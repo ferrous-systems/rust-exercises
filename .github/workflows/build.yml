@@ -17,16 +17,9 @@ jobs:
         with:
           tool: mdslides@0.2,mdbook@0.4,mdbook-mermaid@0.12
 
-      - name: Build book
+      - name: Build and test
         run: |
-          mdbook test
-          mdbook build
-      
-      - name: Assemble Artifacts
-        run: |
-          mkdir -p ./output
-          mv ./book ./output/rust-exercises
-          zip -r ./output.zip ./output
+          ./build.sh
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
