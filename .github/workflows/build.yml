@@ -1,0 +1,45 @@
+name: Build sample material
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-20.04
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install tools
+        uses: taiki-e/install-action@v2
+        with:
+          tool: mdslides@0.2,mdbook@0.4,mdbook-mermaid@0.12
+
+      - name: Build book
+        run: |
+          mdbook test
+          mdbook build
+      
+      - name: Assemble Artifacts
+        run: |
+          mkdir -p ./output
+          mv ./book ./output/rust-exercises
+          zip -r ./output.zip ./output
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        if: ${{success()}}
+        with:
+          name: Artifacts
+          if-no-files-found: error
+          path: |
+            ./output
+
+      - name: Create and Upload Release
+        if: github.event_name == 'push' && startswith(github.ref, 'refs/tags/')
+        id: create_release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: ./output.zip

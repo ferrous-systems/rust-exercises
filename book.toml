@@ -1,0 +1,14 @@
+[book]
+authors = ["Ferrous Systems"]
+language = "en"
+multilingual = false
+src = "src"
+title = "Rust Exercises"
+
+[preprocessor.mermaid]
+command = "mdbook-mermaid"
+
+[output.html.playground]
+copyable = true          # include the copy button for copying code snippets
+editable = true          # allow the code editor to work
+line-numbers = true      # turn on line numbers

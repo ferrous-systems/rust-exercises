@@ -1,18 +1,14 @@
-# Rust Exercises
+# Introduction
 
 This book contains a collection of Rust Exercises, written by Ferrous Systems.
 
 We use these exercises as part of our [Rust Training](https://ferrous-systems.com/training/), but you are welcome to try them for yourself as well.
 
-If you wish to fund further development of the course, why not [book a training with us](https://ferrous-systems.com/training/)!.
+# Source Code
 
-# Reading the book
+The source code for this book can be found at <https://github.com/ferrous-systems/rust-exercises>. It is open sourced as a contribution to the growth of the Rust language.
 
-You can:
-
-* Browse [the pages on Github](./boot/SUMMARY.md)
-* Clone the repo, and build it using [`mdbook`](https://crates.io/crates/mdbook)
-* Download the book in HTML format from the [releases area](/releases)
+If you wish to fund further development of the course, why not [book a training with us](https://ferrous-systems.com/training/)!
 
 # License
 
