@@ -15,5 +15,17 @@ name = "bar-step3"
 version = "0.1.0"
 
 [[package]]
-name = "foo"
+name = "rustlatin-step1"
+version = "0.1.0"
+
+[[package]]
+name = "rustlatin-step2"
+version = "0.1.0"
+
+[[package]]
+name = "rustlatin-step3"
+version = "0.1.0"
+
+[[package]]
+name = "rustlatin-step4"
 version = "0.1.0"
