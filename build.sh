@@ -31,5 +31,7 @@ mkdir -p ./output/exercise-book
 #    is easier than re-writing all the links at build time.
 mv ./exercise-book/book ./output/exercise-book/html
 cp -r ./exercise-templates ./output/
+rm -rf ./output/exercise-templates/target
 cp -r ./exercise-solutions ./output/
+rm -rf ./output/exercise-solutions/target
 zip -r ./output.zip ./output
