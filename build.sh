@@ -19,8 +19,16 @@ mdbook test
 mdbook build
 popd
 
+rm -rf ./output
 mkdir -p ./output
 mkdir -p ./output/exercise-book
+# Note: the use of the html subdirectory here is deliberate.
+# a) it allows the book to be provided as PDF in the future
+# b) it ensures the `../../exercise-solutions` links in the markdown also work
+#    when loaded from this output folder. The `../..` comes about
+#    because the Markdown book source lives in the `src` subfolder and so you
+#    have to go up one extra level. Adding an extra level in the output
+#    is easier than re-writing all the links at build time.
 mv ./exercise-book/book ./output/exercise-book/html
 cp -r ./exercise-templates ./output/
 cp -r ./exercise-solutions ./output/
