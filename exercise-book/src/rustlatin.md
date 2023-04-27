@@ -82,19 +82,26 @@ A part of this exercise is seeing type inference in action and to use it to help
   <summary>Solution</summary>
 
 ```rust
-fn rustlatin(sentence: &str) -> Vec<&str> {
+fn rustlatin(sentence: &str) -> Vec<String> {
     let mut collection_of_words = Vec::new();
 
     for word in sentence.split(' ') {
-            collection_of_words.push(word);
-    };
-
+        collection_of_words.push(word.to_string())
+    }
     collection_of_words
 }
+
+
+# fn main() {
+#    assert_eq!(
+#        vec!["This", "sentence", "needs", "to", "be", "split"],
+#        rustlatin("This sentence needs to be split")
+#    )
+#}
 ```
 </details>
 
-## Step 2 Concatenating String types.
+## Step 2: Concatenating String types.
 
 ✅ After iterating over the sentence to split it into words, add the suffix `"rs"` to each word before pushing it to the vector. 
 
