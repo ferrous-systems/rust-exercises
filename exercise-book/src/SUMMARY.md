@@ -4,7 +4,7 @@
 
 # Rust Fundamentals
 
-- [The Foo Exercise](./foo.md)
+- [Rust Latin](./rustlatin.md)
 
 # Real-world Rust
 
