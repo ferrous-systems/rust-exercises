@@ -90,14 +90,6 @@ fn rustlatin(sentence: &str) -> Vec<String> {
     }
     collection_of_words
 }
-
-
-# fn main() {
-#    assert_eq!(
-#        vec!["This", "sentence", "needs", "to", "be", "split"],
-#        rustlatin("This sentence needs to be split")
-#    )
-#}
 ```
 </details>
 
@@ -119,7 +111,7 @@ fn rustlatin(sentence: &str) -> Vec<String> {
     let mut collection_of_words = Vec::new();
 
     for word in sentence.split(' ') {
-            collection_of_mod_words.push(word.to_owned() + "rs")
+            collection_of_words.push(word.to_owned() + "rs")
 
     };
     collection_of_words
@@ -165,6 +157,8 @@ In `fn rustlatin` return the content of the vector as `String`. Run the tests to
   <summary>Solution</summary>
 
 ```rust
+const VOWELS: [char; 5] = ['a', 'e', 'i', 'o', 'u'];
+
 fn latinize(word: &str) -> String {
     let first_char_of_word = word.chars().next().unwrap();
     if VOWELS.contains(&first_char_of_word) {
@@ -184,6 +178,8 @@ If not already done, use functional techniques (i.e. methods on [iterators](http
   <summary>Solution</summary>
 
 ```rust
+const VOWELS: [char; 5] = ['a', 'e', 'i', 'o', 'u'];
+
 fn rustlatin_match(sentence: &str) -> String {
     // transform incoming words vector to rustlatined outgoing
     let new_words: Vec<_> = sentence
