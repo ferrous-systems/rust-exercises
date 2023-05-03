@@ -60,7 +60,7 @@ let string = i.to_string();
 let string = format!("Buzz");
 
 let i = 4;
-format!("{}", i);
+let string = format!("{}", i);
 ```
 
 ### Returning data
