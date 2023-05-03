@@ -71,7 +71,7 @@ If you have issues returning data from multiple branches of your solution, liber
 # fn returner() -> String {
     # let x = 10;
     if x % 5 == 0 {
-    return String::from("Buzz");
+        return String::from("Buzz");
     }
     String::from("Fizz")
 # }
