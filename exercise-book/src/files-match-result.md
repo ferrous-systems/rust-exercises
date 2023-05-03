@@ -33,7 +33,7 @@ Find the solution to the exercise here [`../../exercise-solutions/files-match-re
 
 1. Fix the runtime error in the template code by correcting the file path. Handle the `Result` type that is returned from the `File::open()` with a match statement, so that the `.unwrap()` can be deleted. 
 
-2. Read the content of the file to a buffer using [Read::read\_to\_string](https://doc.rust-lang.org/std/io/trait.Read.html#method.read_to_string). Propagate the Error with `?` to `fn main()`. Start with the code of Step 1. 
+2. Take the code from Step 1 and now read the entire contents of the file to a `String` using [Read::read\_to\_string](https://doc.rust-lang.org/std/io/trait.Read.html#method.read_to_string). Propagate the Error with `?` to `fn main()`. 
   
 3. Take the code from Step 1 again, but now use the [`lines()`](https://doc.rust-lang.org/std/io/trait.BufRead.html#method.lines)-method to instead read the file line-by-line from a [BufReader](https://doc.rust-lang.org/std/io/struct.BufReader.html). Use this to count how many lines there are.
 
