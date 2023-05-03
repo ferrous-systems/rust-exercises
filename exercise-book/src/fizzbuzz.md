@@ -32,6 +32,8 @@ For completing this exercise you need to have
   - On each iteration the integer is tested with `fn fizzbuzz`
   - print the returned value.
 
+If you need it, we have provided a [complete solution](../../exercise-solutions/fizzbuzz/src/examples/fizzbuzz.rs) for this exercise.
+
 ## Knowledge
 
 ### Printing to console

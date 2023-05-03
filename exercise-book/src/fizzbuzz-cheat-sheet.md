@@ -1,7 +1,6 @@
 # Fizzbuzz Cheat Sheet
 
-This is a syntax cheat sheet to be used with the Fizzbuzz exercise. 
-
+This is a syntax cheat sheet to be used with the Fizzbuzz exercise.
 
 ## Variables
 
@@ -11,6 +10,7 @@ let mut thing = 43; // a mutable variable
 ```
 
 ## Functions
+
 ```rust
 // a function with one argument, no return.
 fn number_crunch(input: u32) {
@@ -22,11 +22,18 @@ fn division_machine(dividend: f32, divisor: f32) -> f32 {
     // function body
     let quotient = dividend / divisor;
 
-    // return line does not have a semi colon!
+    // return line does not have a semi-colon!
     quotient
 }
 
-// calling a function 
+fn main() {
+    
+    let cookies = 1000.0_f32;
+    let cookie_monsters = 1.0_f32;
+
+    // calling a function 
+    let number = division_machine(cookies, cookie_monsters);
+}
 ```
 
 ## `for` loops and ranges
@@ -54,7 +61,7 @@ if number == 4 {
     println!("Something else happens");
 } else {
     println!("Or this happens");
-};
+}
 
 // condition can be anything that evaluates to a bool
 
@@ -70,7 +77,3 @@ if number == 4 {
 |`\|\|`         |`expr \|\| expr`   |Short-circuiting logical OR    |
 |`%`            |`expr % expr`      |Arithmetic remainder           |
 |`/`            | `expr / expr`     |Arithmetic division            |
-
-
-
-

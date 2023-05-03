@@ -1,5 +1,6 @@
 [workspace]
 members = [
+    "fizzbuzz",
     "rustlatin/*",
     "bar/step1",
     "bar/step2",
