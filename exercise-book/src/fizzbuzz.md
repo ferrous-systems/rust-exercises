@@ -57,7 +57,7 @@ let i = 4;
 let string = i.to_string();
 
 // 2. 
-format!("Buzz");
+let string = format!("Buzz");
 
 let i = 4;
 format!("{}", i);
