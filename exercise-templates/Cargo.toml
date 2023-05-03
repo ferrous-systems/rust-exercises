@@ -1,2 +1,9 @@
 [workspace]
-members = ["foo", "bar/step1", "bar/step2", "bar/step3", "files-match-result"]
+
+members = [
+    "rustlatin/*",
+    "bar/step1",
+    "bar/step2",
+    "bar/step3",
+    "files-match-result"
+]

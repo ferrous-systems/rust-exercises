@@ -4,8 +4,8 @@
 
 # Rust Fundamentals
 
-- [The Foo Exercise](./foo.md)
-- [Files, match, result](files-match-result.md)
+- [Rust Latin](./rustlatin.md)
+- [Files, match, result](./files-match-result.md)
 
 # Real-world Rust
 
