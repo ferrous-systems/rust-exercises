@@ -131,7 +131,7 @@ fn main() {
     };
 }
 ```
-All arms of the match tree have to result in the same type!
+All arms of the match tree have to either result in the same type, or they have to *diverge* (that is, panic the program or return early from the function)!
 
 # Template
 
