@@ -78,7 +78,7 @@ match value {
 }
 ```
 
-Other then with if/else, every case has to be handled explicitly, at
+Unlike with if/else, every case has to be handled explicitly, at
 least with a last catch all arm that uses a place holder:
 
 ```rust
