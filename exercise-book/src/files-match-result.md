@@ -38,7 +38,7 @@ Find the solution to the exercise here [`../../exercise-solutions/files-match-re
 3. Take the code from Step 1 again, but now use the [`lines()`](https://doc.rust-lang.org/std/io/trait.BufRead.html#method.lines)-method to instead read the file line-by-line from a [BufReader](https://doc.rust-lang.org/std/io/struct.BufReader.html). Use this to count how many lines there are.
 
 
-4. Filter out empty lines using [is\_empty](https://doc.rust-lang.org/std/string/struct.String.html#method.is_empty) and print the non-empty ones. Start with the code of Step 3.
+4. Change the code from Step 3 to filter out empty lines using [is\_empty](https://doc.rust-lang.org/std/string/struct.String.html#method.is_empty) and print the non-empty ones.
 
 5. Write a function that parses each line and returns `Some(url)` if the line is a URL, and `None` if it is not. Use the Url crate's [UrlType](https://docs.rs/url/2.1.1/url/). Start with the code of Step 4.
 
