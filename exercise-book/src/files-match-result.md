@@ -196,6 +196,8 @@ Take a look at [Read::read\_to\_string](https://doc.rust-lang.org/std/io/trait.R
 
 ✅ Use `println!` to print the content of the `String` buffer.
 
+✅ Rewrite the handling of the `Result<T, E>` from step 1, so that the `Error` is propagated with `?` and not handled with `match`.
+
 <details>
   <summary>Click me</summary>
 
@@ -212,7 +214,7 @@ Take a look at [Read::read\_to\_string](https://doc.rust-lang.org/std/io/trait.R
 use std::io::{ BufReader, BufRead,};
 ```
 
-✅ Take a look at the documentation of [BufReader](https://doc.rust-lang.org/std/io/struct.BufReader.html). BufReader is a struct that adds buffering to any reader. It implements the
+✅ Take a look at the documentation of [BufReader](https://doc.rust-lang.org/std/io/struct.BufReader.html). `BufReader` is a struct that adds buffering to any reader. It implements the
 [`BufRead`](https://doc.rust-lang.org/std/io/trait.BufRead.html#) trait. In short this means, that methods that are defined for `BufRead` can be used for `BufReader`. For example the [`lines()`](https://doc.rust-lang.org/std/io/trait.BufRead.html#method.lines) method.
 
 ✅ Construct a `BufReader` around the file.
@@ -220,8 +222,6 @@ use std::io::{ BufReader, BufRead,};
 ✅ The `lines()`- method returns an Iterator over the file’s lines. Iterate over the lines with a for loop to count them.
 
 ✅ Print the number of lines the file contains.
-
-✅ You don’t have to handle the `Result` that is returned from `.lines()`, why?
 
 <details>
   <summary>Click me</summary>
@@ -272,6 +272,6 @@ use std::io::{ BufReader, BufRead,};
 
 Variables can be typed by using `:` and a type.
 
-    let my_value: String = String::from("test");
-
-
+```rust
+let my_value: String = String::from("test");
+```
