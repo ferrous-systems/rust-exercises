@@ -40,7 +40,7 @@ Find the solution to the exercise here [`../../exercise-solutions/files-match-re
 
 4. Change the code from Step 3 to filter out empty lines using [is\_empty](https://doc.rust-lang.org/std/string/struct.String.html#method.is_empty) and print the non-empty ones.
 
-5. Write a function that parses each line and returns `Some(url)` if the line is a URL, and `None` if it is not. Use the Url crate's [UrlType](https://docs.rs/url/2.1.1/url/). Start with the code of Step 4.
+5. Take your code from Step 4 and now write a function that parses each line and returns `Some(url)` if the line is a URL, and `None` if it is not. Use the Url crate's [UrlType](https://docs.rs/url/2.1.1/url/).
 
 ## Knowledge
 
