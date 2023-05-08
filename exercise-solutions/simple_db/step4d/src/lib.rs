@@ -35,7 +35,7 @@ pub fn parse(input: &str) -> Result<Command, Error> {
                 } else {
                     Err(Error::UnexpectedPayload)
                 }
-            },
+            }
             "" => Err(Error::EmptyMessage),
             _ => Err(Error::UnknownCommand),
         }
@@ -99,7 +99,7 @@ mod tests {
         let expected = Err(Error::UnexpectedPayload);
         assert_eq!(result, expected);
     }
-   
+
     #[test]
     fn test_retrieve() {
         let line = "RETRIEVE\n";
@@ -107,31 +107,4 @@ mod tests {
         let expected = Ok(Command::Retrieve);
         assert_eq!(result, expected);
     }
-
-    // // Tests correct formatting of PUBLISH command
-
-    // #[test]
-    // fn test_publish() {
-    //     let line = "PUBLISH TestMessage\n";
-    //     let result: Result<Command, Error> = parse(line);
-    //     let expected = Ok(Command::Publish("TestMessage".into()));
-    //     assert_eq!(result, expected);
-    // }
-
-    // #[test]
-    // fn test_empty_publish() {
-    //     let line = "PUBLISH \n";
-    //     let result: Result<Command, Error> = parse(line);
-    //     let expected = Ok(Command::Publish("".into()));
-    //     assert_eq!(result, expected);
-    // }
-
-    // #[test]
-    // fn test_missing_payload() {
-    //     let line = "PUBLISH\n";
-    //     let result: Result<Command, Error> = parse(line);
-    //     let expected = Err(Error::MissingPayload);
-    //     assert_eq!(result, expected);
-    // }
 }
-

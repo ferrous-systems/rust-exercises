@@ -106,7 +106,7 @@ mod tests {
         let expected = Err(Error::UnexpectedPayload);
         assert_eq!(result, expected);
     }
-   
+
     #[test]
     fn test_retrieve() {
         let line = "RETRIEVE\n";
