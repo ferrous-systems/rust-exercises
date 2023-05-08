@@ -8,6 +8,7 @@
   - [Fizzbuzz Cheat-Sheet](./fizzbuzz-cheat-sheet.md)
 - [Fizzbuzz with match](./fizzbuzz-match.md)
 - [Rust Latin](./rustlatin.md)
+- [SimpleDB](./simple_db.md)
 
 
 # Real-world Rust
