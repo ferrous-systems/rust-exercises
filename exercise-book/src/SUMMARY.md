@@ -14,7 +14,7 @@
 - [Files, match, result](./files-match-result.md)
 
 # Real-world Rust
-
+- [Shapes](./shapes.md)
 - [The Bar Exercise](./bar.md)
 
 # Async Rust
