@@ -1,24 +1,17 @@
 # SimpleDB Exercise
 
-In this exercise, we will implement a toy protocol parser for a simple
-protocol for databank queries. We call it simpleDB. The protocol has two
-commands, one of them can be sent with a payload of additional data.
-Your parser parses the incoming data strings, makes sure the commands
-are formatted correctly and returns errors for the different ways the
-formatting can go wrong.
+In this exercise, we will implement a toy protocol parser for a simple protocol for databank queries. We call it simpleDB. The protocol has two commands, one of them can be sent with a payload of additional data. Your parser parses the incoming data strings, makes sure the commands are formatted correctly and returns errors for the different ways the formatting can go wrong.
 
 ## After completing this exercise you are able to
 
 - write a simple Rust library from scratch
 
-- interact with borrowed and owned memory, especially how to take
-    ownership
+- interact with borrowed and owned memory, especially how to take ownership
 
 - handle complex cases using the `match` and `if let` syntax
 
 - create a safe protocol parser in Rust manually
 
-The library does not handle I/O.
 
 ## Prerequisites
 
@@ -26,7 +19,7 @@ The library does not handle I/O.
 
 - control flow with if/else
 
-- familiarity with `Result<T, T>`, `Option<>`
+- familiarity with `Result<T, E>`, `Option<T>`
 
 ## Tasks
 
@@ -43,8 +36,12 @@ The library does not handle I/O.
 
 The Step-by-Step-Solution contains steps 4a-e that explain a possible way to handle the cases in detail.
 
-- ✅ Run `clippy` on your codebase.
-- ✅ Run `rustfmt` on your codebase.
+### Optional Tasks:
+
+- Run `clippy` on your codebase.
+- Run `rustfmt` on your codebase.
+
+If you need it, we have provided [solutions](../../exercise-solutions/simple_db/) for every step for this exercise.
 
 ### Protocol Specification
 
@@ -200,11 +197,11 @@ hail the trainers quickly.
 
 ### Derives
 
-# [derive(PartialEq)]
+`#[derive(PartialEq, Eq)]`
 
   This enables comparison between 2 instances of the type, by comparing every field/variant. This enables the `assert_eq!` macro, which relies on equality being defined. `Eq` for total equality isn’t strictly necessary for this example, but it is good practice to derive it if it applies.
 
-# [derive(Debug)]
+`#[derive(Debug)]`
 
 This enables automatic debug output for the type. The `assert_eq!`macro requires this for testing.
 
@@ -225,7 +222,7 @@ introduce you to `if let`.
 the returned `Option(T)` from a method to `Some(T)`. The statement
 yields true, if `Some(T)` is returned, false if `None` is returned.
 
-When to use what?
+#### When to use what?
 
 `if let` is used if you have to decide between two cases, where the
 second case is usually of lesser meaning for the program’s execution.
@@ -237,7 +234,7 @@ for every possible case that is not explicitly spelled out. The order
 of the match arms matter: The catch all branch needs to be last,
 otherwise, it catches all…
 
-Returning Values from branches and match arms
+#### Returning Values from branches and match arms
 
 - all match arms always need to return the same type, or none can
     return a value.
@@ -281,8 +278,8 @@ Define two enums, one is called `Command` and one is called `Error`. `Command` h
 ### Step 3: Read the documentation for `str`, especially `trim()`, `splitn()`, `split_once()` to build your logic
 
 tl;dr
-`split_once()` splits a str into 2 parts at the first occurrence of a delimiter
-`splitn()` splits a str into a max of n substrings at every occurrence of a delimiter
+`split_once()` splits a str into 2 parts at the first occurrence of a delimiter.
+`splitn()` splits a str into a max of n substrings at every occurrence of a delimiter.
 `trim()` returns a string slice with leading and trailing whitespace removed.
 
 <details>
@@ -294,7 +291,7 @@ Split the input with `split_once()` using `\n` as delimeter, this allows to dist
 - a command with trailing data, where the second substring's length is longer than 0 -> Error::TrailingData
 - a command where `\n` is the last part, and the second substring is of length 0 -> generic command
 
-Split the input with `splitn()` using `' '` as delimeter and 2 as the max number of substrings. The method returns `Some(T)` where T is an iterator over the substrings, and `None` when there are no substrings. Note, that even an empty str `""` is a substring. This allows us to distiguish the following cases
+Split the input with `splitn()` using `' '` as delimeter and 2 as the max number of substrings. The method returns `Some(T)` where T is an iterator over the substrings, and `None` when there are no substrings. Note, that even an empty str `""` is a substring. This allows us to distiguish the following cases:
 
 - `Some(T)` contains all methods that have either one or two substrings -> generic Command
 - `None` is returned if no substrings are returned -> Error::UnknownError
@@ -310,22 +307,11 @@ From here, the actual command cases need to be distiguished with pattern matchin
 
 #### Step 4a: Sorting out wrongly placed and absent newlines
 
-Missing, wrongly placed and more than one `\n` are errors that occur
-independent of other errors so it makes sense to handle these cases
-first. Split the incoming message at the first appearing `\n` using
-`split_once()`. This operation yields `Some((&str, &str))` if at least
-one `\n` is present, and `None` if 0 are present. If the `\n` is **not**
-the last item in the message, the second `&str` in `Some((&str, &str))`
-is longer than 0 bytes.
+Missing, wrongly placed and more than one `\n` are errors that occur independent of other errors so it makes sense to handle these cases first. Split the incoming message at the first appearing `\n` using `split_once()`. This operation yields `Some((&str, &str))` if at least one `\n` is present, and `None` if 0 are present. If the `\n` is **not** the last item in the message, the second `&str` in `Some((&str, &str))` is longer than 0 bytes.
 
-In order to be able to run this part, introduce a generic `Command` in
-the `Command` enum, which is returned if the second `&str` in
-`Some((&str, &str))`
+Tip: Introduce a generic variant `Command::Command` that temporarily stands for a valid command. 
 
-Handle the two cases with match, check the length of the second `&str`
-with `len()`. Return `Err(Error::TrailingData)` or for wrongly placed
-`\n`, `Err(Error::IncompleteMessage)` for absent `\n` and
-`Ok(Command::Command)` if the `\n` is placed correct.
+Handle the two cases with match, check the length of the second `&str` with `len()`. Return `Err(Error::TrailingData)` or for wrongly placed `\n`, `Err(Error::IncompleteMessage)` for absent `\n` and `Ok(Command::Command)` if the `\n` is placed correct.
 
 <details>
   <summary>Solution</summary>
@@ -340,20 +326,13 @@ with `len()`. Return `Err(Error::TrailingData)` or for wrongly placed
 
 In 4a a generic command is distiguished from a message that contains trailing data in an else branch. Remove the else branch before continuing, because we want to distishish this case further. 
 
-Use `.splitn()` to split the `input` into 2 parts at max, use whitespace
-as delimiter (`' '`). This method yields an iterator over the
-`substrings`.
+Use `.splitn()` to split the `input` into 2 parts at max, use whitespace as delimiter (`' '`). This method yields an iterator over the substrings.
 
-Use `.next()` to access the first substring, the command keyword, which
-is wrapped into the `Option<T>` type. Sign it with the `Some` Option
-to `if let`.
+Use `.next()` to access the first substring, the command keyword, which is wrapped into the `Option<T>` type. Sign it with the `Some()` Option to `if let`.
 
 This tests if there is at least one substring in the input.
 
-Return the generic `Ok(Command::Command)` for the `Some` case, and
-`Err(Error::UnknownError)` for `None`. The error is unknown, since
-`None` is only returned if there is nothing to iterate about. Even an
-empty string would return `Some`!
+Return the generic `Ok(Command::Command)` for the `Some()` case, and `Err(Error::UnknownError)` for `None`. The error is unknown, since `None` is only returned if there is nothing to iterate about. Even an empty string would return `Some()`!
 
 <details>
   <summary>Solution</summary>
@@ -366,11 +345,7 @@ empty string would return `Some`!
 
 #### Step 4c: Pattern matching for the command keywords
 
-Remove the Ok(Command::Command) and the enum variant. Use `.trim()` on
-the command substring and use `match` to patternmatch its content.
-`.trim()` removes any `\n` that are in the substring. Next, implement
-two necessary match arms: `""` for empty messages, `_` for any other
-string, currently evaluated to be an unknown command.
+Remove the Ok(Command::Command) and the enum variant. Use `.trim()` on the command substring and use `match` to patternmatch its content. `.trim()` removes any `\n` that are in the substring. Next, implement two necessary match arms: `""` for empty messages, `_` for any other string, currently evaluated to be an unknown command.
 
 <details>
   <summary>Solution</summary>
@@ -383,13 +358,7 @@ string, currently evaluated to be an unknown command.
 
 #### Step 4d: Add Retrieve Case
 
-Add a match arm to check if the command substring is equal to
-`"RETRIEVE"`. It’s not enough to return `Ok(Command::Retrieve)` just
-yet. The Retrieve command cannot have a payload, this includes
-whitespace! To check for this, add an if else statement, that checks if
-the next iteration over the substrings returns none. If this is true,
-return the `Ok(Command::Retrieve)`, if it is false, return
-`Err(Error::UnexpectedPayload)`.
+Add a match arm to check if the command substring is equal to `"RETRIEVE"`. It’s not enough to return `Ok(Command::Retrieve)` just yet. The Retrieve command cannot have a payload, this includes whitespace! To check for this, add an if else statement, that checks if the next iteration over the substrings returns none. If this is true, return the `Ok(Command::Retrieve)`, if it is false, return `Err(Error::UnexpectedPayload)`.
 
 <details>
   <summary>Solution</summary>
@@ -402,15 +371,9 @@ return the `Ok(Command::Retrieve)`, if it is false, return
 
 #### Step 4e: Add Publish Case and finish
 
-Add a `match` arm to check if the command substring is equal to
-`"PUBLISH"`. Just like with the Retrieve command, we need to add a
-distinction, but the other way round: Publish needs a payload or
-whitespace for an empty payload to be valid.
+Add a `match` arm to check if the command substring is equal to `"PUBLISH"`. Just like with the Retrieve command, we need to add a distinction, but the other way round: Publish needs a payload or whitespace for an empty payload to be valid.
 
-Use `if let` to check if the next iteration into the substrings returns
-`Some()`. If it does, return `Ok(Command::Publish(T))`, where T is an
-owned version of the trimmed payload. Otherwise return
-`Err(Error::MissingPayload)`
+Use `if let` to check if the next iteration into the substrings returns `Some()`. If it does, return `Ok(Command::Publish(T))`, where T is an owned version of the trimmed payload. Otherwise return `Err(Error::MissingPayload)`.
 
 <details>
   <summary>Solution</summary>
@@ -423,8 +386,7 @@ owned version of the trimmed payload. Otherwise return
 
 ## Full source code
 
-If all else fails, feel free to copy this solution to play around with
-it.
+If all else fails, feel free to copy this solution to play around with it.
 
 <details>
   <summary>Solution</summary>
