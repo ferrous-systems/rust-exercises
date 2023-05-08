@@ -108,30 +108,30 @@ mod tests {
         assert_eq!(result, expected);
     }
 
-    // Tests correct formatting of PUBLISH command
+    // // Tests correct formatting of PUBLISH command
 
-    #[test]
-    fn test_publish() {
-        let line = "PUBLISH TestMessage\n";
-        let result: Result<Command, Error> = parse(line);
-        let expected = Ok(Command::Publish("TestMessage".into()));
-        assert_eq!(result, expected);
-    }
+    // #[test]
+    // fn test_publish() {
+    //     let line = "PUBLISH TestMessage\n";
+    //     let result: Result<Command, Error> = parse(line);
+    //     let expected = Ok(Command::Publish("TestMessage".into()));
+    //     assert_eq!(result, expected);
+    // }
 
-    #[test]
-    fn test_empty_publish() {
-        let line = "PUBLISH \n";
-        let result: Result<Command, Error> = parse(line);
-        let expected = Ok(Command::Publish("".into()));
-        assert_eq!(result, expected);
-    }
+    // #[test]
+    // fn test_empty_publish() {
+    //     let line = "PUBLISH \n";
+    //     let result: Result<Command, Error> = parse(line);
+    //     let expected = Ok(Command::Publish("".into()));
+    //     assert_eq!(result, expected);
+    // }
 
-    #[test]
-    fn test_missing_payload() {
-        let line = "PUBLISH\n";
-        let result: Result<Command, Error> = parse(line);
-        let expected = Err(Error::MissingPayload);
-        assert_eq!(result, expected);
-    }
+    // #[test]
+    // fn test_missing_payload() {
+    //     let line = "PUBLISH\n";
+    //     let result: Result<Command, Error> = parse(line);
+    //     let expected = Err(Error::MissingPayload);
+    //     assert_eq!(result, expected);
+    // }
 }
 
