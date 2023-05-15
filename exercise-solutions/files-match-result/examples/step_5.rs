@@ -20,7 +20,7 @@ fn main() -> Result<(), Error> {
             println!("{}", valid_url);
         }
     }
-    
+
     Ok(())
 }
 

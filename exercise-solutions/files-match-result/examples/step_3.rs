@@ -13,6 +13,6 @@ fn main() -> Result<(), Error> {
     }
 
     println!("{}", number);
-    
+
     Ok(())
 }

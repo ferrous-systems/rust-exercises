@@ -7,36 +7,34 @@ non-urls.
 
 ## In this exercise, you will learn how to
 
--   handle occurring `Result`-types with `match` for basic error
+- handle occurring `Result`-types with `match` for basic error
     handling.
 
--   when to use the `.unwrap()` method.
+- when to use the `.unwrap()` method.
 
--   propagate an error with the `?` operator
+- propagate an error with the `?` operator
 
--   return the `Option`-type.
+- return the `Option`-type.
 
--   do some elementary file processing (opening, reading to buffer,
+- do some elementary file processing (opening, reading to buffer,
     counting, reading line by line).
 
--   navigate the Rust `stdlib` documentation
+- navigate the Rust `stdlib` documentation
 
--   add external dependencies to your project
+- add external dependencies to your project
 
 ## Task
 
 Find the exercise template here [`../../exercise-templates/files-match-result`](../../exercise-templates/files-match-result)
 
 Find the solution to the exercise here [`../../exercise-solutions/files-match-result`](../../exercise-solutions/files-match-result). You can run them with the following command:
-`cargo run --example step_x`, where x is the number of the step. 
+`cargo run --example step_x`, where x is the number of the step.
 
+1. Fix the runtime error in the template code by correcting the file path. Handle the `Result` type that is returned from the `File::open()` with a match statement, so that the `.unwrap()` can be deleted.
 
-1. Fix the runtime error in the template code by correcting the file path. Handle the `Result` type that is returned from the `File::open()` with a match statement, so that the `.unwrap()` can be deleted. 
-
-2. Take the code from Step 1 and now read the entire contents of the file to a `String` using [Read::read\_to\_string](https://doc.rust-lang.org/std/io/trait.Read.html#method.read_to_string). Propagate the Error with `?` to `fn main()`. 
+2. Take the code from Step 1 and now read the entire contents of the file to a `String` using [Read::read\_to\_string](https://doc.rust-lang.org/std/io/trait.Read.html#method.read_to_string). Propagate the Error with `?` to `fn main()`.
   
 3. Take the code from Step 2, but instead of reading a to a `String`, construct a [BufReader](https://doc.rust-lang.org/std/io/struct.BufReader.html) and use its [`lines()`](https://doc.rust-lang.org/std/io/trait.BufRead.html#method.lines)-method to read the file line-by-line. Use this to count how many lines there are.
-
 
 4. Change the code from Step 3 to filter out empty lines using [is\_empty](https://doc.rust-lang.org/std/string/struct.String.html#method.is_empty) and print the non-empty ones.
 
@@ -130,16 +128,18 @@ fn main() {
         Err(error) => panic!("Error opening the file: {:?}", error),
     };
 }
+
 ```
+
 All arms of the match tree have to either result in the same type, or they have to *diverge* (that is, panic the program or return early from the function)!
 
-# Template
+## Template
 
 Start your `VSCode` in the proper root folder to have
 `Rust-Analyzer` working properly.
 
 ```shell
-$ ../../exercise-templates/files-match-result/
+../../exercise-templates/files-match-result/
 ```
 
 The template builds, but has a runtime error, as the location of the file
@@ -148,11 +148,12 @@ is wrong. This is intentional.
 Your code will use the example data found in
 
 ```shell
-$ ../../exercise-templates/files-match-result/src/data
+../../exercise-templates/files-match-result/src/data
 ```
+
 ## Step-by-Step Solution
 
-### Step 1: Handle the `Result` instead of unwrapping it!
+### Step 1: Handle the `Result` instead of unwrapping it
 
 `File::open` yields a `Result<T, E>` kind of type, a quick way to get to
 inner type T is to use the `.unwrap()` method on the `Result<T, E>`. The
@@ -167,7 +168,7 @@ often used as a quick fix before implementing proper error handling.
 
 ✅ Handle the `Result` using `match` to get to the inner type. Link the two possible patterns, `Ok(file)` and `Err(e)` to an an appropriate expression, for example: `println!("File opened")` and `panic!("Problem opening the file: {:?}", e)`.
 
-✅ Fix the location of the file so that the program no longer panics. 
+✅ Fix the location of the file so that the program no longer panics.
 
 <details>
   <summary>Click me</summary>
@@ -180,17 +181,16 @@ often used as a quick fix before implementing proper error handling.
 
 TIP: IDEs often provide a "quick fix" to roll out all match arms quickly
 
-### Step 2: Reading the File content to a String and Error propagation.
+### Step 2: Reading the File content to a String and Error propagation
 
 ✅ Import `std::io::prelude::*`
 
-Take a look at [Read::read\_to\_string](https://doc.rust-lang.org/std/io/trait.Read.html#method.read_to_string). The method takes in a mutable empty `String`, and writes the content of a file to this buffer. The method returns a `Result<usize, Error>`, where the usize is the number of bytes that have been written to the buffer. Handling this Result, will not yield the `String` of file content. For a simple program, handling it with an 
+Take a look at [Read::read\_to\_string](https://doc.rust-lang.org/std/io/trait.Read.html#method.read_to_string). The method takes in a mutable empty `String`, and writes the content of a file to this buffer. The method returns a `Result<usize, Error>`, where the usize is the number of bytes that have been written to the buffer. Handling this Result, will not yield the `String` of file content. For a simple program, handling it with an
 `.unwrap()` would be sufficient, but for bigger code bases this is not helpful, so we want to propagate the Error.
 
 ✅ Add `Result<(), Error>` as return type to `fn main()` and `Ok(())` as the last line of `fn main()`.
   
-
-✅ Create an empty `String` that serves as buffer and bind it to a mutable variable. 
+✅ Create an empty `String` that serves as buffer and bind it to a mutable variable.
 
 ✅ Call the `.read_to_string()` method on the `File` object. The method takes in the `String` buffer and is followed by the `?` operator. If the method returns an `Error` it is propagated to the instance that called `fn main()`. If the method returns the `Ok` value, the program proceeds as planned.
 
@@ -204,9 +204,10 @@ Take a look at [Read::read\_to\_string](https://doc.rust-lang.org/std/io/trait.R
 ```rust, ignore
 {{#include ../../exercise-solutions/files-match-result/examples/step_2.rs}}
 ```
+
 </details>
 
-### Task 3: Read the lines into a `BufReader` and count them!
+### Task 3: Read the lines into a `BufReader` and count them
 
 ✅ Add the following imports:
 
@@ -245,7 +246,7 @@ use std::io::{ BufReader, BufRead,};
 
 </details>
 
-### Step 5: Read URLs from file and return with `Option<T>`.
+### Step 5: Read URLs from file and return with `Option<T>`
 
 ✅ Add `url = "2"` to your `[dependencies]` section in `Cargo.toml` and import `url::Url` in `main.rs`.
 

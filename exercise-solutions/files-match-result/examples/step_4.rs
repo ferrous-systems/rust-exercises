@@ -12,6 +12,6 @@ fn main() -> Result<(), Error> {
             println!("{}", line)
         }
     }
-    
+
     Ok(())
 }
