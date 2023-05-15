@@ -9,30 +9,19 @@ fn parse_line(line: String) -> Option<Url> {
     }
 }
 
-fn main() {
-    let open_result = File::open("src/data/content.txt");
-
-    let file = match open_result {
-        Ok(file) => file,
-        Err(e) => panic!("Problem opening the file: {:?}", e),
-    };
+fn main() -> Result<(), Error> {
+    let open_result = File::open("src/data/content.txt")?;
 
     let buf_reader = BufReader::new(file);
 
     for line in buf_reader.lines() {
-        let line = match line {
-            Ok(content) => content,
-
-            Err(e) => panic!("Error reading line {}", e),
-        };
-
-        let url = parse_line(line);
-
-        match url {
-            Some(line) => println!("{}", line),
-            None => continue,
+        let line = line?
+        if let Some(valid_url) = parse_line(line) {
+            println!("{}", valid_url),
         }
     }
+    
+    Ok(())
 }
 
 #[test]
