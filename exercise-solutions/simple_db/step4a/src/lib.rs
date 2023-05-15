@@ -20,7 +20,9 @@ pub fn parse(input: &str) -> Result<Command, Error> {
     match input.split_once('\n') {
         Some((_message, trailing_data)) => {
             if trailing_data.len() != 0 {
-                return Err(Error::TrailingData);
+                Err(Error::TrailingData)
+            } else {
+                Ok(Command::Command)
             }
         }
         None => Err(Error::IncompleteMessage),
