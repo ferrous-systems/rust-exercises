@@ -1,7 +1,9 @@
 [workspace]
+
 members = [
     "rustlatin/*",
     "bar/step1",
     "bar/step2",
-    "bar/step3"
+    "bar/step3",
+    "files-match-result"
 ]
