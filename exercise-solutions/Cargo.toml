@@ -3,6 +3,7 @@
 members = [
     "fizzbuzz",
     "rustlatin/*",
+    "simple_db/*",
     "bar/step1",
     "bar/step2",
     "bar/step3",
