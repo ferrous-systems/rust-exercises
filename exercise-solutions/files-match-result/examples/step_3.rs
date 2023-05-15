@@ -1,13 +1,8 @@
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 
-fn main() {
-    let open_result = File::open("./src/data/content.txt");
-
-    let file = match open_result {
-        Ok(file) => file,
-        Err(e) => panic!("Problem opening the file: {:?}", e),
-    };
+fn main() -> Result<(), Error> {
+    let open_result = File::open("./src/data/content.txt")?;
 
     let buf_reader = BufReader::new(file);
 
@@ -18,4 +13,6 @@ fn main() {
     }
 
     println!("{}", number);
+    
+    Ok(())
 }
