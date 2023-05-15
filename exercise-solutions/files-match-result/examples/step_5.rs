@@ -1,5 +1,5 @@
 use std::fs::File;
-use std::io::{BufRead, BufReader};
+use std::io::{BufRead, BufReader, Error};
 use url::Url;
 
 fn parse_line(line: String) -> Option<Url> {
@@ -10,14 +10,14 @@ fn parse_line(line: String) -> Option<Url> {
 }
 
 fn main() -> Result<(), Error> {
-    let open_result = File::open("src/data/content.txt")?;
+    let file = File::open("src/data/content.txt")?;
 
     let buf_reader = BufReader::new(file);
 
     for line in buf_reader.lines() {
-        let line = line?
+        let line = line?;
         if let Some(valid_url) = parse_line(line) {
-            println!("{}", valid_url),
+            println!("{}", valid_url);
         }
     }
     
