@@ -35,7 +35,7 @@ Find the solution to the exercise here [`../../exercise-solutions/files-match-re
 
 2. Take the code from Step 1 and now read the entire contents of the file to a `String` using [Read::read\_to\_string](https://doc.rust-lang.org/std/io/trait.Read.html#method.read_to_string). Propagate the Error with `?` to `fn main()`. 
   
-3. Take the code from Step 1 again, but now use the [`lines()`](https://doc.rust-lang.org/std/io/trait.BufRead.html#method.lines)-method to instead read the file line-by-line from a [BufReader](https://doc.rust-lang.org/std/io/struct.BufReader.html). Use this to count how many lines there are.
+3. Take the code from Step 2, but instead of reading a to a `String`, construct a [BufReader](https://doc.rust-lang.org/std/io/struct.BufReader.html) and use its [`lines()`](https://doc.rust-lang.org/std/io/trait.BufRead.html#method.lines)-method to read the file line-by-line. Use this to count how many lines there are.
 
 
 4. Change the code from Step 3 to filter out empty lines using [is\_empty](https://doc.rust-lang.org/std/string/struct.String.html#method.is_empty) and print the non-empty ones.
