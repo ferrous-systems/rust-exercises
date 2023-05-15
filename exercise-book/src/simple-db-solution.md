@@ -165,8 +165,8 @@ If all else fails, feel free to copy this solution to play around with it.
 
     pub fn parse(input: &str) -> Result<Command, Error> {
         match input.split_once('\n') {
-            Some((_, data)) => {
-                if data.len() != 0 {
+            Some((_message, trailing_data)) => {
+                if trailing_data.len() != 0 {
                     return Err(Error::TrailingData);
                 }
             }
