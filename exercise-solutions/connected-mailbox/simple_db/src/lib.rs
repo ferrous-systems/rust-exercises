@@ -1,34 +1,39 @@
-use std::fmt;
+//! Simple DB - a parser for a simple database protocol
 
+/// The kinds of commands our protocol supports
 #[derive(Eq, PartialEq, Debug)]
 pub enum Command {
+    /// Publishes a new message into the database.
+    ///
+    /// `PUBLISH <message>\n`
     Publish(String),
+    /// Retrieves a message from the database.
+    ///
+    /// `RETRIEVE\n`
     Retrieve,
 }
 
-#[derive(Eq, PartialEq, Debug)]
+/// The ways in which this module can fail
+#[derive(Eq, PartialEq, Debug, thiserror::Error)]
 pub enum Error {
+    #[error("Unexpected data after the final newline")]
     TrailingData,
+    #[error("Not enough data in command (missing newline?)")]
     IncompleteMessage,
+    #[error("Input was empty")]
     EmptyMessage,
+    #[error("Unknown command string")]
     UnknownCommand,
-    UnknownError,
+    #[error("Valid command but unexpected payload")]
     UnexpectedPayload,
+    #[error("Valid command but missing payload")]
     MissingPayload,
 }
-
-impl fmt::Display for Error {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "Error parsing is command: {:?}!", self)
-    }
-}
-
-impl std::error::Error for Error {}
 
 pub fn parse(input: &str) -> Result<Command, Error> {
     match input.split_once('\n') {
         Some((_message, trailing_data)) => {
-            if trailing_data.len() != 0 {
+            if !trailing_data.is_empty() {
                 return Err(Error::TrailingData);
             }
         }
@@ -57,6 +62,6 @@ pub fn parse(input: &str) -> Result<Command, Error> {
             _ => Err(Error::UnknownCommand),
         }
     } else {
-        Err(Error::UnknownError)
+        Err(Error::IncompleteMessage)
     }
 }

@@ -49,6 +49,8 @@ fn main() -> io::Result<()> {
 fn handle_client(mut stream: TcpStream, storage: &mut VecDeque<String>) -> Result<(), ServerError> {
     let command = read_command(&mut stream)?;
 
+    println!("Got command {:?}", command);
+
     match command {
         simple_db::Command::Publish(message) => {
             storage.push_back(message);
@@ -57,8 +59,8 @@ fn handle_client(mut stream: TcpStream, storage: &mut VecDeque<String>) -> Resul
             let data = storage.pop_front();
 
             match data {
-                Some(message) => write!(stream, "{}", message)?,
-                None => write!(stream, "No message in inbox!\n")?,
+                Some(message) => writeln!(stream, "{}", message)?,
+                None => writeln!(stream, "No message in inbox!")?,
             }
         }
     }
