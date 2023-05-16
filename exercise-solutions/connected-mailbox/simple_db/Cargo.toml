@@ -1,5 +1,5 @@
 [package]
-name = "redisish"
+name = "simple_db"
 version = "0.1.0"
 authors = ["Florian Gilcher <florian.gilcher@asquera.de>"]
 

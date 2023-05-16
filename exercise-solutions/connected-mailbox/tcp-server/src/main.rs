@@ -6,12 +6,12 @@ use std::net::{TcpListener, TcpStream};
 
 #[derive(Debug)]
 enum ServerError {
-    ParseError(redisish::Error),
+    ParseError(simple_db::Error),
     IoError(std::io::Error),
 }
 
-impl From<redisish::Error> for ServerError {
-    fn from(e: redisish::Error) -> ServerError {
+impl From<simple_db::Error> for ServerError {
+    fn from(e: simple_db::Error) -> ServerError {
         ServerError::ParseError(e)
     }
 }
@@ -36,7 +36,7 @@ fn main() -> io::Result<()> {
             }
         };
 
-        let res = handle(stream, &mut storage);
+        let res = handle_client(stream, &mut storage);
 
         if let Err(e) = res {
             println!("Error occurred: {:?}", e);
@@ -46,14 +46,14 @@ fn main() -> io::Result<()> {
     Ok(())
 }
 
-fn handle(mut stream: TcpStream, storage: &mut VecDeque<String>) -> Result<(), ServerError> {
+fn handle_client(mut stream: TcpStream, storage: &mut VecDeque<String>) -> Result<(), ServerError> {
     let command = read_command(&mut stream)?;
 
     match command {
-        redisish::Command::Publish(message) => {
+        simple_db::Command::Publish(message) => {
             storage.push_back(message);
         }
-        redisish::Command::Retrieve => {
+        simple_db::Command::Retrieve => {
             let data = storage.pop_front();
 
             match data {
@@ -65,10 +65,10 @@ fn handle(mut stream: TcpStream, storage: &mut VecDeque<String>) -> Result<(), S
     Ok(())
 }
 
-fn read_command(stream: &mut TcpStream) -> Result<redisish::Command, ServerError> {
+fn read_command(stream: &mut TcpStream) -> Result<simple_db::Command, ServerError> {
     let mut read_buffer = String::new();
     let mut buffered_stream = BufReader::new(stream);
     buffered_stream.read_line(&mut read_buffer)?;
-    let command = redisish::parse(&read_buffer)?;
+    let command = simple_db::parse(&read_buffer)?;
     Ok(command)
 }

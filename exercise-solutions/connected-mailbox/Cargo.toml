@@ -1,2 +1,2 @@
 [workspace]
-members = ["simple_db", "mailbox"]
+members = ["simple_db", "tcp-server"]

@@ -1,19 +1,20 @@
 use std::fmt;
 
-#[derive(Eq,PartialEq,Debug)]
+#[derive(Eq, PartialEq, Debug)]
 pub enum Command {
     Publish(String),
-    Retrieve
+    Retrieve,
 }
 
 #[derive(Eq, PartialEq, Debug)]
 pub enum Error {
-    UnknownVerb,
+    TrailingData,
+    IncompleteMessage,
+    EmptyMessage,
+    UnknownCommand,
+    UnknownError,
     UnexpectedPayload,
     MissingPayload,
-    EmptyMessage,
-    IncompleteMessage,
-    TrailingData,
 }
 
 impl fmt::Display for Error {
@@ -22,43 +23,40 @@ impl fmt::Display for Error {
     }
 }
 
-impl std::error::Error for Error {
-    
-}
+impl std::error::Error for Error {}
 
 pub fn parse(input: &str) -> Result<Command, Error> {
-    if let Some(pos) = input.find('\n') {
-        if !((pos+1) == input.len()) {
-            return Err(Error::TrailingData)
+    match input.split_once('\n') {
+        Some((_message, trailing_data)) => {
+            if trailing_data.len() != 0 {
+                return Err(Error::TrailingData);
+            }
         }
-    } else {
-        return Err(Error::IncompleteMessage)
+        None => return Err(Error::IncompleteMessage),
     }
 
-    let mut split = input.splitn(2, ' ');
+    let mut substrings = input.splitn(2, ' ');
 
-    if let Some(verb) = split.next() {
-        match verb.trim() {
+    if let Some(command) = substrings.next() {
+        match command.trim() {
             "RETRIEVE" => {
-                if split.next() == None {
+                if substrings.next().is_none() {
                     Ok(Command::Retrieve)
                 } else {
                     Err(Error::UnexpectedPayload)
                 }
             }
             "PUBLISH" => {
-                if let Some(payload) = split.next() {
+                if let Some(payload) = substrings.next() {
                     Ok(Command::Publish(String::from(payload.trim())))
                 } else {
                     Err(Error::MissingPayload)
                 }
             }
-            "" => {
-                Err(Error::EmptyMessage)
-            }
-            _ => { Err(Error::UnknownVerb) }
+            "" => Err(Error::EmptyMessage),
+            _ => Err(Error::UnknownCommand),
         }
     } else {
-        Err(Error::EmptyMessage)
+        Err(Error::UnknownError)
     }
 }
