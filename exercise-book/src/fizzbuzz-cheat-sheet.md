@@ -42,12 +42,12 @@ fn main() {
 // for loop with end-exclusive range
 for i in 0..10 {
     // do this
-};
+}
 
 // for loop with end-inclusive range
 for j in 0..=10 {
     // do that 
-};
+}
 ```
 
 ## if - statements
