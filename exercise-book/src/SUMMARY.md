@@ -16,6 +16,7 @@
 # Applied Rust
 
 - [Shapes](shapes.md)
+- [Connected](./connected-mailbox.md)
 
 # Async Rust
 
