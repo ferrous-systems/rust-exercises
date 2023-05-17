@@ -1,11 +1,11 @@
 #[derive(Eq, PartialEq, Debug)]
-enum Command {
+pub enum Command {
     Publish(String),
     Retrieve,
 }
 
 #[derive(Eq, PartialEq, Debug)]
-enum Error {
+pub enum Error {
     TrailingData,
     IncompleteMessage,
     EmptyMessage,
@@ -15,7 +15,7 @@ enum Error {
     MissingPayload,
 }
 
-fn parse(input: &str) -> Result<Command, Error> {
+pub fn parse(input: &str) -> Result<Command, Error> {
     match input.split_once('\n') {
         Some((_message, trailing_data)) => {
             if trailing_data.len() != 0 {
@@ -68,6 +68,14 @@ mod tests {
         let line = "PUBLISH The message\n is wrong \n";
         let result: Result<Command, Error> = parse(line);
         let expected = Err(Error::TrailingData);
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn test_empty_string() {
+        let line = "";
+        let result = parse(line);
+        let expected = Err(Error::IncompleteMessage);
         assert_eq!(result, expected);
     }
 
