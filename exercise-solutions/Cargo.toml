@@ -1,12 +1,11 @@
 [workspace]
 
 members = [
-    "fizzbuzz",
-    "rustlatin/*",
-    "simple_db/*",
-    "bar/step1",
-    "bar/step2",
-    "bar/step3",
-    "files-match-result"
+  "fizzbuzz",
+  "rustlatin/*",
+  "simple_db/*",
+  "files-match-result",
+  "shapes-part-1",
+  "shapes-part-2",
+  "shapes-part-3",
 ]
-

@@ -1,110 +1,124 @@
 # Shapes
-In this exercise,  **Shapes**.
-Our **Shapes** library lets us work with basic geometric shapes in our
-Rust applications.
+
+In this exercise we're going to define methods for a struct, define and implement a trait, and look into how to make these generic. 
+
 
 You will learn:
 
 ## Learning Goals
 
+You will learn how to:
+
 * implement methods for a `struct`
-* when to use Self, self, &self and &mut self in methods
-* define a Trait with required methods
-* make a type generic over T
-* how to constrain T
+* when to use `Self`, `self`, `&self` and `&mut self` in methods
+* define a trait with required methods
+* make a type generic over `T`
+* how to constrain `T`
 
 ## Tasks
 
-### Part 1
-    
-1. Open the template that has two shapes defined as structs, `Circle` and `Square`. 
-2. Implement the following methods for each type:
+### Part 1: Defining Methods for Types
 
-    -   `fn new(...) -> Self
+You can find a [complete solution](../../exercise-solutions/shapes-part-1/)
 
-    -   `fn area(&self) -> ...`
+1. Make a new library project called `shapes`
+2. Make two structs, `Circle` with field `radius` and `Square` with field `side` to use as types. 
+3. Make an `impl` block and implement the following methods for each type. Consider when to use `self`, `&self`, `&mut self` and `Self`.
 
-    -   `fn perimeter(&self) -> ...`
-3. 
-4. 
-* 
-* leave out the `enum Shapes`, come up with a `Trait Shape`  with required methods instead. (does this make sense regarding part 2)
-* focus on when when to use Self, self, &self and &mut self.
-    * add a scale method because it changes the shape
-    * add a method that consumes the shape (what makes sense here? a "delete" method?)
+    * `fn new(...) -> ...`
+        * creates an instance of the shape with a certain size (radius or side length).
 
-### Part 2
-* change the square so it's generic over T 
-* use word (eg. Unit) instead of <T>  as Type parameter?
+    * `fn area(...) -> ...`
+        * calculates the area of the shape.
 
+    * `fn scale(...)`
+        * changes the size of an instance of the shape.
 
+    * `fn destroy(...) -> ...`
+        * destroys the instance of a shape and returns the value of its field.
 
+### Part 2: Defining and Implementing a Trait
 
+You can find a [complete solution](../../exercise-solutions/shapes-part-2/)
 
-        
+1. Define a Trait `HasArea` with a mandatory method:  `fn area()`. Implement `HasArea` for `Square`
+2. Abstract over `Circle` and `Square` by defining an enum `Shapes` that contains both as variants.
 
-1.  Write some unit tests
+### Part 3: Making `Square` generic over T
 
-2.  Write some `enum Shape { ... }` which abstracts over those shapes.
+You can find a [complete solution](../../exercise-solutions/shapes-part-3/)
 
-3.  Implement the `area` and `perimeter` functions for your `Shape`
-    type.
+We want to make `Square` generic over `T`, so we can use other numeric types and not just `u32`.
 
-Help
-----
+1. Add the generic type parameter `<T>` to `Square`.
+2. Import the `num` crate, version 0.4.0, in order to be able to use the `Num` trait as bound for the generic type `<T>`. This assures, whatever type is used for `T` is a numeric type and also makes some guarantees about operations that can be performed.
+3. Add the restraint to a `where` clause:
+
+```rust, ignore
+where
+    T: num::Num 
+```
+
+4. Depending on the math operation, you may need to add further trait bounds, such as `Copy` and `std::ops::MulAssign`. You can add them to the `where` clause with a `+` sign.
+
+Implement the trait `HasArea` for `Circle`.
+
+Todo! There is a problem with multiplying f32s and gaining T from that. 
+
+## Help
 
 This section gives partial solutions to look at or refer to.
 
 In general, we also recommend to use the Rust documentation to figure
-out things you are missing to familiarise yourself with it. If you ever
+out things you are missing to familiarize yourself with it. If you ever
 feel completely stuck or that you haven’t understood something, please
 hail the trainers quickly.
 
-Getting Started
----------------
+### Getting Started
 
 Create a new library Cargo project, check the build and see if it runs:
 
-$ cargo new --lib shapes $ cd shapes $ cargo run&lt;/programlisting&gt;
+```
+cargo new --lib shapes 
+cd shapes \
+cargo run
+```
 
-Creating a Type
----------------
+### Creating a Type
 
 Each of your shape types (Square, Circle, etc) will need some fields (or
 properties) to identify its geometry. Use `///` to add documentation to
 each field.
 
+```rust, ignore
     /// Describes a human individual
     struct Person {
         /// How old this person is
         age: u8
     }
+```
 
-Functions that take arguments
------------------------------
+### Functions that take arguments: self, &self, &mut self
 
-Does your function need to take ownership of the shape in order to
-calculate its area? Or is it sufficient to merely take a read-only look
-at the shape for a short period of time?
+Does your function need to take ownership of the shape in order to calculate its area? Or is it sufficient to merely take a read-only look at the shape for a short period of time?
 
-You can pass arguments **by reference** in Rust by making your function
-take `x: &MyShape`, and passing them with `&my_shape`.
+You can pass arguments **by reference** in Rust by making your function take `x: &MyShape`, and passing them with `&my_shape`.
 
-You can also associate your function with a specific type by placing it
-inside a block like `impl MyShape { ... }`
+You can also associate your function with a specific type by placing it inside a block like `impl MyShape { ... }`
 
+```rust, ignore
     impl Pentagon {
-        fn area(self: &Pentagon) -> u32 {
+        fn area(&self) -> u32 {
             // calculate the area of the pentagon here...
         }
     }
+```
 
-A Shape of many geometries
---------------------------
+### A Shape of many geometries
 
-You can use an `enum` to provide a single type that can be any of your
-supported shapes. If we were working with fruit, we might say:
+You can use an `enum` to provide a single type that can be any of your supported shapes. If we were working with fruit, we might say:
 
+```rust
     struct Banana { ... }
     struct Apple { ... }
 
@@ -112,38 +126,31 @@ supported shapes. If we were working with fruit, we might say:
         Banana(Banana),
         Apple(Apple),
     }
+```
 
-Which shape do I have?
-----------------------
+### I need a Pi
 
-A `match` expression will let you determine which **variant** your
-**enum** currently has. Again, using fruit as an example:
+The `f32` type also has its own module in the standard library called `std::f32`. If you look at the docs, you will find a defined constant for Pi: `std::f32::consts::PI`
 
-    enum Fruit {
-        Banana(Banana),
-        Apple(Apple)
-    }
+### Defining a `Trait`
 
-    impl Fruit {
-        fn some_function(self: &Fruit) {
-            match self {
-                Fruit::Banana(banana) => { ... }
-                Fruit::Apple(apple) => { ... }
-            }
-        }
-    }
+A trait has a name, and lists function definitions that make guarantees about the name of a method, it's arguments and return types. 
 
-Remember, a match expression is all about **pattern matching**, not
-testing for equality.
+```rust, ignore
+pub trait Color {
+    fn red() -> u8;
+}
+```
 
-I need a Pi, and a Square Root
-------------------------------
+### Adding generic Type parameters
 
-The `f32` type also has its own module in the standard library called
-`std::f32`. If you look at the docs, you will find a defined constant
-for Pi, and some useful functions for performing mathematical functions
-like square-root.
+```rust, ignore
+pub struct Square<T> {
+    /// The length of one side of the square
+    side: T,
+}
 
-    let x: f32 = 25.0;
-    let y = x.sqrt();
-    let z = x * x * std::f32::consts::PI;
+impl<T> Square<T> {
+    // ...
+}
+```
