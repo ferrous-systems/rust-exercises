@@ -5,7 +5,7 @@ pub enum Command {
 }
 
 #[derive(Eq, PartialEq, Debug)]
-enum Error {
+pub enum Error {
     TrailingData,
     IncompleteMessage,
     EmptyMessage,
