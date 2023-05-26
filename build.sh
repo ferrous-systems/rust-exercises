@@ -6,6 +6,10 @@ set -euo pipefail
 pushd exercise-solutions
 cargo test
 cargo fmt --check
+pushd connected-mailbox
+cargo test
+cargo fmt --check
+popd
 popd
 
 # Only build the templates (they will panic at run-time due to the use of todo!)
