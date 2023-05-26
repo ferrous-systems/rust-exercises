@@ -15,7 +15,6 @@
 
 # Real-world Rust
 - [Shapes](shapes.md)
-- [The Bar Exercise](./bar.md)
 
 # Async Rust
 
