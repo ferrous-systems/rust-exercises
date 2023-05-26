@@ -1,4 +1,6 @@
 [package]
+authors = ["Ferrous Systems"]
+edition = "2021"
 name = "simple_db-step4a"
 version = "0.1.0"
 
