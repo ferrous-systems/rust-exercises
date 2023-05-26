@@ -78,10 +78,10 @@ hail the trainers quickly.
 
 Create a new library Cargo project, check the build and see if it runs:
 
-```
-cargo new --lib shapes 
-cd shapes \
-cargo run
+```console
+$ cargo new --lib shapes 
+$ cd shapes
+$ cargo run
 ```
 
 ### Creating a Type
@@ -91,11 +91,11 @@ properties) to identify its geometry. Use `///` to add documentation to
 each field.
 
 ```rust, ignore
-    /// Describes a human individual
-    struct Person {
-        /// How old this person is
-        age: u8
-    }
+/// Describes a human individual
+struct Person {
+    /// How old this person is
+    age: u8
+}
 ```
 
 ### Functions that take arguments: self, &self, &mut self
@@ -107,25 +107,25 @@ You can pass arguments **by reference** in Rust by making your function take `x:
 You can also associate your function with a specific type by placing it inside a block like `impl MyShape { ... }`
 
 ```rust, ignore
-    impl Pentagon {
-        fn area(&self) -> u32 {
-            // calculate the area of the pentagon here...
-        }
+impl Pentagon {
+    fn area(&self) -> u32 {
+        // calculate the area of the pentagon here...
     }
+}
 ```
 
 ### A Shape of many geometries
 
 You can use an `enum` to provide a single type that can be any of your supported shapes. If we were working with fruit, we might say:
 
-```rust
-    struct Banana { ... }
-    struct Apple { ... }
+```rust ignore
+struct Banana { ... }
+struct Apple { ... }
 
-    enum Fruit {
-        Banana(Banana),
-        Apple(Apple),
-    }
+enum Fruit {
+    Banana(Banana),
+    Apple(Apple),
+}
 ```
 
 ### I need a Pi
@@ -136,7 +136,7 @@ The `f32` type also has its own module in the standard library called `std::f32`
 
 A trait has a name, and lists function definitions that make guarantees about the name of a method, it's arguments and return types. 
 
-```rust, ignore
+```rust
 pub trait Color {
     fn red() -> u8;
 }
@@ -144,7 +144,7 @@ pub trait Color {
 
 ### Adding generic Type parameters
 
-```rust, ignore
+```rust
 pub struct Square<T> {
     /// The length of one side of the square
     side: T,

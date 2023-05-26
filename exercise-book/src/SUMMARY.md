@@ -13,7 +13,8 @@
   - [Step-by-Step Solution](./simple-db-solution.md)
 - [Files, match, result](./files-match-result.md)
 
-# Real-world Rust
+# Applied Rust
+
 - [Shapes](shapes.md)
 
 # Async Rust
