@@ -1,7 +1,8 @@
 [package]
 authors = ["Ferrous Systems"]
 edition = "2021"
-name = "simple_db-step2"
+name = "simple-db"
 version = "0.1.0"
 
 [dependencies]
+thiserror = "1.0"

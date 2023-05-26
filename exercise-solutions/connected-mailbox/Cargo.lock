@@ -21,7 +21,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "simple_db"
+name = "simple-db"
 version = "0.1.0"
 dependencies = [
  "thiserror",
@@ -42,7 +42,7 @@ dependencies = [
 name = "tcp-server"
 version = "0.1.0"
 dependencies = [
- "simple_db",
+ "simple-db",
 ]
 
 [[package]]

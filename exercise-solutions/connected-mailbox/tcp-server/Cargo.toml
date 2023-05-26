@@ -5,4 +5,4 @@ name = "tcp-server"
 version = "0.1.0"
 
 [dependencies]
-simple_db = {path = "../simple_db"}
+simple-db = {path = "../simple-db"}

@@ -23,7 +23,7 @@ impl From<std::io::Error> for ServerError {
 }
 
 fn main() -> io::Result<()> {
-    let listener = TcpListener::bind("127.0.0.1:7878").unwrap();
+    let listener = TcpListener::bind("127.0.0.1:7878")?;
 
     let mut storage = VecDeque::new();
 

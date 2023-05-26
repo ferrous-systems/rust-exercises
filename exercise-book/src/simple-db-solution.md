@@ -8,8 +8,8 @@ Create a new Cargo project, check the build and the test setup:
   <summary>Solution</summary>
 
 ```console
-cargo new --lib simple_db 
-cd simple_db 
+cargo new --lib simple-db 
+cd simple-db 
 cargo build 
 cargo test
 ```
@@ -24,7 +24,7 @@ Define two enums, one is called `Command` and one is called `Error`. `Command` h
   <summary>Solution</summary>
 
 ```rust, ignore
-{{#include ../../exercise-solutions/simple_db/step2/src/lib.rs}}
+{{#include ../../exercise-solutions/simple-db/step2/src/lib.rs}}
 ```
 
 </details>
@@ -71,7 +71,7 @@ Handle the two cases with match, check the length of the second `&str` with `len
   <summary>Solution</summary>
 
 ```rust, ignore
-{{#include ../../exercise-solutions/simple_db/step4a/src/lib.rs:19:33}}
+{{#include ../../exercise-solutions/simple-db/step4a/src/lib.rs:19:33}}
 ```
 
 </details>
@@ -92,7 +92,7 @@ Return the generic `Ok(Command::Command)` for the `Some()` case, and `Err(Error:
   <summary>Solution</summary>
 
 ```rust, ignore
-{{#include ../../exercise-solutions/simple_db/step4b/src/lib.rs:18:38}}
+{{#include ../../exercise-solutions/simple-db/step4b/src/lib.rs:18:38}}
 ```
 
 </details>
@@ -105,7 +105,7 @@ Remove the Ok(Command::Command) and the enum variant. Use `.trim()` on the comma
   <summary>Solution</summary>
 
 ```rust, ignore
-{{#include ../../exercise-solutions/simple_db/step4c/src/lib.rs:17:39}}
+{{#include ../../exercise-solutions/simple-db/step4c/src/lib.rs:17:39}}
 ```
 
 </details>
@@ -118,7 +118,7 @@ Add a match arm to check if the command substring is equal to `"RETRIEVE"`. Itâ€
   <summary>Solution</summary>
 
 ```rust, ignore
-{{#include ../../exercise-solutions/simple_db/step4d/src/lib.rs:17:46}}
+{{#include ../../exercise-solutions/simple-db/step4d/src/lib.rs:17:46}}
 ```
 
 </details>
@@ -133,7 +133,7 @@ Use `if let` to check if the next iteration into the substrings returns `Some()`
   <summary>Solution</summary>
 
 ```rust, ignore
-{{#include ../../exercise-solutions/simple_db/step4e/src/lib.rs:17:53}}
+{{#include ../../exercise-solutions/simple-db/step4e/src/lib.rs:17:53}}
 ```
 
 </details>
