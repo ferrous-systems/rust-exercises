@@ -27,19 +27,18 @@ fn main() -> io::Result<()> {
 
     let mut storage = VecDeque::new();
 
-    for connection in listener.incoming() {
-        let stream = match connection {
-            Ok(stream) => stream,
-            Err(e) => {
-                println!("Error occurred: {:?}", e);
-                continue;
+    // accept connections and process them one at a time
+    for stream in listener.incoming() {
+        match stream {
+            Ok(stream) => {
+                println!("Got client {:?}", stream.peer_addr());
+                if let Err(e) = handle_client(stream, &mut storage) {
+                    println!("Error handling client: {:?}", e);
+                }
             }
-        };
-
-        let res = handle_client(stream, &mut storage);
-
-        if let Err(e) = res {
-            println!("Error occurred: {:?}", e);
+            Err(e) => {
+                println!("Error connecting: {:?}", e);
+            }
         }
     }
 
@@ -54,6 +53,7 @@ fn handle_client(mut stream: TcpStream, storage: &mut VecDeque<String>) -> Resul
     match command {
         simple_db::Command::Publish(message) => {
             storage.push_back(message);
+            writeln!(stream, "Message published OK.")?;
         }
         simple_db::Command::Retrieve => {
             let data = storage.pop_front();

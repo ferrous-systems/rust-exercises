@@ -38,4 +38,5 @@ cp -r ./exercise-templates ./output/
 rm -rf ./output/exercise-templates/target
 cp -r ./exercise-solutions ./output/
 rm -rf ./output/exercise-solutions/target
+rm -rf ./output/exercise-solutions/connected-mailbox/target
 zip -r ./output.zip ./output
