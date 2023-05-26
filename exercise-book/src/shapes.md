@@ -22,7 +22,7 @@ You will learn how to:
 You can find a [complete solution](../../exercise-solutions/shapes-part-1/)
 
 1. Make a new library project called `shapes`
-2. Make two structs, `Circle` with field `radius` and `Square` with field `side` to use as types. 
+2. Make two structs, `Circle` with field `radius` and `Square` with field `side` to use as types. Decide on appropriate types for `radius` and `width`.
 3. Make an `impl` block and implement the following methods for each type. Consider when to use `self`, `&self`, `&mut self` and `Self`.
 
     * `fn new(...) -> ...`
@@ -41,29 +41,28 @@ You can find a [complete solution](../../exercise-solutions/shapes-part-1/)
 
 You can find a [complete solution](../../exercise-solutions/shapes-part-2/)
 
-1. Define a Trait `HasArea` with a mandatory method:  `fn area()`. Implement `HasArea` for `Square`
-2. Abstract over `Circle` and `Square` by defining an enum `Shapes` that contains both as variants.
+1. Define a Trait `HasArea` with a mandatory method: `fn area(&self) -> f32`.
+2. Implement `HasArea` for `Square` and `Circle`. You can defer to the existing method but may need to cast the return type.
+3. Abstract over `Circle` and `Square` by defining an enum `Shape` that contains both as variants.
+4. Implement `HasArea` for `Shape`.
 
-### Part 3: Making `Square` generic over T
+### Part 3: Making `Square` generic over `T`
 
 You can find a [complete solution](../../exercise-solutions/shapes-part-3/)
 
-We want to make `Square` generic over `T`, so we can use other numeric types and not just `u32`.
+We want to make `Square` and `Circle` generic over `T`, so we can use other numeric types and not just `u32` and `f32`.
 
-1. Add the generic type parameter `<T>` to `Square`.
-2. Import the `num` crate, version 0.4.0, in order to be able to use the `Num` trait as bound for the generic type `<T>`. This assures, whatever type is used for `T` is a numeric type and also makes some guarantees about operations that can be performed.
-3. Add the restraint to a `where` clause:
+1. Add the generic type parameter `<T>` to `Square`. You can temporarily remove `enum Shape` to make this easier.
+2. Import the `num` crate, version 0.4.0, in order to be able to use the `num::Num` trait as bound for the generic type `<T>`. This assures, whatever type is used for `T` is a numeric type and also makes some guarantees about operations that can be performed.
+3. Add a `where` clause on the methods of `Square`, as required, e.g.:
 
-```rust, ignore
-where
-    T: num::Num 
-```
+   ```rust, ignore
+   where T: num::Num 
+   ```
 
-4. Depending on the math operation, you may need to add further trait bounds, such as `Copy` and `std::ops::MulAssign`. You can add them to the `where` clause with a `+` sign.
-
-Implement the trait `HasArea` for `Circle`.
-
-Todo! There is a problem with multiplying f32s and gaining T from that. 
+4. Depending on the operations performed in that function, you may need to add further trait bounds, such as `Copy` and `std::ops::MulAssign`. You can add them to the `where` clause with a `+` sign, like `T: num::Num + Copy`.
+5. Add the generic type parameter `<T>` to `Circle` and then appropriate `where` clauses.
+6. Re-introduce `Shape` but with the generic type parameter `<T>`, and then add appropriate `where` clauses.
 
 ## Help
 
@@ -128,9 +127,32 @@ enum Fruit {
 }
 ```
 
-### I need a Pi
+If you wanted to count the pips in a piece of Fruit, you might just call to the `num_pips()` method on the appropriate constituent fruit. This might look like:
 
-The `f32` type also has its own module in the standard library called `std::f32`. If you look at the docs, you will find a defined constant for Pi: `std::f32::consts::PI`
+```rust ignore
+impl Fruit {
+    fn num_pips(&self) -> u8 {
+        match self {
+            Fruit::Apple(apple) => apple.num_pips(),
+            Fruit::Banana(banana) => banana.num_pips(),
+        }
+    }
+}
+```
+
+### I need a π
+
+The `f32` type also has its own module in the standard library called `std::f32`. If you look at the docs, you will find a defined constant for π: `std::f32::consts::PI`.
+
+### I need a π, of type `T`
+
+If you want to convert a Pi constant to some type T, you need a `where` bound like:
+
+```rust ignore
+where T: num::Num + From<f32>
+```
+
+This restricts T to values that can be converted *from* an `f32` (or, types you can convert an `f32` *into*). You can then call `let my_pi: T = my_f32_pi.into();` to convert your `f32` value into a `T` value.
 
 ### Defining a `Trait`
 

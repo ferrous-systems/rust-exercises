@@ -42,7 +42,7 @@ impl Circle {
         std::f32::consts::PI * self.radius * self.radius
     }
 
-    /// Multiplies the radius by a factor to increase the size of the given [`Circle`]
+    /// Multiplies the radius by a factor to increase/decrease the size of the given [`Circle`]
     pub fn scale(&mut self, factor: f32) {
         self.radius *= factor;
     }
@@ -69,13 +69,13 @@ mod tests {
     }
 
     #[test]
-    fn cicle() {
+    fn circle() {
         let test_circle = Circle::new(4.0);
         assert_eq!(test_circle.area(), 50.265484);
     }
 
     #[test]
-    fn cicle_scale() {
+    fn circle_scale() {
         let mut test_circle = Circle::new(4.0);
         test_circle.scale(2.0);
         println!("{}", test_circle.radius);
@@ -89,7 +89,7 @@ mod tests {
         assert_eq!(test_square.area(), 64);
     }
     #[test]
-    fn cicle_destroy() {
+    fn circle_destroy() {
         let test_circle = Circle::new(4.0);
         assert_eq!(test_circle.destroy(), 4.0);
     }
