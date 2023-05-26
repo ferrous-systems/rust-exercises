@@ -59,15 +59,10 @@ impl Circle {
         self.radius
     }
 }
-impl<T> HasArea<T> for Circle
-where
-    T: num::Num + Copy,
-    f32: core::ops::Mul<f32, Output = T>,
-{
+impl HasArea<f32> for Circle {
     /// Calculate the area of the given [`Square`]
-    fn area(&self) -> T {
-        // std::f32::consts::PI *
-        self.radius * self.radius
+    fn area(&self) -> f32 {
+        std::f32::consts::PI * self.radius * self.radius
     }
 }
 
@@ -87,13 +82,13 @@ mod tests {
     }
 
     #[test]
-    fn cicle() {
+    fn circle() {
         let test_circle = Circle::new(4.0);
         assert_eq!(test_circle.area(), 50.265484);
     }
 
     #[test]
-    fn cicle_scale() {
+    fn circle_scale() {
         let mut test_circle = Circle::new(4.0);
         test_circle.scale(2.0);
         println!("{}", test_circle.radius);
