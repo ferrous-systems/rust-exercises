@@ -13,9 +13,9 @@
   - [Step-by-Step Solution](./simple-db-solution.md)
 - [Files, match, result](./files-match-result.md)
 
-# Real-world Rust
+# Applied Rust
 
-- [The Bar Exercise](./bar.md)
+- [Shapes](shapes.md)
 
 # Async Rust
 
