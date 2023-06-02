@@ -85,7 +85,7 @@ $ cargo run
 
 ### Creating a Type
 
-Each of your shape types (Square, Circle, etc) will need some fields (or
+Each of your shape types (`Square`, `Circle`, etc.) will need some fields (or
 properties) to identify its geometry. Use `///` to add documentation to
 each field.
 
