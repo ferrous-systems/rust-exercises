@@ -90,6 +90,7 @@ where
     }
 }
 
+/// Allow us to handle any one of the given kinds of *shape* within a single type.
 pub enum Shape<T> {
     Square(Square<T>),
     Circle(Circle<T>),

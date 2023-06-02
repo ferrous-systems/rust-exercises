@@ -53,11 +53,6 @@ impl Circle {
     }
 }
 
-pub enum Shape {
-    Square(Square),
-    Circle(Circle),
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;

@@ -70,6 +70,7 @@ impl HasArea for Circle {
     }
 }
 
+/// Allow us to handle any one of the given kinds of *shape* within a single type.
 pub enum Shape {
     Square(Square),
     Circle(Circle),
