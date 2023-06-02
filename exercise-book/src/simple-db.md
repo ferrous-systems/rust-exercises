@@ -23,7 +23,7 @@ In this exercise, we will implement a toy protocol parser for a simple protocol 
 
 ## Tasks
 
-1. Create a library project called `simple_db`.
+1. Create a library project called `simple-db`.
 2. Implement appropriate data structures for `Command` and `Error`.
 3. Read the documentation for `str` (primitive), especially [`split_once()`](https://doc.rust-lang.org/std/primitive.str.html#method.split_once), [`splitn()`](https://doc.rust-lang.org/std/primitive.str.html#method.splitn) and [`trim()`](https://doc.rust-lang.org/std/primitive.str.html#method.trim). Pay attention to their return type. Use the result value of `split_once()` and `splitn()` to guide your logic. The Step-by-Step-Solution contains a proposal.
 4. Implement the following function so that it implements the protocol specifications to parse the messages. Use the provided tests to help you with the case handling.
@@ -41,7 +41,7 @@ The Step-by-Step-Solution contains steps 4a-e that explain a possible way to han
 - Run `clippy` on your codebase.
 - Run `rustfmt` on your codebase.
 
-If you need it, we have provided [solutions](../../exercise-solutions/simple_db/) for every step for this exercise.
+If you need it, we have provided [solutions](../../exercise-solutions/simple-db/) for every step for this exercise.
 
 ### Protocol Specification
 

@@ -2,6 +2,9 @@ output
 output.zip
 exercise-book/book
 exercise-templates/target
+exercise-solutions/*/target
 exercise-templates/Cargo.lock
 exercise-solutions/target
 exercise-solutions/Cargo.lock
+tools/*/target
+

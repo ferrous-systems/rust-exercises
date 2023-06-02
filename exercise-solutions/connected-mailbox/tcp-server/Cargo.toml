@@ -1,8 +1,8 @@
 [package]
 authors = ["Ferrous Systems"]
 edition = "2021"
-name = "files_match"
+name = "tcp-server"
 version = "0.1.0"
 
 [dependencies]
-url = "2"
+simple-db = {path = "../simple-db"}

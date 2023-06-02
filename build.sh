@@ -6,6 +6,10 @@ set -euo pipefail
 pushd exercise-solutions
 cargo test
 cargo fmt --check
+pushd connected-mailbox
+cargo test
+cargo fmt --check
+popd
 popd
 
 # Only build the templates (they will panic at run-time due to the use of todo!)
@@ -34,4 +38,5 @@ cp -r ./exercise-templates ./output/
 rm -rf ./output/exercise-templates/target
 cp -r ./exercise-solutions ./output/
 rm -rf ./output/exercise-solutions/target
+rm -rf ./output/exercise-solutions/connected-mailbox/target
 zip -r ./output.zip ./output

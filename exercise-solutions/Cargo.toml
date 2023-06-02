@@ -3,7 +3,7 @@
 members = [
   "fizzbuzz",
   "rustlatin/*",
-  "simple_db/*",
+  "simple-db/*",
   "files-match-result",
   "shapes-part-1",
   "shapes-part-2",

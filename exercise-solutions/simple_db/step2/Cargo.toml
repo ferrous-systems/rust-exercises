@@ -1,5 +1,0 @@
-[package]
-name = "simple_db-step2"
-version = "0.1.0"
-
-[dependencies]
