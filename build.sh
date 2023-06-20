@@ -5,6 +5,7 @@ set -euo pipefail
 # Build and test the solutions
 pushd exercise-solutions
 cargo test
+cargo test --examples
 cargo fmt --check
 pushd connected-mailbox
 cargo test
