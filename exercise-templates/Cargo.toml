@@ -1,7 +1,7 @@
 [workspace]
 
 members = [
-  "files-match-result",
+  "urls-match-result",
   "rustlatin/*",
   "tcp-echo-server",
 ]
