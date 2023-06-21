@@ -32,10 +32,10 @@ Find the solution to the exercise here
 You can run them with the following command: `cargo run --example step_x`, where
 x is the number of the step.
 
-1. Fix the runtime error in the template code by correcting the file path.
-   Handle the `Result` type that is returned from the
-   `std::fs::read_to_string()` with a `match` block, so that the `.unwrap()` can
-   be deleted.
+1. Fix the runtime error in the template code by correcting the file path. Then,
+   handle the `Result` type that is returned from the
+   `std::fs::read_to_string()` with a `match` block, instead of using
+   `.unwrap()`.
 
 2. Take the code from Step 1 and instead of using a `match`, propagate the Error
    with `?` out of `fn main()`. Note that your `main` function will now need to
