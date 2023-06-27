@@ -17,7 +17,7 @@ This enables automatic debug output for the type. The `assert_eq!`macro requires
 
 ## Control flow and pattern matching, returning values
 
-This exercise involves handling a number of cases. You are already familiar with `if /else` and a basic form of `match`. Here, we’ll introduce you to `if let`.
+This exercise involves handling a number of cases. You are already familiar with `if/else` and a basic form of `match`. Here, we’ll introduce you to `if let`.
 
 ```rust, ignore
     if let Some(payload) = substrings.next() {
@@ -25,17 +25,13 @@ This exercise involves handling a number of cases. You are already familiar with
     }
 ```
 
-`if let` assigns and evaluates in one line. A typical use is to assign the returned `Option(T)` from a method to `Some(T)`. The statement yields true, if `Some(T)` is returned, false if `None` is returned.
 
 ### When to use what?
 
-`if let` is used if you have to decide between two cases, where the
-second case is usually of lesser meaning for the program’s execution.
+`if let` is like a pattern-matching `match` block with only one arm. So, if your `match` only has one arm of interest, consider an `if let` instead.
 
-`match` can be used to handle more fine grained and complex pattern matching, especially when there are several, equally ranked possibilities. The match arms have to include a catch all `_ =>` arm, for every possible case that is not explicitly spelled out. The order of the match arms matter: The catch all branch needs to be last, otherwise, it catches all…
+`match` can be used to handle more fine grained and complex pattern matching, especially when there are several, equally ranked possibilities. The match arms may have to include a catch all `_ =>` arm, for every possible case that is not explicitly spelled out. The order of the match arms matter: The catch all branch needs to be last, otherwise, it catches all…
 
 ### Returning Values from branches and match arms
 
-- all match arms always need to return the same type, or none can return a value.
-
-- For `if let/else` or `if/else`: If there is no explicit `else` branch, it implicitly returns `()`. If you run into trouble because you need a return type, but don’t need the else condition, `return` statements can help.
+All match arms always need to produce a value the same type (or they diverge with a `return` statement).

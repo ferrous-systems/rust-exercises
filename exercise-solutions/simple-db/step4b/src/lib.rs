@@ -11,28 +11,22 @@ pub enum Error {
     IncompleteMessage,
     EmptyMessage,
     UnknownCommand,
-    UnknownError,
     UnexpectedPayload,
     MissingPayload,
 }
 
 pub fn parse(input: &str) -> Result<Command, Error> {
-    match input.split_once('\n') {
-        Some((_message, trailing_data)) => {
-            if trailing_data.len() != 0 {
-                return Err(Error::TrailingData);
-            }
-        }
+    let message = match input.split_once('\n') {
+        Some((message, "")) => message,
+        Some(_) => return Err(Error::TrailingData),
         None => return Err(Error::IncompleteMessage),
-    }
+    };
 
-    let mut substrings = input.splitn(2, ' ');
+    let mut substrings = message.splitn(2, ' ');
 
-    if let Some(command) = substrings.next() {
-        Ok(Command::Command)
-    } else {
-        Err(Error::UnknownError)
-    }
+    let _command = substrings.next().unwrap();
+
+    Ok(Command::Command)
 }
 
 #[cfg(test)]

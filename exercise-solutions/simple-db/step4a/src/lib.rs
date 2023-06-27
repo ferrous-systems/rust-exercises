@@ -11,21 +11,15 @@ pub enum Error {
     IncompleteMessage,
     EmptyMessage,
     UnknownCommand,
-    UnknownError,
     UnexpectedPayload,
     MissingPayload,
 }
 
 pub fn parse(input: &str) -> Result<Command, Error> {
     match input.split_once('\n') {
-        Some((_message, trailing_data)) => {
-            if trailing_data.len() != 0 {
-                Err(Error::TrailingData)
-            } else {
-                Ok(Command::Command)
-            }
-        }
-        None => Err(Error::IncompleteMessage),
+        Some((_message, "")) => Ok(Command::Command),
+        Some(_) => return Err(Error::TrailingData),
+        None => return Err(Error::IncompleteMessage),
     }
 }
 
