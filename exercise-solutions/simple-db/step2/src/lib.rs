@@ -10,7 +10,6 @@ pub enum Error {
     IncompleteMessage,
     EmptyMessage,
     UnknownCommand,
-    UnknownError,
     UnexpectedPayload,
     MissingPayload,
 }

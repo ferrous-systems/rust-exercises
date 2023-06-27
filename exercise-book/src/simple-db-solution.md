@@ -29,31 +29,27 @@ Define two enums, one is called `Command` and one is called `Error`. `Command` h
 
 </details>
 
-## Step 3: Read the documentation for `str`, especially `trim()`, `splitn()`, `split_once()` to build your logic
+## Step 3: Read the documentation for `str`, especially `splitn()`, `split_once()` to build your logic
 
 tl;dr
 - `split_once()` splits a str into 2 parts at the first occurrence of a delimiter.
 - `splitn()` splits a str into a max of n substrings at every occurrence of a delimiter.
-- `trim()` returns a string slice with leading and trailing whitespace removed.
 
 <details>
   <summary>The proposed logic</summary>
 
 Split the input with `split_once()` using `\n` as delimeter, this allows to distiguish 3 cases:
 
+- a command where `\n` is the last part, and the second substring is `""` -> some kind of command
+- a command with trailing data (i.e. data after a newline) -> Error::TrailingData
 - a command with no `\n` -> Error::IncompleteMessage
-- a command with trailing data, where the second substring's length is longer than 0 -> Error::TrailingData
-- a command where `\n` is the last part, and the second substring is of length 0 -> generic command
 
-Split the input with `splitn()` using `' '` as delimeter and 2 as the max number of substrings. The method returns `Some(T)` where T is an iterator over the substrings, and `None` when there are no substrings. Note, that even an empty str `""` is a substring. This allows us to distiguish the following cases:
-
-- `Some(T)` contains all methods that have either one or two substrings -> generic Command
-- `None` is returned if no substrings are returned -> Error::UnknownError
+After that, split the input with `splitn()` using `' '` as delimeter and 2 as the max number of substrings. The method an iterator over the substrings, and the iterator produces `Some(...)`, or `None` when there are no substrings. Note, that even an empty str `""` is a substring.
 
 From here, the actual command cases need to be distiguished with pattern matching:
 
-- `RETRIEVE\n` has no whitespace and no payload
-- `PUBLISH <payload>\n` has always whitespace and an optional payload
+- `RETRIEVE` has no whitespace and no payload
+- `PUBLISH <payload>` has always whitespace and an optional payload
 
 </details>
 
@@ -61,64 +57,60 @@ From here, the actual command cases need to be distiguished with pattern matchin
 
 ### Step 4a: Sorting out wrongly placed and absent newlines
 
-Missing, wrongly placed and more than one `\n` are errors that occur independent of other errors so it makes sense to handle these cases first. Split the incoming message at the first appearing `\n` using `split_once()`. This operation yields `Some((&str, &str))` if at least one `\n` is present, and `None` if 0 are present. If the `\n` is **not** the last item in the message, the second `&str` in `Some((&str, &str))` is longer than 0 bytes.
+Missing, wrongly placed and more than one `\n` are errors that occur independent of other errors so it makes sense to handle these cases first. Split the incoming message at the first appearing `\n` using `split_once()`. This operation yields `Some((&str, &str))` if at least one `\n` is present, and `None` if 0 are present. If the `\n` is **not** the last item in the message, the second `&str` in `Some((&str, &str))` is not `""`.
 
 Tip: Introduce a generic variant `Command::Command` that temporarily stands for a valid command. 
 
-Handle the two cases with match, check the length of the second `&str` with `len()`. Return `Err(Error::TrailingData)` or for wrongly placed `\n`, `Err(Error::IncompleteMessage)` for absent `\n` and `Ok(Command::Command)` if the `\n` is placed correct.
+Handle the two cases with match, check if the second part is `""`. Return `Err(Error::TrailingData)` or for wrongly placed `\n`, `Err(Error::IncompleteMessage)` for absent `\n` and `Ok(Command::Command)` if the `\n` is placed correct.
 
 <details>
   <summary>Solution</summary>
 
 ```rust, ignore
-{{#include ../../exercise-solutions/simple-db/step4a/src/lib.rs:19:33}}
+{{#include ../../exercise-solutions/simple-db/step4a/src/lib.rs:18:24}}
 ```
 
 </details>
 
 ### Step 4b: `if let`: sorting `Some()` from `None`
 
-In 4a a generic command is distiguished from a message that contains trailing data in an else branch. Remove the else branch before continuing, because we want to distishish this case further. 
+In 4a, we produce a `Ok(Command::Command)` if the newlines all check out. Instead of doing that, we want to capture the message - that is the input, without the newline on the end, and we know it has no newlines within it.
 
-Use `.splitn()` to split the `input` into 2 parts at max, use whitespace as delimiter (`' '`). This method yields an iterator over the substrings.
+Use `.splitn()` to split the `message` into 2 parts maximum, use a space as delimiter (`' '`). This method yields an iterator over the substrings.
 
-Use `.next()` to access the first substring, the command keyword, which is wrapped into the `Option<T>` type. Sign it with the `Some()` Option to `if let`.
-
-This tests if there is at least one substring in the input.
-
-Return the generic `Ok(Command::Command)` for the `Some()` case, and `Err(Error::UnknownError)` for `None`. The error is unknown, since `None` is only returned if there is nothing to iterate about. Even an empty string would return `Some()`!
+Use `.next()` to access the first substring, which is the command keyword. You will always get `Some(value)` - the `splitn` method never returns `None` the first time around. We can unwrap this first value because `splitn` always returns at least one string - but add yourself a comment to remind yourself why this `unwrap()` is never going to fail!
 
 <details>
   <summary>Solution</summary>
 
 ```rust, ignore
-{{#include ../../exercise-solutions/simple-db/step4b/src/lib.rs:18:38}}
+{{#include ../../exercise-solutions/simple-db/step4b/src/lib.rs:18:30}}
 ```
 
 </details>
 
 ### Step 4c: Pattern matching for the command keywords
 
-Remove the Ok(Command::Command) and the enum variant. Use `.trim()` on the command substring and use `match` to patternmatch its content. `.trim()` removes any `\n` that are in the substring. Next, implement two necessary match arms: `""` for empty messages, `_` for any other string, currently evaluated to be an unknown command.
+Remove the `Ok(Command::Command)` and the enum variant. Use `match` to pattern match the command instead. Next, implement two necessary match arms: `""` for empty messages, `_` for any other string, currently evaluated to be an unknown command.
 
 <details>
   <summary>Solution</summary>
 
 ```rust, ignore
-{{#include ../../exercise-solutions/simple-db/step4c/src/lib.rs:17:39}}
+{{#include ../../exercise-solutions/simple-db/step4c/src/lib.rs:17:32}}
 ```
 
 </details>
 
 ### Step 4d: Add Retrieve Case
 
-Add a match arm to check if the command substring is equal to `"RETRIEVE"`. It’s not enough to return `Ok(Command::Retrieve)` just yet. The Retrieve command cannot have a payload, this includes whitespace! To check for this, add an if else statement, that checks if the next iteration over the substrings returns none. If this is true, return the `Ok(Command::Retrieve)`, if it is false, return `Err(Error::UnexpectedPayload)`.
+Add a match arm to check if the command substring is equal to `"RETRIEVE"`. It’s not enough to return `Ok(Command::Retrieve)` just yet. The Retrieve command cannot have a payload, this includes whitespace! To check for this, add an if else statement, that checks if the next iteration over the substrings returns `None`. If this is true, return the `Ok(Command::Retrieve)`, if it is false, return `Err(Error::UnexpectedPayload)`.
 
 <details>
   <summary>Solution</summary>
 
 ```rust, ignore
-{{#include ../../exercise-solutions/simple-db/step4d/src/lib.rs:17:46}}
+{{#include ../../exercise-solutions/simple-db/step4d/src/lib.rs:17:39}}
 ```
 
 </details>
@@ -127,13 +119,13 @@ Add a match arm to check if the command substring is equal to `"RETRIEVE"`. It�
 
 Add a `match` arm to check if the command substring is equal to `"PUBLISH"`. Just like with the Retrieve command, we need to add a distinction, but the other way round: Publish needs a payload or whitespace for an empty payload to be valid.
 
-Use `if let` to check if the next iteration into the substrings returns `Some()`. If it does, return `Ok(Command::Publish(T))`, where T is an owned version of the trimmed payload. Otherwise return `Err(Error::MissingPayload)`.
+Use `if let` to check if the next iteration into the substrings returns `Some()`. If it does, return `Ok(Command::Publish(payload))`, where `payload` is an owned version (a `String`) of the trimmed payload. Otherwise return `Err(Error::MissingPayload)`.
 
 <details>
   <summary>Solution</summary>
 
 ```rust, ignore
-{{#include ../../exercise-solutions/simple-db/step4e/src/lib.rs:17:53}}
+{{#include ../../exercise-solutions/simple-db/step4e/src/lib.rs:17:46}}
 ```
 
 </details>
@@ -146,58 +138,52 @@ If all else fails, feel free to copy this solution to play around with it.
   <summary>Solution</summary>
 
 ```rust
-    #[derive(Eq, PartialEq, Debug)]
-    pub enum Command {
-        Publish(String),
-        Retrieve,
-    }
+#[derive(Eq, PartialEq, Debug)]
+pub enum Command {
+    Publish(String),
+    Retrieve,
+}
 
-    #[derive(Eq, PartialEq, Debug)]
-    pub enum Error {
-        TrailingData,
-        IncompleteMessage,
-        EmptyMessage,
-        UnknownCommand,
-        UnknownError,
-        UnexpectedPayload,
-        MissingPayload,
-    }
+#[derive(Eq, PartialEq, Debug)]
+pub enum Error {
+    TrailingData,
+    IncompleteMessage,
+    EmptyMessage,
+    UnknownCommand,
+    UnexpectedPayload,
+    MissingPayload,
+}
 
-    pub fn parse(input: &str) -> Result<Command, Error> {
-        match input.split_once('\n') {
-            Some((_message, trailing_data)) => {
-                if trailing_data.len() != 0 {
-                    return Err(Error::TrailingData);
-                }
+pub fn parse(input: &str) -> Result<Command, Error> {
+    let message = match input.split_once('\n') {
+        Some((message, "")) => message,
+        Some(_) => return Err(Error::TrailingData),
+        None => return Err(Error::IncompleteMessage),
+    };
+
+    let mut substrings = message.splitn(2, ' ');
+
+    // Note: `splitn` *always* returns at least one value
+    let command = substrings.next().unwrap();
+    match command {
+        "RETRIEVE" => {
+            if substrings.next().is_none() {
+                Ok(Command::Retrieve)
+            } else {
+                Err(Error::UnexpectedPayload)
             }
-            None => return Err(Error::IncompleteMessage),
         }
-
-        let mut substrings = input.splitn(2, ' ');
-
-        if let Some(command) = substrings.next() {
-            match command.trim() {
-                "RETRIEVE" => {
-                    if substrings.next().is_none() {
-                        Ok(Command::Retrieve)
-                    } else {
-                        Err(Error::UnexpectedPayload)
-                    }
-                }
-                "PUBLISH" => {
-                    if let Some(payload) = substrings.next() {
-                        Ok(Command::Publish(String::from(payload.trim())))
-                    } else {
-                        Err(Error::MissingPayload)
-                    }
-                }
-                "" => Err(Error::EmptyMessage),
-                _ => Err(Error::UnknownCommand),
+        "PUBLISH" => {
+            if let Some(payload) = substrings.next() {
+                Ok(Command::Publish(String::from(payload)))
+            } else {
+                Err(Error::MissingPayload)
             }
-        } else {
-            Err(Error::UnknownError)
         }
+        "" => Err(Error::EmptyMessage),
+        _ => Err(Error::UnknownCommand),
     }
+}
 ```
 
 </details>
