@@ -138,52 +138,7 @@ If all else fails, feel free to copy this solution to play around with it.
   <summary>Solution</summary>
 
 ```rust
-#[derive(Eq, PartialEq, Debug)]
-pub enum Command {
-    Publish(String),
-    Retrieve,
-}
-
-#[derive(Eq, PartialEq, Debug)]
-pub enum Error {
-    TrailingData,
-    IncompleteMessage,
-    EmptyMessage,
-    UnknownCommand,
-    UnexpectedPayload,
-    MissingPayload,
-}
-
-pub fn parse(input: &str) -> Result<Command, Error> {
-    let message = match input.split_once('\n') {
-        Some((message, "")) => message,
-        Some(_) => return Err(Error::TrailingData),
-        None => return Err(Error::IncompleteMessage),
-    };
-
-    let mut substrings = message.splitn(2, ' ');
-
-    // Note: `splitn` *always* returns at least one value
-    let command = substrings.next().unwrap();
-    match command {
-        "RETRIEVE" => {
-            if substrings.next().is_none() {
-                Ok(Command::Retrieve)
-            } else {
-                Err(Error::UnexpectedPayload)
-            }
-        }
-        "PUBLISH" => {
-            if let Some(payload) = substrings.next() {
-                Ok(Command::Publish(String::from(payload)))
-            } else {
-                Err(Error::MissingPayload)
-            }
-        }
-        "" => Err(Error::EmptyMessage),
-        _ => Err(Error::UnknownCommand),
-    }
-}
+{{#include ../../exercise-solutions/simple-db/step4e/src/lib.rs}}
 ```
 
 </details>
