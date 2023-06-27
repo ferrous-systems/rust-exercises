@@ -8,10 +8,10 @@
   - [Fizzbuzz Cheat-Sheet](./fizzbuzz-cheat-sheet.md)
 - [Fizzbuzz with match](./fizzbuzz-match.md)
 - [Rust Latin](./rustlatin.md)
+- [URLs, match, result](./urls-match-result.md)
 - [SimpleDB](./simple-db.md)
   - [Knowledge](./simple-db-knowledge.md)
   - [Step-by-Step Solution](./simple-db-solution.md)
-- [URLs, match, result](./urls-match-result.md)
 
 # Applied Rust
 
