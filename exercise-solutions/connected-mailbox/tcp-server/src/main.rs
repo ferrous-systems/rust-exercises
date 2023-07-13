@@ -1,26 +1,9 @@
 use std::collections::VecDeque;
-use std::io;
-use std::io::prelude::*;
-use std::io::BufReader;
+use std::io::{self, prelude::*};
 use std::net::{TcpListener, TcpStream};
+use std::time::Duration;
 
-#[derive(Debug)]
-enum ServerError {
-    ParseError(simple_db::Error),
-    IoError(std::io::Error),
-}
-
-impl From<simple_db::Error> for ServerError {
-    fn from(e: simple_db::Error) -> ServerError {
-        ServerError::ParseError(e)
-    }
-}
-
-impl From<std::io::Error> for ServerError {
-    fn from(e: std::io::Error) -> ServerError {
-        ServerError::IoError(e)
-    }
-}
+const DEFAULT_TIMEOUT: Option<Duration> = Some(Duration::from_millis(1000));
 
 fn main() -> io::Result<()> {
     let listener = TcpListener::bind("127.0.0.1:7878")?;
@@ -45,32 +28,37 @@ fn main() -> io::Result<()> {
     Ok(())
 }
 
-fn handle_client(mut stream: TcpStream, storage: &mut VecDeque<String>) -> Result<(), ServerError> {
-    let command = read_command(&mut stream)?;
+/// Process a single connection from a single client.
+///
+/// Drops the stream when it has finished.
+fn handle_client(mut stream: TcpStream, storage: &mut VecDeque<String>) -> io::Result<()> {
+    stream.set_read_timeout(DEFAULT_TIMEOUT)?;
+    stream.set_write_timeout(DEFAULT_TIMEOUT)?;
+
+    let mut buffer = String::new();
+    stream.read_to_string(&mut buffer)?;
+    println!("Received: {:?}", buffer);
+
+    let command = match simple_db::parse(&buffer) {
+        Ok(s) => s,
+        Err(e) => {
+            println!("Error parsing command: {:?}", e);
+            writeln!(stream, "Error: {}!", e)?;
+            return Ok(());
+        }
+    };
 
     println!("Got command {:?}", command);
 
     match command {
         simple_db::Command::Publish(message) => {
             storage.push_back(message);
-            writeln!(stream, "Message published OK.")?;
+            writeln!(stream, "OK")?;
         }
-        simple_db::Command::Retrieve => {
-            let data = storage.pop_front();
-
-            match data {
-                Some(message) => writeln!(stream, "{}", message)?,
-                None => writeln!(stream, "No message in inbox!")?,
-            }
-        }
+        simple_db::Command::Retrieve => match storage.pop_front() {
+            Some(message) => writeln!(stream, "Got: {:?}", message)?,
+            None => writeln!(stream, "Error: Queue empty!")?,
+        },
     }
     Ok(())
-}
-
-fn read_command(stream: &mut TcpStream) -> Result<simple_db::Command, ServerError> {
-    let mut read_buffer = String::new();
-    let mut buffered_stream = BufReader::new(stream);
-    buffered_stream.read_line(&mut read_buffer)?;
-    let command = simple_db::parse(&read_buffer)?;
-    Ok(command)
 }
