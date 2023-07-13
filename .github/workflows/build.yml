@@ -17,9 +17,15 @@ jobs:
         with:
           tool: mdslides@0.2,mdbook@0.4,mdbook-mermaid@0.12
 
+      - name: Find slug name
+        run: |
+          slug=$(./describe.sh "${GITHUB_REF}")
+          echo "Building with slug '${slug}'"
+          echo "slug=${slug}" >> "${GITHUB_ENV}"
+
       - name: Build and test
         run: |
-          ./build.sh
+          ./build.sh "./rust-exercises-${{ env.slug }}"
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
@@ -28,11 +34,11 @@ jobs:
           name: Artifacts
           if-no-files-found: error
           path: |
-            ./output
+            ./rust-exercises-*
 
       - name: Create and Upload Release
         if: github.event_name == 'push' && startswith(github.ref, 'refs/tags/')
         id: create_release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: ./output.zip
+          artifacts: ./rust-exercises-${{ env.slug }}.zip
