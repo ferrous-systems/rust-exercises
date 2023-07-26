@@ -22,7 +22,7 @@ You will learn how to:
 You can find a [complete solution](../../exercise-solutions/shapes-part-1/)
 
 1. Make a new library project called `shapes`
-2. Make two structs, `Circle` with field `radius` and `Square` with field `side` to use as types. Decide on appropriate types for `radius` and `width`.
+2. Make two structs, `Circle` with field `radius` and `Square` with field `side` to use as types. Decide on appropriate types for `radius` and `side`.
 3. Make an `impl` block and implement the following methods for each type. Consider when to use `self`, `&self`, `&mut self` and `Self`.
 
     * `fn new(...) -> ...`
