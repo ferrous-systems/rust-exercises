@@ -7,44 +7,36 @@ word
 
 ## Learning Goals
 
-You will learn how to:
+You will learn how to
 
--   create a Rust library
-
--   split a `&str` at specified `char`
-
--   get single `char` out of a `&str`
-
--   iterate over a `&str`
-
--   define Globals
-
--   compare a value to the content of an array
-
--   use the Rust compiler’s type inference to your advantage
-
--   to concatenate `&str`
-
--   return the content of a `Vec<String>` as `String`.
+- create a Rust library
+- split a `&str` at specified `char`
+- get single `char` out of a `&str`
+- iterate over a `&str`
+- define Globals
+- compare a value to the content of an array
+- use the Rust compiler’s type inference to your advantage
+- to concatenate `&str`
+- return the content of a `Vec<String>` as `String`.
 
 ## Prerequisites
 
-You must be able to 
-* define variables as mutable 
-* use for loop 
-* use an if/else construction 
-* read Rust documentation 
-* define a function with signature and return type 
-* define arrays and vectors 
-* distinguish between `String` and `&str`
+### You must be able to
 
-## Tasks
+- define variables as mutable
+- use for loop
+- use an if/else construction
+- read Rust documentation
+- define a function with signature and return type
+- define arrays and vectors
+- distinguish between `String` and `&str`
 
-For this exercise we define
+### For this exercise we define
 
 - the Vowels of English alphabet → `['a', 'e', 'i', 'o', 'u']`
-
 - a sentence is a collection of Unicode characters with words that are separated by a space character (`U+0020`)
+
+## Task
 
 ✅ Implement a function that splits a sentence into its words, and adds a suffix or prefix to them according to the following rules:
 
@@ -70,9 +62,9 @@ Complete solutions are available [`../../exercise-solutions/rustlatin`](../../ex
 
 A part of this exercise is seeing type inference in action and to use it to help to determine the type the function is going to return. To make sure the file can be indexed by Rust Analyzer, make sure you open the relevant step by itself - e.g. `exercise-templates/rustlatin/step1`. You can close each step when complete and open the next one.
 
-# Step-by-step-Solution
+## Step-by-step-Solution
 
-## Step 1: Splitting a sentence and pushing its words into a vector.
+### Step 1: Splitting a sentence and pushing its words into a vector.
 
 ✅ Iterate over the sentence to split it into words. Use the white space as separator. This can be done with the [`.split()`](https://doc.rust-lang.org/std/primitive.str.html#method.split) method, where the separator character `' '` goes into the paranthesis. This method returns an iterator over substrings of the string slice. In Rust, iterators are lazy, that means just calling `.split()` on a `&str` doesn’t do anything by itself. It needs to be in combination with something that advances the iteration, such as a `for` loop, or a manual advancement such as the `.next()` method. These will yield the actual object you want to use. [Push](https://doc.rust-lang.org/std/vec/struct.Vec.html#method.push) each word into the vector `collection_of_words`. Add the correct return type to the function signature.
 
@@ -93,7 +85,7 @@ fn rustlatin(sentence: &str) -> Vec<String> {
 ```
 </details>
 
-## Step 2: Concatenating String types.
+### Step 2: Concatenating String types.
 
 ✅ After iterating over the sentence to split it into words, add the suffix `"rs"` to each word before pushing it to the vector. 
 
@@ -119,7 +111,7 @@ fn rustlatin(sentence: &str) -> Vec<String> {
 ```
 </details>
 
-## Step 3: Iterating over a word to return the first character.
+### Step 3: Iterating over a word to return the first character.
 
 ✅ After iterating over the sentence to split it into words, add the first character of each word to the vector.
 
@@ -145,7 +137,7 @@ fn rustlatin(sentence: &str) -> Vec<char> {
 ```
 </details>
 
-## Step 4: Putting everything together: Comparing values and returning the content of the vector as `String`.
+### Step 4: Putting everything together: Comparing values and returning the content of the vector as `String`.
 
 ✅ Add another function that checks if the first character of each word is a vowel. [contains()](https://doc.rust-lang.org/std/primitive.slice.html#method.contains) is the method to help you with this. It adds the prefix or suffix to the word according to the rules above.
 
@@ -170,7 +162,7 @@ fn latinize(word: &str) -> String {
 ```
 </details>
 
-## Step 5 (optional)
+### Step 5 (optional)
 
 If not already done, use functional techniques (i.e. methods on [iterators](https://doc.rust-lang.org/std/iter/trait.Iterator.html)) to write the same function. Test this new function as well.
 
