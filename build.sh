@@ -13,6 +13,10 @@ pushd connected-mailbox
 cargo test
 cargo fmt --check
 popd
+pushd multi-threaded-mailbox
+cargo test
+cargo fmt --check
+popd
 popd
 
 # Only build the templates (they will panic at run-time due to the use of todo!)
@@ -41,5 +45,5 @@ cp -r ./exercise-templates "${OUTPUT_NAME}/"
 rm -rf "${OUTPUT_NAME}/exercise-templates/target"
 cp -r ./exercise-solutions "${OUTPUT_NAME}/"
 rm -rf "${OUTPUT_NAME}/exercise-solutions/target"
-rm -rf "${OUTPUT_NAME}/exercise-solutions/connected-mailbox/target"
+rm -rf "${OUTPUT_NAME}"/exercise-solutions/*/target
 zip -r "${OUTPUT_NAME}.zip" "${OUTPUT_NAME}"

@@ -1,0 +1,2 @@
+[workspace]
+members = ["simple-db", "with-arc", "with-scoped-threads"]
