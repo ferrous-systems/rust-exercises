@@ -12,6 +12,7 @@
 - [SimpleDB](./simple-db.md)
   - [Knowledge](./simple-db-knowledge.md)
   - [Step-by-Step Solution](./simple-db-solution.md)
+- [Green and Yellow game](./green-yellow-game.md)
 
 # Applied Rust
 
