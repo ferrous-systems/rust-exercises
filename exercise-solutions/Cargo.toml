@@ -4,6 +4,7 @@ members = [
   "fizzbuzz",
   "rustlatin/*",
   "simple-db/*",
+  "green-yellow",
   "urls-match-result",
   "shapes-part-1",
   "shapes-part-2",
