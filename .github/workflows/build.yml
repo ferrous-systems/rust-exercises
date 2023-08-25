@@ -42,3 +42,5 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           artifacts: ./rust-exercises-${{ env.slug }}.zip
+          allowUpdates: true
+          updateOnlyUnreleased: true
