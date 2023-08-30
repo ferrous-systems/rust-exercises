@@ -228,7 +228,7 @@ wrong value to see what happens if there is an error.
 
 </details>
 
-### Task 3: Count the number of lines
+### Step 3: Count the number of lines
 
 ✅ Take a look at the documentation of
 [std::lines](https://doc.rust-lang.org/std/primitive.str.html#method.lines). It
