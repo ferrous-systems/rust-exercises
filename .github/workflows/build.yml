@@ -15,7 +15,7 @@ jobs:
       - name: Install tools
         uses: taiki-e/install-action@v2
         with:
-          tool: mdslides@0.2,mdbook@0.4,mdbook-mermaid@0.12
+          tool: mdslides@0.3,mdbook@0.4,mdbook-mermaid@0.12
 
       - name: Find slug name
         run: |
