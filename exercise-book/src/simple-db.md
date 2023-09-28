@@ -66,18 +66,18 @@ With the additional properties:
 Violations against the form of the messages and the properties are
 handled with the following error codes:
 
-- TrailingData (more than one newline)
+- `TrailingData` (more than one newline)
 
-- IncompleteMessage (no newline)
+- `IncompleteMessage` (no newline)
 
-- EmptyMessage (empty string instead of a command)
+- `EmptyMessage` (empty string instead of a command)
 
-- UnknownCommand (string is not empty, but neither `PUBLISH` nor
+- `UnknownCommand` (string is not empty, but neither `PUBLISH` nor
     `RECEIVE`)
 
-- UnexpectedPayload (message contains a payload, when it should not)
+- `UnexpectedPayload` (message contains a payload, when it should not)
 
-- MissingPayload (message is missing a payload)
+- `MissingPayload` (message is missing a payload)
 
 ### Testing
 
