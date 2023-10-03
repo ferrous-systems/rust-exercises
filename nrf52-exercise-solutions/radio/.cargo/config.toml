@@ -1,0 +1,19 @@
+[target.'cfg(all(target_arch = "arm", target_os = "none"))']
+# (..)
+rustflags = [
+  "-C", "linker=flip-link", # adds stack overflow protection
+  "-C", "link-arg=-Tdefmt.x", # defmt support
+  # (..)
+]
+
+[target.thumbv7em-none-eabihf]
+# set custom cargo runner to flash & run on embedded target when we call `cargo run`
+# for more information, check out https://github.com/knurling-rs/probe-run
+runner = "probe-run --chip nRF52840_xxAA"
+rustflags = [
+  "-C", "link-arg=-Tlink.x",
+]
+
+[build]
+# cross-compile to this target
+target = "thumbv7em-none-eabihf" # = ARM Cortex-M4

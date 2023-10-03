@@ -1,0 +1,33 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "cwd": "${workspaceRoot}",
+        // TODO to debug a different program the app name ("hello") needs to be changed
+        "executable": "./target/thumbv7em-none-eabihf/debug/hello", 
+        "name": "Debug Microcontroller (launch)",
+        "request": "launch",
+        "preLaunchTask": "rust: cargo build",
+        "type": "cortex-debug",
+        "runToEntryPoint": "main",
+        "configFiles": [
+          "interface/jlink.cfg",
+        ],
+        "servertype": "openocd",
+        "openOCDLaunchCommands": [
+          "transport select swd",
+          "source [find target/nrf52.cfg]"
+        ],
+        // commands only supported in OpenOCD 0.11.0; also due to how the `rtt-target` crate works
+        // these commands need to run _after_ the target executes the `rtt_init` macro so running
+        // these commands when the device is halted on `main` will fail
+        // "postLaunchCommands": [
+        //   // FIXME(?) to work with a newer version (>0.3.7) of the cortex-debug extension the
+        //   // escaped backslashes (`\\`) may need to be removed
+        //   "monitor rtt setup 0x20000000 262144 \\\"SEGGER RTT\\\"",
+        //   "monitor rtt start",
+        //   "monitor rtt server start 8765 0",
+        // ],
+      }
+    ]
+}
