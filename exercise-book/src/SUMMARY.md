@@ -20,6 +20,12 @@
 - [Connected Mailbox](./connected-mailbox.md)
 - [Multithreaded mailbox](./multi-threaded-mailbox.md)
 
+# Embedded Rust - 
+
+- [nRF52 Preparation](./nrf52-preparation.md)
+  - [Hardware](./nrf52-hardware.md)
+  - [Software](./nrf52-software.md)
+
 # Async Rust
 
 # Other Topics
