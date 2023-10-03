@@ -18,6 +18,16 @@ cargo test
 cargo fmt --check
 popd
 popd
+pushd nrf52-exercise-solutions
+pushd boards/dk
+cargo build --target=thumbv7em-none-eabihf
+cargo fmt --check
+popd
+pushd radio
+cargo build --target=thumbv7em-none-eabihf --release
+cargo fmt --check
+popd
+popd
 
 # Only build the templates (they will panic at run-time due to the use of todo!)
 pushd exercise-templates
@@ -42,8 +52,7 @@ mkdir -p "${OUTPUT_NAME}/exercise-book"
 #    is easier than re-writing all the links at build time.
 mv ./exercise-book/book "${OUTPUT_NAME}/exercise-book/html"
 cp -r ./exercise-templates "${OUTPUT_NAME}/"
-rm -rf "${OUTPUT_NAME}/exercise-templates/target"
 cp -r ./exercise-solutions "${OUTPUT_NAME}/"
-rm -rf "${OUTPUT_NAME}/exercise-solutions/target"
-rm -rf "${OUTPUT_NAME}"/exercise-solutions/*/target
+cp -r ./nrf52-exercise-solutions "${OUTPUT_NAME}/"
+find "${OUTPUT_NAME}" -name target -type d -print0 | xargs -0 rm -rf
 zip -r "${OUTPUT_NAME}.zip" "${OUTPUT_NAME}"
