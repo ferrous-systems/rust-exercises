@@ -8,7 +8,7 @@ Connect the Dongle to your PC/laptop. Its red LED should start oscillating in in
 
 **Linux**: a USB device under `lsusb`. The device will have a VID of `0x1915` and a PID of `0x521f` -- the `0x` prefix will be omitted in the output of `lsusb`:
 
-``` console
+```console
 $ lsusb
 (..)
 Bus 001 Device 023: ID 1915:521f Nordic Semiconductor ASA 4-Port USB 2.0 Hub
@@ -16,14 +16,14 @@ Bus 001 Device 023: ID 1915:521f Nordic Semiconductor ASA 4-Port USB 2.0 Hub
 
 The device will also show up in the `/dev` directory as a `ttyACM` device:
 
-``` console
+```console
 $ ls /dev/ttyACM*
 /dev/ttyACM0
 ```
 
 **macOS**: a usb device when executing `ioreg -p IOUSB -b -n "Open DFU Bootloader"`. The device will have a vendor ID (`"idVendor"`) of `6421` and a product ID (`"idProduct"`) of `21023`:
 
-``` console
+```console
 $ ioreg -p IOUSB -b -n "Open DFU Bootloader"
 (...)
 | +-o Open DFU Bootloader@14300000  <class AppleUSBDevice, id 0x100005d5b, registered, matched, ac$
@@ -44,7 +44,7 @@ $ ioreg -p IOUSB -b -n "Open DFU Bootloader"
 
 The device will show up in the `/dev` directory as `tty.usbmodem<USB Serial Number>`:
 
-``` console
+```console
 $ ls /dev/tty.usbmodem*
 /dev/tty.usbmodemCA1781C8A1EE1
 ```
@@ -63,7 +63,7 @@ After connecting the DK to your PC/laptop it will show up as:
 
 **Linux**: a USB device under `lsusb`. The device will have a VID of `0x1366` and a PID of `0x10??` or `0x01??` (`?` is a hex digit)  -- the `0x` prefix will be omitted in the output of `lsusb`:
 
-``` console
+```console
 $ lsusb
 (..)
 Bus 001 Device 014: ID 1366:1015 SEGGER 4-Port USB 2.0 Hub
@@ -71,14 +71,14 @@ Bus 001 Device 014: ID 1366:1015 SEGGER 4-Port USB 2.0 Hub
 
 The device will also show up in the `/dev` directory as a `ttyACM` device:
 
-``` console
+```console
 $ ls /dev/ttyACM*
 /dev/ttyACM0
 ```
 
 **macOS**: a removable USB flash drive (named JLINK) in Finder and also a USB device named "J-Link" when executing `ioreg -p IOUSB -b -n "J-Link"`.
 
-``` console
+```console
 $ ioreg -p IOUSB -b -n "J-Link"
 (...)
   | +-o J-Link@14300000  <class AppleUSBDevice, id 0x10000606a, registered, matched, active, busy 0 $
@@ -99,7 +99,7 @@ $ ioreg -p IOUSB -b -n "J-Link"
 
 The device will also show up in the `/dev` directory as `tty.usbmodem<USB Serial Number>`:
 
-``` console
+```console
 $ ls /dev/tty.usbmodem*
 /dev/tty.usbmodem0006834208031
 ```

@@ -6,7 +6,7 @@ To display the amount of Flash the program will occupy on the target device use 
 
 ✅ Use the following command to print the binary's size in system V format.
 
-``` console
+```console
 cargo size --bin hello -- -A
 ```
 
@@ -14,7 +14,7 @@ Expected output: The breakdown of the program's static memory usage per *linker 
 
 ```console
 $ cargo size --bin hello -- -A
-   Compiling radio v0.0.0 (/Users/jonathan/Documents/rust-exercises/nrf52-exercise-solutions/radio)
+   Compiling radio v0.0.0 (/Users/jonathan/Documents/rust-exercises/nrf52-code/radio)
     Finished dev [optimized + debuginfo] target(s) in 0.92s
 hello  :
 section               size        addr

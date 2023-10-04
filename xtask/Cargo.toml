@@ -1,0 +1,16 @@
+[package]
+authors = ["Ferrous Systems"]
+edition = "2018"
+name = "xtask"
+version = "0.0.0"
+
+[dependencies]
+color-eyre = "0.6"
+ctrlc = "3.4"
+hidapi = "2.4"
+rusb = "0.9"
+consts = { path = "../nrf52-code/consts" }
+# # Note: we are using a fork due compatibility problems.
+# # See https://github.com/ferrous-systems/embedded-trainings-2020/issues/148 for more details.
+serialport = "4.2"
+# serialport = { git = "https://github.com/ferrous-systems/serialport-rs-hotfix.git", branch = "fix-usb-deprecation"}

@@ -12,7 +12,7 @@ use core::{
 
 use cortex_m::{asm, peripheral::NVIC};
 use embedded_hal::digital::v2::{OutputPin as _, StatefulOutputPin};
-#[cfg(feature = "beginner")]
+#[cfg(feature = "radio")]
 pub use hal::ieee802154;
 pub use hal::pac::{interrupt, Interrupt, NVIC_PRIO_BITS, RTC0};
 use hal::{
@@ -23,7 +23,7 @@ use hal::{
 };
 
 use defmt;
-#[cfg(any(feature = "beginner", feature = "advanced"))]
+#[cfg(any(feature = "radio", feature = "advanced"))]
 use defmt_rtt as _; // global logger
 
 #[cfg(feature = "advanced")]
@@ -46,7 +46,7 @@ pub struct Board {
     pub timer: Timer,
 
     /// Radio interface
-    #[cfg(feature = "beginner")]
+    #[cfg(feature = "radio")]
     pub radio: ieee802154::Radio<'static>,
     /// USBD (Universal Serial Bus Device) peripheral
     #[cfg(feature = "advanced")]
@@ -190,7 +190,7 @@ pub fn init() -> Result<Board, ()> {
         // NOTE(static mut) this branch runs at most once
         #[cfg(feature = "advanced")]
         static mut EP0IN_BUF: [u8; 64] = [0; 64];
-        #[cfg(feature = "beginner")]
+        #[cfg(feature = "radio")]
         static mut CLOCKS: Option<
             Clocks<clocks::ExternalOscillator, clocks::ExternalOscillator, clocks::LfOscStarted>,
         > = None;
@@ -203,7 +203,7 @@ pub fn init() -> Result<Board, ()> {
         let clocks = clocks.start_lfclk();
         let _clocks = clocks.enable_ext_hfosc();
         // extend lifetime to `'static`
-        #[cfg(feature = "beginner")]
+        #[cfg(feature = "radio")]
         let clocks = unsafe { CLOCKS.get_or_insert(_clocks) };
 
         defmt::debug!("Clocks configured");
@@ -239,7 +239,7 @@ pub fn init() -> Result<Board, ()> {
 
         let timer = hal::Timer::new(periph.TIMER0);
 
-        #[cfg(feature = "beginner")]
+        #[cfg(feature = "radio")]
         let radio = {
             let mut radio = ieee802154::Radio::init(periph.RADIO, clocks);
 
@@ -258,7 +258,7 @@ pub fn init() -> Result<Board, ()> {
                 _3: Led { inner: _3 },
                 _4: Led { inner: _4 },
             },
-            #[cfg(feature = "beginner")]
+            #[cfg(feature = "radio")]
             radio,
             timer: Timer { inner: timer },
             #[cfg(feature = "advanced")]

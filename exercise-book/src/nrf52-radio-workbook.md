@@ -8,7 +8,7 @@ In this workshop you'll get familiar with:
 
 To put these concepts in practice you'll write applications that use the radio functionality of the nRF52840 microcontroller.
 
-You have received two development boards for this workshop. We'll use both in the beginner workshop.
+You have received two development boards for this workshop. We'll use both in the this radio workshop.
 
 ## The nRF52840 Development Kit
 
