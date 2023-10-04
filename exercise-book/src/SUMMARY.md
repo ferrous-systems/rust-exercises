@@ -38,7 +38,7 @@
     - [Radio Setup](./nrf52-radio-setup.md)
     - [Messages](./nrf52-radio-messages.md)
     - [Link Quality Indicator (LQI)](./nrf52-radio-link-quality.md)
-  - [Radio In ](./nrf52-radio-in.md)
+  - [Radio In](./nrf52-radio-in.md)
   - [Radio Puzzle](./nrf52-radio-puzzle.md)
   - [Radio Puzzle Help](./nrf52-radio-puzzle-help.md)
   - [Next Steps](./nrf52-radio-next-steps.md)

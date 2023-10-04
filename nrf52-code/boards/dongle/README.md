@@ -2,7 +2,7 @@
 
 Pre-made applications for the nRF52840 Dongle.
 
-These applications will be used in the beginner workshop.
+These applications will be used in the radio workshop.
 
 ## Hardware
 
@@ -26,7 +26,7 @@ Both LEDs are mounted near the USB connector.
 
 Run the `puzzlegen.rs` program on the host to create a new secret string.
 
-``` console
+```console
 cargo new --bin puzzlegen
 cp puzzlegen.rs puzzlegen/src/main.rs
 cd puzzlegen
@@ -46,7 +46,7 @@ secret: "<p=-*Uh5&Ph6=PQ_z_6=Q_-Zh_-h&IPh?cj?>>?>h$IUQhL&P*Up&6w"
 
 ### Generate `puzzle` ELF
 
-``` console
+```console
 git clone --branch dongle-puzzle https://github.com/japaric/embedded2020
 cd embedded2020/firmware/apps
 ```
@@ -78,7 +78,7 @@ static SECRET: &[u8] = b"<p=-*Uh5&Ph6=PQ_z_6=Q_-Zh_-h&IPh?cj?>>?>h$IUQhL&P*Up&6w
 
 Build the program; this will produce an ELF file called `puzzle` (no file ending).
 
-``` console
+```console
 cargo build --bin puzzle --release
 ```
 

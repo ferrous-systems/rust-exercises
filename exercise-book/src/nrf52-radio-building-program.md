@@ -1,6 +1,6 @@
 # Building an Embedded Program
 
-The default in a Cargo project is to compile for the host (native compilation). The `nrf52-example-solutions/radio` project has been configured for cross compilation to the ARM Cortex-M4 architecture. This configuration can be seen in the Cargo configuration file (`.cargo/config`):
+The default in a Cargo project is to compile for the host (native compilation). The `nrf52-code/radio` project has been configured for cross compilation to the ARM Cortex-M4 architecture. This configuration can be seen in the Cargo configuration file (`.cargo/config`):
 
 ``` text
 # .cargo/config
@@ -15,9 +15,9 @@ The target `thumbv7em-none-eabihf` can be broken down as:
 * `eabihf` - use the ARM *Embedded Application Binary Interface*, with *Hard Float* support
   * `f32` and `f64` can be passed to functions in FPU registers (like `S0`), instead of in integer registers (like `R0`)
 
-✅ Inside the folder `nrf52-example-solutions/radio`, use the following command to cross compile the program to the ARM Cortex-M4 architecture.
+✅ Inside the folder `nrf52-code/radio`, use the following command to cross compile the program to the ARM Cortex-M4 architecture.
 
-``` console
+```console
 cargo build --bin hello
 ```
 

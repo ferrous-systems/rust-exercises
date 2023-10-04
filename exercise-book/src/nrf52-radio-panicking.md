@@ -5,7 +5,7 @@
 This program attempts to index an array beyond its length and this results in a panic.
 
 ```console
-   Compiling radio v0.0.0 (/Users/jonathan/Documents/ferrous-systems/rust-exercises/nrf52-exercise-solutions/radio)
+   Compiling radio v0.0.0 (/Users/jonathan/Documents/ferrous-systems/rust-exercises/nrf52-code/radio)
     Finished dev [optimized + debuginfo] target(s) in 0.92s
      Running `probe-run --chip nRF52840_xxAA target/thumbv7em-none-eabihf/debug/panic`
 (HOST) INFO  flashing program (2 pages / 8.00 KiB)

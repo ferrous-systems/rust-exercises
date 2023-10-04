@@ -18,13 +18,17 @@ cargo test
 cargo fmt --check
 popd
 popd
-pushd nrf52-exercise-solutions
+pushd nrf52-code
 pushd boards/dk
 cargo build --target=thumbv7em-none-eabihf
 cargo fmt --check
 popd
 pushd radio
 cargo build --target=thumbv7em-none-eabihf --release
+cargo fmt --check
+popd
+pushd consts
+cargo build
 cargo fmt --check
 popd
 popd
@@ -53,6 +57,6 @@ mkdir -p "${OUTPUT_NAME}/exercise-book"
 mv ./exercise-book/book "${OUTPUT_NAME}/exercise-book/html"
 cp -r ./exercise-templates "${OUTPUT_NAME}/"
 cp -r ./exercise-solutions "${OUTPUT_NAME}/"
-cp -r ./nrf52-exercise-solutions "${OUTPUT_NAME}/"
+cp -r ./nrf52-code "${OUTPUT_NAME}/"
 find "${OUTPUT_NAME}" -name target -type d -print0 | xargs -0 rm -rf
 zip -r "${OUTPUT_NAME}.zip" "${OUTPUT_NAME}"

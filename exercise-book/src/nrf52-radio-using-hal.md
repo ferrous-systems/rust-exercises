@@ -10,7 +10,7 @@ let board = dk::init().unwrap();
 
 This grants you access to the board's peripherals, like its LEDs.
 
-The `dk` crate / library is a Board Support Crate tailored to this workshop to make accessing the peripherals used in this workshop extra seamless. You can find its source code at `nrf52-exercise-solutions/boards/dk/src/`.
+The `dk` crate / library is a Board Support Crate tailored to this workshop to make accessing the peripherals used in this workshop extra seamless. You can find its source code at `nrf52-code/boards/dk/src/`.
 
 `dk` is based on the [`nrf52840-hal`] crate, which is a Hardware Abstraction Layer (HAL) over the nRF52840 Development Kit. The purpose of a HAL is to abstract away the device-specific details of the hardware, for example registers, and instead expose a higher level API more suitable for application development.
 
@@ -20,9 +20,9 @@ The `dk::init` function we have been calling in all programs initializes a few o
 
 > NOTE this program will not terminate itself. Within VS code you need to click "Kill terminal" (garbage bin icon) in the bottom panel to terminate it.
 
-✅ Open the documentation for the `dk` crate by running the following command from the `nrf52-exercise-solutions/radio` folder:
+✅ Open the documentation for the `dk` crate by running the following command from the `nrf52-code/radio` folder:
 
-``` console
+```console
 cargo doc -p dk --open
 ```
 

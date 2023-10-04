@@ -27,7 +27,7 @@ Skelton projects you can edit can be found in the `exercise-templates` folder. C
 
 Some of our tools depend on `pkg-config` and `libudev.pc`. Ensure you have the proper packages installed; on Debian based distributions you can use:
 
-``` console
+```console
 sudo apt-get install libudev-dev libusb-1.0-0-dev
 ```
 
@@ -35,7 +35,7 @@ To access the USB devices as a non-root user, follow these steps:
 
 1. (Optional) Connect the dongle and check its permissions with these commands:
 
-    ``` console
+    ```console
     $ lsusb -d 1915:521f
     Bus 001 Device 016: ID 1915:521f Nordic Semiconductor ASA USB Billboard
     $ #   ^         ^^
@@ -49,7 +49,7 @@ To access the USB devices as a non-root user, follow these steps:
 
 2. Create the following file with the displayed contents. You'll need root permissions to create the file.
 
-    ``` console
+    ```console
     $ cat /etc/udev/rules.d/50-oxidize-global.rules
     # udev rules to allow access to USB devices as a non-root user
 
@@ -65,13 +65,13 @@ To access the USB devices as a non-root user, follow these steps:
 
 3. Run the following command to make the new udev rules effective
 
-    ``` console
+    ```console
     sudo udevadm control --reload-rules
     ```
 
 4. (Optional) Disconnect and reconnect the dongle. Then check its permissions again.
 
-    ``` console
+    ```console
     $ lsusb
     Bus 001 Device 017: ID 1915:521f Nordic Semiconductor ASA 4-Port USB 2.0 Hub
 
@@ -125,7 +125,7 @@ Go to [https://rustup.rs](https://rustup.rs/) and follow the instructions.
 
 **All**: Run this command in a terminal:
 
-``` console
+```console
 rustup +stable target add thumbv7em-none-eabihf
 ```
 
@@ -133,7 +133,7 @@ rustup +stable target add thumbv7em-none-eabihf
 
 **All**: Run these commands in a terminal:
 
-``` console
+```console
 cargo install cargo-binutils
 rustup +stable component add llvm-tools
 ```
@@ -142,7 +142,7 @@ rustup +stable component add llvm-tools
 
 Install the [`flip-link`](https://crates.io/crates/flip-link) and [`probe-run`](https://crates.io/crates/probe-run) tools using the following Cargo commands:
 
-``` console
+```console
 
 $ cargo install probe-run
 (..)
@@ -161,15 +161,15 @@ Installed package `nrfdfu v0.1.3` (..)
 
 ✅ Let's check that you have installed all the tools listed in the previous section.
 
-``` console
+```console
 $ cargo size --version
 cargo-size 0.3.3
 ```
 
 ✅ Connect the nRF52840-DK with your computer by plugging the usb-cable into the J2 connector on the DK (the usb connector on the short side of the board).
 
-✅ In the terminal run the following command from the `nrf52-exercise-solutions/radio` folder. This will build and run a simple program on the DK to test the set-up.
+✅ In the terminal run the following command from the `nrf52-code/radio` folder. This will build and run a simple program on the DK to test the set-up.
 
-``` console
+```console
 cargo run --bin hello
 ```
