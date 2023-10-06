@@ -1,0 +1,12 @@
+[package]
+authors = ["Ferrous Systems"]
+edition = "2018"
+license = "MIT OR Apache-2.0"
+name = "usb"
+version = "0.0.0"
+description = "Library for parsing USB requests"
+
+[dependencies]
+defmt = "0.3.5"
+
+

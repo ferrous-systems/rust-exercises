@@ -27,6 +27,20 @@ pushd radio
 cargo build --target=thumbv7em-none-eabihf --release
 cargo fmt --check
 popd
+for i in usb-lib*; do
+    pushd $i
+    cargo build --target=thumbv7em-none-eabihf --release
+    cargo fmt --check
+    popd
+done
+pushd rtic-app
+cargo build --target=thumbv7em-none-eabihf --release
+cargo fmt --check
+popd
+pushd rtic-app-solutions
+cargo build --target=thumbv7em-none-eabihf --release
+cargo fmt --check
+popd
 pushd consts
 cargo build
 cargo fmt --check
