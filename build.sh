@@ -23,7 +23,7 @@ pushd boards/dk
 cargo build --target=thumbv7em-none-eabihf
 cargo fmt --check
 popd
-pushd radio
+pushd radio-app
 cargo build --target=thumbv7em-none-eabihf --release
 cargo fmt --check
 popd
@@ -33,11 +33,11 @@ for i in usb-lib*; do
     cargo fmt --check
     popd
 done
-pushd rtic-app
+pushd usb-app
 cargo build --target=thumbv7em-none-eabihf --release
 cargo fmt --check
 popd
-pushd rtic-app-solutions
+pushd usb-app-solutions
 cargo build --target=thumbv7em-none-eabihf --release
 cargo fmt --check
 popd

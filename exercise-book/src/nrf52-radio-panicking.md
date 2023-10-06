@@ -46,7 +46,7 @@ stack backtrace:
 
 In `no_std` programs the behavior of panic is defined using the `#[panic_handler]` attribute. In the example, the *panic handler* is defined in the `panic_log` crate but we can also implement it manually:
 
-✅ Comment out the `use radio as _;` import and add the following function to the example:
+✅ Comment out the `use radio_app as _;` import and add the following function to the example:
 
 ```rust ignore
 #[panic_handler]

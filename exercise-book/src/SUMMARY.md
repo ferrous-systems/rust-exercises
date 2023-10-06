@@ -22,9 +22,10 @@
 
 # Embedded Rust on the nRF52
 
-- [nRF52 Preparation](./nrf52-preparation.md)
+- [Preparation](./nrf52-preparation.md)
   - [Hardware](./nrf52-hardware.md)
-  - [Software](./nrf52-software.md)
+  - [Software Tools](./nrf52-tools.md)
+  - [Code Organization](./nrf52-code-organisation.md)
 - [nRF52 Radio Workbook](./nrf52-radio-workbook.md)
   - [Parts of an Embedded Program](./nrf52-radio-parts-embedded-program.md)
   - [Building an Embedded Program](./nrf52-radio-building-program.md)
