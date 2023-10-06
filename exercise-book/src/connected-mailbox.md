@@ -122,6 +122,7 @@ A workspace file looks like:
 
 ```toml
 [workspace]
+resolver= "2"
 members = ["simple-db", "tcp-server"]
 ```
 
