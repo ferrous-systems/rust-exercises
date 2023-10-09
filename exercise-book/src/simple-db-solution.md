@@ -8,9 +8,9 @@ Create a new Cargo project, check the build and the test setup:
   <summary>Solution</summary>
 
 ```console
-cargo new --lib simple-db 
-cd simple-db 
-cargo build 
+cargo new --lib simple-db
+cd simple-db
+cargo build
 cargo test
 ```
 
@@ -38,15 +38,15 @@ tl;dr
 <details>
   <summary>The proposed logic</summary>
 
-Split the input with `split_once()` using `\n` as delimeter, this allows to distiguish 3 cases:
+Split the input with `split_once()` using `\n` as delimiter, this allows to distinguish 3 cases:
 
 - a command where `\n` is the last part, and the second substring is `""` -> some kind of command
 - a command with trailing data (i.e. data after a newline) -> Error::TrailingData
 - a command with no `\n` -> Error::IncompleteMessage
 
-After that, split the input with `splitn()` using `' '` as delimeter and 2 as the max number of substrings. The method an iterator over the substrings, and the iterator produces `Some(...)`, or `None` when there are no substrings. Note, that even an empty str `""` is a substring.
+After that, split the input with `splitn()` using `' '` as delimiter and 2 as the max number of substrings. The method an iterator over the substrings, and the iterator produces `Some(...)`, or `None` when there are no substrings. Note, that even an empty str `""` is a substring.
 
-From here, the actual command cases need to be distiguished with pattern matching:
+From here, the actual command cases need to be distinguished with pattern matching:
 
 - `RETRIEVE` has no whitespace and no payload
 - `PUBLISH <payload>` has always whitespace and an optional payload
@@ -59,7 +59,7 @@ From here, the actual command cases need to be distiguished with pattern matchin
 
 Missing, wrongly placed and more than one `\n` are errors that occur independent of other errors so it makes sense to handle these cases first. Split the incoming message at the first appearing `\n` using `split_once()`. This operation yields `Some((&str, &str))` if at least one `\n` is present, and `None` if 0 are present. If the `\n` is **not** the last item in the message, the second `&str` in `Some((&str, &str))` is not `""`.
 
-Tip: Introduce a generic variant `Command::Command` that temporarily stands for a valid command. 
+Tip: Introduce a generic variant `Command::Command` that temporarily stands for a valid command.
 
 Handle the two cases with match, check if the second part is `""`. Return `Err(Error::TrailingData)` or for wrongly placed `\n`, `Err(Error::IncompleteMessage)` for absent `\n` and `Ok(Command::Command)` if the `\n` is placed correct.
 

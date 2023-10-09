@@ -23,7 +23,7 @@ We use Icons to mark different kinds of information in the book:
 
 ## Course Material
 
-We have attempted to make our material as inclusive as possible. This means, that some information is available in several forms, for example as a picture and as a text description. We also use icons so that different kinds of information are visually distiguishable on the first glance. If you are on a course and have accessibility needs that are not covered, please let us know.
+We have attempted to make our material as inclusive as possible. This means, that some information is available in several forms, for example as a picture and as a text description. We also use icons so that different kinds of information are visually distinguishable on the first glance. If you are on a course and have accessibility needs that are not covered, please let us know.
 
 ## License
 
