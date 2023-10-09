@@ -50,13 +50,13 @@ mod app {
     #[task(binds = POWER_CLOCK, local = [power, counter])]
     //                                          ^^^^^^^ we want to access the resource from here
     fn on_power_event(cx: on_power_event::Context) {
-        defmt::debug!("POWER event occurred");
+        defmt::println!("POWER event occurred");
 
-        let power = cx.local.power;
-        let counter = cx.local.counter;
+        // resources available to this task
+        let resources = cx.local;
 
-        *counter += 1;
-        let n = *counter;
+        *resources.counter += 1;
+        let n = *resources.counter;
         defmt::println!(
             "on_power_event: cable connected {} time{}",
             n,
@@ -64,6 +64,6 @@ mod app {
         );
 
         // clear the interrupt flag; otherwise this task will run again after it returns
-        power.events_usbdetected.reset();
+        resources.power.events_usbdetected.reset();
     }
 }

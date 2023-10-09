@@ -1,0 +1,1 @@
+# SET_CONFIGURATION (Linux & Mac OS)

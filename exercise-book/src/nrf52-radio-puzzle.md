@@ -17,7 +17,7 @@ Like in the previous sections the Dongle will listen for radio packets -- this t
 
 ## Sending Messages and Receiving the Dongle's Responses
 
-✅ Open the `nrf52-code/radio` folder in VS Code; then open the `src/bin/radio-puzzle.rs` file. Run the program.
+✅ Open the `nrf52-code/radio-app` folder in VS Code; then open the `src/bin/radio-puzzle.rs` file. Run the program.
 
 This will send a zero sized packet `let msg = b""` to the dongle.
 

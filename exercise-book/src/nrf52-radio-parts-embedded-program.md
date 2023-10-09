@@ -2,14 +2,14 @@
 
 We will look at the elements that distinguish an embedded Rust program from a desktop program.
 
-✅ Open the `nrf52-code/radio` folder in VS Code.
+✅ Open the `nrf52-code/radio-app` folder in VS Code.
 
 ```console
 # or use "File > Open Folder" in VS Code
 code nrf52-code/radio
 ```
 
-✅ Then open the `src/bin/hello.rs` file.
+✅ Then open the `nrf52-code/radio-app/src/bin/hello.rs` file.
 
 ## In the file, you will find the following attributes:
 

@@ -428,24 +428,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ec0be4795e2f6a28069bec0b5ff3e2ac9bafc99e6a9a7dc3547996c5c816922c"
 
 [[package]]
-name = "rtic-app"
-version = "0.0.0"
-dependencies = [
- "consts",
- "cortex-m",
- "cortex-m-rt",
- "cortex-m-rtic",
- "defmt",
- "defmt-rtt",
- "dk",
- "heapless",
- "panic-probe",
- "quote",
- "usb",
- "usb2",
-]
-
-[[package]]
 name = "rtic-core"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -557,6 +539,24 @@ name = "usb"
 version = "0.0.0"
 dependencies = [
  "defmt",
+]
+
+[[package]]
+name = "usb-app"
+version = "0.0.0"
+dependencies = [
+ "consts",
+ "cortex-m",
+ "cortex-m-rt",
+ "cortex-m-rtic",
+ "defmt",
+ "defmt-rtt",
+ "dk",
+ "heapless",
+ "panic-probe",
+ "quote",
+ "usb",
+ "usb2",
 ]
 
 [[package]]

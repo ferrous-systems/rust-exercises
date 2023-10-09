@@ -1,6 +1,6 @@
 # Panicking
 
-✅ Open the `src/bin/panic.rs` file and click the "Run" button (or run with `cargo run --bin panic`).
+✅ Open the `nrf52-code/radio-app/src/bin/panic.rs` file and click the "Run" button (or run with `cargo run --bin panic`).
 
 This program attempts to index an array beyond its length and this results in a panic.
 

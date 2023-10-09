@@ -167,7 +167,7 @@ mod app {
                         if let Some(address) = address {
                             *state = State::Address(address);
                         } else {
-                            // stay in the default state
+                            // stay in the `Default` state
                         }
                     }
 

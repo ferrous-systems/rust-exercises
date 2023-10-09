@@ -51,10 +51,7 @@ mod app {
         // resources available to this task
         let resources = cx.local;
 
-        // the POWER peripheral can be accessed through a reference
-        let power: &mut POWER = resources.power;
-
         // clear the interrupt flag; otherwise this task will run again after it returns
-        power.events_usbdetected.reset();
+        resources.power.events_usbdetected.reset();
     }
 }

@@ -4,7 +4,7 @@ In this section we'll explore the `recv_timeout` method of the Radio API. As the
 
 The `loopback` application running on the Dongle will broadcast a radio packet after receiving one over channel 20. The contents of this outgoing packet will be the contents of the received one but reversed.
 
-✅ Open the `src/bin/radio-recv.rs` file. Make sure that the Dongle and the Radio are set to the same channel. Click the "Run" button.
+✅ Open the `nrf52-code/radio-app/src/bin/radio-recv.rs` file. Make sure that the Dongle and the Radio are set to the same channel. Click the "Run" button.
 
 The Dongle expects the packet to contain only ASCII characters and will not respond to packets that contain non-ASCII data. If you only send packets that contain byte string literals *with no escaped characters* (e.g. `b"hello"`) then this requirement will be satisfied. At the same time the Dongle will always respond with ASCII data so calling `str::from_utf8` on the response should never fail, unless the packet contents got corrupted in the transmission but the CRC should detect this scenario.
 
