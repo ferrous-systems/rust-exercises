@@ -66,7 +66,7 @@ A part of this exercise is seeing type inference in action and to use it to help
 
 ### Step 1: Splitting a sentence and pushing its words into a vector.
 
-✅ Iterate over the sentence to split it into words. Use the white space as separator. This can be done with the [`.split()`](https://doc.rust-lang.org/std/primitive.str.html#method.split) method, where the separator character `' '` goes into the paranthesis. This method returns an iterator over substrings of the string slice. In Rust, iterators are lazy, that means just calling `.split()` on a `&str` doesn’t do anything by itself. It needs to be in combination with something that advances the iteration, such as a `for` loop, or a manual advancement such as the `.next()` method. These will yield the actual object you want to use. [Push](https://doc.rust-lang.org/std/vec/struct.Vec.html#method.push) each word into the vector `collection_of_words`. Add the correct return type to the function signature.
+✅ Iterate over the sentence to split it into words. Use the white space as separator. This can be done with the [`.split()`](https://doc.rust-lang.org/std/primitive.str.html#method.split) method, where the separator character `' '` goes into the parenthesis. This method returns an iterator over substrings of the string slice. In Rust, iterators are lazy, that means just calling `.split()` on a `&str` doesn’t do anything by itself. It needs to be in combination with something that advances the iteration, such as a `for` loop, or a manual advancement such as the `.next()` method. These will yield the actual object you want to use. [Push](https://doc.rust-lang.org/std/vec/struct.Vec.html#method.push) each word into the vector `collection_of_words`. Add the correct return type to the function signature.
 
 ✅ Run the test to see if it passes.
 
@@ -87,11 +87,11 @@ fn rustlatin(sentence: &str) -> Vec<String> {
 
 ### Step 2: Concatenating String types.
 
-✅ After iterating over the sentence to split it into words, add the suffix `"rs"` to each word before pushing it to the vector. 
+✅ After iterating over the sentence to split it into words, add the suffix `"rs"` to each word before pushing it to the vector.
 
-✅ To concatenate two `&str` the first needs to be turned into the owned type with `.to_owned()`. Then `String` and `&str` can be added using `+`. 
+✅ To concatenate two `&str` the first needs to be turned into the owned type with `.to_owned()`. Then `String` and `&str` can be added using `+`.
 
-✅ Add the correct return type to the function signature. 
+✅ Add the correct return type to the function signature.
 
 ✅ Run the test to see if it passes.
 

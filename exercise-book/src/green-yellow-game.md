@@ -125,7 +125,7 @@ You need a random number generator (call `rand::thread_rng()`), and using that y
 
 ### Reading from the Console
 
-You need to grab a standard input handle with `std::io::stdin()`. This implments the `std::io::Write` trait, so you can call `read_to_string(&mut some_string)` and get a line of text into your `some_string: String` variable.
+You need to grab a standard input handle with `std::io::stdin()`. This implements the `std::io::Write` trait, so you can call `read_to_string(&mut some_string)` and get a line of text into your `some_string: String` variable.
 
 ### Parsing Strings into Integers
 
@@ -144,7 +144,7 @@ Create a new binary Cargo project, check the build and see if it runs.
 
 ```shell
 cargo new green-yellow
-cd fizzbuzz 
+cd fizzbuzz
 cargo run
 ```
 

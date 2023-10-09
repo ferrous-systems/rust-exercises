@@ -40,7 +40,7 @@ x is the number of the step.
 2. Take the code from Step 1 and instead of using a `match`, propagate the Error
    with `?` out of `fn main()`. Note that your `main` function will now need to
    return something when it reaches the end.
-  
+
 3. Take the code from Step 2, and split the `String` into lines using the
    [`lines()`](https://doc.rust-lang.org/std/primitive.str.html#method.lines)
    method. Use this to count how many lines there are.
@@ -55,7 +55,7 @@ x is the number of the step.
    [Url](https://docs.rs/url/2.1.1/url/struct.Url.html), which is from the
    [`url` crate]. Use this function to convert each line and use the returned
    value to print either `Is a URL: <url>` or `Not a URL`.
-   
+
    The [`url` crate] has already been added as a dependency so you can just use
    `url::Url::parse`
 
@@ -125,14 +125,14 @@ enum Season {
 }
 
 fn which_season_is_now(season: Season) -> String {
-    
+
     let return_value = match season {
         Season::Spring => String::from("It's spring!"),
         Season::Summer => String::from("It's summer!."),
         Season::Fall => String::from("It's Fall!"),
         Season::Winter => String::from("Brrr. It's Winter."),
     };
-    
+
     return_value
 }
 ```
@@ -232,11 +232,11 @@ wrong value to see what happens if there is an error.
 
 ✅ Take a look at the documentation of
 [std::lines](https://doc.rust-lang.org/std/primitive.str.html#method.lines). It
-returns a `struct Lines` which is an iterator. 
+returns a `struct Lines` which is an iterator.
 
 ✅ Add a block like `for line in my_contents.lines() { }`
 
-✅ Declare a mutable integer, initialised to zero. Increment that integer inside
+✅ Declare a mutable integer, initialized to zero. Increment that integer inside
 the for loop.
 
 ✅ Print the number of lines the file contains.

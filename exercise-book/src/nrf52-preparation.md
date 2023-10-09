@@ -1,6 +1,6 @@
 # nRF52 Preparation
 
-This chapter contains informations about the nRF52-based exercises, the required hardware and an installation guide.
+This chapter contains information about the nRF52-based exercises, the required hardware and an installation guide.
 
 ## Required Hardware
 
