@@ -10,7 +10,7 @@ use cortex_m_rt::entry;
 use usb_app as _;
 
 // the custom entry point
-// vvvvv
+// 👇🏾
 #[entry]
 fn main() -> ! {
     //      ˆˆˆ
@@ -19,7 +19,7 @@ fn main() -> ! {
     // initializes the peripherals
     dk::init().unwrap();
 
-    defmt::println!("Hello, world!"); // :wave:
+    defmt::println!("Hello, world!"); // 👋🏾
 
     loop {
         // breakpoint: halts the program's execution

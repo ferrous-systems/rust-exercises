@@ -11,7 +11,7 @@ cd rust-exercises
 
 The workshop repository contains all workshop materials, i.e. code snippets, custom tools and the source for this handbook.
 
-Skelton projects you can edit can be found in the `exercise-templates` folder. Completed solutions can be found in the `exercise-solutions` folder.
+Skeleton projects you can edit can be found in the `exercise-templates` folder. Completed solutions can be found in the `exercise-solutions` folder.
 
 ## Firmware
 
