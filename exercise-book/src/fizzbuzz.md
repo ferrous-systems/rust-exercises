@@ -1,6 +1,6 @@
 # Fizzbuzz
 
-In this exercise, you will implement your first tiny program in rust: FizzBuzz. FizzBuzz is easy to implement, but allows for application of Rust patterns in a very clean fashion. If you have never written Rust before, use the [cheat sheet](/fizzbuzz-cheat-sheet.md/) for help on syntax.
+In this exercise, you will implement your first tiny program in rust: FizzBuzz. FizzBuzz is easy to implement, but allows for application of Rust patterns in a very clean fashion. If you have never written Rust before, use the [cheat sheet](fizzbuzz-cheat-sheet.md) for help on syntax.
 
 ## After completing this exercise you are able to
 
