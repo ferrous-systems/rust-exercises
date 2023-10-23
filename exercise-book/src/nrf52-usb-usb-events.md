@@ -14,7 +14,7 @@ This code will panic because `USBRESET` is not implemented yet.
 
 ✅ Go to `fn on_event(...)`, line 39. In this section you'll need to implement the following USB events `USBRESET` and `EP0SETUP` so that your log output will look like this:
 
-``` console
+```console
 USBD initialized
 USB: UsbReset
 returning to the `Default` state

@@ -16,7 +16,7 @@ In `usb-2.rs`, you will find a short description of each register above the vari
 
 Modify `Request::parse()` in `nrf52-code/usb-lib/src/lib.rs` to recognize a `GET_DESCRIPTOR` request of type `DEVICE` so that the `get_descriptor_device` test passes. Note that the parser already handles `SET_ADDRESS` requests.
 
-## Getting Started:
+## Getting Started
 
 ### Writing code that can be tested
 
@@ -51,7 +51,6 @@ You should return `Err(Error::xxx)` if the properties aren't met.
 - define binary literals by prefixing them with `0b`
 - use bit shifts (`>>`) and casts (`as u8`) to get the high/low bytes of `wValue`
 
-
 You will also find this information in the `// TODO implement ...` comment in the `Request::parse()` function of `lib.rs` file.
  > NOTE: If you'd like to learn more, take a look at Section 9.4.3 Get Descriptor of the USB specification.
 
@@ -74,7 +73,7 @@ modify `usb-2.rs` to read `USBD` registers and parse the SETUP data when an EP0S
 
 When you have successfully received a GET_DESCRIPTOR request for a Device descriptor you are done. You should see an output like this:
 
-``` console
+```console
 USB: UsbReset @ Duration { secs: 0, nanos: 361145018 }
 USB: UsbEp0Setup @ Duration { secs: 0, nanos: 402465820 }
 SETUP: bmrequesttype: 0, brequest: 5, wlength: 0, windex: 0, wvalue: 10
@@ -86,7 +85,6 @@ Goal reached; move to the next section
 ```
 
 > Note: `wlength` / `length` can vary depending on the OS, USB port (USB 2.0 vs USB 3.0) or the presence of a USB hub so you may see a different value.
-
 
 You can find a solution to this step in `advanced/firmware/src/bin/usb-2-solution.rs`.
 

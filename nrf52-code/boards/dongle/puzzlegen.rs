@@ -1,5 +1,5 @@
 // add this to Cargo.toml
-// ``` toml
+// ```toml
 // [dependencies]
 // rand = "0.7.3"
 // ```

@@ -134,7 +134,7 @@ mod app {
                 return Err(());
             }
             Request::SetAddress { .. } => {
-                // On Mac OS you'll get this request before the GET_DESCRIPTOR request so we
+                // On macOS you'll get this request before the GET_DESCRIPTOR request so we
                 // need to catch it here.
 
                 // TODO: handle this request properly now.

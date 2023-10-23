@@ -58,7 +58,7 @@ The `probe-run` tool will
 
 Should you need to configure the `probe-run` invocation to e.g. flash a different microcontroller you can do that in the `.cargo/config.toml` file.
 
-``` toml
+```toml
 [target.thumbv7em-none-eabihf]
 runner = "probe-run --chip nRF52840_xxAA" # <- add/remove/modify flags here
 # ..

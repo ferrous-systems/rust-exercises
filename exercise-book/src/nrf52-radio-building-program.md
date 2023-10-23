@@ -2,7 +2,7 @@
 
 The default in a Cargo project is to compile for the host (native compilation). The `nrf52-code/radio-app` project has been configured for cross compilation to the ARM Cortex-M4 architecture. This configuration can be seen in the Cargo configuration file (`.cargo/config`):
 
-``` text
+```text
 # .cargo/config
 [build]
 target = "thumbv7em-none-eabihf" # = ARM Cortex-M4

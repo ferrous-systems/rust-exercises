@@ -87,7 +87,7 @@ mod app {
                         ep0in.start(&resp, usbd);
                     }
                     Request::SetAddress { .. } => {
-                        // On Mac OS you'll get this request before the GET_DESCRIPTOR request so we
+                        // On macOS you'll get this request before the GET_DESCRIPTOR request so we
                         // need to catch it here. We'll properly handle this request later
                         // but for now it's OK to do nothing.
                     }

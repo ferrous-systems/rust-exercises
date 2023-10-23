@@ -20,7 +20,7 @@ Also note that in the starter code the `idle` function has been modified. Pay at
 
 ✅ Modify the program so that it prints the number of times the USB cable has been connected to the DK every time the cable is connected, as shown below.
 
-``` console
+```console
 USBDETECTED interrupt enabled
 idle: going to sleep
 on_power_event: cable connected 1 time
