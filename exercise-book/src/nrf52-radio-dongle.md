@@ -58,7 +58,7 @@ After the device has been programmed it will automatically reset and start runni
 ```console
 $ cargo xtask usb-list
 (..)
-Bus 001 Device 020: ID 2020:0309 <- nRF52840 Dongle (loopback.hex)
+Bus 001 Device 020: ID 1209:0309 <- nRF52840 Dongle (loopback.hex)
 ```
 
 The `loopback` app will log messages over the USB interface. To display these messages on the host we have provided a cross-platform tool: `cargo xtask serial-term`.
