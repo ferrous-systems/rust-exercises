@@ -64,7 +64,7 @@ For this tutorial, we'll be using the `nrf52-code/` applications, so let's modif
  # optimize code in both profiles
 -[profile.dev]
 -codegen-units = 1
--debug = 1
+-debug = 2
 -debug-assertions = true # !
 -incremental = false
 -lto = "fat"
