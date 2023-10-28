@@ -72,5 +72,7 @@ mv ./exercise-book/book "${OUTPUT_NAME}/exercise-book/html"
 cp -r ./exercise-templates "${OUTPUT_NAME}/"
 cp -r ./exercise-solutions "${OUTPUT_NAME}/"
 cp -r ./nrf52-code "${OUTPUT_NAME}/"
+cp -r ./xtask "${OUTPUT_NAME}/"
+cp -r ./.cargo "${OUTPUT_NAME}/"
 find "${OUTPUT_NAME}" -name target -type d -print0 | xargs -0 rm -rf
 zip -r "${OUTPUT_NAME}.zip" "${OUTPUT_NAME}"
