@@ -1,4 +1,6 @@
-//! Hardware Abstraction Layer (HAL) for the nRF52840 Development Kit
+//! Board Support Package (BSP) for the nRF52840 Development Kit
+//!
+//! See <https://www.nordicsemi.com/Products/Development-hardware/nrf52840-dk>
 
 #![deny(missing_docs)]
 #![deny(warnings)]

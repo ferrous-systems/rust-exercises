@@ -6,11 +6,11 @@ So far we have been using a pre-made Cargo project to work with the nRF52840 DK.
 
 The first step is to identify the microcontroller you'll be working with. The information about the microcontroller you'll need is:
 
-### 1. Its processor architecture and sub-architecture.
+### 1. Its processor architecture and sub-architecture
 
 This information should be in the device's data sheet or manual. In the case of the nRF52840, the processor is an ARM Cortex-M4 core. With this information you'll need to select a compatible *compilation target*. `rustup target list` will show all the supported compilation targets.
 
-``` console
+```console
 $ rustup target list
 (..)
 thumbv6m-none-eabi
@@ -59,7 +59,7 @@ The recommended way to use the quickstart template is through the [`cargo-genera
 
 [`cargo-generate`]: https://crates.io/crates/cargo-generate
 
-``` console
+```console
 cargo generate --git https://github.com/rust-embedded/cortex-m-quickstart
 ```
 
@@ -69,7 +69,7 @@ Once you have instantiated a project using the template you'll need to fill in t
 
 ### 1. Change the default compilation target in `.cargo/config`
 
-``` toml
+```toml
 [build]
 target = "thumbv7em-none-eabi"
 ```
@@ -87,7 +87,7 @@ MEMORY
 }
 ```
 
-### 3. `cargo build` now will cross compile programs for your target device.
+### 3. `cargo build` now will cross compile programs for your target device
 
 If there's no template or signs of support for a particular architecture under the rust-embedded organization then you can follow the [embedonomicon] to bootstrap support for the new architecture by yourself.
 

@@ -1,0 +1,16 @@
+[target.'cfg(all(target_arch = "arm", target_os = "none"))']
+# (..)
+rustflags = [
+  "-C", "linker=flip-link", # adds stack overflow protection
+  "-C", "link-arg=-Tdefmt.x", # defmt support
+  # (..)
+]
+
+[target.thumbv7em-none-eabihf]
+runner = "probe-run --chip nRF52840_xxAA"
+rustflags = [
+  "-C", "link-arg=-Tlink.x",
+]
+
+[build]
+target = "thumbv7em-none-eabihf"
