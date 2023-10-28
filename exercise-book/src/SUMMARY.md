@@ -84,7 +84,7 @@
 - [Troubleshooting](./nrf52-troubleshooting.md)
   - [`cargo-size` is not working](./nrf52-troubleshoot-cargo-size.md)
   - [Rust analyzer is not working](./nrf52-troubleshoot-rust-analyzer.md)
-  - [`cargo-build` fails to link](./nrf52-troubleshoot-cargo-build.md)
+  - [`cargo build` fails to link](./nrf52-troubleshoot-cargo-build.md)
   - [Dongle USB functionality is not working](./nrf52-troubleshoot-usb-dongle.md)
   - [`cargo run` errors](./nrf52-troubleshoot-cargo-run-error.md)
   - [`no probe was found` error](./nrf52-troubleshoot-probe-not-found.md)
