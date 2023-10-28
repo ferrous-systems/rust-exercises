@@ -107,6 +107,25 @@ The procedure is similar to the one for generating the `puzzle` ELF file. The di
 
 Also test these `nousb` ELF files. Note that the green LED won't turn on when the dongle restarts! The green LED will toggle when a new packet is received and the blue LED will turn on when the decoded secret is received. Also, `cargo xtask change-channel` won't work with the `nousb` variants so you can skip that test.
 
+## Addendum
+
+In October 2023, Jonathan changed the USB Vendor ID from 0x2020 to the 0x1209 suggested by https://pid.codes. Rather than find the old
+firmware source code and recompile it, it was easier to patch the binaries.
+
+```console
+$ diff <(hexdump -C puzzle) <(hexdump -C puzzle-1209)
+2363c2363
+< 000131b0  00 00 02 12 01 00 02 ef  02 01 40 20 20 09 03 00  |..........@  ...|
+---
+> 000131b0  00 00 02 12 01 00 02 ef  02 01 40 09 12 09 03 00  |..........@.....|
+$ diff <(hexdump -C loopback) <(hexdump -C loopback-1209)
+2344c2344
+< 000131b0  00 00 02 12 01 00 02 ef  02 01 40 20 20 09 03 00  |..........@  ...|
+---
+> 000131b0  00 00 02 12 01 00 02 ef  02 01 40 09 12 09 03 00  |..........@.....|
+$ 
+```
+
 ## References
 
 - [nRF52840 Dongle section on Nordic Semiconductor's info center](https://infocenter.nordicsemi.com/index.jsp?topic=%2Fug_getting_started%2FUG%2Fgs%2Fdevelop_sw.html&cp=1_0_2)
