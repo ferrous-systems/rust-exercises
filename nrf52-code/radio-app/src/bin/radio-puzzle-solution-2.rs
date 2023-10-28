@@ -18,8 +18,9 @@ fn main() -> ! {
     let mut radio = board.radio;
     let mut timer = board.timer;
 
-    // puzzle.hex uses channel 25
-    radio.set_channel(Channel::_25);
+    // puzzle.hex uses channel 25 by default
+    // NOTE if you ran `change-channel` then you may need to update the channel here
+    radio.set_channel(Channel::_25); // <- must match the Dongle's listening channel
 
     /* # Build a dictionary */
     let mut dict = LinearMap::<u8, u8, 128>::new();
@@ -67,12 +68,8 @@ fn main() -> ! {
     for spot in packet.iter_mut() {
         // `spot` has type `&mut u8` and lets you modify the contents of the packet
         let cipherletter = *spot; // make a copy of the byte
-        let key = cipherletter;
-        let value = dict[&key];
-
-        let plainletter = value;
-        // overwrite the old value with the plainletter
-        *spot = plainletter;
+                                  // overwrite the old value with the plainletter
+        *spot = dict[&cipherletter];
     }
 
     defmt::println!(

@@ -2,7 +2,7 @@
 
 ## Use a dictionary
 
-Our suggestion is to use a dictionary / map. `std::collections::HashMap` is not available in `no_std` code (without linking to a global allocator) but you can use one of the stack-allocated maps in the [`heapless`] crate. It supplies a stack-allocated, fixed-capacity version of the `std::Vec` type which will come in handy to store byte arrays. To store character mappings we recommend using a `heapless::LinearMap`.
+Our suggestion is to use a dictionary / map. `std::collections::HashMap` is not available in `no_std` code (it requires a secure random number generator to prevent collision attacks) but you can use one of the stack-allocated maps in the [`heapless`] crate. It supplies a stack-allocated, fixed-capacity version of the `std::Vec` type which will come in handy to store byte arrays. To store character mappings we recommend using a `heapless::LinearMap`.
 
 `heapless` is already declared as a dependency in the Cargo.toml of the project so you can directly import it into the application code using a `use` statement.
 
@@ -28,8 +28,8 @@ fn main() {
 
 If you haven't used a stack-allocated collection before note that you'll need to specify the capacity of the collection as a type parameter using one of the "type-level values" in the `heapless::consts` module (e.g. `U8`, `U64` etc.). The [`heapless::LinearMap` documentation][indexMap] of the `heapless` crate has some usage examples, as does the [`heapless::Vec` documentation][vec].
 
-[indexMap]: https://docs.rs/heapless/0.5.5/heapless/struct.LinearMap.html
-[vec]: https://docs.rs/heapless/0.5.5/heapless/struct.Vec.html
+[indexMap]: https://docs.rs/heapless/0.7.16/heapless/struct.LinearMap.html
+[vec]: https://docs.rs/heapless/0.7.16/heapless/struct.Vec.html
 
 ## Note the difference between character literals and byte literals!
 
@@ -63,26 +63,24 @@ fn main() -> ! {
 }
 ```
 
-## Recommended Steps:
+## Recommended Steps
 
-Each step is demonstrated in a separate example so if for example you only need a quick reference of how to use the map API you can step / example number 2.
+Each step is demonstrated in a separate example so if for example you only need a quick reference of how to use the map API you can look at step / example number 2 and ignore the others.
 
-1. Send a one letter packet (e.g. `A`) to the radio to get a feel for how the mapping works. Then do a few more letters. Check out example `radio-puzzle-1`
+1. Send a one letter packet (e.g. `A`) to the radio to get a feel for how the mapping works. Then do a few more letters. See `src/bin/radio-puzzle-1.rs`.
 
-2. Get familiar with the dictionary API. Do some insertions and look ups. What happens if the dictionary gets full? See `radio-puzzle-2`
+2. Get familiar with the dictionary API. Do some insertions and look ups. What happens if the dictionary gets full? See `src/bin/radio-puzzle-2.rs`.
 
-3. Next, get mappings from the radio and insert them into the dictionary. See `radio-puzzle-3`
+3. Next, get mappings from the radio and insert them into the dictionary. See `src/bin/radio-puzzle-3.rs`.
 
-4. You'll probably want a buffer to place the plaintext in. We suggest using `heapless::Vec` for this. See `radio-puzzle-4` (NB It is also possible to decrypt the packet in place)
+4. You'll probably want a buffer to place the plaintext in. We suggest using `heapless::Vec` for this. See `src/bin/radio-puzzle-4.rs` for a starting-point (NB It is also possible to decrypt the packet in place).
 
-5. Simulate decryption: fetch the encrypted string and "process" each of its bytes. See `radio-puzzle-5`
+5. Simulate decryption: fetch the encrypted string and "process" each of its bytes. See `src/bin/radio-puzzle-5.rs`.
 
-6. Now merge steps 3 and 5: build a dictionary, retrieve the secret string and do the reverse mapping to decrypt the message. See `radio-puzzle-6`
+6. Now merge steps 3 and 5: build a dictionary, retrieve the secret string and do the reverse mapping to decrypt the message. See `src/bin/radio-puzzle-6.rs`.
 
-7. As a final step, send the decrypted string to the Dongle and check if it was correct or not. See `radio-puzzle-7`
+7. As a final step, send the decrypted string to the Dongle and check if it was correct or not. See `src/bin/radio-puzzle-7.rs`.
 
 For your reference, we have provided a complete solution in the `src/bin/radio-puzzle-solution.rs` file. That solution is based on the seven steps outlined above. Did you solve the puzzle in a different way?
 
-If you solved the puzzle using a `Vec` buffer you can try solving it without the buffer as a stretch goal. You may find the [slice methods][slice] that let you mutate its data useful. A solution that does not use the `Vec` buffer can be found in the `radio-puzzle-solution-2` file.
-
-[slice]: https://doc.rust-lang.org/std/primitive.slice.html#methods
+All finished? See the [next steps](nrf52-radio-next-steps.md).
