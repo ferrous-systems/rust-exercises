@@ -80,13 +80,13 @@ In Zadig's graphical user interface,
 
 1. Select the 'List all devices' option from the Options menu at the top.
 
-2. From the device (top) drop down menu select "BULK interface (Interface 2)"
+2. From the device (top) drop down menu select "BULK interface (Interface nnn)"
 
 3. Once that device is selected, `1366 1015` should be displayed in the USB ID field. That's the Vendor ID - Product ID pair.
 
 4. Select 'WinUSB' as the target driver (right side)
 
-5. Click "Install WinUSB driver". The process may take a few minutes to complete.
+5. Click "Install Driver". The process may take a few minutes to complete and might not appear to do anything right away. Click it once and wait.
 
 > You do not need to do anything for the **nRF52840 Dongle** device.
 
@@ -96,7 +96,7 @@ In Zadig's graphical user interface,
 
 Go to [https://rustup.rs](https://rustup.rs/) and follow the instructions.
 
-**Windows**: *Do* install the optional components of the [C++ build tools package](https://visualstudio.microsoft.com/visual-cpp-build-tools/). The installation size may take up to 2 GB of disk space.
+**Windows**: Be sure to select the optional "Desktop development with C++" part of the [C++ build tools package](https://visualstudio.microsoft.com/visual-cpp-build-tools/). The installation size may take up to 5.7 GB of disk space.
 
 ### Rust Analyzer
 
@@ -158,5 +158,7 @@ cargo-size 0.3.6
 ✅ In the terminal run the following command from the `nrf52-code/radio-app` folder. This will build and run a simple program on the DK to test the set-up.
 
 ```console
-cargo run --bin hello
+cargo run --bin hello -- --erase-all
 ```
+
+The `-- --erase-all` option gives the `--erase-all` argument to `probe-run`, which gives it permission to clear out the pre-installed Nordic bootloader code. You only need that the first time you try and program the nRF52840-DK with `cargo run`.
