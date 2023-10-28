@@ -2,6 +2,14 @@
 
 ## Workshop Materials
 
+You will need a local copy of the workshop materials. We recommend the Github release as it contains pre-compiled HTML docs, but you can clone the repo with `git` if you prefer.
+
+### Github Release
+
+Download the latest release from [the rust-exercises Github release area](https://github.com/ferrous-systems/rust-exercises/releases). Unpack the zip file somewhere you can work on the contents.
+
+### Git checkout
+
 Clone and change into the [rust-exercises git repository](https://github.com/ferrous-systems/rust-exercises):
 
 ```console
@@ -9,7 +17,7 @@ git clone https://github.com/ferrous-systems/rust-exercises.git
 cd rust-exercises
 ```
 
-The workshop repository contains all workshop materials, i.e. code snippets, custom tools and the source for this handbook.
+The workshop repository contains all workshop materials, i.e. code snippets, custom tools and the source for this handbook. Your instructor will tell you if you should checkout a specific git tag.
 
 ## Firmware
 
