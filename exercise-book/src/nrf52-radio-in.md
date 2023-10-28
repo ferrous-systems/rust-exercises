@@ -10,7 +10,7 @@ The Dongle expects the packet to contain only ASCII characters and will not resp
 
 The Dongle will respond as soon as it receives a packet. If you insert a delay between the `send` operation and the `recv` operation in the `radio-recv` program this will result in the DK not seeing the Dongle's response. So try this:
 
-✅ Add a `timer.delay(x)` call before the `recv_timeout` call; try different values of `x` and observe what happens.
+✅ Add a `timer.wait(x)` call before the `recv_timeout` call, where `x` is `core::time::Duration`; try different lengths of time for `x` and observe what happens.
 
 Having log statements between `send` and `recv_timeout` can also cause packets to be missed so try to keep those two calls as close to each other as possible and with as little code in between as possible.
 
