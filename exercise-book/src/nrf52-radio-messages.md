@@ -1,6 +1,6 @@
 # Messages
 
-In `radio-send.rs` we introduce three different types for messages:
+In `radio-send.rs` we propose three different ways to define the bytes we want to send to the radio:
 
 ```rust
 let msg: &[u8; 5] = &[72, 101, 108, 108, 111];
@@ -86,6 +86,6 @@ In this workshop we'll work with ASCII strings so byte string literals that cont
 
 You'll note that `defmt::println!("{:?}", b"Hello")` will print `[72, 101, 108, 108, 111]` rather than `"Hello"` and that the `{}` format specifier (`Display`) does not work. This is because the type of the literal is `&[u8; N]` and in Rust this type means "bytes"; those bytes could be ASCII data, UTF-8 data or something else.
 
-To print this you'll need to convert the slice `&[u8]` into a string (`&str`) using the `str::from_utf8` function. This function will verify that the slice contains well formed UTF-8 data and interpret it as a UTF-8 string (`&str`). As long as we use ASCII data (printable ASCII characters) this conversion will not fail.
+To print this you'll need to convert the slice `&[u8]` into a string (`&str`) using the [`core::str::from_utf8`](https://doc.rust-lang.org/stable/core/str/fn.from_utf8.html) function. This function will verify that the slice contains well formed UTF-8 data and interpret it as a UTF-8 string (`&str`). We were careful to ensure that our three example messages were the same, and were all valid UTF-8, so we expect the conversion to always succeed. Why not try and see which bytes cause this conversion to fail?
 
 Something similar will happen with byte literals: `defmt::println!("{}", b'A')` will print `65` rather than `A`. To get the `A` output you can cast the byte literal (`u8` value) to the `char` type: `defmt::println!("{}", b'A' as char)`.
