@@ -17,7 +17,7 @@ When the Dongle is in bootloader mode its red LED will pulsate. The Dongle will 
 
 You can also use our `cargo xtask usb-list` tool, a minimal cross-platform version of the `lsusb` tool, to check out the status of the Dongle.
 
-✅ Run `cargo xtask usb-list` in the root of the rust-exercises checkout to list all USB devices; the Dongle will be highlighted in the output, along with a note if in bootloader mode.
+✅ Run `cargo xtask usb-list` **in the root** of the rust-exercises checkout to list all USB devices; the Dongle will be highlighted in the output, along with a note if in bootloader mode.
 
 Output should look like this:
 
@@ -29,7 +29,7 @@ Bus 001 Device 016: ID 1915:521f <- nRF52840 Dongle (in bootloader mode)
 
 🔎 [`cargo xtask`](https://github.com/matklad/cargo-xtask) lets us extend `cargo` with custom commands which are installed as you run them for the first time. We've used it to add some helper tools to our workshop materials while keeping the preparation installations as minimal as possible.
 
-Now that the device is in bootloader mode browse to the `boards/dongle` directory. You'll find some `ELF` files (without a file ending) there. These are pre-compiled Rust programs to be flashed onto your dongle.
+Now that the device is in bootloader mode browse to the `nrf52-code/boards/dongle` directory. You'll find some `ELF` files (without a file ending) there. These are pre-compiled Rust programs to be flashed onto your dongle.
 
 For the next section you'll need to flash the `loopback` file onto the Dongle.
 
