@@ -76,7 +76,7 @@ This line is printed by the `loopback` app on boot. It contains the device ID of
 
 If you don't get any output from `cargo xtask serial-term` check [the USB dongle troubleshooting section][usb-issues].
 
-[usb-issues]: /troubleshoot-usb-dongle.html
+[usb-issues]: nrf52-troubleshoot-usb-dongle.md
 
 ## Interference
 
@@ -107,4 +107,4 @@ deviceid=588c06af0877c8f2 channel=20 TxPower=+8dBm
 now listening on channel 11
 ```
 
-Leave the Dongle connected and `cargo xtask serial-term` running. Now we'll switch back to the Development Kit. Note that if you power cycle or reset the dongle, it goes back to its default channel of 20.
+Leave the Dongle connected and `cargo xtask serial-term` running. Now we'll switch back to the Development Kit. Note that if you remove and re-insert the dongle, it goes back to its default channel of 20.
