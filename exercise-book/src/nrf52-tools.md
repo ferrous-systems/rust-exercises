@@ -37,14 +37,14 @@ To access the USB devices as a non-root user, follow these steps:
 2. Create the following file with the displayed contents. You'll need root permissions to create the file.
 
     ```console
-    $ cat /etc/udev/rules.d/50-oxidize-global.rules
+    $ cat /etc/udev/rules.d/50-ferrous-training.rules
     # udev rules to allow access to USB devices as a non-root user
 
     # nRF52840 Dongle in bootloader mode
     ATTRS{idVendor}=="1915", ATTRS{idProduct}=="521f", TAG+="uaccess"
 
     # nRF52840 Dongle applications
-    ATTRS{idVendor}=="2020", TAG+="uaccess"
+    ATTRS{idVendor}=="1209", TAG+="uaccess"
 
     # nRF52840 Development Kit
     ATTRS{idVendor}=="1366", ENV{ID_MM_DEVICE_IGNORE}="1", TAG+="uaccess"
@@ -150,7 +150,7 @@ Installed package `nrfdfu v0.1.3` (..)
 
 ```console
 $ cargo size --version
-cargo-size 0.3.3
+cargo-size 0.3.6
 ```
 
 ✅ Connect the nRF52840-DK with your computer by plugging the usb-cable into the J2 connector on the DK (the usb connector on the short side of the board).

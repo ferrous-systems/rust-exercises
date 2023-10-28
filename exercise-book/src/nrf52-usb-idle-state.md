@@ -60,7 +60,7 @@ You can find traces for other OSes in these files (they are in the `advanced` fo
 ```console
 Bus 001 Device 013: ID 1366:1015 <- J-Link on the nRF52840 Development Kit
 (..)
-Bus 001 Device 016: ID 2020:0717 <- nRF52840 on the nRF52840 Development Kit
+Bus 001 Device 016: ID 1209:0717 <- nRF52840 on the nRF52840 Development Kit
 ```
 
 Both the J-Link and the device implemented by your firmware should appear in the list.

@@ -14,5 +14,5 @@ The goal of this workshop is to get the nRF52840 SoC to show in this list. The e
 $ cargo xtask usb-list
 (...) random other USB devices will be listed
 Bus 001 Device 010: ID 1366:1015 <- J-Link on the nRF52840 Development Kit
-Bus 001 Device 059: ID 2020:0717 <- nRF52840 on the nRF52840 Development Kit
+Bus 001 Device 059: ID 1209:0717 <- nRF52840 on the nRF52840 Development Kit
 ```

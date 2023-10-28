@@ -39,7 +39,7 @@ pub fn serial_term() -> color_eyre::Result<()> {
         if let Some(dongle) = serialport::available_ports()?
             .into_iter()
             .filter(|info| match &info.port_type {
-                SerialPortType::UsbPort(usb) => usb.vid == 0x2020,
+                SerialPortType::UsbPort(usb) => usb.vid == consts::USB_VID_DEMO,
                 _ => false,
             })
             .next()
