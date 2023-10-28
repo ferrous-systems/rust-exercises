@@ -56,4 +56,4 @@ fn panic(info: &core::panic::PanicInfo) -> ! {
 }
 ```
 
-Now run the program again. Try changing the format string of the `panic!` macro.
+Now run the program again. Try changing the format string given to `defmt::error!`.
