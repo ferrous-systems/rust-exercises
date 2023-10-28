@@ -1,7 +1,6 @@
 use std::{
     io::{self, Write as _},
     sync::atomic::{AtomicBool, Ordering},
-    thread,
     time::Duration,
 };
 
@@ -53,6 +52,7 @@ pub fn serial_term() -> color_eyre::Result<()> {
     };
 
     let mut port = serialport::new(&dongle.port_name, 115200).open()?;
+    port.set_timeout(Duration::from_millis(10))?;
 
     static CONTINUE: AtomicBool = AtomicBool::new(true);
 
@@ -60,16 +60,21 @@ pub fn serial_term() -> color_eyre::Result<()> {
     ctrlc::set_handler(|| CONTINUE.store(false, Ordering::Relaxed))?;
 
     let stdout = io::stdout();
-    let mut stdout = stdout.lock();
-    let mut read_buf = [0; 64];
     while CONTINUE.load(Ordering::Relaxed) {
-        if port.bytes_to_read()? != 0 {
-            let n = port.read(&mut read_buf)?;
-            stdout.write_all(&read_buf[..n])?;
-            stdout.flush()?;
-        } else {
-            // time span between two consecutive FS USB packets
-            thread::sleep(Duration::from_millis(1));
+        let mut read_buf = [0u8; 8];
+        match port.read(&mut read_buf) {
+            Ok(n) => {
+                let mut stdout = stdout.lock();
+                stdout.write_all(&read_buf[..n])?;
+                stdout.flush()?;        
+            }
+            Err(e) if e.kind() == std::io::ErrorKind::TimedOut => {
+                // Go around
+            }
+            Err(e) => {
+                println!("Error: {:?}", e);
+                break;
+            }
         }
     }
 
