@@ -13,13 +13,13 @@ use core::{
 };
 
 use cortex_m::{asm, peripheral::NVIC};
-use embedded_hal::digital::v2::{OutputPin as _, StatefulOutputPin};
+use embedded_hal::digital::v2::{InputPin as _, OutputPin as _, StatefulOutputPin as _};
 #[cfg(feature = "radio")]
 pub use hal::ieee802154;
 pub use hal::pac::{interrupt, Interrupt, NVIC_PRIO_BITS, RTC0};
 use hal::{
     clocks::{self, Clocks},
-    gpio::{p0, Level, Output, Pin, Port, PushPull},
+    gpio::{p0, Input, Level, Output, Pin, Port, PullUp, PushPull},
     rtc::{Rtc, RtcInterrupt},
     timer::OneShot,
 };
@@ -44,6 +44,8 @@ pub mod usbd;
 pub struct Board {
     /// LEDs
     pub leds: Leds,
+    /// Buttons
+    pub buttons: Buttons,
     /// Timer
     pub timer: Timer,
 
@@ -128,6 +130,30 @@ impl Led {
         } else {
             self.off()
         }
+    }
+}
+
+/// All Buttons on the board
+pub struct Buttons {
+    /// Button1: pin P0.11
+    pub _1: Button,
+    /// Button2: pin P0.12
+    pub _2: Button,
+    /// Button3: pin P0.24
+    pub _3: Button,
+    /// Button4: pin P0.25
+    pub _4: Button,
+}
+
+/// A single Button
+pub struct Button {
+    inner: Pin<Input<PullUp>>,
+}
+
+impl Button {
+    /// Is the button pressed
+    pub fn is_pressed(&mut self) -> bool {
+        self.inner.is_low() == Ok(true)
     }
 }
 
@@ -237,6 +263,12 @@ pub fn init() -> Result<Board, ()> {
         let led3pin = pins.p0_15.degrade().into_push_pull_output(Level::High);
         let led4pin = pins.p0_16.degrade().into_push_pull_output(Level::High);
 
+        // NOTE pin goes low when button is pressed
+        let button1pin = pins.p0_11.degrade().into_pullup_input();
+        let button2pin = pins.p0_12.degrade().into_pullup_input();
+        let button3pin = pins.p0_24.degrade().into_pullup_input();
+        let button4pin = pins.p0_25.degrade().into_pullup_input();
+
         defmt::debug!("I/O pins have been configured for digital output");
 
         let timer = hal::Timer::new(periph.TIMER0);
@@ -259,6 +291,12 @@ pub fn init() -> Result<Board, ()> {
                 _2: Led { inner: led2pin },
                 _3: Led { inner: led3pin },
                 _4: Led { inner: led4pin },
+            },
+            buttons: Buttons {
+                _1: Button { inner: button1pin },
+                _2: Button { inner: button2pin },
+                _3: Button { inner: button3pin },
+                _4: Button { inner: button4pin },
             },
             #[cfg(feature = "radio")]
             radio,

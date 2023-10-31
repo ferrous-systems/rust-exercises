@@ -23,6 +23,10 @@ pushd boards/dk
 cargo build --target=thumbv7em-none-eabihf
 cargo fmt --check
 popd
+pushd boards/dk-solution
+cargo build --target=thumbv7em-none-eabihf
+cargo fmt --check
+popd
 pushd radio-app
 cargo build --target=thumbv7em-none-eabihf --release
 cargo fmt --check

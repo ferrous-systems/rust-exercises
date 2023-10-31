@@ -47,6 +47,8 @@
     - [Collision avoidance](./nrf52-radio-collision-avoidance.md)
     - [Interrupt handling](./nrf52-radio-interrupt-handling.md)
     - [Starting a Project from Scratch](./nrf52-radio-from-scratch.md)
+- [nRF52 HAL Workbook](./nrf52-hal-workbook.md)
+  - [Adding Buttons](./nrf52-hal-buttons.md)
 - [nRF52 USB Workbook](./nrf52-usb-workbook.md)
   - [Listing USB Devices](./nrf52-usb-listing-usb-devices.md)
   - [Hello, world!](./nrf52-usb-hello-world.md)
