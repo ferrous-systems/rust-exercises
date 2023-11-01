@@ -22,7 +22,7 @@ Modify `Request::parse()` in `nrf52-code/usb-lib/src/lib.rs` to recognize a `GET
 
 When you need to write some `no_std` code that does not involve device-specific I/O you should consider writing it as a separate crate. This way, you can test it on your development machine (e.g. `x86_64`) using the standard `cargo test` functionality.
 
-So that's what we'll do here. In `advanced/common/usb/lib.rs` you'll find starter code for writing a `no_std` SETUP data parser. The starter code contains some unit tests; you can run them with `cargo test` (from within the `usb` folder) or you can use Rust Analyzer's "Test" button in VS code.
+So that's what we'll do here. In `nrf52-code/usb-lib/src/lib.rs` you'll find starter code for writing a `no_std` SETUP data parser. The starter code contains some unit tests; you can run them with `cargo test` (from within the `usb` folder) or you can use Rust Analyzer's "Test" button in VS code.
 
 The definition of `Descriptor::Configuration` as well as the associated test has been "commented out" using an `#[cfg(TODO)]` attribute because it is not handled by the firmware yet. Delete the `#[cfg(TODO)]` so that the unit tests can access it. This pattern is used for enum members and test functions throughout this workshop, so keep it in mind should you see it again.
 
@@ -54,7 +54,7 @@ You should return `Err(Error::xxx)` if the properties aren't met.
 You will also find this information in the `// TODO implement ...` comment in the `Request::parse()` function of `lib.rs` file.
  > NOTE: If you'd like to learn more, take a look at Section 9.4.3 Get Descriptor of the USB specification.
 
-See `advanced/common/usb/solution-get-descriptor-device.rs` for a solution.
+See `nrf52-code/usb-lib-solution-get-device/src/lib.rs` for a solution.
 
 ✅ Read incoming request information and pass it to the parser:
 
@@ -67,7 +67,7 @@ modify `usb-2.rs` to read `USBD` registers and parse the SETUP data when an EP0S
 - remember that we've learned how to read registers in `events.rs`.
 - you will need to put together the higher and lower bits of `wlength`, `windex` and `wvalue` to get the whole field
 
-- > Note: If you're using a Mac, you need to catch `SetAddress` requests returned by the parser as these are sent before the first GetDescriptor request. You can handle them by doing nothing.
+- > Note: If you're using a Mac, you need to catch `SetAddress` requests returned by the parser as these are sent before the first GetDescriptor request. We added an empty handler for you already so there's nothing further to do (we're just explaining why it's there).
 
 **Expected Result:**
 
@@ -86,6 +86,6 @@ Goal reached; move to the next section
 
 > Note: `wlength` / `length` can vary depending on the OS, USB port (USB 2.0 vs USB 3.0) or the presence of a USB hub so you may see a different value.
 
-You can find a solution to this step in `advanced/firmware/src/bin/usb-2-solution.rs`.
+You can find a solution to this step in `nrf52-code/usb-app-solution/src/bin/usb-2-solution.rs`.
 
 [usb_spec]: https://www.usb.org/document-library/usb-20-specification

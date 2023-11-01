@@ -1,0 +1,37 @@
+INFO:usb_4_solution -- USB: UsbReset @ 101.135252ms
+INFO:usb_4_solution -- USB reset condition detected
+INFO:usb_4_solution -- USB: UsbEp0Setup @ 166.625976ms
+INFO:usb_4_solution -- EP0: SetAddress { address: Some(20) }
+INFO:usb_4_solution -- USB: UsbEp0Setup @ 168.823241ms
+INFO:usb_4_solution -- EP0: GetDescriptor { descriptor: Device, length: 8 }
+INFO:dk::usbd -- EP0IN: start 8B transfer
+INFO:usb_4_solution -- USB: UsbEp0DataDone @ 169.0979ms
+INFO:usb_4_solution -- EP0IN: transfer complete
+INFO:dk::usbd -- EP0IN: transfer done
+INFO:usb_4_solution -- USB: UsbEp0Setup @ 169.34204ms
+INFO:usb_4_solution -- EP0: GetDescriptor { descriptor: Device, length: 18 }
+INFO:dk::usbd -- EP0IN: start 18B transfer
+INFO:usb_4_solution -- USB: UsbEp0DataDone @ 169.616697ms
+INFO:usb_4_solution -- EP0IN: transfer complete
+INFO:dk::usbd -- EP0IN: transfer done
+INFO:usb_4_solution -- USB: UsbEp0Setup @ 171.905516ms
+INFO:usb_4_solution -- EP0: GetDescriptor { descriptor: Configuration { index: 0 }, length: 9 }
+INFO:dk::usbd -- EP0IN: start 9B transfer
+INFO:usb_4_solution -- USB: UsbEp0DataDone @ 172.210691ms
+INFO:usb_4_solution -- EP0IN: transfer complete
+INFO:dk::usbd -- EP0IN: transfer done
+INFO:usb_4_solution -- USB: UsbEp0Setup @ 172.393797ms
+INFO:usb_4_solution -- EP0: GetDescriptor { descriptor: Configuration { index: 0 }, length: 18 }
+INFO:dk::usbd -- EP0IN: start 18B transfer
+INFO:usb_4_solution -- USB: UsbEp0DataDone @ 172.729491ms
+INFO:usb_4_solution -- EP0IN: transfer complete
+INFO:dk::usbd -- EP0IN: transfer done
+INFO:usb_4_solution -- USB: UsbEp0Setup @ 237.640378ms
+INFO:usb_4_solution -- EP0: SetConfiguration { value: Some(42) }
+WARN:usb_4_solution -- EP0IN: unexpected request; stalling the endpoint
+INFO:usb_4_solution -- USB: UsbEp0Setup @ 338.012695ms
+INFO:usb_4_solution -- EP0: SetConfiguration { value: Some(42) }
+WARN:usb_4_solution -- EP0IN: unexpected request; stalling the endpoint
+INFO:usb_4_solution -- USB: UsbEp0Setup @ 438.385008ms
+INFO:usb_4_solution -- EP0: SetConfiguration { value: Some(42) }
+WARN:usb_4_solution -- EP0IN: unexpected request; stalling the endpoint

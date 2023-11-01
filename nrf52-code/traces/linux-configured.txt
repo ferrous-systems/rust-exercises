@@ -1,0 +1,42 @@
+INFO:usb_5 -- USB: UsbReset @ 397.15576ms
+INFO:usb_5 -- USB reset condition detected
+INFO:usb_5 -- USB: UsbEp0Setup @ 470.00122ms
+INFO:usb_5 -- EP0: GetDescriptor { descriptor: Device, length: 64 }
+INFO:dk::usbd -- EP0IN: start 18B transfer
+INFO:usb_5 -- USB: UsbEp0DataDone @ 470.306395ms
+INFO:usb_5 -- EP0IN: transfer complete
+INFO:dk::usbd -- EP0IN: transfer done
+INFO:usb_5 -- USB: UsbReset @ 520.721433ms
+INFO:usb_5 -- USB reset condition detected
+INFO:usb_5 -- USB: UsbEp0Setup @ 593.292235ms
+INFO:usb_5 -- EP0: SetAddress { address: Some(21) }
+INFO:usb_5 -- USB: UsbEp0Setup @ 609.954832ms
+INFO:usb_5 -- EP0: GetDescriptor { descriptor: Device, length: 18 }
+INFO:dk::usbd -- EP0IN: start 18B transfer
+INFO:usb_5 -- USB: UsbEp0DataDone @ 610.260008ms
+INFO:usb_5 -- EP0IN: transfer complete
+INFO:dk::usbd -- EP0IN: transfer done
+INFO:usb_5 -- USB: UsbEp0Setup @ 610.443113ms
+INFO:usb_5 -- EP0: GetDescriptor { descriptor: DeviceQualifier, length: 10 }
+WARN:usb_5 -- EP0IN: stalled
+INFO:usb_5 -- USB: UsbEp0Setup @ 610.809325ms
+INFO:usb_5 -- EP0: GetDescriptor { descriptor: DeviceQualifier, length: 10 }
+WARN:usb_5 -- EP0IN: stalled
+INFO:usb_5 -- USB: UsbEp0Setup @ 611.175535ms
+INFO:usb_5 -- EP0: GetDescriptor { descriptor: DeviceQualifier, length: 10 }
+WARN:usb_5 -- EP0IN: stalled
+INFO:usb_5 -- USB: UsbEp0Setup @ 611.511228ms
+INFO:usb_5 -- EP0: GetDescriptor { descriptor: Configuration { index: 0 }, length: 9 }
+INFO:dk::usbd -- EP0IN: start 9B transfer
+INFO:usb_5 -- USB: UsbEp0DataDone @ 611.846922ms
+INFO:usb_5 -- EP0IN: transfer complete
+INFO:dk::usbd -- EP0IN: transfer done
+INFO:usb_5 -- USB: UsbEp0Setup @ 612.030027ms
+INFO:usb_5 -- EP0: GetDescriptor { descriptor: Configuration { index: 0 }, length: 18 }
+INFO:dk::usbd -- EP0IN: start 18B transfer
+INFO:usb_5 -- USB: UsbEp0DataDone @ 612.365721ms
+INFO:usb_5 -- EP0IN: transfer complete
+INFO:dk::usbd -- EP0IN: transfer done
+INFO:usb_5 -- USB: UsbEp0Setup @ 612.640378ms
+INFO:usb_5 -- EP0: SetConfiguration { value: Some(42) }
+INFO:usb_5 -- entering the configured state

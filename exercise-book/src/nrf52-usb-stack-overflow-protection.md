@@ -1,6 +1,6 @@
 # Stack Overflow Protection
 
-The `firmware` crate in which we developed our advanced workshop solutions (i.e. `advanced/firmware`) uses our open-source [`flip-link`] tool for zero-cost stack overflow protection.
+The `usb-app` crate in which we developed our advanced workshop solutions (i.e. `nrf52-code/usb-app`) uses our open-source [`flip-link`] tool for zero-cost stack overflow protection.
 
 This means that your application will warn you by crashing if you accidentally overreach the boundaries of your application's stack instead of running into *undefined behavior* and behaving erratically in irreproducible ways. This memory protection mechanism comes at no additional computational or memory-usage cost.
 

@@ -12,7 +12,7 @@ In this starter code the USBD peripheral is initialized in `init` and a task, na
 
 This code will panic because `USBRESET` is not implemented yet.
 
-✅ Go to `fn on_event(...)`, line 39. In this section you'll need to implement the following USB events `USBRESET` and `EP0SETUP` so that your log output will look like this:
+✅ Go to `fn on_event(...)`, line 48. In this section you'll need to implement the following USB events `USBRESET` and `EP0SETUP` so that your log output will look like this:
 
 ```console
 USBD initialized

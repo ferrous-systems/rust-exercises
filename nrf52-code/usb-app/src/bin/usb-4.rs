@@ -122,15 +122,12 @@ mod app {
                 let bytes = desc.bytes();
                 ep0in.start(&bytes[..core::cmp::min(bytes.len(), length.into())], usbd);
             }
+            // TODO implement Configuration descriptor
             Request::GetDescriptor {
+                // descriptor: Descriptor::Configuration { index },
                 descriptor: _,
                 length: _,
             } => {
-                // TODO implement Configuration descriptor
-                // Descriptor::Configuration { .. } => todo!(),
-
-                // stall any other request
-
                 return Err(());
             }
             Request::SetAddress { .. } => {

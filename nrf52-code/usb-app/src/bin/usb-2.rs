@@ -86,7 +86,7 @@ mod app {
                     Request::GetDescriptor { descriptor, length }
                         if descriptor == Descriptor::Device =>
                     {
-                        // TODO modify `Request::parse()` in `advanced/common/usb/lib.rs`
+                        // TODO modify `Request::parse()` in `nrf52-code/usb-lib/src/lib.rs`
                         // so that this branch is reached
 
                         defmt::println!("GET_DESCRIPTOR Device [length={}]", length);

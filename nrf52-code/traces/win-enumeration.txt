@@ -1,0 +1,27 @@
+INFO:rtic_usb_4 -- USB: UsbReset @ 101.837157ms
+INFO:rtic_usb_4 -- USB reset condition detected
+INFO:rtic_usb_4 -- USB: UsbEp0Setup @ 190.216063ms
+INFO:rtic_usb_4 -- EP0: GetDescriptor { descriptor: Device, length: 64 }
+INFO:dk::usbd -- EP0IN: start 18B transfer
+INFO:rtic_usb_4 -- USB: UsbEp0DataDone @ 190.551757ms
+INFO:rtic_usb_4 -- EP0IN: transfer complete
+INFO:dk::usbd -- EP0IN: transfer done
+INFO:rtic_usb_4 -- USB: UsbReset @ 190.734862ms
+INFO:rtic_usb_4 -- USB reset condition detected
+INFO:rtic_usb_4 -- USB: UsbEp0Setup @ 277.954101ms
+INFO:rtic_usb_4 -- EP0: SetAddress { address: Some(6) }
+INFO:rtic_usb_4 -- USB: UsbEp0Setup @ 288.940428ms
+INFO:rtic_usb_4 -- EP0: GetDescriptor { descriptor: Device, length: 18 }
+INFO:dk::usbd -- EP0IN: start 18B transfer
+INFO:rtic_usb_4 -- USB: UsbEp0DataDone @ 289.245603ms
+INFO:rtic_usb_4 -- EP0IN: transfer complete
+INFO:dk::usbd -- EP0IN: transfer done
+INFO:rtic_usb_4 -- USB: UsbEp0Setup @ 296.783446ms
+INFO:rtic_usb_4 -- EP0: GetDescriptor { descriptor: Configuration { index: 0 }, length: 255 }
+INFO:dk::usbd -- EP0IN: start 18B transfer
+INFO:rtic_usb_4 -- USB: UsbEp0DataDone @ 297.11914ms
+INFO:rtic_usb_4 -- EP0IN: transfer complete
+INFO:dk::usbd -- EP0IN: transfer done
+INFO:rtic_usb_4 -- USB: UsbEp0Setup @ 297.302245ms
+INFO:rtic_usb_4 -- EP0: GetDescriptor { descriptor: DeviceQualifier, length: 10 }
+WARN:rtic_usb_4 -- EP0IN: stalled
