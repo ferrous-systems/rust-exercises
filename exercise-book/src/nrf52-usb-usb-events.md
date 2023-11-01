@@ -30,4 +30,4 @@ goal reached; move to the next section
 
 - `EP0SETUP`. The USBD peripheral has detected the SETUP stage of a control transfer. Add a log statement containing "goal reached; move to the next section" and exit the application.
 
-You can find the solution in the `usb-1-solution.rs` file.
+You can find the solution in the `nrf52-code/usb-app-solution/src/bin/usb-1.rs` file.
