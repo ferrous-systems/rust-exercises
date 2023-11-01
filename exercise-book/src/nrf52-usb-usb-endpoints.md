@@ -12,6 +12,6 @@ Endpoints are identified by their address, a zero-based index, and direction. Th
 
 All USB devices must use "endpoint 0" as the default control endpoint. "Endpoint 0" actually refers to two endpoints: endpoint 0 IN and endpoint 0 OUT. This endpoint pair is used to establish a *control pipe*, a bidirectional communication channel between the host and device where data is exchanged using a predefined format. The default control pipe over endpoint 0 is mandatory: it must always be present and must always be active.
 
-For detailed information about endpoints check Section 5.3.1 *Device Endpoints*, in the [USB 2.0 specification][usb20].
+For detailed information about endpoints check Section 5.3.1 *Device Endpoints*, in the [USB 2.0 specification][usb20] (download the zip file and look for `usb_20.pdf` in it).
 
 [usb20]: https://www.usb.org/document-library/usb-20-specification

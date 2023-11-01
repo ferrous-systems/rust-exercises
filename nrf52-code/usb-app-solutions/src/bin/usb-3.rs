@@ -10,7 +10,6 @@ mod app {
         peripheral::USBD,
         usbd::{self, Ep0In, Event},
     };
-
     use usb::{Descriptor, Request};
 
     #[local]

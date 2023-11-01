@@ -32,7 +32,7 @@ Extend `usb-3.rs` so that it uses `Ep0In` to respond to the `GET_DESCRIPTOR Devi
 - `iManufacturer = iProduct = iSerialNumber = None`, string descriptors not supported
 - `bNumConfigurations = 1`, must be at least `1` so this is the minimum value
 
->(\*) the `common` crate refers to the crate in the `advanced/common` folder. It is already part of the `firmware` crate dependencies.
+>(\*) the `consts` crate refers to the crate in the `nrf52-code/consts` folder. It is already part of the `usb-app` crate dependencies.
 
 ### Use the `usb2::device::Descriptor` abstraction
 

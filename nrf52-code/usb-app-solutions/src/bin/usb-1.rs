@@ -25,7 +25,7 @@ mod app {
 
         // initialize the USBD peripheral
         // NOTE this will block if the USB cable is not connected to port J3
-        dk::usbd::init(board.power, &board.usbd);
+        usbd::init(board.power, &board.usbd);
 
         defmt::println!("USBD initialized");
 
@@ -46,16 +46,15 @@ mod app {
     }
 
     fn on_event(_usbd: &USBD, event: Event) {
-        defmt::println!("USB: {}", event);
+        defmt::println!("USB: {} @ {}", event, dk::uptime());
 
         match event {
             Event::UsbReset => {
                 // going from the Default state to the Default state is a no-operation
                 defmt::println!("returning to the Default state");
             }
-
             Event::UsbEp0DataDone => todo!(),
-
+            // leave this at it is for now.
             Event::UsbEp0Setup => {
                 defmt::println!("goal reached; move to the next section");
                 dk::exit();

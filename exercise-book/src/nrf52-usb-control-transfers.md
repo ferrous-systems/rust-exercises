@@ -8,6 +8,6 @@ The control pipe handles *control transfers*, a special kind of data transfer us
 
 During the SETUP stage the host sends 8 bytes of data that identify the control request. Depending on the issued request there may be a DATA stage or not; during the DATA stage data is transferred either from the device to the host or the other way around. During the STATUS stage the device acknowledges, or not, the whole control request.
 
-For detailed information about control transfers check Section 5.5 *Control Transfers*, of the [USB 2.0 specification][usb20].
+For detailed information about control transfers check Section 5.5 *Control Transfers*, of the [USB 2.0 specification][usb20] (download the zip file and look for `usb_20.pdf` in it).
 
 [usb20]: https://www.usb.org/document-library/usb-20-specification

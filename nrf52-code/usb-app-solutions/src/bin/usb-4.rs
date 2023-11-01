@@ -24,6 +24,7 @@ mod app {
 
     #[shared]
     struct MySharedResources {}
+
     #[init]
     fn init(_cx: init::Context) -> (MySharedResources, MyLocalResources, init::Monotonics) {
         let board = dk::init().unwrap();
@@ -51,6 +52,7 @@ mod app {
             on_event(usbd, ep0in, state, event)
         }
     }
+
     fn on_event(usbd: &USBD, ep0in: &mut Ep0In, state: &mut State, event: Event) {
         defmt::println!("USB: {} @ {}", event, dk::uptime());
 
@@ -101,65 +103,65 @@ mod app {
         match request {
             // section 9.4.3
             // this request is valid in any state
-            Request::GetDescriptor { descriptor, length } => match descriptor {
-                Descriptor::Device => {
-                    let desc = usb2::device::Descriptor {
-                        bDeviceClass: 0,
-                        bDeviceProtocol: 0,
-                        bDeviceSubClass: 0,
-                        bMaxPacketSize0: usb2::device::bMaxPacketSize0::B64,
-                        bNumConfigurations: core::num::NonZeroU8::new(1).unwrap(),
-                        bcdDevice: 0x01_00, // 1.00
-                        iManufacturer: None,
-                        iProduct: None,
-                        iSerialNumber: None,
-                        idProduct: consts::USB_PID_RTIC_DEMO,
-                        idVendor: consts::USB_VID_DEMO,
+            Request::GetDescriptor {
+                descriptor: Descriptor::Device,
+                length,
+            } => {
+                let desc = usb2::device::Descriptor {
+                    bDeviceClass: 0,
+                    bDeviceProtocol: 0,
+                    bDeviceSubClass: 0,
+                    bMaxPacketSize0: usb2::device::bMaxPacketSize0::B64,
+                    bNumConfigurations: core::num::NonZeroU8::new(1).unwrap(),
+                    bcdDevice: 0x01_00, // 1.00
+                    iManufacturer: None,
+                    iProduct: None,
+                    iSerialNumber: None,
+                    idProduct: consts::USB_PID_RTIC_DEMO,
+                    idVendor: consts::USB_VID_DEMO,
+                };
+                let bytes = desc.bytes();
+                ep0in.start(&bytes[..core::cmp::min(bytes.len(), length.into())], usbd);
+            }
+            Request::GetDescriptor {
+                descriptor: Descriptor::Configuration { index },
+                length,
+            } => {
+                if index == 0 {
+                    let mut resp = heapless::Vec::<u8, 64>::new();
+
+                    let conf_desc = usb2::configuration::Descriptor {
+                        wTotalLength: (usb2::configuration::Descriptor::SIZE
+                            + usb2::interface::Descriptor::SIZE)
+                            .into(),
+                        bNumInterfaces: NonZeroU8::new(1).unwrap(),
+                        bConfigurationValue: core::num::NonZeroU8::new(CONFIG_VAL).unwrap(),
+                        iConfiguration: None,
+                        bmAttributes: usb2::configuration::bmAttributes {
+                            self_powered: true,
+                            remote_wakeup: false,
+                        },
+                        bMaxPower: 250, // 500 mA
                     };
-                    let bytes = desc.bytes();
-                    ep0in.start(&bytes[..core::cmp::min(bytes.len(), length.into())], usbd);
+
+                    let iface_desc = usb2::interface::Descriptor {
+                        bInterfaceNumber: 0,
+                        bAlternativeSetting: 0,
+                        bNumEndpoints: 0,
+                        bInterfaceClass: 0,
+                        bInterfaceSubClass: 0,
+                        bInterfaceProtocol: 0,
+                        iInterface: None,
+                    };
+
+                    resp.extend_from_slice(&conf_desc.bytes()).unwrap();
+                    resp.extend_from_slice(&iface_desc.bytes()).unwrap();
+                    ep0in.start(&resp[..core::cmp::min(resp.len(), length.into())], usbd);
+                } else {
+                    // out of bounds access: stall the endpoint
+                    return Err(());
                 }
-
-                Descriptor::Configuration { index } => {
-                    if index == 0 {
-                        let mut resp = heapless::Vec::<u8, 64>::new();
-
-                        let conf_desc = usb2::configuration::Descriptor {
-                            wTotalLength: (usb2::configuration::Descriptor::SIZE
-                                + usb2::interface::Descriptor::SIZE)
-                                .into(),
-                            bNumInterfaces: NonZeroU8::new(1).unwrap(),
-                            bConfigurationValue: core::num::NonZeroU8::new(CONFIG_VAL).unwrap(),
-                            iConfiguration: None,
-                            bmAttributes: usb2::configuration::bmAttributes {
-                                self_powered: true,
-                                remote_wakeup: false,
-                            },
-                            bMaxPower: 250, // 500 mA
-                        };
-
-                        let iface_desc = usb2::interface::Descriptor {
-                            bInterfaceNumber: 0,
-                            bAlternativeSetting: 0,
-                            bNumEndpoints: 0,
-                            bInterfaceClass: 0,
-                            bInterfaceSubClass: 0,
-                            bInterfaceProtocol: 0,
-                            iInterface: None,
-                        };
-
-                        resp.extend_from_slice(&conf_desc.bytes()).unwrap();
-                        resp.extend_from_slice(&iface_desc.bytes()).unwrap();
-                        ep0in.start(&resp[..core::cmp::min(resp.len(), length.into())], usbd);
-                    } else {
-                        // out of bounds access: stall the endpoint
-                        return Err(());
-                    }
-                }
-
-                _ => return Err(()),
-            },
-
+            }
             Request::SetAddress { address } => {
                 match state {
                     State::Default => {

@@ -1,0 +1,31 @@
+INFO:usb_5_solution -- USB: UsbReset @ 101.104735ms
+INFO:usb_5_solution -- USB reset condition detected
+INFO:usb_5_solution -- USB: UsbEp0Setup @ 166.68701ms
+INFO:usb_5_solution -- EP0: SetAddress { address: Some(21) }
+INFO:usb_5_solution -- USB: UsbEp0Setup @ 168.853758ms
+INFO:usb_5_solution -- EP0: GetDescriptor { descriptor: Device, length: 8 }
+INFO:dk::usbd -- EP0IN: start 8B transfer
+INFO:usb_5_solution -- USB: UsbEp0DataDone @ 169.128416ms
+INFO:usb_5_solution -- EP0IN: transfer complete
+INFO:dk::usbd -- EP0IN: transfer done
+INFO:usb_5_solution -- USB: UsbEp0Setup @ 169.372557ms
+INFO:usb_5_solution -- EP0: GetDescriptor { descriptor: Device, length: 18 }
+INFO:dk::usbd -- EP0IN: start 18B transfer
+INFO:usb_5_solution -- USB: UsbEp0DataDone @ 169.677733ms
+INFO:usb_5_solution -- EP0IN: transfer complete
+INFO:dk::usbd -- EP0IN: transfer done
+INFO:usb_5_solution -- USB: UsbEp0Setup @ 172.180175ms
+INFO:usb_5_solution -- EP0: GetDescriptor { descriptor: Configuration { index: 0 }, length: 9 }
+INFO:dk::usbd -- EP0IN: start 9B transfer
+INFO:usb_5_solution -- USB: UsbEp0DataDone @ 172.515868ms
+INFO:usb_5_solution -- EP0IN: transfer complete
+INFO:dk::usbd -- EP0IN: transfer done
+INFO:usb_5_solution -- USB: UsbEp0Setup @ 172.698972ms
+INFO:usb_5_solution -- EP0: GetDescriptor { descriptor: Configuration { index: 0 }, length: 18 }
+INFO:dk::usbd -- EP0IN: start 18B transfer
+INFO:usb_5_solution -- USB: UsbEp0DataDone @ 173.00415ms
+INFO:usb_5_solution -- EP0IN: transfer complete
+INFO:dk::usbd -- EP0IN: transfer done
+INFO:usb_5_solution -- USB: UsbEp0Setup @ 237.945556ms
+INFO:usb_5_solution -- EP0: SetConfiguration { value: Some(42) }
+INFO:usb_5_solution -- entering the configured state

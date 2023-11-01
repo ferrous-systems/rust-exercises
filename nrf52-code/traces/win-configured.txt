@@ -1,0 +1,42 @@
+INFO:rtic_usb_4 -- USB: UsbReset @ 305.594085691s
+INFO:rtic_usb_4 -- USB reset condition detected
+INFO:rtic_usb_4 -- USB: UsbEp0Setup @ 305.681701658s
+INFO:rtic_usb_4 -- EP0: GetDescriptor { descriptor: Device, length: 64 }
+INFO:dk::usbd -- EP0IN: start 18B transfer
+INFO:rtic_usb_4 -- USB: UsbEp0DataDone @ 305.682037352s
+INFO:rtic_usb_4 -- EP0IN: transfer complete
+INFO:dk::usbd -- EP0IN: transfer done
+INFO:rtic_usb_4 -- USB: UsbReset @ 305.682220457s
+INFO:rtic_usb_4 -- USB reset condition detected
+INFO:rtic_usb_4 -- USB: UsbEp0Setup @ 305.769470213s
+INFO:rtic_usb_4 -- EP0: SetAddress { address: Some(7) }
+INFO:rtic_usb_4 -- USB: UsbEp0Setup @ 305.780456541s
+INFO:rtic_usb_4 -- EP0: GetDescriptor { descriptor: Device, length: 18 }
+INFO:dk::usbd -- EP0IN: start 18B transfer
+INFO:rtic_usb_4 -- USB: UsbEp0DataDone @ 305.780761718s
+INFO:rtic_usb_4 -- EP0IN: transfer complete
+INFO:dk::usbd -- EP0IN: transfer done
+INFO:rtic_usb_4 -- USB: UsbEp0Setup @ 305.784606932s
+INFO:rtic_usb_4 -- EP0: GetDescriptor { descriptor: Device, length: 18 }
+INFO:dk::usbd -- EP0IN: start 18B transfer
+INFO:rtic_usb_4 -- USB: UsbEp0DataDone @ 305.784912108s
+INFO:rtic_usb_4 -- EP0IN: transfer complete
+INFO:dk::usbd -- EP0IN: transfer done
+INFO:rtic_usb_4 -- USB: UsbEp0Setup @ 305.785095213s
+INFO:rtic_usb_4 -- EP0: GetDescriptor { descriptor: Configuration { index: 0 }, length: 9 }
+INFO:dk::usbd -- EP0IN: start 9B transfer
+INFO:rtic_usb_4 -- USB: UsbEp0DataDone @ 305.78540039s
+INFO:rtic_usb_4 -- EP0IN: transfer complete
+INFO:dk::usbd -- EP0IN: transfer done
+INFO:rtic_usb_4 -- USB: UsbEp0Setup @ 305.785583495s
+INFO:rtic_usb_4 -- EP0: GetDescriptor { descriptor: Configuration { index: 0 }, length: 18 }
+INFO:dk::usbd -- EP0IN: start 18B transfer
+INFO:rtic_usb_4 -- USB: UsbEp0DataDone @ 305.785919188s
+INFO:rtic_usb_4 -- EP0IN: transfer complete
+INFO:dk::usbd -- EP0IN: transfer done
+INFO:rtic_usb_4 -- USB: UsbEp0Setup @ 305.786102293s
+INFO:rtic_usb_4 -- EP0: GetStatus(Device)
+WARN:rtic_usb_4 -- EP0IN: stalled
+INFO:rtic_usb_4 -- USB: UsbEp0Setup @ 305.786621093s
+INFO:rtic_usb_4 -- EP0: SetConfiguration { value: Some(42) }
+INFO:rtic_usb_4 -- entering the configured stat

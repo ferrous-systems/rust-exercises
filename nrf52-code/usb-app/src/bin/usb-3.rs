@@ -20,6 +20,7 @@ mod app {
 
     #[shared]
     struct MySharedResources {}
+
     #[init]
     fn init(_cx: init::Context) -> (MySharedResources, MyLocalResources, init::Monotonics) {
         let board = dk::init().unwrap();
