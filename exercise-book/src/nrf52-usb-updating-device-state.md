@@ -8,7 +8,7 @@ The device state should be tracked using a resource so that it's preserved acros
 
 ### Update the handling of the `USBRESET` event
 
-Instead of ignoring it, we now want it to change the state of the USB device. See section 9.1 USB Device States of the USB specification for details on what to do.
+Instead of ignoring it, we now want it to change the state of the USB device. See section 9.1 USB Device States of the USB specification for details on what to do. Note that `fn on_event()` was given `state: &mut State`.
 
 ### Update the handling of `SET_ADDRESS` requests
 
