@@ -2,7 +2,7 @@
 
 After responding to the `GET_DESCRIPTOR Device` request the host will start sending different requests.
 
-✅ Update the parser in `common/usb` so that it can handle the following requests:
+✅ Update the parser in `nrf52-code/usb-lib` so that it can handle the following requests:
 
 1. `GET_DESCRIPTOR Configuration`, see the section on [Handling GET_DESCRIPTOR Configuration Requests](./nrf52-usb-get-descriptor-config.md#handling-get_descriptor-configuration-requests)
 2. `SET_CONFIGURATION`, see the section on [SET_CONFIGURATION](./nrf52-usb-getting-device-configured.md#set_configuration) of this course material
