@@ -6,4 +6,4 @@ For this situation, the USB specification defines a device-side procedure for "s
 
 > This procedure should be used to deal with invalid requests, requests whose `SETUP` stage doesn't match any USB 2.0 standard request, and requests not supported by the device – for instance the `SET_DESCRIPTOR` request is not mandatory.
 
-✅ Use the `dk::usbd::ep0stall()` helper function to stall endpoint 0 in `nrf52-code/usb-app/src/bin/usb-4.rs`
+✅ Use the `dk::usbd::ep0stall()` helper function to stall endpoint 0 in `nrf52-code/usb-app/src/bin/usb-4.rs` if an invalid request is received.
