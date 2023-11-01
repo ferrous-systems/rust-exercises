@@ -22,6 +22,8 @@ Extend `usb-3.rs` so that it uses `Ep0In` to respond to the `GET_DESCRIPTOR Devi
 
 ### Values of the device descriptor
 
+The raw values you need to pack into the descriptor are as follows. Note, we won't be doing this by hand, so read on before you start typing!
+
 - `bLength = 18`, the size of the descriptor (must always be this value)
 - `bDescriptorType = 1`, device descriptor type (must always be this value)
 - `bDeviceClass = bDeviceSubClass = bDeviceProtocol = 0`, these are unimportant for enumeration
