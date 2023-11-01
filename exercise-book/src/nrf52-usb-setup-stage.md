@@ -86,6 +86,6 @@ Goal reached; move to the next section
 
 > Note: `wlength` / `length` can vary depending on the OS, USB port (USB 2.0 vs USB 3.0) or the presence of a USB hub so you may see a different value.
 
-You can find a solution to this step in `nrf52-code/usb-app-solution/src/bin/usb-2-solution.rs`.
+You can find a solution to this step in `nrf52-code/usb-app-solution/src/bin/usb-2.rs`.
 
 [usb_spec]: https://www.usb.org/document-library/usb-20-specification
