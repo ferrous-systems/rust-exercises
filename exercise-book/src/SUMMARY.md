@@ -20,6 +20,10 @@
 - [Connected Mailbox](./connected-mailbox.md)
 - [Multithreaded mailbox](./multi-threaded-mailbox.md)
 
+# Self-check Project
+
+- [Self-check project](./self-check.md)
+
 # Embedded Rust on the nRF52
 
 - [Preparation](./nrf52-preparation.md)
