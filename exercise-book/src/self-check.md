@@ -408,3 +408,11 @@ fn main() {
 ```
 
 </details>
+
+### Solution
+
+This exercise is based on three other exercises. Check their solutions below:
+
+- [Simple-DB](../../exercise-solutions/simple-db)
+- [Connected Mailbox](../../exercise-solutions/connected-mailbox)
+- [Multithreaded mailbox](../../exercise-solutions/multi-threaded-mailbox)
