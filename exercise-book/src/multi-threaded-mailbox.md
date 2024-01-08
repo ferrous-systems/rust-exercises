@@ -117,9 +117,19 @@ fn main() {
 ```
 </details>
 
-## Creating a thread scope.
+## Creating a thread scope
 
-The
+Recall, the purpose of a thread scope is to satisfy the compiler that it is safe
+for a thread to borrow an item that is on the current function's stack. It does
+this by ensuring that all threads created with the scope terminate before the
+thread scope ends (after which, the remainder of the function is executed
+including perhaps destruction or transfer of the variables that were borrowed).
+
+Use `std::thread::scope` to create a scope, and pass it a closure containing the
+bulk of your main function. Any variables you want to borrow should be created
+before the thread scope is created, but you should wait for incoming connections
+*inside* the thread scope (think about what happens to any spawned threads that
+are still executing at the point you try and leave the thread scope).
 
 <details>
     <summary>Solution</summary>
