@@ -28,8 +28,8 @@ fn main() {
 
 If you haven't used a stack-allocated collection before note that you'll need to specify the capacity of the collection as a type parameter using one of the "type-level values" in the `heapless::consts` module (e.g. `U8`, `U64` etc.). The [`heapless::LinearMap` documentation][indexMap] of the `heapless` crate has some usage examples, as does the [`heapless::Vec` documentation][vec].
 
-[indexMap]: https://docs.rs/heapless/0.7.16/heapless/struct.LinearMap.html
-[vec]: https://docs.rs/heapless/0.7.16/heapless/struct.Vec.html
+[indexMap]: https://docs.rs/heapless/0.8.0/heapless/struct.LinearMap.html
+[vec]: https://docs.rs/heapless/0.8.0/heapless/struct.Vec.html
 
 ## Note the difference between character literals and byte literals!
 
