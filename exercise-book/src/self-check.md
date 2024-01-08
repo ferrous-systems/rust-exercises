@@ -45,7 +45,7 @@ In this exercise we will create a small in-memory message queue that is accessib
 
 6. Change your TCP Server to *use* your parser crate to parse the input, and provide an appropriate canned response.
 7. Set up a `VecDeque` queue and either *push* or *pop* from that queue, depending on the command you have received.
-8. Add support for multiple simultaneous client connections using threads. Make sure all clients read a write to the same shared queue.
+8. Add support for multiple simultaneous client connections using threads. Make sure all clients read and write to the same shared queue.
 
 ### Optional Tasks
 
