@@ -37,4 +37,4 @@ Again, we strongly recommend that you use the `usb2::configuration::Descriptor` 
 
 > NOTE: the `usb2::configuration::Descriptor` and `usb2::interface::Descriptor` structs do not have `bLength` and `bDescriptorType` fields. Those fields have fixed values according to the USB spec so you cannot modify or set them. When `bytes()` is called on the `Descriptor` value the returned array, the binary representation of the descriptor, will contain those fields set to their correct value.
 
-[`heapless::Vec`]: https://docs.rs/heapless/0.7.16/heapless/struct.Vec.html
+[`heapless::Vec`]: https://docs.rs/heapless/0.8.0/heapless/struct.Vec.html
