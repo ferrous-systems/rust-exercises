@@ -76,7 +76,7 @@ With the additional properties:
 Violations against the form of the messages and the properties are
 handled with the following error codes:
 
-- `TrailingData` (more than one newline)
+- `TrailingData` (bytes found after newline)
 
 - `IncompleteMessage` (no newline)
 
