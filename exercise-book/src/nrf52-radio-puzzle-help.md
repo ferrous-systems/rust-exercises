@@ -9,24 +9,25 @@ Our suggestion is to use a dictionary / map. `std::collections::HashMap` is not 
 [`heapless`]: https://docs.rs/heapless
 
 ```rust ignore
-use heapless::Vec;         // like `std::Vec` but stack-allocated
+use heapless::Vec;       // like `std::Vec` but stack-allocated
 use heapless::LinearMap; // a dictionary / map
-use heapless::consts::*;   // defines U16, U32, U64... etc. to set the size of the LinearMap
 
 fn main() {
-    // A hash map with a capacity of 16 key-value pairs allocated on the stack
-    // note that U16 is a heapless constant, not Rust's u16
-    let mut my_map = LinearMap::<_, _, U16>::new();
+    // A hash map with a capacity of 16 `(u8, u8)` key-value pairs allocated on the stack
+    let mut my_map = LinearMap::<u8, u8, 16>::new();
     my_map.insert(b'A', b'~').unwrap();
 
-    // A vector with a fixed capacity of 8 elements allocated on the stack
-    // note that U8 is a heapless constant, not Rust's u8
-    let mut my_vec = Vec::<_, U8>::new();
+    // A vector with a fixed capacity of 8 `u8` elements allocated on the stack
+    let mut my_vec = Vec::<u8, 8>::new();
     my_vec.push(b'A').unwrap();
 }
 ```
 
-If you haven't used a stack-allocated collection before note that you'll need to specify the capacity of the collection as a type parameter using one of the "type-level values" in the `heapless::consts` module (e.g. `U8`, `U64` etc.). The [`heapless::LinearMap` documentation][indexMap] of the `heapless` crate has some usage examples, as does the [`heapless::Vec` documentation][vec].
+If you haven't used a stack-allocated collection before note that you'll need to
+specify the capacity of the collection as a const-generic parameter. The larger
+the value, the more memory the collection takes up on the stack. The
+[`heapless::LinearMap` documentation][indexMap] of the `heapless` crate has some
+usage examples, as does the [`heapless::Vec` documentation][vec].
 
 [indexMap]: https://docs.rs/heapless/0.8.0/heapless/struct.LinearMap.html
 [vec]: https://docs.rs/heapless/0.8.0/heapless/struct.Vec.html
