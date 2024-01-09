@@ -210,7 +210,7 @@ The `echo` command adds a new-line character automatically. Use `echo -n` if you
 
 #### Using our TCP Client
 
-We have written a basic TCP Client which should work on any platform.
+We have written [a basic TCP Client](../../tools/tcp-client) which should work on any platform.
 
 ```console
 $ cd tools/tcp-client
