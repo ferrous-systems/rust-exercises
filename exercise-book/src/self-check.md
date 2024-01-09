@@ -39,7 +39,7 @@ After completing this exercise you will have demonstrated that you can:
 4. Create a package with a library crate inside your workspace for the message protocol parser. Make your TCP server depend on that library using a relative path.
 5. Inside your library implement the following function so that it implements the protocol specifications to parse the messages. Use the provided tests to help you with the case handling.
 
-    ```rust, ignore
+    ```rust ignore
     pub fn parse(input: &str) -> Result<Command, Error> {
         todo!()
     }
