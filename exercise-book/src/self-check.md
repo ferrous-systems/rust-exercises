@@ -1,11 +1,13 @@
 <!-- markdownlint-disable MD033 MD014 -->
 # Self-Check Project
 
-*This exercise is intended for you to check your Rust knowledge. It is based on our other exercises, so you can follow them one by one instead of attempting to do everything in one go.*
+*This exercise is intended for you to check your Rust knowledge. It is based on our other exercises, so you can follow those one by one instead of attempting to do everything in one go if you prefer.*
 
-In this exercise we will create a small in-memory message queue that is accessible over a TCP connection and uses a plain text format for its protocol. The protocol has two commands to put a message into the back of the queue and to read a message from the front of the queue. When a user sends a "PUBLISH" we will push the data into a queue, and when the user sends a "RETRIEVE" we will pop some data off the queue (if any is available). The user will connect via TCP to port 7878. Multiple clients can add and remove messages from the queue at the same time.
+In this exercise you will create a small in-memory message queue that is accessible over a TCP connection and uses a plain-text format for its protocol. The protocol has two commands: one to put a message into the back of the queue and one to read a message from the front of the queue. When a user sends a "PUBLISH" you will push the data into the queue, and when the user sends a "RETRIEVE" you will pop some data off the queue (if any is available). The user will connect via TCP to port 7878. You should handle multiple clients adding or removing messages from the queue at the same time.
 
-## After completing this exercise you are able to
+## Goals
+
+After completing this exercise you will have demonstrated that you can:
 
 - write a Rust binary that uses a Rust library
 
@@ -33,11 +35,11 @@ In this exercise we will create a small in-memory message queue that is accessib
 
 1. Create a Cargo workspace for your project.
 2. Create a binary package inside your workspace for your TCP server
-3. Implement a simple TCP Server that listens for connections on `127.0.0.1:7878`. For each incoming connection, read all of the input as a string, and send it back to the client.
-4. Create a library package inside your workspace for a message protocol parser. Make your TCP server depend on that library using a relative path.
+3. Implement a simple TCP Server that listens for connections on `127.0.0.1:7878`. For each incoming connection, read all of the input as a string, and send it back to the client. Disconnect the client if they send input that is not valid UTF-8.
+4. Create a package with a library crate inside your workspace for the message protocol parser. Make your TCP server depend on that library using a relative path.
 5. Inside your library implement the following function so that it implements the protocol specifications to parse the messages. Use the provided tests to help you with the case handling.
 
-    ```rust, ignore
+    ```rust ignore
     pub fn parse(input: &str) -> Result<Command, Error> {
         todo!()
     }
@@ -50,6 +52,7 @@ In this exercise we will create a small in-memory message queue that is accessib
 ### Optional Tasks
 
 - Allow each connection to read input line by line as a sequence of commands and execute them in the same order as they come in. This way you should be able to open several connections in terminal and type commands in them one by one.
+- Handle slow clients by disconnecting them if the input isn't received within some timeout.
 - Run `cargo fmt` on your codebase.
 - Run `cargo clippy` on your codebase.
 
@@ -93,7 +96,7 @@ handled with the following error codes:
 
 Below are the tests your protocol parser needs to pass. You can copy them to the bottom of your `lib.rs`.
 
-```rust, ignore
+```rust ignore
 #[cfg(test)]
 mod tests {
     use super::*;
