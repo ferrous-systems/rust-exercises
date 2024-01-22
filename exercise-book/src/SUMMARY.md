@@ -100,4 +100,5 @@
 # Async Rust
 
 - [Interactive TCP Echo Server](./tcp-server.md)
+  - [Share data between connections](./tcp-server-log.md)
 # Other Topics
