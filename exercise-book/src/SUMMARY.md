@@ -99,4 +99,5 @@
 
 # Async Rust
 
+- [Interactive TCP Echo Server](./tcp-server.md)
 # Other Topics
