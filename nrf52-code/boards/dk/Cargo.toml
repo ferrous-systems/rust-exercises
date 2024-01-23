@@ -9,24 +9,11 @@ version = "0.0.0"
 cortex-m = {version = "0.7.6", features = ["critical-section-single-core"]}
 cortex-m-rt = "0.7.2"
 embedded-hal = "0.2.7"
-hal = { package = "nrf52840-hal", version = "0.14.0" }
+hal = { package = "nrf52840-hal", version = "0.16.0" }
 panic-probe = { version = "0.3.0", features = ["print-defmt"] }
 defmt = "0.3.5"
-defmt-rtt = "0.3.2"
+defmt-rtt = "0.4"
 
 [features]
 advanced = []
 radio = []
-
-default = [
-  "other-feature"
-]
-other-feature = []
-
-# do NOT modify these features
-defmt-default = []
-defmt-trace = []
-defmt-debug = []
-defmt-info = []
-defmt-warn = []
-defmt-error = []

@@ -13,7 +13,7 @@ dk = { path = "../boards/dk", features = ["radio"] }
 heapless = "0.8"
 panic-probe = { version = "0.3", features = ["print-defmt"] }
 defmt = "0.3.5"
-defmt-rtt = "0.3"
+defmt-rtt = "0.4"
 
 # optimize code in both profiles
 [profile.dev]
@@ -33,17 +33,3 @@ incremental = false
 lto = "fat"
 opt-level = 3
 overflow-checks = false
-
-[features]
-
-default = [
-  "other-feature"
-]
-other-feature = []
-# do NOT modify these features
-defmt-default = []
-defmt-trace = []
-defmt-debug = []
-defmt-info = []
-defmt-warn = []
-defmt-error = []
