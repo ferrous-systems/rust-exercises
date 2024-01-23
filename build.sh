@@ -27,6 +27,10 @@ pushd boards/dk-solution
 cargo build --target=thumbv7em-none-eabihf
 cargo fmt --check
 popd
+pushd boards/dongle
+cargo build --target=thumbv7em-none-eabihf
+cargo fmt --check
+popd
 pushd radio-app
 cargo build --target=thumbv7em-none-eabihf --release
 cargo fmt --check
@@ -47,6 +51,10 @@ cargo fmt --check
 popd
 pushd consts
 cargo build
+cargo fmt --check
+popd
+pushd puzzle-fw
+cargo build --target=thumbv7em-none-eabihf --release
 cargo fmt --check
 popd
 popd
