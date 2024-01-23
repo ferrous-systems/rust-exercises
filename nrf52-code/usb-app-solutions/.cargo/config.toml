@@ -7,7 +7,7 @@ rustflags = [
 ]
 
 [target.thumbv7em-none-eabihf]
-runner = "probe-run --chip nRF52840_xxAA"
+runner = "probe-rs run --chip nRF52840_xxAA"
 rustflags = [
   "-C", "link-arg=-Tlink.x",
 ]

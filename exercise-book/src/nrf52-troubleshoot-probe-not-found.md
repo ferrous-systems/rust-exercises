@@ -3,7 +3,7 @@
 You may encounter this error:
 
 ```console
-Running probe-run --chip nRF52840_xxAA target/thumbv7em-none-eabihf/debug/hello
+Running probe-rs run --chip nRF52840_xxAA target/thumbv7em-none-eabihf/debug/hello
 Error: no probe was found
 ```
 

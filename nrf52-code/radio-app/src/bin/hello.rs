@@ -4,7 +4,6 @@
 // this program uses a custom entry point instead of `fn main()`
 #![no_main]
 
-use cortex_m::asm;
 use cortex_m_rt::entry;
 // this imports `src/lib.rs`to retrieve our global logger + panicking-behavior
 use radio_app as _;
@@ -21,8 +20,5 @@ fn main() -> ! {
 
     defmt::println!("Hello, world!"); // 👋🏾
 
-    loop {
-        // breakpoint: halts the program's execution
-        asm::bkpt();
-    }
+    dk::exit();
 }
