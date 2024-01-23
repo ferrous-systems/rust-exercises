@@ -43,7 +43,7 @@ mod app {
         // read the 1-bit VBUSDETECT field that is part of the USBREGSTATUS register content
         // to show that its contents reflect our usb connection status
         // (the USBDETECTED event that will trigger `on_power_event()` is derived from this information)
-        let vbusdetect: bool = power.usbregstatus.read().vbusdetect().bits();
+        let vbusdetect: bool = power.usbregstatus.read().vbusdetect().is_vbus_present();
         //                                               ^^^^^^^^^^ bitfield name
         defmt::println!("USBREGSTATUS.VBUSDETECT: {}", vbusdetect);
 
