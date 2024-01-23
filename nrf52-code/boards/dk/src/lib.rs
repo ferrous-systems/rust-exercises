@@ -12,8 +12,9 @@ use core::{
     time::Duration,
 };
 
-use cortex_m::{asm, peripheral::NVIC};
-use embedded_hal::digital::v2::{OutputPin as _, StatefulOutputPin};
+use cortex_m::peripheral::NVIC;
+use cortex_m_semihosting::debug;
+use embedded_hal::digital::v2::{OutputPin, StatefulOutputPin};
 #[cfg(feature = "radio")]
 pub use hal::ieee802154;
 pub use hal::pac::{interrupt, Interrupt, NVIC_PRIO_BITS, RTC0};
@@ -24,7 +25,6 @@ use hal::{
     timer::OneShot,
 };
 
-use defmt;
 #[cfg(any(feature = "radio", feature = "advanced"))]
 use defmt_rtt as _; // global logger
 
@@ -142,8 +142,7 @@ impl Timer {
         defmt::trace!("blocking for {:?} ...", duration);
 
         // 1 cycle = 1 microsecond
-        const NANOS_IN_ONE_MICRO: u32 = 1_000;
-        let subsec_micros = duration.subsec_nanos() / NANOS_IN_ONE_MICRO;
+        let subsec_micros = duration.subsec_micros();
         if subsec_micros != 0 {
             self.inner.delay(subsec_micros);
         }
@@ -184,95 +183,99 @@ impl ops::DerefMut for Timer {
     }
 }
 
+/// The ways that initialisation can fail
+#[derive(Debug, Copy, Clone, defmt::Format)]
+pub enum Error {
+    /// You tried to initialise the board twice
+    DoubleInit = 1,
+}
+
 /// Initializes the board
 ///
 /// This return an `Err`or if called more than once
-pub fn init() -> Result<Board, ()> {
-    if let Some(periph) = hal::pac::Peripherals::take() {
-        // NOTE(static mut) this branch runs at most once
+pub fn init() -> Result<Board, Error> {
+    let Some(periph) = hal::pac::Peripherals::take() else {
+        return Err(Error::DoubleInit);
+    };
+    // NOTE(static mut) this branch runs at most once
+    #[cfg(feature = "advanced")]
+    static mut EP0IN_BUF: [u8; 64] = [0; 64];
+    #[cfg(feature = "radio")]
+    static mut CLOCKS: Option<
+        Clocks<clocks::ExternalOscillator, clocks::ExternalOscillator, clocks::LfOscStarted>,
+    > = None;
+
+    defmt::debug!("Initializing the board");
+
+    let clocks = Clocks::new(periph.CLOCK);
+    let clocks = clocks.enable_ext_hfosc();
+    let clocks = clocks.set_lfclk_src_external(clocks::LfOscConfiguration::NoExternalNoBypass);
+    let clocks = clocks.start_lfclk();
+    let _clocks = clocks.enable_ext_hfosc();
+    // extend lifetime to `'static`
+    #[cfg(feature = "radio")]
+    let clocks = unsafe { CLOCKS.get_or_insert(_clocks) };
+
+    defmt::debug!("Clocks configured");
+
+    let mut rtc = Rtc::new(periph.RTC0, 0).unwrap();
+    rtc.enable_interrupt(RtcInterrupt::Overflow, None);
+    rtc.enable_counter();
+    // NOTE(unsafe) because this crate defines the `#[interrupt] fn RTC0` interrupt handler,
+    // RTIC cannot manage that interrupt (trying to do so results in a linker error). Thus it
+    // is the task of this crate to mask/unmask the interrupt in a safe manner.
+    //
+    // Because the RTC0 interrupt handler does *not* access static variables through a critical
+    // section (that disables interrupts) this `unmask` operation cannot break critical sections
+    // and thus won't lead to undefined behavior (e.g. torn reads/writes)
+    //
+    // the preceding `enable_conuter` method consumes the `rtc` value. This is a semantic move
+    // of the RTC0 peripheral from this function (which can only be called at most once) to the
+    // interrupt handler (where the peripheral is accessed without any synchronization
+    // mechanism)
+    unsafe { NVIC::unmask(Interrupt::RTC0) };
+
+    defmt::debug!("RTC started");
+
+    let pins = p0::Parts::new(periph.P0);
+
+    // NOTE LEDs turn on when the pin output level is low
+    let led1pin = pins.p0_13.degrade().into_push_pull_output(Level::High);
+    let led2pin = pins.p0_14.degrade().into_push_pull_output(Level::High);
+    let led3pin = pins.p0_15.degrade().into_push_pull_output(Level::High);
+    let led4pin = pins.p0_16.degrade().into_push_pull_output(Level::High);
+
+    defmt::debug!("I/O pins have been configured for digital output");
+
+    let timer = hal::Timer::new(periph.TIMER0);
+
+    #[cfg(feature = "radio")]
+    let radio = {
+        let mut radio = ieee802154::Radio::init(periph.RADIO, clocks);
+
+        // set TX power to its maximum value
+        radio.set_txpower(ieee802154::TxPower::Pos8dBm);
+        defmt::debug!("Radio initialized and configured with TX power set to the maximum value");
+        radio
+    };
+
+    Ok(Board {
+        leds: Leds {
+            _1: Led { inner: led1pin },
+            _2: Led { inner: led2pin },
+            _3: Led { inner: led3pin },
+            _4: Led { inner: led4pin },
+        },
+        #[cfg(feature = "radio")]
+        radio,
+        timer: Timer { inner: timer },
         #[cfg(feature = "advanced")]
-        static mut EP0IN_BUF: [u8; 64] = [0; 64];
-        #[cfg(feature = "radio")]
-        static mut CLOCKS: Option<
-            Clocks<clocks::ExternalOscillator, clocks::ExternalOscillator, clocks::LfOscStarted>,
-        > = None;
-
-        defmt::debug!("Initializing the board");
-
-        let clocks = Clocks::new(periph.CLOCK);
-        let clocks = clocks.enable_ext_hfosc();
-        let clocks = clocks.set_lfclk_src_external(clocks::LfOscConfiguration::NoExternalNoBypass);
-        let clocks = clocks.start_lfclk();
-        let _clocks = clocks.enable_ext_hfosc();
-        // extend lifetime to `'static`
-        #[cfg(feature = "radio")]
-        let clocks = unsafe { CLOCKS.get_or_insert(_clocks) };
-
-        defmt::debug!("Clocks configured");
-
-        let mut rtc = Rtc::new(periph.RTC0, 0).unwrap();
-        rtc.enable_interrupt(RtcInterrupt::Overflow, None);
-        rtc.enable_counter();
-        // NOTE(unsafe) because this crate defines the `#[interrupt] fn RTC0` interrupt handler,
-        // RTIC cannot manage that interrupt (trying to do so results in a linker error). Thus it
-        // is the task of this crate to mask/unmask the interrupt in a safe manner.
-        //
-        // Because the RTC0 interrupt handler does *not* access static variables through a critical
-        // section (that disables interrupts) this `unmask` operation cannot break critical sections
-        // and thus won't lead to undefined behavior (e.g. torn reads/writes)
-        //
-        // the preceding `enable_conuter` method consumes the `rtc` value. This is a semantic move
-        // of the RTC0 peripheral from this function (which can only be called at most once) to the
-        // interrupt handler (where the peripheral is accessed without any synchronization
-        // mechanism)
-        unsafe { NVIC::unmask(Interrupt::RTC0) };
-
-        defmt::debug!("RTC started");
-
-        let pins = p0::Parts::new(periph.P0);
-
-        // NOTE LEDs turn on when the pin output level is low
-        let led1pin = pins.p0_13.degrade().into_push_pull_output(Level::High);
-        let led2pin = pins.p0_14.degrade().into_push_pull_output(Level::High);
-        let led3pin = pins.p0_15.degrade().into_push_pull_output(Level::High);
-        let led4pin = pins.p0_16.degrade().into_push_pull_output(Level::High);
-
-        defmt::debug!("I/O pins have been configured for digital output");
-
-        let timer = hal::Timer::new(periph.TIMER0);
-
-        #[cfg(feature = "radio")]
-        let radio = {
-            let mut radio = ieee802154::Radio::init(periph.RADIO, clocks);
-
-            // set TX power to its maximum value
-            radio.set_txpower(ieee802154::TxPower::Pos8dBm);
-            defmt::debug!(
-                "Radio initialized and configured with TX power set to the maximum value"
-            );
-            radio
-        };
-
-        Ok(Board {
-            leds: Leds {
-                _1: Led { inner: led1pin },
-                _2: Led { inner: led2pin },
-                _3: Led { inner: led3pin },
-                _4: Led { inner: led4pin },
-            },
-            #[cfg(feature = "radio")]
-            radio,
-            timer: Timer { inner: timer },
-            #[cfg(feature = "advanced")]
-            usbd: periph.USBD,
-            #[cfg(feature = "advanced")]
-            power: periph.POWER,
-            #[cfg(feature = "advanced")]
-            ep0in: unsafe { Ep0In::new(&mut EP0IN_BUF) },
-        })
-    } else {
-        Err(())
-    }
+        usbd: periph.USBD,
+        #[cfg(feature = "advanced")]
+        power: periph.POWER,
+        #[cfg(feature = "advanced")]
+        ep0in: unsafe { Ep0In::new(&mut EP0IN_BUF) },
+    })
 }
 
 // Counter of OVERFLOW events -- an OVERFLOW occurs every (1<<24) ticks
@@ -304,7 +307,7 @@ pub fn exit() -> ! {
     // force any pending memory operation to complete before the BKPT instruction that follows
     atomic::compiler_fence(Ordering::SeqCst);
     loop {
-        asm::bkpt()
+        debug::exit(debug::ExitStatus::Ok(()))
     }
 }
 

@@ -128,7 +128,7 @@ pub fn init(power: POWER, usbd: &USBD) {
         continue;
     }
     // write 1 to clear the flag
-    usbd.eventcause.write(|w| w.ready().set_bit());
+    usbd.eventcause.write(|w| w.ready().clear_bit_by_one());
 
     // if EVENTCAUSE is all zeroes then also clear the USBEVENT register
     if usbd.eventcause.read().bits() == 0 {
