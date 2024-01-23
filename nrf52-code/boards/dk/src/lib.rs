@@ -291,20 +291,17 @@ fn RTC0() {
     unsafe { core::mem::transmute::<_, RTC0>(()).events_ovrflw.reset() }
 }
 
-/// Exits the application when the program is executed through the `probe-run` Cargo runner
+/// Exits the application when the program is executed through the `probe-rs` Cargo runner
 pub fn exit() -> ! {
     unsafe {
         // turn off the USB D+ pull-up before pausing the device with a breakpoint
         // this disconnects the nRF device from the USB host so the USB host won't attempt further
-        // USB communication (and see an unresponsive device). probe-run will also reset the nRF's
-        // USBD peripheral when it sees the device in a halted state which has the same effect as
-        // this line but that can take a while and the USB host may issue a power cycle of the USB
-        // port / hub / root in the meantime, which can bring down the probe and break probe-run
+        // USB communication (and see an unresponsive device).
         const USBD_USBPULLUP: *mut u32 = 0x4002_7504 as *mut u32;
         USBD_USBPULLUP.write_volatile(0)
     }
     defmt::println!("`dk::exit()` called; exiting ...");
-    // force any pending memory operation to complete before the BKPT instruction that follows
+    // force any pending memory operation to complete before the instruction that follows
     atomic::compiler_fence(Ordering::SeqCst);
     loop {
         debug::exit(debug::ExitStatus::Ok(()))

@@ -127,13 +127,13 @@ rustup +stable component add llvm-tools
 
 ### General purpose tools
 
-Install the [`flip-link`](https://crates.io/crates/flip-link) and [`probe-run`](https://crates.io/crates/probe-run) tools using the following Cargo commands:
+Install the [`flip-link`](https://crates.io/crates/flip-link), [`probe-rs`](https://crates.io/crates/probe-rs) and [`nrf-dfu`](https://crates.io/crates/nrfdfu) tools using the following Cargo commands:
 
 ```console
 
-$ cargo install probe-run
+$ cargo install probe-rs --features=cli
 (..)
-Installed package `probe-run v0.3.10` (..)
+Installed package `probe-rs v0.22.0` (executables `cargo-embed`, `cargo-flash`, `probe-rs`)
 
 $ cargo install flip-link
 (..)
@@ -161,4 +161,4 @@ cargo-size 0.3.6
 cargo run --bin hello -- --erase-all
 ```
 
-The `-- --erase-all` option gives the `--erase-all` argument to `probe-run`, which gives it permission to clear out the pre-installed Nordic bootloader code. You only need that the first time you try and program the nRF52840-DK with `cargo run`.
+The `-- --erase-all` option gives the `--erase-all` argument to `probe-rs`, which gives it permission to clear out the pre-installed Nordic bootloader code. You only need that the first time you try and program the nRF52840-DK with `cargo run`.

@@ -36,31 +36,29 @@ Expected output:
 
 ```console
 $ cargo run --bin hello
-   Compiling radio v0.0.0 (/Users/jonathan/Documents/rust-exercises/nrf52-code/radio)
-    Finished dev [optimized + debuginfo] target(s) in 0.73s
-    Running `probe-run --chip nRF52840_xxAA target/thumbv7em-none-eabihf/debug/hello`
-(HOST) INFO  flashing program (2 pages / 16.00 KiB)
-(HOST) INFO  success!
-────────────────────────────────────────────────────────────────────────────────
-INFO:hello -- Hello, world!
-────────────────────────────────────────────────────────────────────────────────
-(HOST) INFO  device halted without error
+   Compiling radio_app v0.0.0 (/Users/jonathan/Documents/ferrous-systems/rust-exercises/nrf52-code/radio-app)
+    Finished dev [optimized + debuginfo] target(s) in 0.28s
+     Running `probe-rs run --chip nRF52840_xxAA target/thumbv7em-none-eabihf/debug/hello`
+     Erasing sectors ✔ [00:00:00] [######################################################] 8.00 KiB/8.00 KiB @ 26.71 KiB/s (eta 0s )
+ Programming pages   ✔ [00:00:00] [######################################################] 8.00 KiB/8.00 KiB @ 29.70 KiB/s (eta 0s )    Finished in 0.59s
+Hello, world!
+`dk::exit()` called; exiting ...
 ```
 
-`cargo run` will compile the application and then invoke the `probe-run` tool with its argument set to the path of the output ELF file.
+`cargo run` will compile the application and then invoke the `probe-rs` tool with its argument set to the path of the output ELF file.
 
-The `probe-run` tool will
+The `probe-rs` tool will
 
 - flash (load) the program on the microcontroller
 - reset the microcontroller to make it execute the new program
 - collect logs from the microcontroller and print them to the console
 - print a backtrace of the program if the halt was due to an error.
 
-Should you need to configure the `probe-run` invocation to e.g. flash a different microcontroller you can do that in the `.cargo/config.toml` file.
+Should you need to configure the `probe-rs` invocation to e.g. flash a different microcontroller you can do that in the `.cargo/config.toml` file.
 
 ```toml
 [target.thumbv7em-none-eabihf]
-runner = "probe-run --chip nRF52840_xxAA" # <- add/remove/modify flags here
+runner = "probe-rs run --chip nRF52840_xxAA" # <- add/remove/modify flags here
 # ..
 ```
 
