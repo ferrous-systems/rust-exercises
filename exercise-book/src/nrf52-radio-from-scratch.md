@@ -97,7 +97,7 @@ If there's no template or signs of support for a particular architecture under t
 
 To flash the program on the target device you'll need to identify the on-board debugger, if the development board has one. Or choose an external debugger, if the development board exposes a JTAG or SWD interface via some connector.
 
-If the hardware debugger is supported by the `probe-rs` project -- for example J-Link, ST-Link or CMSIS-DAP -- then you'll be able to use `probe-rs`-based tools like `cargo-flash` and `cargo-embed`. This is the case of the nRF52840 DK: it has an on-board J-Link probe.
+If the hardware debugger is supported by the `probe-rs` project -- for example J-Link, ST-Link or CMSIS-DAP -- then you'll be able to use `probe-rs`-based tools like `probe-rs` and `cargo-embed`. This is the case of the nRF52840 DK: it has an on-board J-Link probe.
 
 If the debugger is not supported by `probe-rs` then you'll need to use [OpenOCD] or vendor provided software to flash programs on the board.
 
