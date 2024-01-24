@@ -28,6 +28,8 @@ jobs:
           echo "slug=${slug}" >> "${GITHUB_ENV}"
 
       - name: Build and test
+        env: # Or as an environment variable
+          HIDDEN_MESSAGE: ${{ secrets.HIDDEN_MESSAGE }}
         run: |
           ./build.sh "./rust-exercises-${{ env.slug }}"
 
