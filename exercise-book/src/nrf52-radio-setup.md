@@ -6,7 +6,7 @@
 
 ```console
 $ cargo xtask serial-term
-deviceid=588c06af0877c8f2 channel=20 TxPower=+8dBm app=loopback.hex
+deviceid=588c06af0877c8f2 channel=20 TxPower=+8dBm app=loopback-fw
 received 5 bytes (CRC=Ok(0xdad9), LQI=53)
 ```
 
