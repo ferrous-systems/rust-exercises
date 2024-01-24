@@ -88,8 +88,8 @@ pub fn usb_list() -> color_eyre::Result<()> {
         let suffix = match (desc.vendor_id(), desc.product_id()) {
             (0x1366, pid) if (pid >> 8) == 0x10 || (pid >> 8) == 0x01 => " <- J-Link on the nRF52840 Development Kit",
             (0x1915, 0x521f) => " <- nRF52840 Dongle (in bootloader mode)",
-            (consts::USB_VID_DEMO, consts::USB_PID_DONGLE_LOOPBACK) => " <- nRF52840 Dongle (loopback.hex)",
-            (consts::USB_VID_DEMO, consts::USB_PID_DONGLE_PUZZLE) => " <- nRF52840 Dongle (puzzle.hex)",
+            (consts::USB_VID_DEMO, consts::USB_PID_DONGLE_LOOPBACK) => " <- nRF52840 Dongle (loopback-fw)",
+            (consts::USB_VID_DEMO, consts::USB_PID_DONGLE_PUZZLE) => " <- nRF52840 Dongle (puzzle-fw)",
             (consts::USB_VID_DEMO, consts::USB_PID_RTIC_DEMO) => " <- nRF52840 on the nRF52840 Development Kit",
             _ => "",
         };

@@ -58,7 +58,7 @@ After the device has been programmed it will automatically reset and start runni
 ```console
 $ cargo xtask usb-list
 (..)
-Bus 001 Device 020: ID 1209:0309 <- nRF52840 Dongle (loopback.hex)
+Bus 001 Device 020: ID 1209:0309 <- nRF52840 Dongle (loopback-fw)
 ```
 
 The `loopback` app will log messages over the USB interface. To display these messages on the host we have provided a cross-platform tool: `cargo xtask serial-term`.
@@ -69,7 +69,7 @@ The `loopback` app will log messages over the USB interface. To display these me
 
 ```console
 $ cargo xtask serial-term
-deviceid=588c06af0877c8f2 channel=20 TxPower=+8dBm app=loopback.hex
+deviceid=588c06af0877c8f2 channel=20 TxPower=+8dBm app=loopback-fw
 ```
 
 This line is printed by the `loopback` app on boot. It contains the device ID of the dongle, a 64-bit unique identifier (so everyone will see a different number); the radio channel that the device will use to communicate; and the transmission power of the radio in dBm.
@@ -86,7 +86,7 @@ At this point you should *not* get more output from `cargo xtask serial-term`.
 
 ```console
 $ cargo xtask serial-term
-deviceid=588c06af0877c8f2 channel=20 TxPower=+8dBm
+deviceid=588c06af0877c8f2 channel=20 TxPower=+8dBm app=loopback-fw
 received 7 bytes (CRC=Ok(0x2459), LQI=0)
 received 5 bytes (CRC=Ok(0xdad9), LQI=0)
 received 6 bytes (CRC=Ok(0x72bb), LQI=0)
@@ -102,7 +102,7 @@ requested channel change to channel 11
 Then you should see new output from `cargo xtask serial-term`:
 
 ```console
-deviceid=588c06af0877c8f2 channel=20 TxPower=+8dBm
+deviceid=588c06af0877c8f2 channel=20 TxPower=+8dBm app=loopback-fw
 (..)
 now listening on channel 11
 ```
