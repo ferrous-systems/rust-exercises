@@ -359,3 +359,17 @@ pub fn uptime() -> Duration {
         (((ticks % 32768).wrapping_mul(78125) >> 2).wrapping_mul(5) >> 2).wrapping_mul(5) >> 2;
     Duration::new(secs, nanos as u32)
 }
+
+/// Returns the least-significant bits of the device identifier
+pub fn deviceid0() -> u32 {
+    // NOTE(unsafe) read-only registers, and no other use of the block
+    let ficr = unsafe { &*hal::pac::FICR::ptr() };
+    ficr.deviceid[0].read().deviceid().bits()
+}
+
+/// Returns the most-significant bits of the device identifier
+pub fn deviceid1() -> u32 {
+    // NOTE(unsafe) read-only registers, and no other use of the block
+    let ficr = unsafe { &*hal::pac::FICR::ptr() };
+    ficr.deviceid[1].read().deviceid().bits()
+}
