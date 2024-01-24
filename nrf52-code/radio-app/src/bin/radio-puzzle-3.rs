@@ -16,7 +16,7 @@ fn main() -> ! {
     let mut radio = board.radio;
     let mut timer = board.timer;
 
-    // puzzle.hex uses channel 25 by default
+    // puzzle-fw uses channel 25 by default
     // NOTE if you ran `change-channel` then you may need to update the channel here
     radio.set_channel(Channel::_25); // <- must match the Dongle's listening channel
 

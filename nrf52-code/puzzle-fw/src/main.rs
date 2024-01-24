@@ -155,7 +155,6 @@ fn main() -> ! {
     }
 
     // Turn on USB interrupts...
-    // Enable the USB interrupt
     unsafe {
         cortex_m::peripheral::NVIC::unmask(dongle::peripheral::Interrupt::USBD);
     };
