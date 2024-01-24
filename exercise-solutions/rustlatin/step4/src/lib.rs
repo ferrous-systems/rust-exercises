@@ -1,3 +1,5 @@
+#![allow(unused)]
+
 const VOWELS: [char; 5] = ['a', 'e', 'i', 'o', 'u'];
 // ^^^^^^^^^ The vowels are contained in an array, because the length never changes.
 //           It's a global const because it will not be modified in any way and it's
