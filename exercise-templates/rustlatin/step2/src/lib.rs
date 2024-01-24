@@ -1,3 +1,5 @@
+#![allow(unused)]
+
 fn rustlatin(sentence: &str) -> Vec<()> {
     //                          ^^^^^^^
     // The correct return type needs to be added by you,
