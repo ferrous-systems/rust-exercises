@@ -16,6 +16,9 @@ usb-device = "0.2.7"
 usbd-hid = "0.6"
 usbd-serial = "0.1.0"
 
+[build-dependencies]
+rand = "0.8.5"
+
 # optimize code in both profiles
 [profile.dev]
 codegen-units = 1

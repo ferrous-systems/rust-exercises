@@ -20,16 +20,16 @@ use dongle::{
     ieee802154::{Channel, Packet},
 };
 
-/// Store the secret.
+/// The secret message, but encoded.
 ///
 /// We do this rather than the plaintext -- otherwise `strings $elf` will reveal the answer
-static SECRET: &[u8] = env!("SECRET_MESSAGE").as_bytes();
+static ENCODED_MESSAGE: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/ENCODED_MESSAGE.txt"));
 
 /// The plaintext side of the map
-static PLAIN_LETTERS: &[u8] = env!("PLAIN_LETTERS").as_bytes();
+static PLAIN_LETTERS: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/PLAIN_LETTERS.txt"));
 
 /// The ciphertext side of the map
-static CIPHER_LETTERS: &[u8] = env!("CIPHER_LETTERS").as_bytes();
+static CIPHER_LETTERS: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/CIPHER_LETTERS.txt"));
 
 /// A 64-byte USB Serial buffer
 static RING_BUFFER: Ringbuffer = Ringbuffer {
@@ -177,17 +177,17 @@ fn main() -> ! {
                     pkt.lqi(),
                     pkt.len()
                 );
-                match handle_packet(&pkt, &dict) {
+                match handle_packet(&mut pkt, &dict) {
                     Command::SendSecret => {
-                        pkt.copy_from_slice(&SECRET);
+                        pkt.copy_from_slice(&ENCODED_MESSAGE);
                         let _ = writeln!(&RING_BUFFER, "TX Secret");
                         board.leds.ld2_blue.on();
                         board.leds.ld2_green.off();
                         board.leds.ld2_red.off();
                     }
-                    Command::MapChar(from, to) => {
-                        pkt.copy_from_slice(&[to]);
-                        let _ = writeln!(&RING_BUFFER, "TX Map({from}) => {to}");
+                    Command::MapChar(plain, cipher) => {
+                        pkt.copy_from_slice(&[cipher]);
+                        let _ = writeln!(&RING_BUFFER, "TX Map({plain}) => {cipher}");
                         board.leds.ld2_blue.off();
                         board.leds.ld2_green.on();
                         board.leds.ld2_red.off();
@@ -272,28 +272,25 @@ enum Command {
     Wrong,
 }
 
-fn handle_packet(packet: &Packet, dict: &heapless::LinearMap<u8, u8, 128>) -> Command {
+fn handle_packet(packet: &mut Packet, dict: &heapless::LinearMap<u8, u8, 128>) -> Command {
     if packet.len() == 0 {
         Command::SendSecret
     } else if packet.len() == 1 {
-        // They want to know how convert from X to Y, and they gave us X
-        let from = packet[0];
-        let to = *dict.get(&from).unwrap_or(&0);
-        Command::MapChar(from, to)
+        // They give us plaintext, we give them ciphertext
+        let plain = packet[0];
+        let cipher = *dict.get(&plain).unwrap_or(&0);
+        Command::MapChar(plain, cipher)
     } else {
-        let mut correct = packet.len() as usize == SECRET.len();
+        // They give us plaintext, we tell them if it is correct
         // Encrypt every byte of plaintext they give us
-        for (encrypted, secret) in packet
-            .iter()
-            .map(|b| dict.get(b).unwrap_or(&0))
-            .zip(SECRET.iter())
-        {
-            if secret != encrypted {
-                correct = false;
+        for slot in packet.iter_mut() {
+            if let Some(c) = dict.get(slot) {
+                *slot = *c;
+            } else {
+                *slot = 0;
             }
         }
-
-        if correct {
+        if &packet[..] == ENCODED_MESSAGE {
             Command::Correct
         } else {
             Command::Wrong
