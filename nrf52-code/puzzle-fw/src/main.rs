@@ -6,16 +6,19 @@
 #![no_main]
 
 use core::fmt::Write;
-use core::sync::atomic::{AtomicU32, Ordering};
+use core::sync::atomic::{AtomicBool, AtomicU32, Ordering};
 
 use cortex_m_rt::entry;
-use panic_probe as _;
 use usb_device::class_prelude::UsbBusAllocator;
 use usb_device::device::{UsbDevice, UsbDeviceBuilder, UsbVidPid};
+use usbd_hid::hid_class::HIDClass;
 use usbd_serial::{SerialPort, USB_CLASS_CDC};
 
 use dongle::peripheral::interrupt;
-use dongle::{hal::usbd, ieee802154::Packet};
+use dongle::{
+    hal::usbd,
+    ieee802154::{Channel, Packet},
+};
 
 /// Store the secret.
 ///
@@ -33,18 +36,36 @@ static RING_BUFFER: Ringbuffer = Ringbuffer {
     buffer: heapless::mpmc::Q64::new(),
 };
 
-/// The USB Device Driver (shared with the interrupt).
-static mut USB_DEVICE: Option<UsbDevice<usbd::Usbd<usbd::UsbPeripheral>>> = None;
+/// A short-hand for the nRF52 USB types
+type UsbBus<'a> = usbd::Usbd<usbd::UsbPeripheral<'a>>;
 
-/// The USB Bus Driver (shared with the interrupt).
-static mut USB_BUS: Option<UsbBusAllocator<usbd::Usbd<usbd::UsbPeripheral>>> = None;
+/// The USB Device Driver (owned by the USBD interrupt).
+static mut USB_DEVICE: Option<UsbDevice<UsbBus>> = None;
 
-/// The USB Serial Device Driver (shared with the interrupt).
-static mut USB_SERIAL: Option<SerialPort<usbd::Usbd<usbd::UsbPeripheral>>> = None;
+/// The USB Bus Driver (owned by the USBD interrupt).
+static mut USB_BUS: Option<UsbBusAllocator<UsbBus>> = None;
 
+/// The USB Serial Device Driver (owned by the USBD interrupt).
+static mut USB_SERIAL: Option<SerialPort<UsbBus>> = None;
+
+/// The USB Human Interface Device Driver (owned by the USBD interrupt).
+static mut USB_HID: Option<HIDClass<UsbBus>> = None;
+
+/// Track how many CRC successes we had receiving radio packets
 static RX_COUNT: AtomicU32 = AtomicU32::new(0);
 
+/// Track how many CRC failures we had receiving radio packets
 static ERR_COUNT: AtomicU32 = AtomicU32::new(0);
+
+/// The USB interrupt sets this to < u32::MAX when a new channel is sent over HID.
+///
+/// The main loop handles it and sets it back to u32::MAX when processed.
+static NEW_CHANNEL: AtomicU32 = AtomicU32::new(u32::MAX);
+
+/// Set to true when we get a ?.
+///
+/// We print some info in response.
+static WANT_INFO: AtomicBool = AtomicBool::new(false);
 
 struct Ringbuffer {
     buffer: heapless::mpmc::Q64<u8>,
@@ -83,6 +104,36 @@ fn main() -> ! {
         USB_SERIAL = Some(serial);
     }
 
+    let desc = &[
+        0x06, 0x00, 0xFF, // Item(Global): Usage Page, data= [ 0x00 0xff ] 65280
+        0x09, 0x01, // Item(Local ): Usage, data= [ 0x01 ] 1
+        0xA1, 0x01, // Item(Main  ): Collection, data= [ 0x01 ] 1
+        //               Application
+        0x15, 0x00, // Item(Global): Logical Minimum, data= [ 0x00 ] 0
+        0x26, 0xFF, 0x00, // Item(Global): Logical Maximum, data= [ 0xff 0x00 ] 255
+        0x75, 0x08, // Item(Global): Report Size, data= [ 0x08 ] 8
+        0x95, 0x40, // Item(Global): Report Count, data= [ 0x40 ] 64
+        0x09, 0x01, // Item(Local ): Usage, data= [ 0x01 ] 1
+        0x81, 0x02, // Item(Main  ): Input, data= [ 0x02 ] 2
+        //               Data Variable Absolute No_Wrap Linear
+        //               Preferred_State No_Null_Position Non_Volatile Bitfield
+        0x95, 0x40, // Item(Global): Report Count, data= [ 0x40 ] 64
+        0x09, 0x01, // Item(Local ): Usage, data= [ 0x01 ] 1
+        0x91, 0x02, // Item(Main  ): Output, data= [ 0x02 ] 2
+        //               Data Variable Absolute No_Wrap Linear
+        //               Preferred_State No_Null_Position Non_Volatile Bitfield
+        0x95, 0x01, // Item(Global): Report Count, data= [ 0x01 ] 1
+        0x09, 0x01, // Item(Local ): Usage, data= [ 0x01 ] 1
+        0xB1, 0x02, // Item(Main  ): Feature, data= [ 0x02 ] 2
+        //               Data Variable Absolute No_Wrap Linear
+        //               Preferred_State No_Null_Position Non_Volatile Bitfield
+        0xC0, // Item(Main  ): End Collection, data=none
+    ];
+    let hid = HIDClass::new(bus_ref, desc, 100);
+    unsafe {
+        USB_HID = Some(hid);
+    }
+
     let vid_pid = UsbVidPid(consts::USB_VID_DEMO, consts::USB_PID_DONGLE_PUZZLE);
     let usb_dev = UsbDeviceBuilder::new(bus_ref, vid_pid)
         .manufacturer("Ferrous Systems")
@@ -95,6 +146,7 @@ fn main() -> ! {
         USB_DEVICE = Some(usb_dev);
     }
 
+    let mut current_ch_id = 25;
     board.radio.set_channel(dongle::ieee802154::Channel::_25);
 
     let mut dict: heapless::LinearMap<u8, u8, 128> = heapless::LinearMap::new();
@@ -111,56 +163,104 @@ fn main() -> ! {
     let mut pkt = Packet::new();
     loop {
         board.leds.ld1.on();
-        match board.radio.recv(&mut pkt) {
+        // Wait up to 1 second for a radio packet
+        match board
+            .radio
+            .recv_timeout(&mut pkt, &mut board.timer, 1_000_000)
+        {
             Ok(crc) => {
                 board.leds.ld1.off();
-                write!(&RING_BUFFER, "RX CRC {crc:04x}, LQI ").unwrap();
-                if pkt.len() > 3 {
-                    let lqi = pkt.lqi();
-                    writeln!(&RING_BUFFER, "{lqi}").unwrap();
-                } else {
-                    writeln!(&RING_BUFFER, "Unknown").unwrap();
-                }
-
+                let _ = writeln!(
+                    &RING_BUFFER,
+                    "\nRX CRC {:04x}, LQI {}, LEN {}",
+                    crc,
+                    pkt.lqi(),
+                    pkt.len()
+                );
                 match handle_packet(&pkt, &dict) {
                     Command::SendSecret => {
                         pkt.copy_from_slice(&SECRET);
-                        writeln!(&RING_BUFFER, "TX Secret").unwrap();
+                        let _ = writeln!(&RING_BUFFER, "TX Secret");
                         board.leds.ld2_blue.on();
                         board.leds.ld2_green.off();
                         board.leds.ld2_red.off();
                     }
                     Command::MapChar(from, to) => {
                         pkt.copy_from_slice(&[to]);
-                        writeln!(&RING_BUFFER, "TX Map({from}) => {to}").unwrap();
+                        let _ = writeln!(&RING_BUFFER, "TX Map({from}) => {to}");
                         board.leds.ld2_blue.off();
                         board.leds.ld2_green.on();
                         board.leds.ld2_red.off();
                     }
                     Command::Correct => {
                         pkt.copy_from_slice(b"correct");
-                        writeln!(&RING_BUFFER, "TX Correct").unwrap();
+                        let _ = writeln!(&RING_BUFFER, "TX Correct");
                         board.leds.ld2_blue.on();
                         board.leds.ld2_green.on();
                         board.leds.ld2_red.on();
                     }
                     Command::Wrong => {
                         pkt.copy_from_slice(b"incorrect");
-                        writeln!(&RING_BUFFER, "TX Incorrect").unwrap();
+                        let _ = writeln!(&RING_BUFFER, "TX Incorrect");
                         board.leds.ld2_blue.off();
                         board.leds.ld2_green.on();
                         board.leds.ld2_red.on();
                     }
                 }
-                // wait 1ms so they have time to switch to receive mode
-                board.timer.delay(1000);
                 // now send it
                 board.radio.send(&mut pkt);
                 RX_COUNT.fetch_add(1, Ordering::Relaxed);
             }
-            Err(_crc) => {
+            Err(dongle::ieee802154::Error::Crc(_)) => {
                 ERR_COUNT.fetch_add(1, Ordering::Relaxed);
             }
+            Err(dongle::ieee802154::Error::Timeout) => {
+                // Show that we are alive
+                let _ = write!(&RING_BUFFER, ".");
+            }
+        }
+
+        // Handle channel changes
+        let ch_id = NEW_CHANNEL.load(Ordering::Relaxed);
+        if ch_id != u32::MAX {
+            NEW_CHANNEL.store(u32::MAX, Ordering::Relaxed);
+            if let Some(channel) = match ch_id {
+                11 => Some(Channel::_11),
+                12 => Some(Channel::_12),
+                13 => Some(Channel::_13),
+                14 => Some(Channel::_14),
+                15 => Some(Channel::_15),
+                16 => Some(Channel::_16),
+                17 => Some(Channel::_17),
+                18 => Some(Channel::_18),
+                19 => Some(Channel::_19),
+                20 => Some(Channel::_20),
+                21 => Some(Channel::_21),
+                22 => Some(Channel::_22),
+                23 => Some(Channel::_23),
+                24 => Some(Channel::_24),
+                25 => Some(Channel::_25),
+                26 => Some(Channel::_26),
+                _ => None,
+            } {
+                board.radio.set_channel(channel);
+                let _ = writeln!(&RING_BUFFER, "\nChannel {} set", ch_id);
+                current_ch_id = ch_id;
+            } else {
+                let _ = writeln!(&RING_BUFFER, "\nChannel {} invalid", ch_id);
+            }
+        }
+
+        // Print help text when ? is pressed
+        if WANT_INFO.load(Ordering::Relaxed) {
+            WANT_INFO.store(false, Ordering::Relaxed);
+            let _ = writeln!(
+                &RING_BUFFER,
+                "rx={}, err={}, ch={}, app=puzzle-fw",
+                RX_COUNT.load(Ordering::Relaxed),
+                ERR_COUNT.load(Ordering::Relaxed),
+                current_ch_id,
+            );
         }
     }
 }
@@ -201,16 +301,21 @@ fn handle_packet(packet: &Packet, dict: &heapless::LinearMap<u8, u8, 128>) -> Co
     }
 }
 
+/// Handles USB interrupts
+///
+/// Polls all the USB devices, and copies bytes from [`RING_BUFFER`] into the
+/// USB UART.
 #[interrupt]
-unsafe fn USBD() {
+fn USBD() {
     // Grab the global objects. This is OK as we only access them under interrupt.
-    let usb_dev = USB_DEVICE.as_mut().unwrap();
-    let serial = USB_SERIAL.as_mut().unwrap();
+    let usb_dev = unsafe { USB_DEVICE.as_mut().unwrap() };
+    let serial = unsafe { USB_SERIAL.as_mut().unwrap() };
+    let hid = unsafe { USB_HID.as_mut().unwrap() };
 
     let mut buf = [0u8; 64];
 
     // Poll the USB driver with all of our supported USB Classes
-    if usb_dev.poll(&mut [serial]) {
+    if usb_dev.poll(&mut [serial, hid]) {
         match serial.read(&mut buf) {
             Err(_e) => {
                 // Do nothing
@@ -222,15 +327,28 @@ unsafe fn USBD() {
                 for item in &buf[0..count] {
                     // Look for question marks
                     if *item == b'?' {
-                        let _ = writeln!(
-                            &RING_BUFFER,
-                            "{}, {}",
-                            RX_COUNT.load(Ordering::Relaxed),
-                            ERR_COUNT.load(Ordering::Relaxed)
-                        );
+                        WANT_INFO.store(true, Ordering::Relaxed);
                     }
                 }
             }
+        }
+        let hid_byte = match hid.pull_raw_output(&mut buf) {
+            Ok(64) => {
+                // Windows zero-pads the packet
+                Some(buf[0])
+            }
+            Ok(1) => {
+                // macOS/Linux sends a single byte
+                Some(buf[0])
+            }
+            Ok(_n) => {
+                // Ignore any other size packet
+                None
+            }
+            Err(_e) => None,
+        };
+        if let Some(ch) = hid_byte {
+            NEW_CHANNEL.store(ch as u32, Ordering::Relaxed);
         }
     }
 
@@ -245,6 +363,17 @@ unsafe fn USBD() {
         }
     }
     let _ = serial.write(&buf[0..count]);
+}
+
+#[panic_handler]
+fn panic(info: &core::panic::PanicInfo) -> ! {
+    let _ = writeln!(&RING_BUFFER, "Panic: {:?}", info);
+    cortex_m::asm::delay(64_000_000 * 2);
+    unsafe {
+        loop {
+            core::arch::asm!("bkpt 0x00");
+        }
+    }
 }
 
 // End of file
