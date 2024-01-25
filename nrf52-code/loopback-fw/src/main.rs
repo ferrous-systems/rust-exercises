@@ -5,12 +5,10 @@
 #![no_std]
 #![no_main]
 
-use core::cell::RefCell;
 use core::fmt::Write;
 use core::sync::atomic::{AtomicBool, AtomicU32, Ordering};
 
 use cortex_m_rt::entry;
-use critical_section::Mutex;
 use usb_device::class_prelude::UsbBusAllocator;
 use usb_device::device::{UsbDevice, UsbDeviceBuilder, UsbVidPid};
 use usbd_hid::hid_class::HIDClass;
@@ -20,20 +18,20 @@ use dongle::peripheral::interrupt;
 use dongle::{
     hal::usbd,
     ieee802154::{Channel, Packet},
-    UsbBus,
+    GlobalIrqState, LocalIrqState, UsbBus,
 };
 
 /// A buffer for holding bytes we want to send to the USB Serial port
 static RING_BUFFER: dongle::Ringbuffer = dongle::Ringbuffer::new();
 
 /// The USB Device Driver (owned by the USBD interrupt).
-static USB_DEVICE: Mutex<RefCell<Option<UsbDevice<UsbBus>>>> = Mutex::new(RefCell::new(None));
+static USB_DEVICE: GlobalIrqState<UsbDevice<UsbBus>> = GlobalIrqState::new();
 
 /// The USB Serial Device Driver (owned by the USBD interrupt).
-static USB_SERIAL: Mutex<RefCell<Option<SerialPort<UsbBus>>>> = Mutex::new(RefCell::new(None));
+static USB_SERIAL: GlobalIrqState<SerialPort<UsbBus>> = GlobalIrqState::new();
 
 /// The USB Human Interface Device Driver (owned by the USBD interrupt).
-static USB_HID: Mutex<RefCell<Option<HIDClass<UsbBus>>>> = Mutex::new(RefCell::new(None));
+static USB_HID: GlobalIrqState<HIDClass<UsbBus>> = GlobalIrqState::new();
 
 /// Track how many CRC successes we had receiving radio packets
 static RX_COUNT: AtomicU32 = AtomicU32::new(0);
@@ -67,17 +65,14 @@ fn main() -> ! {
         board.usbd,
         board.clocks,
     )));
-    *USB_BUS = Some(usb_bus);
-
-    // This reference has static lifetime
-    let bus_ref = USB_BUS.as_ref().unwrap();
+    USB_BUS.replace(usb_bus);
 
     // Grab a reference to the USB Bus allocator. We are promising to the
     // compiler not to take mutable access to this global variable whilst this
     // reference exists!
-    critical_section::with(|cs| {
-        *USB_SERIAL.borrow(cs).borrow_mut() = Some(SerialPort::new(bus_ref));
-    });
+    let bus_ref = USB_BUS.as_ref().unwrap();
+
+    USB_SERIAL.load(SerialPort::new(bus_ref));
 
     let desc = &[
         0x06, 0x00, 0xFF, // Item(Global): Usage Page, data= [ 0x00 0xff ] 65280
@@ -104,21 +99,17 @@ fn main() -> ! {
         //               Preferred_State No_Null_Position Non_Volatile Bitfield
         0xC0, // Item(Main  ): End Collection, data=none
     ];
-    let hid = HIDClass::new(bus_ref, desc, 100);
-    critical_section::with(|cs| {
-        *USB_HID.borrow(cs).borrow_mut() = Some(hid);
-    });
+    USB_HID.load(HIDClass::new(bus_ref, desc, 100));
 
-    let vid_pid = UsbVidPid(consts::USB_VID_DEMO, consts::USB_PID_DONGLE_PUZZLE);
-    let usb_dev = UsbDeviceBuilder::new(bus_ref, vid_pid)
-        .manufacturer("Ferrous Systems")
-        .product("Dongle Loopback")
-        .device_class(USB_CLASS_CDC)
-        .max_packet_size_0(64) // (makes control transfers 8x faster)
-        .build();
-    critical_section::with(|cs| {
-        *USB_DEVICE.borrow(cs).borrow_mut() = Some(usb_dev);
-    });
+    let vid_pid = UsbVidPid(consts::USB_VID_DEMO, consts::USB_PID_DONGLE_LOOPBACK);
+    USB_DEVICE.load(
+        UsbDeviceBuilder::new(bus_ref, vid_pid)
+            .manufacturer("Ferrous Systems")
+            .product("Dongle Loopback")
+            .device_class(USB_CLASS_CDC)
+            .max_packet_size_0(64) // (makes control transfers 8x faster)
+            .build(),
+    );
 
     let mut current_ch_id = 20;
     board.radio.set_channel(dongle::ieee802154::Channel::_20);
@@ -220,33 +211,15 @@ fn main() -> ! {
 /// USB UART.
 #[interrupt]
 fn USBD() {
-    static mut LOCAL_USB_DEVICE: Option<UsbDevice<UsbBus>> = None;
-    static mut LOCAL_USB_SERIAL: Option<SerialPort<UsbBus>> = None;
-    static mut LOCAL_USB_HID: Option<HIDClass<UsbBus>> = None;
+    static mut LOCAL_USB_DEVICE: LocalIrqState<UsbDevice<'static, UsbBus>> = LocalIrqState::new();
+    static mut LOCAL_USB_SERIAL: LocalIrqState<SerialPort<'static, UsbBus>> = LocalIrqState::new();
+    static mut LOCAL_USB_HID: LocalIrqState<HIDClass<'static, UsbBus>> = LocalIrqState::new();
     static mut IS_PENDING: Option<u8> = None;
 
     // Grab a reference to our local vars, moving the object out of the global as required...
-
-    let usb_dev = LOCAL_USB_DEVICE.get_or_insert_with(|| {
-        critical_section::with(|cs| {
-            // Move USB device here, leaving a None in its place
-            USB_DEVICE.borrow(cs).replace(None).unwrap()
-        })
-    });
-
-    let serial = LOCAL_USB_SERIAL.get_or_insert_with(|| {
-        critical_section::with(|cs| {
-            // Move USB device here, leaving a None in its place
-            USB_SERIAL.borrow(cs).replace(None).unwrap()
-        })
-    });
-
-    let hid = LOCAL_USB_HID.get_or_insert_with(|| {
-        critical_section::with(|cs| {
-            // Move USB device here, leaving a None in its place
-            USB_HID.borrow(cs).replace(None).unwrap()
-        })
-    });
+    let usb_dev = LOCAL_USB_DEVICE.get_or_init_with(&USB_DEVICE);
+    let serial = LOCAL_USB_SERIAL.get_or_init_with(&USB_SERIAL);
+    let hid = LOCAL_USB_HID.get_or_init_with(&USB_HID);
 
     let mut buf = [0u8; 64];
 
