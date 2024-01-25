@@ -10,7 +10,7 @@ jobs:
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Install tools
         uses: taiki-e/install-action@v2
@@ -32,7 +32,7 @@ jobs:
           ./build.sh "./rust-exercises-${{ env.slug }}"
 
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{success()}}
         with:
           name: Artifacts
