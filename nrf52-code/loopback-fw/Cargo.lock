@@ -163,6 +163,7 @@ dependencies = [
  "defmt",
  "defmt-rtt",
  "embedded-hal",
+ "heapless",
  "nrf52840-hal",
  "panic-probe",
 ]
@@ -263,9 +264,9 @@ dependencies = [
  "consts",
  "cortex-m",
  "cortex-m-rt",
+ "critical-section",
  "dongle",
  "embedded-hal",
- "heapless",
  "rand",
  "usb-device",
  "usbd-hid",

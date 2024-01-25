@@ -5,10 +5,12 @@
 #![no_std]
 #![no_main]
 
+use core::cell::RefCell;
 use core::fmt::Write;
 use core::sync::atomic::{AtomicBool, AtomicU32, Ordering};
 
 use cortex_m_rt::entry;
+use critical_section::Mutex;
 use usb_device::class_prelude::UsbBusAllocator;
 use usb_device::device::{UsbDevice, UsbDeviceBuilder, UsbVidPid};
 use usbd_hid::hid_class::HIDClass;
@@ -18,6 +20,7 @@ use dongle::peripheral::interrupt;
 use dongle::{
     hal::usbd,
     ieee802154::{Channel, Packet},
+    UsbBus,
 };
 
 /// The secret message, but encoded.
@@ -31,25 +34,17 @@ static PLAIN_LETTERS: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/PLAIN_LE
 /// The ciphertext side of the map
 static CIPHER_LETTERS: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/CIPHER_LETTERS.txt"));
 
-/// A 64-byte USB Serial buffer
-static RING_BUFFER: Ringbuffer = Ringbuffer {
-    buffer: heapless::mpmc::Q64::new(),
-};
-
-/// A short-hand for the nRF52 USB types
-type UsbBus<'a> = usbd::Usbd<usbd::UsbPeripheral<'a>>;
+/// A buffer for holding bytes we want to send to the USB Serial port
+static RING_BUFFER: dongle::Ringbuffer = dongle::Ringbuffer::new();
 
 /// The USB Device Driver (owned by the USBD interrupt).
-static mut USB_DEVICE: Option<UsbDevice<UsbBus>> = None;
-
-/// The USB Bus Driver (owned by the USBD interrupt).
-static mut USB_BUS: Option<UsbBusAllocator<UsbBus>> = None;
+static USB_DEVICE: Mutex<RefCell<Option<UsbDevice<UsbBus>>>> = Mutex::new(RefCell::new(None));
 
 /// The USB Serial Device Driver (owned by the USBD interrupt).
-static mut USB_SERIAL: Option<SerialPort<UsbBus>> = None;
+static USB_SERIAL: Mutex<RefCell<Option<SerialPort<UsbBus>>>> = Mutex::new(RefCell::new(None));
 
 /// The USB Human Interface Device Driver (owned by the USBD interrupt).
-static mut USB_HID: Option<HIDClass<UsbBus>> = None;
+static USB_HID: Mutex<RefCell<Option<HIDClass<UsbBus>>>> = Mutex::new(RefCell::new(None));
 
 /// Track how many CRC successes we had receiving radio packets
 static RX_COUNT: AtomicU32 = AtomicU32::new(0);
@@ -67,42 +62,33 @@ static NEW_CHANNEL: AtomicU32 = AtomicU32::new(u32::MAX);
 /// We print some info in response.
 static WANT_INFO: AtomicBool = AtomicBool::new(false);
 
-struct Ringbuffer {
-    buffer: heapless::mpmc::Q64<u8>,
-}
-
-impl core::fmt::Write for &Ringbuffer {
-    fn write_str(&mut self, s: &str) -> core::fmt::Result {
-        for b in s.bytes() {
-            let _ = self.buffer.enqueue(b);
-        }
-        Ok(())
-    }
-}
-
 #[entry]
 fn main() -> ! {
+    // The USB Bus, statically allocated
+    static mut USB_BUS: Option<UsbBusAllocator<UsbBus>> = None;
+
     let mut board = dongle::init().unwrap();
+
     board.usbd.inten.modify(|_r, w| {
         w.sof().set_bit();
         w
     });
+
     let usb_bus = UsbBusAllocator::new(usbd::Usbd::new(usbd::UsbPeripheral::new(
         board.usbd,
         board.clocks,
     )));
-    unsafe {
-        // Note (safety): This is safe as interrupts haven't been started yet
-        USB_BUS = Some(usb_bus);
-    }
+    *USB_BUS = Some(usb_bus);
+
+    // This reference has static lifetime
+    let bus_ref = USB_BUS.as_ref().unwrap();
+
     // Grab a reference to the USB Bus allocator. We are promising to the
     // compiler not to take mutable access to this global variable whilst this
     // reference exists!
-    let bus_ref = unsafe { USB_BUS.as_ref().unwrap() };
-    let serial = SerialPort::new(bus_ref);
-    unsafe {
-        USB_SERIAL = Some(serial);
-    }
+    critical_section::with(|cs| {
+        *USB_SERIAL.borrow(cs).borrow_mut() = Some(SerialPort::new(bus_ref));
+    });
 
     let desc = &[
         0x06, 0x00, 0xFF, // Item(Global): Usage Page, data= [ 0x00 0xff ] 65280
@@ -130,9 +116,9 @@ fn main() -> ! {
         0xC0, // Item(Main  ): End Collection, data=none
     ];
     let hid = HIDClass::new(bus_ref, desc, 100);
-    unsafe {
-        USB_HID = Some(hid);
-    }
+    critical_section::with(|cs| {
+        *USB_HID.borrow(cs).borrow_mut() = Some(hid);
+    });
 
     let vid_pid = UsbVidPid(consts::USB_VID_DEMO, consts::USB_PID_DONGLE_PUZZLE);
     let usb_dev = UsbDeviceBuilder::new(bus_ref, vid_pid)
@@ -141,34 +127,43 @@ fn main() -> ! {
         .device_class(USB_CLASS_CDC)
         .max_packet_size_0(64) // (makes control transfers 8x faster)
         .build();
-    unsafe {
-        // Note (safety): This is safe as interrupts haven't been started yet
-        USB_DEVICE = Some(usb_dev);
-    }
+    critical_section::with(|cs| {
+        *USB_DEVICE.borrow(cs).borrow_mut() = Some(usb_dev);
+    });
 
     let mut current_ch_id = 25;
     board.radio.set_channel(dongle::ieee802154::Channel::_25);
-
-    let mut dict: heapless::LinearMap<u8, u8, 128> = heapless::LinearMap::new();
-    for (&plain, &cipher) in PLAIN_LETTERS.iter().zip(CIPHER_LETTERS.iter()) {
-        let _ = dict.insert(plain, cipher);
-    }
 
     // Turn on USB interrupts...
     unsafe {
         cortex_m::peripheral::NVIC::unmask(dongle::peripheral::Interrupt::USBD);
     };
 
+    let _ = writeln!(
+        &RING_BUFFER,
+        "deviceid={:08x}{:08x} channel={} TxPower=+8dBm app=puzzle-fw",
+        dongle::deviceid1(),
+        dongle::deviceid0(),
+        current_ch_id
+    );
+
+    board.leds.ld1.on();
+    board.leds.ld2_green.on();
+
+    let mut dict: heapless::LinearMap<u8, u8, 128> = heapless::LinearMap::new();
+    for (&plain, &cipher) in PLAIN_LETTERS.iter().zip(CIPHER_LETTERS.iter()) {
+        let _ = dict.insert(plain, cipher);
+    }
+
     let mut pkt = Packet::new();
     loop {
-        board.leds.ld1.on();
         // Wait up to 1 second for a radio packet
         match board
             .radio
             .recv_timeout(&mut pkt, &mut board.timer, 1_000_000)
         {
             Ok(crc) => {
-                board.leds.ld1.off();
+                board.leds.ld1.toggle();
                 let _ = writeln!(
                     &RING_BUFFER,
                     "\nRX CRC {:04x}, LQI {}, LEN {}",
@@ -206,7 +201,10 @@ fn main() -> ! {
                         board.leds.ld2_red.on();
                     }
                 }
-                // now send it
+                // send packet after 5ms (we know the client waits for 10ms and
+                // we want to ensure they are definitely in receive mode by the
+                // time we send this reply)
+                board.timer.delay(5000);
                 board.radio.send(&mut pkt);
                 RX_COUNT.fetch_add(1, Ordering::Relaxed);
             }
@@ -243,10 +241,10 @@ fn main() -> ! {
                 _ => None,
             } {
                 board.radio.set_channel(channel);
-                let _ = writeln!(&RING_BUFFER, "\nChannel {} set", ch_id);
+                let _ = writeln!(&RING_BUFFER, "now listening on channel {}", ch_id);
                 current_ch_id = ch_id;
             } else {
-                let _ = writeln!(&RING_BUFFER, "\nChannel {} invalid", ch_id);
+                let _ = writeln!(&RING_BUFFER, "Channel {} invalid", ch_id);
             }
         }
 
@@ -303,10 +301,33 @@ fn handle_packet(packet: &mut Packet, dict: &heapless::LinearMap<u8, u8, 128>) -
 /// USB UART.
 #[interrupt]
 fn USBD() {
-    // Grab the global objects. This is OK as we only access them under interrupt.
-    let usb_dev = unsafe { USB_DEVICE.as_mut().unwrap() };
-    let serial = unsafe { USB_SERIAL.as_mut().unwrap() };
-    let hid = unsafe { USB_HID.as_mut().unwrap() };
+    static mut LOCAL_USB_DEVICE: Option<UsbDevice<UsbBus>> = None;
+    static mut LOCAL_USB_SERIAL: Option<SerialPort<UsbBus>> = None;
+    static mut LOCAL_USB_HID: Option<HIDClass<UsbBus>> = None;
+    static mut IS_PENDING: Option<u8> = None;
+
+    // Grab a reference to our local vars, moving the object out of the global as required...
+
+    let usb_dev = LOCAL_USB_DEVICE.get_or_insert_with(|| {
+        critical_section::with(|cs| {
+            // Move USB device here, leaving a None in its place
+            USB_DEVICE.borrow(cs).replace(None).unwrap()
+        })
+    });
+
+    let serial = LOCAL_USB_SERIAL.get_or_insert_with(|| {
+        critical_section::with(|cs| {
+            // Move USB device here, leaving a None in its place
+            USB_SERIAL.borrow(cs).replace(None).unwrap()
+        })
+    });
+
+    let hid = LOCAL_USB_HID.get_or_insert_with(|| {
+        critical_section::with(|cs| {
+            // Move USB device here, leaving a None in its place
+            USB_HID.borrow(cs).replace(None).unwrap()
+        })
+    });
 
     let mut buf = [0u8; 64];
 
@@ -348,17 +369,32 @@ fn USBD() {
         }
     }
 
-    // Copy from ring-buffer to USB UART
-    let mut count = 0;
-    while count < buf.len() {
-        if let Some(item) = RING_BUFFER.buffer.dequeue() {
-            buf[count] = item;
-            count += 1;
-        } else {
+    // Is there a pending byte from last time?
+    if let Some(n) = IS_PENDING {
+        match serial.write(core::slice::from_ref(n)) {
+            Ok(_) => {
+                // it took our pending byte
+                *IS_PENDING = None;
+            }
+            Err(_) => {
+                // serial buffer is full
+                return;
+            }
+        }
+    }
+
+    // Copy some more from the ring-buffer to the USB Serial interface,
+    // until the serial interface is full.
+    while let Some(item) = RING_BUFFER.read() {
+        let s = &[item];
+        if serial.write(s).is_err() {
+            // the USB UART can't take this byte right now
+            *IS_PENDING = Some(item);
             break;
         }
     }
-    let _ = serial.write(&buf[0..count]);
+
+    cortex_m::asm::sev();
 }
 
 #[panic_handler]
