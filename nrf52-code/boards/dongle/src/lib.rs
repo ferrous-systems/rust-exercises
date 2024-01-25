@@ -35,6 +35,9 @@ pub mod peripheral {
     pub use hal::pac::{interrupt, Interrupt, POWER, USBD};
 }
 
+/// A short-hand for the nRF52 USB types
+pub type UsbBus = hal::usbd::Usbd<hal::usbd::UsbPeripheral<'static>>;
+
 use peripheral::interrupt;
 
 /// Components on the board
@@ -187,6 +190,44 @@ impl ops::Deref for Timer {
 impl ops::DerefMut for Timer {
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.inner
+    }
+}
+
+/// A byte-based ring-buffer that you can writeln! into, and drain under
+/// interrupt.
+///
+/// Used for buffering serial port output.
+///
+/// Stores 128 bytes, maximum.
+pub struct Ringbuffer {
+    buffer: heapless::mpmc::MpMcQueue<u8, 128>,
+}
+
+impl Ringbuffer {
+    /// Construct a new Ringbuffer
+    pub const fn new() -> Ringbuffer {
+        Ringbuffer {
+            buffer: heapless::mpmc::MpMcQueue::new(),
+        }
+    }
+
+    /// Take an item from the buffer
+    pub fn read(&self) -> Option<u8> {
+        self.buffer.dequeue()
+    }
+
+    /// Add an item to the queue
+    pub fn write(&self, value: u8) -> Result<(), u8> {
+        self.buffer.enqueue(value)
+    }
+}
+
+impl core::fmt::Write for &Ringbuffer {
+    fn write_str(&mut self, s: &str) -> core::fmt::Result {
+        for b in s.bytes() {
+            let _ = self.buffer.enqueue(b);
+        }
+        Ok(())
     }
 }
 
