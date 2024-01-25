@@ -301,19 +301,14 @@ fn handle_packet(packet: &mut Packet, dict: &heapless::LinearMap<u8, u8, 128>) -
 /// USB UART.
 #[interrupt]
 fn USBD() {
-    static mut LOCAL_USB_DEVICE: Option<UsbDevice<UsbBus>> = None;
+    static mut LOCAL_USB_DEVICE: Shared<UsbDevice<'static, UsbBus>> = Shared::new();
     static mut LOCAL_USB_SERIAL: Option<SerialPort<UsbBus>> = None;
     static mut LOCAL_USB_HID: Option<HIDClass<UsbBus>> = None;
     static mut IS_PENDING: Option<u8> = None;
 
     // Grab a reference to our local vars, moving the object out of the global as required...
 
-    let usb_dev = LOCAL_USB_DEVICE.get_or_insert_with(|| {
-        critical_section::with(|cs| {
-            // Move USB device here, leaving a None in its place
-            USB_DEVICE.borrow(cs).replace(None).unwrap()
-        })
-    });
+    let usb_dev = LOCAL_USB_DEVICE.get_or_init_with(&USB_DEVICE);
 
     let serial = LOCAL_USB_SERIAL.get_or_insert_with(|| {
         critical_section::with(|cs| {
@@ -395,6 +390,26 @@ fn USBD() {
     }
 
     cortex_m::asm::sev();
+}
+
+struct Shared<T> {
+    inner: Option<T>,
+}
+
+impl<T> Shared<T> {
+    pub const fn new() -> Shared<T> {
+        Shared { inner: None }
+    }
+
+    pub fn get_or_init_with<'a>(
+        &'a mut self,
+        global: &'static Mutex<RefCell<Option<T>>>,
+    ) -> &'a mut T {
+        let result = self.inner.get_or_insert_with(|| {
+            critical_section::with(|cs| global.borrow(cs).replace(None).unwrap())
+        });
+        result
+    }
 }
 
 #[panic_handler]
