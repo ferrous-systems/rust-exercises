@@ -1,3 +1,4 @@
+<!-- markdownlint-disable MD025 -->
 # Summary
 
 [Introduction](./introduction.md)
@@ -47,7 +48,7 @@
   - [Radio Puzzle](./nrf52-radio-puzzle.md)
   - [Radio Puzzle Help](./nrf52-radio-puzzle-help.md)
   - [Next Steps](./nrf52-radio-next-steps.md)
-    - [Alternative containers](./nrf52-radio-alt-containers.md) 
+    - [Alternative containers](./nrf52-radio-alt-containers.md)
     - [Collision avoidance](./nrf52-radio-collision-avoidance.md)
     - [Interrupt handling](./nrf52-radio-interrupt-handling.md)
     - [Starting a Project from Scratch](./nrf52-radio-from-scratch.md)
@@ -101,4 +102,5 @@
 
 - [Interactive TCP Echo Server](./tcp-server.md)
   - [Share data between connections](./tcp-server-log.md)
+
 # Other Topics
