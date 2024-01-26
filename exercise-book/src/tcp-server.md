@@ -1,6 +1,9 @@
+<!-- markdownlint-disable MD033 -->
 # Interactive TCP Echo Server
 
-In this exercise, we will make a simple TCP "echo" server using APIs in Rust standard Library. Here's how an interaction with it would look like from a client point of view. You connect to it using `nc`, for example:
+In this exercise, we will make a simple TCP "echo" server using APIs in Rust's Standard Library.
+
+Here's how an interaction with it would look like from a client point of view. You connect to it using `nc`, for example:
 
 `nc localhost 7878`
 
@@ -16,11 +19,11 @@ world
 > world
 ```
 
-(`>` denotes the text that is send back to you)
+(`>` denotes the text that is sent back to you)
 
 ## After completing this exercise you are able to
 
-- open a TCP port and react to each user connects
+- open a TCP port and react to TCP clients connecting
 
 - use I/O traits to read/write from a TCP socket
 
@@ -36,7 +39,7 @@ world
 
 Here's a bit of code to get you started:
 
-```rust
+```rust ignore
 use std::{io, net::{TcpListener, TcpStream}};
 
 fn handle_client(mut stream: TcpStream) -> Result<(), io::Error> {
@@ -61,9 +64,9 @@ fn main() -> Result<(), io::Error> {
 
 ### Reading line by line
 
-[Rust by Example has a chapter showing examples of reading files line by line](https://doc.rust-lang.org/rust-by-example/std_misc/file/read_lines.html) that chan be adapted to `TcpStream`, too.
+[Rust by Example has a chapter showing examples of reading files line by line](https://doc.rust-lang.org/rust-by-example/std_misc/file/read_lines.html) that can be adapted to `TcpStream`, too.
 
-### Solving borrow checker issues.
+### Solving borrow checker issues
 
 <details>
     <summary>At some point you may run into borrow checker issues because you essentially try writing into a stream as you read from it.</summary>
@@ -74,8 +77,9 @@ There are two general approaches to do so:
 
 1. Simply clone the stream. `TcpStream` has a `try_clone()` method. This will not clone the stream itself: on the Operating System level there will still be a single connection. But from Rust perspective now this underlying OS resource will be represented by two distinct variables.
 2. Use the fact that `Read` and `Write` traits are implemented not only for `TcpStream` but also for `&TcpStream`. For example, you can create a pair of `BufReader` and `BufWriter` by passing `&stream` as an argument.
+
 </details>
 
-### Troubleshooting I/O operations.
+### Troubleshooting I/O operations
 
-If you decide to use `BufWriter` to handle writes you may not see any text echoed back in the terminal when using `nc`. As the name applies the output is buffered, and you need to explicitly call `flush()` method for text to be send out over TCP socket.
+If you decide to use `BufWriter` to handle writes you may not see any text echoed back in the terminal when using `nc`. As the name applies the output is buffered, and you need to explicitly call `flush()` method for text to be send out over the TCP socket.
