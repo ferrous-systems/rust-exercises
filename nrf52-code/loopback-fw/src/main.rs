@@ -145,6 +145,8 @@ fn main() -> ! {
                     crc,
                     pkt.lqi()
                 );
+                // reverse the bytes, so olleh -> hello
+                pkt.reverse();
                 // send packet after 5ms (we know the client waits for 10ms and
                 // we want to ensure they are definitely in receive mode by the
                 // time we send this reply)
