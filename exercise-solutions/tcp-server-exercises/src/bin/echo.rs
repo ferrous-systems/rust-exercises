@@ -18,7 +18,8 @@ use std::{
 ///
 /// Here's another alternative implementation:
 ///
-/// ```rust ignore
+/// ```rust
+/// # use std::{io::{self, BufReader, BufRead, Read, Write}, net::TcpStream};
 /// fn handle_client(stream: TcpStream) -> Result<(), io::Error> {
 ///     let mut writer = stream.try_clone()?;
 ///     let reader = BufReader::new(stream);
@@ -45,7 +46,11 @@ fn handle_client(stream: TcpStream) -> Result<(), io::Error> {
 fn main() -> Result<(), io::Error> {
     let listener = TcpListener::bind("127.0.0.1:7878")?;
     for stream in listener.incoming() {
-        let stream = stream?;
+        let Ok(stream) = stream else {
+            eprintln!("Bad connection");
+            continue;
+        };
+
         thread::spawn(|| {
             handle_client(stream).unwrap();
         });
