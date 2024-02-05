@@ -6,7 +6,7 @@ We will look at the elements that distinguish an embedded Rust program from a de
 
 ```console
 # or use "File > Open Folder" in VS Code
-code nrf52-code/radio
+code nrf52-code/radio-app
 ```
 
 ✅ Then open the `nrf52-code/radio-app/src/bin/hello.rs` file.

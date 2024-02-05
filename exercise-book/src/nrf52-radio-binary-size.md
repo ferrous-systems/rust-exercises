@@ -14,7 +14,7 @@ Expected output: The breakdown of the program's static memory usage per *linker 
 
 ```console
 $ cargo size --bin hello -- -A
-   Compiling radio v0.0.0 (/Users/jonathan/Documents/rust-exercises/nrf52-code/radio)
+   Compiling radio v0.0.0 (/Users/jonathan/Documents/rust-exercises/nrf52-code/radio-app)
     Finished dev [optimized + debuginfo] target(s) in 0.92s
 hello  :
 section               size        addr
