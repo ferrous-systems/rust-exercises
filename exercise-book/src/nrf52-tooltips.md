@@ -30,82 +30,43 @@ File  .text   Size      Crate Name
 
 This breaks down the size of the `.text` section by function. This breakdown can be used to identify the largest functions in the program; those could then be modified to make them smaller.
 
-## Using `gdb`
+## Using `probe-rs` VS Code plugin
 
-To debug embedded Rust applications with GDB we currently recommend using tooling like OpenOCD,
-JLinkGDBServer or pyOCD
+The [probe-rs](https://probe.rs) team have produced a VS Code plugin. It uses the `probe-rs` library to talk directly to your supported Debug Probe (J-Link, ST-Link, CMSIS-DAP, or whatever) and supports both single-stepping and `defmt` logging.
 
-Although `cargo-embed` v0.10 (and v0.10 of `probe-rs`, the library that powers `cargo-embed`) support spawning a GDB server it has some limitations
+Install the `probe-rs.probe-rs-debugger` extension in VS Studio, and when you open the `nrf52-code/radio-app` folder in VS Code, the `.vscode/launch.json` file we supply should give you a *Run with probe-rs* entry in the *Run and Debug* panel. Press the green triangle and it will build the code, flash device, set up defmt and then start the chip running. You can set breakpoints in the usual way (by clicking to the left of your source code to place a red dot).
 
-- stepping through the code (e.g. GDB's `step` and `next` commands) is imprecise or doesn't work in
-  some cases
-- it's not possible to have a GDB server and RTT channels running at the same time so you can use GDB OR RTT but not both together (this limitation is likely to be removed in v0.11)
+## Using `gdb` and `probe-rs`
 
-The rest of this section covers how to debug an embedded application within VS code using OpenOCD as
-the GDB server.
+The CLI `probe-rs` command has an option for opening a GDB server. We have found the command-line version of GDB to be a little buggy though, so the VS Code plugin above is preferred.
 
-### Dependencies
-
-0. Make sure you've connected your Development Kit: USB port J2 on the board
-
-1. You'll need to install OpenOCD. Installation instructions vary depending on your OS.
-
-2. Install the [cortex-debug](https://marketplace.visualstudio.com/items?itemName=marus25.cortex-debug) extension in VS code.
-
-### Preparation
-
-For the best debugging experience, the `dev` (development) compilation profile should be set to its
-default settings.
-For this tutorial, we'll be using the `nrf52-code/` applications, so let's modify `nrf52-code/radio-app/Cargo.toml` to revert the `dev` profile to its default.
-
-```diff
- panic-log = { path = "../../common/panic-log" }
-
- # optimize code in both profiles
--[profile.dev]
--codegen-units = 1
--debug = 2
--debug-assertions = true # !
--incremental = false
--lto = "fat"
--opt-level = 'z' # !
--overflow-checks = false
-
- [profile.release]
+```console
+$ probe-rs gdb --chip nRF52840_xxAA
+# In another window
+$ arm-none-eabi-gdb ./target/thumbv7em-none-eabihf/debug/blinky
+gdb> target extended-remote :1337
+gdb> monitor reset halt
+gdb> break main
+gdb> continue
+Breakpoint 1, blinky::__cortex_m_rt_main_trampoline () at src/bin/blinky.rs:10
 ```
 
-### How to
+## Using `gdb` and `openocd`
 
-1. In VS code, from the top menu pick "File" > "Open folder". Then open the `nrf52-code/radio-app` folder.
+You can also debug a Rust program using `gdb` and `openocd`. However, this isn't recommended because it requires significant extra set-up, especially to get the RTT data piped out of a socket and into `defmt-print` (this function is built into a `probe-rs`).
 
-2. Within this folder, open the `src/bin/hello.rs` file.
+If you are familiar with OpenOCD and GDB, and want to try this anyway, then do pretty much what you would do with a C program.
 
-3. From the top menu, pick "Run" > "Start Debugging".
+The only change is that if you want defmt output, you need these OpenOCD commands to enable RTT:
 
-[![GDB session within VS code using the cortex-debug extension](code-gdb.png)](./code-gdb.png)
-
-You are now in a GDB session. Switch to the "Run" view (4th icon from the top on the left sidebar),
-if VS code didn't automatically switch to it, and you'll see debug information like the call stack,
-local variables, breakpoints and CPU registers on the left side. On the bottom panel, you can switch
-to the "Debug console" to issue commands to the GDB server. Near the top of the GUI you'll find a
-row of buttons to navigate through the program (step, continue, etc.). Breakpoints can be added by
-clicking to the left of line numbers in the file view.
-
-## Debugging a different program
-
-To debug a different program within the `nrf52-code/radio-app` folder you'll need to modify the
-`nrf52-code/radio-app/.vscode/launch.json` file as follows:
-
-```diff
- {
-     "version": "0.2.0",
-     "configurations": [
-       {
-         "cwd": "${workspaceRoot}",
--        // TODO to debug a different program the app name ("hello") needs to be changed
--        "executable": "./target/thumbv7em-none-eabihf/debug/hello",
-+        "executable": "./target/thumbv7em-none-eabihf/debug/blinky",
-         "name": "Debug Microcontroller (launch)",
+```text
+rtt setup 0x20000000 0x40000 "SEGGER RTT"
+rtt start
+rtt server start 9090 0
 ```
 
-Change the name of the program from `hello` to whichever program you wish to debug.
+You can then use `nc` to connect to `localhost:9090`, and pipe the output into `defmt-print`:
+
+```sh
+nc localhost:9090 | defmt-print ./target/thumbv7em-none-eabihf/debug/blinky
+```

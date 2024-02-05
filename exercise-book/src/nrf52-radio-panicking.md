@@ -41,15 +41,15 @@ Frame 13: memmove @ 0x0000013c
 Error: CPU halted unexpectedly.
 ```
 
-In `no_std` programs the behavior of panic is defined using the `#[panic_handler]` attribute. In the example, the *panic handler* is defined in the `panic_log` crate but we can also implement it manually:
+In `no_std` programs the behavior of panic is defined using the `#[panic_handler]` attribute. In the example, the *panic handler* is defined in the `radio_app` library crate but we can also implement a custom one in our binary:
 
-✅ Comment out the `use radio_app as _;` import and add the following function to the example:
+✅ Change `radio-app/lib.rs` to comment out the `use radio_app as _;` import and add the following function to the example:
 
 ```rust ignore
 #[panic_handler]
 fn panic(info: &core::panic::PanicInfo) -> ! {
-    defmt::error!("{}", defmt::Debug2Format(info));
-    asm::udf();
+    defmt::error!("Oh no! {}", defmt::Debug2Format(info));
+    dk::fail();
 }
 ```
 

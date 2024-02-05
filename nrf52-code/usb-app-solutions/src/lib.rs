@@ -1,17 +1,20 @@
 #![no_std]
 
+use cortex_m_rt::exception;
 use panic_probe as _;
 
+/// The default HardFault handler just spins, so replace it.
+///
+/// probe-run used to set a hardfault breakpoint but probe-rs doesn't, so make
+/// the HardFault handler quit out of probe-rs with a breakpoint.
+#[exception]
+unsafe fn HardFault(_ef: &cortex_m_rt::ExceptionFrame) -> ! {
+    dk::fail();
+}
+
 // same panicking *behavior* as `panic-probe` but doesn't print a panic message
-// this prevents the panic message being printed *twice* when `defmt::panic` is invoked
+// this prevents the panic message being printed *twice* when `defmt::panic!` is invoked
 #[defmt::panic_handler]
-fn panic() -> ! {
-    unsafe {
-        // turn off the USB D+ pull-up before pausing the device with a breakpoint
-        // this disconnects the nRF device from the USB host so the USB host won't attempt further
-        // USB communication (and see an unresponsive device).
-        const USBD_USBPULLUP: *mut u32 = 0x4002_7504 as *mut u32;
-        USBD_USBPULLUP.write_volatile(0)
-    }
-    cortex_m::asm::udf()
+fn defmt_panic() -> ! {
+    dk::fail();
 }
