@@ -28,16 +28,27 @@ $ tree -L 2
 .
 ├── boards
 │   ├── dk
-│   └── dongle
+│   ├── dk-solution
+│   ├── dongle
+│   └── dongle-fw
 ├── consts
 │   ├── Cargo.lock
 │   ├── Cargo.toml
 │   └── src
-├── radio-app
+├── hal-app
 │   ├── Cargo.lock
 │   ├── Cargo.toml
 │   └── src
-├── radio-app-solutions
+├── loopback-fw
+│   ├── Cargo.lock
+│   ├── Cargo.toml
+│   └── src
+├── puzzle-fw
+│   ├── Cargo.lock
+│   ├── Cargo.toml
+│   ├── build.rs
+│   └── src
+├── radio-app
 │   ├── Cargo.lock
 │   ├── Cargo.toml
 │   └── src
@@ -48,31 +59,33 @@ $ tree -L 2
 ├── usb-app-solutions
 │   ├── Cargo.lock
 │   ├── Cargo.toml
-│   └── src
+│   ├── src
+│   └── traces
 ├── usb-lib
 │   ├── Cargo.lock
 │   ├── Cargo.toml
 │   └── src
-├── usb-lib-solution-get-descriptor-config
-│   ├── Cargo.lock
-│   ├── Cargo.toml
-│   └── src
-├── usb-lib-solution-get-device
-│   ├── Cargo.lock
-│   ├── Cargo.toml
-│   └── src
-└── usb-lib-solution-set-config
-    ├── Cargo.lock
-    ├── Cargo.toml
-    └── src
-28 directories, 16 files
+└── usb-lib-solutions
+    ├── get-descriptor-config
+    ├── get-device
+    └── set-config
+
+27 directories, 17 files
 ```
 
 ### board/dk
 
 Contains a Board Support Package for the nRF52840 Developer Kit.
 
+### board/dk-solution
+
+Contains a Board Support Package for the nRF52840 Developer Kit, with a solution to the [BSP exercise](./nrf52-hal-buttons.md).
+
 ### board/dongle
+
+Contains a Board Support Package for the nRF52840 USB Dongle. You won't be using this.
+
+### board/dongle-fw
 
 Contains precompiled firmware for the nRF52 USB Dongle. Use in the *nRF52 Radio Exercise*.
 
@@ -80,15 +93,27 @@ Contains precompiled firmware for the nRF52 USB Dongle. Use in the *nRF52 Radio 
 
 Contains constants (e.g. USB Vendor IDs) shared by multiple crates.
 
-### radio
+### hal-app
+
+Contains template and solution binary crates for the *nRF BSP* exercise.
+
+### loopback-fw
+
+Source code for the USB Dongle firmware to implement loopback mode.
+
+### puzzle-fw
+
+Source code for the USB Dongle firmware to implement puzzle mode. No, you won't find the solution to the puzzle in this source directory - nice try!
+
+### radio-app
 
 Contains template and solution binary crates for the *nRF Radio* exercise.
 
-### rtic-app
+### usb-app
 
 Contains template binary crates for the *nRF USB* exercise.
 
-### rtic-app-solutions
+### usb-app-solutions
 
 Contains solution binary crates for the *nRF USB* exercise.
 
@@ -96,14 +121,14 @@ Contains solution binary crates for the *nRF USB* exercise.
 
 Contains a template library crate for the *nRF USB* exercise. This library can parse USB descriptor information.
 
-### usb-lib-solution-get-descriptor-config
+### usb-lib-solutions/get-descriptor-config
 
 Contains a solution library crate for the *nRF USB* exercise.
 
-### usb-lib-solution-get-device
+### usb-lib-solutions/get-device
 
 Contains a solution library crate for the *nRF USB* exercise.
 
-### usb-lib-solution-set-config
+### usb-lib-solutions/set-config
 
 Contains a solution library crate for the *nRF USB* exercise.
