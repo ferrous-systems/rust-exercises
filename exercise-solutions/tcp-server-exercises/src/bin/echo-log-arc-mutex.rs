@@ -1,3 +1,8 @@
+//! A solution to the TCP Server exercise, using Arc and Mutex.
+//!
+//! Opens a TCP port, readings incoming strings, stores them in a shared log
+//! and then echoes them back.
+
 use std::{
     io::{self, BufRead as _, BufReader, BufWriter, Write as _},
     net::{TcpListener, TcpStream},

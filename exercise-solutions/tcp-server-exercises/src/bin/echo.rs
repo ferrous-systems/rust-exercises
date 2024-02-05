@@ -1,3 +1,8 @@
+//! A solution to the TCP Server exercise, using non-scoped threads.
+//!
+//! Opens a TCP port, readings incoming strings and then echoes them back.
+//! The incoming strings are not logged.
+
 use std::{
     io::{self, BufRead as _, BufReader, BufWriter, Write as _},
     net::{TcpListener, TcpStream},
