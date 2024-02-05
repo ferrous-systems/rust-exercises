@@ -2,7 +2,7 @@
 
 ## Setting the log level
 
-Enter the appropriate command into the terminal you're using. This will set the log level for this session.
+Enter the appropriate command into the terminal you're using. This will set the log level for this session. If you want to subsequently build the binary from inside VS Code, make sure you open VS Code from a terminal that has this variable set.
 
 ### MacOS & Linux
 
