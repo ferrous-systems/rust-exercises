@@ -2,7 +2,9 @@
 
 ## Workshop Materials
 
-You will need a local copy of the workshop materials. We recommend the Github release as it contains pre-compiled HTML docs, but you can clone the repo with `git` if you prefer.
+You will need a local copy of the workshop materials. We recommend the Github release as it contains pre-compiled HTML docs and pre-compiled dongle firmware, but you can clone the repo with `git` and check out the appropriate tag as well if you prefer.
+
+Ask your trainer which release/tag you should be using.
 
 ### Github Release
 
@@ -17,7 +19,7 @@ git clone https://github.com/ferrous-systems/rust-exercises.git
 cd rust-exercises
 ```
 
-The workshop repository contains all workshop materials, i.e. code snippets, custom tools and the source for this handbook. Your instructor will tell you if you should checkout a specific git tag.
+The git repository contains all workshop materials, i.e. code snippets, custom tools and the source for this handbook, but not the pre-compiled dongle firmware.
 
 ## Firmware
 
@@ -87,7 +89,7 @@ Contains a Board Support Package for the nRF52840 USB Dongle. You won't be using
 
 ### board/dongle-fw
 
-Contains precompiled firmware for the nRF52 USB Dongle. Use in the *nRF52 Radio Exercise*.
+Contains pre-compiled firmware for the nRF52 USB Dongle. Use in the *nRF52 Radio Exercise*.
 
 ### consts
 

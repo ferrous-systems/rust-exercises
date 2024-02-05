@@ -2,7 +2,7 @@
 
 ## Setting the log level
 
-Enter the appropriate command into the terminal you're using. This will set the log level for this session. If you want to subsequently build the binary from inside VS Code, make sure you open VS Code from a terminal that has this variable set.
+Enter the appropriate command into the terminal you're using. This will set the log level for this session.
 
 ### MacOS & Linux
 
@@ -22,17 +22,34 @@ $Env:DEFMT_LOG = "warn"
 set DEFMT_LOG=warn
 ```
 
-## Run from VS Code
+### Inside VS Code
+
+To get VS Code to pick up the environment variable, you can either:
+
+* set it as above and then open VS Code from inside the terminal (ensuring it wasn't already open and hence just getting you a new window on the existing process), or
+* add it to your rust-analyzer configuration, by placing this in your `settings.json` file:
+
+  ```json
+  "rust-analyzer.runnables.extraEnv": {
+      "DEFMT_LOG": "warn"
+  }
+  ```
+
+  This will ensure the variable is set whenever rust-analyzer executes `cargo run` for you.
+
+## Running from VS Code
 
 ✅ Open the `nrf52-code/radio-app/src/bin/hello.rs` file, go to the "Run and Debug" button on the left, and then click the "Run" triangle next to *Debug Microcontroller*.
 
 > Note: you will get the "Run" button if the Rust analyzer's workspace is set to the `nrf52-code/radio-app` folder. This will be the case if the current folder in VS code (left side panel) is set to `nrf52-code/radio-app`.
 
+## Running from the console
+
 If you are not using VS code, you can run the program out of your console. Enter the command `cargo run --bin hello` from within the `nrf52-code/radio-app` folder. Rust Analyzer's "Run" button is a short-cut for that command.
 
-> NOTE: If you run into an error along the lines of "Debug power request failed" retry the operation and the error should disappear.
+## Expected output
 
-Expected output:
+> NOTE: If you run into an error along the lines of "Debug power request failed" retry the operation and the error should disappear.
 
 ```console
 $ cargo run --bin hello
@@ -45,14 +62,16 @@ Hello, world!
 `dk::exit()` called; exiting ...
 ```
 
-`cargo run` will compile the application and then invoke the `probe-rs` tool with its argument set to the path of the output ELF file.
+## What just happened?
+
+`cargo run` will compile the application and then invoke the `probe-rs` tool with its final argument set to the path of the output ELF file.
 
 The `probe-rs` tool will
 
-- flash (load) the program on the microcontroller
-- reset the microcontroller to make it execute the new program
-- collect logs from the microcontroller and print them to the console
-- print a backtrace of the program if the halt was due to an error.
+* flash (load) the program on the microcontroller
+* reset the microcontroller to make it execute the new program
+* collect logs from the microcontroller and print them to the console
+* print a backtrace of the program if the halt was due to an error.
 
 Should you need to configure the `probe-rs` invocation to e.g. flash a different microcontroller you can do that in the `.cargo/config.toml` file.
 

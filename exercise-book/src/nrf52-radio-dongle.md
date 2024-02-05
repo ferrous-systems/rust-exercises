@@ -22,7 +22,8 @@ You can also use our `cargo xtask usb-list` tool, a minimal cross-platform versi
 Output should look like this:
 
 ```console
-$ cargo xtask usb-list
+radio-app/ $ cd ../..
+rust-exercises/ $ cargo xtask usb-list
 (..)
 Bus 001 Device 016: ID 1915:521f <- nRF52840 Dongle (in bootloader mode)
 ```
@@ -36,8 +37,10 @@ For the next section you'll need to flash the `loopback` file onto the Dongle.
 ✅ Run the following command:
 
 ```console
-nrfdfu nrf52-code/boards/dongle/loopback
+nrfdfu nrf52-code/boards/dongle-fw/loopback
 ```
+
+If the file is missing, you might be in a git checkout instead of a Github release tarball. Grab the Github release tarball and find the binary in there.
 
 Expected output:
 
