@@ -69,7 +69,7 @@ fn main() -> Result<(), io::Error> {
 ### Solving borrow checker issues
 
 <details>
-    <summary>At some point you may run into borrow checker issues because you essentially try writing into a stream as you read from it.</summary>
+    <summary>At some point you may run into borrow checker issues because you are essentially trying to write into a stream as you read from it.</summary>
 
 The solution is to end up with two separate owned variables that perform reading and writing respectively.
 
