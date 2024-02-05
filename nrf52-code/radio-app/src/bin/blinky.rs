@@ -9,8 +9,7 @@ use radio_app as _;
 
 #[entry]
 fn main() -> ! {
-    // to enable more verbose logs, go to your `Cargo.toml` and set defmt logging levels
-    // to `defmt-trace` by changing the `default = []` entry in `[features]`
+    // to enable more verbose logs, set the `DEFMT_LOG` environment variable.
 
     let board = dk::init().unwrap();
 
