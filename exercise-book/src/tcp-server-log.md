@@ -1,7 +1,7 @@
 <!-- markdownlint-disable MD029 MD031 -->
 # Share data between connections
 
-In this exercise we will take our interactive server and will add a common log for *lengths of messages* that each client sends us.
+In this exercise we will take our interactive server and add a common log for *lengths of messages* that each client sends us.
 We will explore synchronization primitives that Rust offers in its Standard Library.
 
 ## After completing this exercise you are able to
@@ -28,7 +28,7 @@ We will explore synchronization primitives that Rust offers in its Standard Libr
 
 ### Part 2
 
-5. Use [`thread::scope`](https://doc.rust-lang.org/stable/std/thread/fn.scope.html) function to get rid of reference counting for `log` vector
+5. Use the [`thread::scope`](https://doc.rust-lang.org/stable/std/thread/fn.scope.html) function to get rid of reference counting for `log` vector
 
 ### Part 3
 
