@@ -83,3 +83,12 @@ There are two general approaches to do so:
 ### Troubleshooting I/O operations
 
 If you decide to use `BufWriter` to handle writes you may not see any text echoed back in the terminal when using `nc`. As the name applies the output is buffered, and you need to explicitly call `flush()` method for text to be send out over the TCP socket.
+
+### Running `nc` on Windows
+
+Windows doesn't come with a TCP client out of the box. You have a number of options:
+
+1. If you have WSL setup your Linux environment has `nc` (or it is available as a package). You may either run the exercise in your Linux environment, too, or connect from Linux guest to your host.
+2. There's a Windows-native version of [`ncat` from Nmap project that is available as a separate portable download](https://nmap.org/ncat/)
+3. If you have access to a remote Linux server you can use SSH tunneling to connect remote `nc` to a TCP server running on your local machine. `ssh -L 7878:<remote_host>:8888 <user>&<remote_host> -p <ssh_port>` will let you run `nc 0.0.0.0 8888` on your Linux box and talk to a locally run TCP Echo server example.
+4. If you have friends that can run `nc` you can let them connect to your developer machine and play a role of your client. It's often possible if you share the same local network with them, but you can always rely on [`ngrok`](https://ngrok.com/docs/tcp/) or [`cloudflared`](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/configure-tunnels/local-management/configuration-file/#supported-protocols) to expose a specific TCP port to anyone on the internet.

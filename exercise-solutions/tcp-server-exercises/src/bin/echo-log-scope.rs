@@ -1,7 +1,7 @@
 use std::{
     io::{self, BufRead as _, BufReader, BufWriter, Write as _},
     net::{TcpListener, TcpStream},
-    sync::{Mutex, MutexGuard},
+    sync::Mutex,
     thread,
 };
 
@@ -11,7 +11,7 @@ fn handle_client(stream: TcpStream, log: &Mutex<Vec<usize>>) -> Result<(), io::E
     for line in reader.lines() {
         let line = line?;
         {
-            let mut log: MutexGuard<'_, _> = log.lock().unwrap();
+            let mut log = log.lock().unwrap();
             log.push(line.len());
         }
         writer.write_all(line.as_bytes())?;
@@ -27,12 +27,15 @@ fn main() -> Result<(), io::Error> {
     let listener = TcpListener::bind("127.0.0.1:7878")?;
     thread::scope(|scope| {
         for stream in listener.incoming() {
-            let stream = stream?;
+            let Ok(stream) = stream else {
+                eprintln!("Bad connection");
+                continue;
+            };
 
             scope.spawn(|| {
                 handle_client(stream, &log).unwrap();
             });
         }
-        Ok(())
-    })
+    });
+    Ok(())
 }
