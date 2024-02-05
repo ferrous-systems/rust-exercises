@@ -1,7 +1,6 @@
 [target.thumbv7em-none-eabihf]
-# set custom cargo runner to flash & run on embedded target when we call `cargo run`
-# for more information, check out https://github.com/probe-rs
-runner = "probe-rs run --chip nRF52840_xxAA"
+# set custom cargo runner to DFU the dongle
+runner = "nrfdfu"
 rustflags = [
   "-C", "link-arg=-Tlink.x", # use the cortex-m-rt linker script
   "-C", "linker=flip-link", # adds stack overflow protection
