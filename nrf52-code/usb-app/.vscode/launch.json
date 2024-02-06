@@ -13,7 +13,7 @@
       "coreConfigs": [
         {
           // Change this to the binary you want to debug
-          "programBinary": "${workspaceFolder}/target/thumbv7em-none-eabihf/debug/panic",
+          "programBinary": "${workspaceFolder}/target/thumbv7em-none-eabihf/debug/rtic-hello",
           "rttEnabled": true
         }
       ],

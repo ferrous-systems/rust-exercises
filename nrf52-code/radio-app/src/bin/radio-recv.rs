@@ -41,7 +41,7 @@ fn main() -> ! {
             defmt::println!(
                 "received: {} (CRC = {:X})",
                 //                    ^^ print as uppercase hexadecimal
-                str::from_utf8(&*packet).expect("response is not valid UTF-8"),
+                str::from_utf8(&packet).expect("response is not valid UTF-8"),
                 crc
             );
         }

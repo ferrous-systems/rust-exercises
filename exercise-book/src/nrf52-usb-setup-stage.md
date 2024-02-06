@@ -54,7 +54,7 @@ You should return `Err(Error::xxx)` if the properties aren't met.
 You will also find this information in the `// TODO implement ...` comment in the `Request::parse()` function of `lib.rs` file.
  > NOTE: If you'd like to learn more, take a look at Section 9.4.3 Get Descriptor of the USB specification.
 
-See `nrf52-code/usb-lib-solution-get-device/src/lib.rs` for a solution.
+See `nrf52-code/usb-lib-solutions/get-device/src/lib.rs` for a solution.
 
 ✅ Read incoming request information and pass it to the parser:
 

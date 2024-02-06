@@ -15,7 +15,7 @@ The starter `nrf52-code/usb-lib` package contains unit tests for these other req
 
 If you need a reference, you can find solutions to parsing `GET_DESCRIPTOR Configuration` and `SET_CONFIGURATION` requests in the following files:
 
-- `nrf52-code/usb-lib-solution-get-descriptor-config`
-- `nrf52-code/usb-lib-solution-set-config`
+- `nrf52-code/usb-lib-solutions/get-descriptor-config`
+- `nrf52-code/usb-lib-solutions/set-config`
 
-Each file contains just enough code to parse the request in its name and the `GET_DESCRIPTOR Device` and `SET_ADDRESS` requests. So you can refer to `nrf52-code/usb-lib-solution-get-descriptor-config` without getting "spoiled" about how to parse the `SET_CONFIGURATION` request.
+Each file contains just enough code to parse the request in its name and the `GET_DESCRIPTOR Device` and `SET_ADDRESS` requests. So you can refer to `nrf52-code/usb-lib-solutions/get-descriptor-config` without getting "spoiled" about how to parse the `SET_CONFIGURATION` request.

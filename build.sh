@@ -35,7 +35,7 @@ pushd radio-app
 cargo build --target=thumbv7em-none-eabihf --release
 cargo fmt --check
 popd
-for i in usb-lib*; do
+for i in usb-lib usb-lib-solutions/*; do
     pushd $i
     cargo build --target=thumbv7em-none-eabihf --release
     cargo fmt --check

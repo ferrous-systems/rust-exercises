@@ -23,4 +23,4 @@ Here are some things for you to try out:
 
 - Repeat the previous experiment but use the channel with the lowest idle energy.
 
-- Pick the channel with the lowest idle energy. Run the `loopback` app on the Dongle and set its listening channel to the chosen channel. Modify the DK program to perform a `send` operation immediately followed by a `try_send` operation. The `try_send` operation will collide with the response of the Dongle (remember: the Dongle responds to all incoming packets). Find a ED threshold that detects this collision and makes `try_send` return the `Err` variant.
+- Pick the channel with the lowest idle energy. Run the `loopback` app on the Dongle and set its listening channel to the chosen channel. Modify the DK program to perform a `send` operation immediately followed by a `try_send` operation. The `try_send` operation will collide with the response of the Dongle (remember: the Dongle responds to all incoming packets after a 5ms delay - see the `loopback-fw` program for details). Find a ED threshold that detects this collision and makes `try_send` return the `Err` variant.

@@ -22,7 +22,8 @@ You can also use our `cargo xtask usb-list` tool, a minimal cross-platform versi
 Output should look like this:
 
 ```console
-$ cargo xtask usb-list
+radio-app/ $ cd ../..
+rust-exercises/ $ cargo xtask usb-list
 (..)
 Bus 001 Device 016: ID 1915:521f <- nRF52840 Dongle (in bootloader mode)
 ```
@@ -36,8 +37,10 @@ For the next section you'll need to flash the `loopback` file onto the Dongle.
 ✅ Run the following command:
 
 ```console
-nrfdfu nrf52-code/boards/dongle/loopback
+nrfdfu nrf52-code/boards/dongle-fw/loopback
 ```
+
+If the file is missing, you might be in a git checkout instead of a Github release tarball. Grab the Github release tarball and find the binary in there.
 
 Expected output:
 
@@ -65,10 +68,13 @@ The `loopback` app will log messages over the USB interface. To display these me
 
 ❗ Do not use serial terminal emulators like `minicom` or `screen`. They use the USB TTY ACM interface in a slightly different manner and may result in data loss.
 
-✅ Run `cargo xtask serial-term`. It shows you the logging output the Dongle is sending on its serial interface to your computer. This helps you monitor what's going on at the Dongle and debug connection issues. You should see the following output:
+✅ Run `cargo xtask serial-term`. It shows you the logging output the Dongle is sending on its serial interface to your computer. This helps you monitor what's going on at the Dongle and debug connection issues. Start with the Dongle unplugged and you should see the following output:
 
 ```console
 $ cargo xtask serial-term
+    Finished dev [unoptimized + debuginfo] target(s) in 0.02s
+     Running `xtask/target/debug/xtask serial-term`
+(waiting for the Dongle to be connected)
 deviceid=588c06af0877c8f2 channel=20 TxPower=+8dBm app=loopback-fw
 ```
 

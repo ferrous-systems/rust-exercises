@@ -12,7 +12,7 @@ use cortex_m_rt::entry;
 use usb_device::class_prelude::UsbBusAllocator;
 use usb_device::device::{UsbDevice, UsbDeviceBuilder, UsbVidPid};
 use usbd_hid::hid_class::HIDClass;
-use usbd_serial::{SerialPort, USB_CLASS_CDC};
+use usbd_serial::SerialPort;
 
 use dongle::peripheral::interrupt;
 use dongle::{
@@ -102,11 +102,14 @@ fn main() -> ! {
     USB_HID.load(HIDClass::new(bus_ref, desc, 100));
 
     let vid_pid = UsbVidPid(consts::USB_VID_DEMO, consts::USB_PID_DONGLE_LOOPBACK);
+    // See https://www.usb.org/sites/default/files/iadclasscode_r10.pdf
     USB_DEVICE.load(
         UsbDeviceBuilder::new(bus_ref, vid_pid)
             .manufacturer("Ferrous Systems")
             .product("Dongle Loopback")
-            .device_class(USB_CLASS_CDC)
+            .device_class(0xEF) // miscellaneous
+            .device_sub_class(2)
+            .device_protocol(1)
             .max_packet_size_0(64) // (makes control transfers 8x faster)
             .build(),
     );
@@ -145,6 +148,8 @@ fn main() -> ! {
                     crc,
                     pkt.lqi()
                 );
+                // reverse the bytes, so olleh -> hello
+                pkt.reverse();
                 // send packet after 5ms (we know the client waits for 10ms and
                 // we want to ensure they are definitely in receive mode by the
                 // time we send this reply)

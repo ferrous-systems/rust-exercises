@@ -158,7 +158,7 @@ cargo-size 0.3.6
 ✅ In the terminal run the following command from the `nrf52-code/radio-app` folder. This will build and run a simple program on the DK to test the set-up.
 
 ```console
-cargo run --bin hello -- --erase-all
+cargo run --bin hello -- --allow-erase-all
 ```
 
-The `-- --erase-all` option gives the `--erase-all` argument to `probe-rs`, which gives it permission to clear out the pre-installed Nordic bootloader code. You only need that the first time you try and program the nRF52840-DK with `cargo run`.
+The `-- --allow-erase-all` option gives the `--allow-erase-all` argument to `probe-rs`, which gives it permission to clear out the pre-installed Nordic bootloader code. You only need that the first time you try and program the nRF52840-DK with `cargo run`.
