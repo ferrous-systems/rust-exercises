@@ -1,13 +1,7 @@
 #![no_std]
 
 use cortex_m_rt::exception;
-// use panic_probe as _;
-
-#[panic_handler]
-fn panic(info: &core::panic::PanicInfo) -> ! {
-    defmt::error!("Oh no! {}", defmt::Debug2Format(info));
-    dk::fail();
-}
+use panic_probe as _;
 
 /// The default HardFault handler just spins, so replace it.
 ///
