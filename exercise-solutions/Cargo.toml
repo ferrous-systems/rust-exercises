@@ -9,4 +9,5 @@ members = [
   "shapes-part-1",
   "shapes-part-2",
   "shapes-part-3",
+  "durable-file/*",
 ]
