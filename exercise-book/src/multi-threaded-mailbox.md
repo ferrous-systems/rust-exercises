@@ -16,9 +16,9 @@ In this exercise, we will take our "Connected Mailbox" and make it multi-threade
 
 ## Tasks
 
-1. Use the `std::thread::spawn` API to start a new thead when your main loop produces a new connection to a client. The `handle_client` function should be executed within that spawned thread. Note how Rust doesn't let you pass `&mut VecDequeue<String>` into the spawned thread, both because you have multiple `&mut` references (not allowed) and because the thread might live longer than the `VecDeque` (which only lives whilst the `main()` function is running, and `main()` might quit at any time with an early return or a break out of the connection loop).
+1. Use the `std::thread::spawn` API to start a new thead when your main loop produces a new connection to a client. The `handle_client` function should be executed within that spawned thread. Note how Rust doesn't let you pass `&mut VecDeque<String>` into the spawned thread, both because you have multiple `&mut` references (not allowed) and because the thread might live longer than the `VecDeque` (which only lives whilst the `main()` function is running, and `main()` might quit at any time with an early return or a break out of the connection loop).
 
-2. Convert the `VecDeque` into a `Arc<Mutex<VecDequeue>>` (use `std::sync::Mutex`). Change the `handle_client` function to take a `&Mutex<VecDeque>`. Clone the Arc handle with `.clone()` and `move` that cloned handle into the new thread. Change the `handle_client` function to call `let mut queue = your_mutex.lock().unwrap();` whenever you want to access the queue inside the Mutex.
+2. Convert the `VecDeque` into a `Arc<Mutex<VecDeque>>` (use `std::sync::Mutex`). Change the `handle_client` function to take a `&Mutex<VecDeque>`. Clone the Arc handle with `.clone()` and `move` that cloned handle into the new thread. Change the `handle_client` function to call `let mut queue = your_mutex.lock().unwrap();` whenever you want to access the queue inside the Mutex.
 
 3. Convert the `Arc<Mutex<VecDeque>>` into a `Mutex<VecDeque>` and introduce scoped threads with `std::thread::scope`. The `Mutex<VecDeque>` should be created outside of the scope (ensure it lives longer than any of the scoped threads), but the connection loop should be inside the scope. Change `std::thread::spawn` to be `s.spawn`, where `s` is the name of the argument to the scope closure.
 
