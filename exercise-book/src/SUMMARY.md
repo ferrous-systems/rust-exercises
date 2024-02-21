@@ -31,6 +31,19 @@
   - [Code Organization](./nrf52-code-organisation.md)
   - [Hardware](./nrf52-hardware.md)
   - [Software Tools](./nrf52-tools.md)
+- [References and Resources](./nrf52-references-resources.md)
+  - [Tooltips](./nrf52-tooltips.md)
+- [Troubleshooting](./nrf52-troubleshooting.md)
+  - [`cargo-size` is not working](./nrf52-troubleshoot-cargo-size.md)
+  - [Rust analyzer is not working](./nrf52-troubleshoot-rust-analyzer.md)
+  - [`cargo build` fails to link](./nrf52-troubleshoot-cargo-build.md)
+  - [Dongle USB functionality is not working](./nrf52-troubleshoot-usb-dongle.md)
+  - [`cargo run` errors](./nrf52-troubleshoot-cargo-run-error.md)
+  - [`no probe was found` error](./nrf52-troubleshoot-probe-not-found.md)
+  - [`location info is incomplete` error](./nrf52-troubleshoot-location-info.md)
+
+## nRF52 Radio Workbook
+
 - [nRF52 Radio Workbook](./nrf52-radio-workbook.md)
   - [Parts of an Embedded Program](./nrf52-radio-parts-embedded-program.md)
   - [Building an Embedded Program](./nrf52-radio-building-program.md)
@@ -52,8 +65,14 @@
     - [Collision avoidance](./nrf52-radio-collision-avoidance.md)
     - [Interrupt handling](./nrf52-radio-interrupt-handling.md)
     - [Starting a Project from Scratch](./nrf52-radio-from-scratch.md)
+
+## nRF52 HAL Workbook
+
 - [nRF52 HAL Workbook](./nrf52-hal-workbook.md)
   - [Adding Buttons](./nrf52-hal-buttons.md)
+
+## nRF52 USB Workbook
+
 - [nRF52 USB Workbook](./nrf52-usb-workbook.md)
   - [Listing USB Devices](./nrf52-usb-listing-usb-devices.md)
   - [Hello, world!](./nrf52-usb-hello-world.md)
@@ -87,16 +106,6 @@
   - [Getting it Configured](./nrf52-usb-getting-device-configured.md)
   - [Next Steps](./nrf52-usb-advanced-next-steps.md)
     - [Stack Overflow Protection](./nrf52-usb-stack-overflow-protection.md)
-- [References and Resources](./nrf52-references-resources.md)
-  - [Tooltips](./nrf52-tooltips.md)
-- [Troubleshooting](./nrf52-troubleshooting.md)
-  - [`cargo-size` is not working](./nrf52-troubleshoot-cargo-size.md)
-  - [Rust analyzer is not working](./nrf52-troubleshoot-rust-analyzer.md)
-  - [`cargo build` fails to link](./nrf52-troubleshoot-cargo-build.md)
-  - [Dongle USB functionality is not working](./nrf52-troubleshoot-usb-dongle.md)
-  - [`cargo run` errors](./nrf52-troubleshoot-cargo-run-error.md)
-  - [`no probe was found` error](./nrf52-troubleshoot-probe-not-found.md)
-  - [`location info is incomplete` error](./nrf52-troubleshoot-location-info.md)
 
 # Async Rust
 
