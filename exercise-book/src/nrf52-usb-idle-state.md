@@ -49,7 +49,7 @@ ERROR:usb_4 -- EP0IN: unexpected request; stalling the endpoint
 
 Note that these logs are from a Linux host where a `SET_CONFIGURATION` request is sent after the `SET_ADDRESS` request. On other OSes you may not get that request before the bus goes idle. Also note that there are some `GET_DESCRIPTOR DeviceQualifier` requests in this case; you do not need to parse them in the `usb` crate as they'll be rejected (stalled) anyways.
 
-You can find traces for other OSes in these files (they are in the `nrf52-code/usb-app-solutions/traces` folder):
+You can find traces for other OSes in these files (they are in the [`nrf52-code/usb-app-solutions/traces`](../../nrf52-code/usb-app-solutions/traces) folder):
 
 - `linux-enumeration.txt` (same logs as the ones shown above)
 - `macos-enumeration.txt`

@@ -8,7 +8,7 @@ $ cargo xtask usb-list
 Bus 001 Device 010: ID 1366:1015 <- J-Link on the nRF52840 Development Kit
 ```
 
-The goal of this workshop is to get the nRF52840 SoC to show in this list. The embedded application will use the USB Vendor ID (VID) and USB Product ID (PID) defined in `nrf52-code/consts`; `cargo xtask usb-list` will highlight the USB device that matches that VID/PID pair, like this:
+The goal of this workshop is to get the nRF52840 SoC to show in this list. The embedded application will use the USB Vendor ID (VID) and USB Product ID (PID) defined in [`nrf52-code/consts`](../../nrf52-code/consts); `cargo xtask usb-list` will highlight the USB device that matches that VID/PID pair, like this:
 
 ```console
 $ cargo xtask usb-list

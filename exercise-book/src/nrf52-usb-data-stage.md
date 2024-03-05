@@ -34,7 +34,7 @@ The raw values you need to pack into the descriptor are as follows. Note, we won
 - `iManufacturer = iProduct = iSerialNumber = None`, string descriptors not supported
 - `bNumConfigurations = 1`, must be at least `1` so this is the minimum value
 
->(\*) the `consts` crate refers to the crate in the `nrf52-code/consts` folder. It is already part of the `usb-app` crate dependencies.
+>(\*) the `consts` crate refers to the crate in the [`nrf52-code/consts`](../../nrf52-code/consts) folder. It is already part of the `usb-app` crate dependencies.
 
 ### Use the `usb2::device::Descriptor` abstraction
 

@@ -18,7 +18,7 @@ We have provided just such a library in [`nrf52-code/usb-lib`](../../nrf52-code/
 
 When you need to write some `no_std` code that does not involve device-specific I/O you should consider writing it as a separate crate. This way, you can test it on your development machine (e.g. `x86_64`) using the standard `cargo test` functionality.
 
-So that's what we'll do here. In `nrf52-code/usb-lib/src/lib.rs` you'll find starter code for writing a `no_std` SETUP data parser. The starter code contains some unit tests; you can run them with `cargo test` (from within the `usb-lib` folder) or you can use Rust Analyzer's "Test" button in VS code.
+So that's what we'll do here. In [`nrf52-code/usb-lib/src/lib.rs`](../../nrf52-code/usb-lib/src/lib.rs) you'll find starter code for writing a `no_std` SETUP data parser. The starter code contains some unit tests; you can run them with `cargo test` (from within the `usb-lib` folder) or you can use Rust Analyzer's "Test" button in VS code.
 
 You should see:
 
@@ -49,7 +49,7 @@ error: test failed, to rerun pass `--lib`
 
 ✅ Fix the tests by parsing `GET_DESCRIPTOR` requests for `DEVICE` descriptors.
 
-Modify `Request::parse()` in `nrf52-code/usb-lib/src/lib.rs` to recognize a `GET_DESCRIPTOR` request of type `DEVICE` so that the `get_descriptor_device` test passes. Note that the parser already handles `SET_ADDRESS` requests.
+Modify `Request::parse()` in [`nrf52-code/usb-lib/src/lib.rs`](../../nrf52-code/usb-lib/src/lib.rs) to recognize a `GET_DESCRIPTOR` request of type `DEVICE` so that the `get_descriptor_device` test passes. Note that the parser already handles `SET_ADDRESS` requests.
 
 ### Description of GET_DESCRIPTOR request
 
@@ -79,7 +79,7 @@ You should return `Err(Error::xxx)` if the properties aren't met.
 You will also find this information in the `// TODO implement ...` comment in the `Request::parse()` function of `lib.rs` file.
  > NOTE: If you'd like to learn more, take a look at Section 9.4.3 Get Descriptor of the USB specification.
 
-See `nrf52-code/usb-lib-solutions/get-device/src/lib.rs` for a solution.
+See [`nrf52-code/usb-lib-solutions/get-device/src/lib.rs`](../../nrf52-code/usb-lib-solutions/get-device/src/lib.rs) for a solution.
 
 ## Using our new parser
 

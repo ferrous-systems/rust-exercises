@@ -2,7 +2,7 @@
 
 Now let's say we want to change the previous program to count how many times the USB cable (port J3) has been connected and disconnected.
 
-✅ Open the `nrf52-code/usb-app/src/bin/task-state.rs` file.
+✅ Open the [`nrf52-code/usb-app/src/bin/task-state.rs`](../../nrf52-code/usb-app/src/bin/task-state.rs) file.
 
 Tasks run from start to finish, like functions, in response to events. To preserve some state between the different executions of a task we can add a *resource* to the task. In RTIC, resources are the mechanism used to *share* data between different tasks in a memory safe manner but they can also be used to hold task state.
 
@@ -32,4 +32,4 @@ idle: going to sleep
 on_power_event: cable connected 3 times
 ```
 
-You can find a solution to this exercise in the `nrf52-code/usb-app-solutions/src/bin/task-state.rs` file.
+You can find a solution to this exercise in the [`nrf52-code/usb-app-solutions/src/bin/task-state.rs`](../../nrf52-code/usb-app-solutions/src/bin/task-state.rs) file.

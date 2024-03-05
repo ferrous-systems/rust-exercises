@@ -98,10 +98,10 @@ INFO:usb_5 -- EP0: SetConfiguration { value: Some(42) }
 INFO:usb_5 -- entering the configured state
 ```
 
-These logs are from a Linux host. You can find traces for other OSes in these files (they are in the `nrf52-code/usb-app-solutions/traces` folder):
+These logs are from a Linux host. You can find traces for other OSes in these files (they are in the [`nrf52-code/usb-app-solutions/traces`](../../nrf52-code/usb-app-solutions/traces) folder):
 
 - `linux-configured.txt` (same logs as the ones shown above)
 - `win-configured.txt`, this file only contains the logs produced by running `cargo xtask usb-descriptors`
 - `macos-configured.txt`
 
-You can find a solution to this part of the exercise in `nrf52-code/usb-app-solutions/src/bin/usb-5.rs`.
+You can find a solution to this part of the exercise in [`nrf52-code/usb-app-solutions/src/bin/usb-5.rs`](../../nrf52-code/usb-app-solutions/src/bin/usb-5.rs).

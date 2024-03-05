@@ -4,11 +4,11 @@ After responding to the `GET_DESCRIPTOR Device` request the host will start send
 
 ## Update the parser
 
-The starter `nrf52-code/usb-lib` package contains unit tests for everything we need. Some of them have been commented out using a `#[cfg(TODO)]` attribute.
+The starter [`nrf52-code/usb-lib`](../../nrf52-code/usb-lib) package contains unit tests for everything we need. Some of them have been commented out using a `#[cfg(TODO)]` attribute.
 
 ✅ Remove all `#[cfg(TODO)]` attributes so that everything is enabled.
 
-✅ Update the parser in `nrf52-code/usb-lib` to handle `GET_DESCRIPTOR` requests for *Configuration Descriptors*.
+✅ Update the parser in [`nrf52-code/usb-lib`](../../nrf52-code/usb-lib) to handle `GET_DESCRIPTOR` requests for *Configuration Descriptors*.
 
 When the host issues a GET_DESCRIPTOR *Configuration* request the device needs to respond with the requested configuration descriptor *plus* all the interface and endpoint descriptors associated to that configuration descriptor during the DATA stage.
 
@@ -23,7 +23,7 @@ A GET_DESCRIPTOR *Configuration* request is determined by the high byte of its `
 
 [usb_spec]: ./nrf52-usb-usb-specification.md
 
-✅ Update the parser in `nrf52-code/usb-lib` to handle `SET_CONFIGURATION` requests.
+✅ Update the parser in [`nrf52-code/usb-lib`](../../nrf52-code/usb-lib) to handle `SET_CONFIGURATION` requests.
 
 See the section on [SET_CONFIGURATION](./nrf52-usb-getting-device-configured.md#set_configuration) for details on how to do this.
 
@@ -33,8 +33,8 @@ Once you've completed this, all your test cases should pass. If not, fix the cod
 
 If you need a reference, you can find solutions to parsing `GET_DESCRIPTOR Configuration` and `SET_CONFIGURATION` requests in the following files:
 
-- `nrf52-code/usb-lib-solutions/get-descriptor-config`
-- `nrf52-code/usb-lib-solutions/set-config`
+- [`nrf52-code/usb-lib-solutions/get-descriptor-config`](../../nrf52-code/usb-lib-solutions/get-descriptor-config)
+- [`nrf52-code/usb-lib-solutions/set-config`](../../nrf52-code/usb-lib-solutions/set-config)
 
 Each file contains just enough code to parse the request in its name and the `GET_DESCRIPTOR Device` and `SET_ADDRESS` requests. So you can refer to [`nrf52-code/usb-lib-solutions/get-descriptor-config`](../../nrf52-code/usb-lib-solutions/get-descriptor-config/src/lib.rs) without getting "spoiled" about how to parse the `SET_CONFIGURATION` request.
 
@@ -92,7 +92,7 @@ For this situation, the USB specification defines a device-side procedure for "s
 
 > This procedure should be used to deal with invalid requests, requests whose `SETUP` stage doesn't match any USB 2.0 standard request, and requests not supported by the device – for instance the `SET_DESCRIPTOR` request is not mandatory.
 
-✅ Use the `dk::usbd::ep0stall()` helper function to stall endpoint 0 in `nrf52-code/usb-app/src/bin/usb-4.rs` if an invalid request is received.
+✅ Use the `dk::usbd::ep0stall()` helper function to stall endpoint 0 in [`nrf52-code/usb-app/src/bin/usb-4.rs`](../../nrf52-code/usb-app/src/bin/usb-4.rs) if an invalid request is received.
 
 ## Updating Device State
 
