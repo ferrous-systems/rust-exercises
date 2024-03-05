@@ -15,13 +15,13 @@ When the host issues a GET_DESCRIPTOR *Configuration* request the device needs t
 As a reminder, all GET_DESCRIPTOR request types share the following properties:
 
 - `bmRequestType` is **0b10000000**
-- `bRequest` is **6** (i.e. the GET_DESCRIPTOR Request Code, defined in table 9-4 of the [USB specification][usb_spec])
+- `bRequest` is **6** (i.e. the GET_DESCRIPTOR Request Code, defined in Table 9-4 of the [USB specification])
 
 A GET_DESCRIPTOR *Configuration* request is determined by the high byte of its `wValue` field:
 
-- The high byte of `wValue` is **2** (i.e. the `CONFIGURATION` descriptor type, defined in table 9-5 of the [USB specification][usb_spec])
+- The high byte of `wValue` is **2** (i.e. the `CONFIGURATION` descriptor type, defined in Table 9-5 of the [USB specification])
 
-[usb_spec]: ./nrf52-usb-usb-specification.md
+[USB specification]: ./nrf52-usb-usb-specification.md
 
 ✅ Update the parser in [`nrf52-code/usb-lib`](../../nrf52-code/usb-lib) to handle `SET_CONFIGURATION` requests.
 

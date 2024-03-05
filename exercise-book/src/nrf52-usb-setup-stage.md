@@ -67,7 +67,7 @@ In this step of the exercise, we only need to parse DEVICE descriptor requests. 
 - the wIndex is **0** for our purposes
 - ❗️you need to fetch the descriptor type from the high byte of `wValue`, and the descriptor index from the the low byte of `wValue`
 
-Check section 9.4.3 of the [USB specification][usb_spec] for a very detailed description of the requests. All the constants we'll be using are also described in Tables 9-3, 9-4 and 9-5 of the same document. Or, you can refer to [Chapter 6 of USB In a Nutshell](https://www.beyondlogic.org/usbnutshell/usb6.shtml).
+Check Section 9.4.3 of the [USB specification] for a very detailed description of the requests. All the constants we'll be using are also described in Tables 9-3, 9-4 and 9-5 of the same document. Or, you can refer to [Chapter 6 of USB In a Nutshell](https://www.beyondlogic.org/usbnutshell/usb6.shtml).
 
 You should return `Err(Error::xxx)` if the properties aren't met.
 
@@ -77,7 +77,6 @@ You should return `Err(Error::xxx)` if the properties aren't met.
 - use bit shifts (`>>`) and casts (`as u8`) to get the high/low bytes of `wValue`
 
 You will also find this information in the `// TODO implement ...` comment in the `Request::parse()` function of `lib.rs` file.
- > NOTE: If you'd like to learn more, take a look at Section 9.4.3 Get Descriptor of the USB specification.
 
 See [`nrf52-code/usb-lib-solutions/get-device/src/lib.rs`](../../nrf52-code/usb-lib-solutions/get-device/src/lib.rs) for a solution.
 
@@ -115,5 +114,5 @@ Goal reached; move to the next section
 
 You can find a solution to this step in [`nrf52-code/usb-app-solutions/src/bin/usb-2.rs`](../../nrf52-code/usb-app-solutions/src/bin/usb-2.rs).
 
-[usb_spec]: ./nrf52-usb-usb-specification.md
+[USB specification]: ./nrf52-usb-usb-specification.md
 [usb_2]: ../../nrf52-code/usb-app/src/bin/usb-2.rs

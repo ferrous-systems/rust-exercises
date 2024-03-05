@@ -16,4 +16,4 @@ Going back to our [enumeration steps](./nrf52-usb-usb-enumeration.md), we are ex
 
 For detailed information about endpoints check Section 5.3.1 *Device Endpoints*, in the [USB 2.0 specification][usb_spec]. Or you can look at [Chapter 3 of USB In a Nutshell](https://www.beyondlogic.org/usbnutshell/usb3.shtml#Endpoints).
 
-[usb_spec]: ./nrf52-usb-usb-specification.md
+[USB specification]: ./nrf52-usb-usb-specification.md
