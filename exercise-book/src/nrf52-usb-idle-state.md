@@ -55,7 +55,7 @@ You can find traces for other OSes in these files (they are in the `nrf52-code/u
 - `macos-enumeration.txt`
 - `win-enumeration.txt`
 
-✅ Double check that the enumeration works by running [`cargo xtask usb-list`](./listing-usb-devices.md) while `usb-4.rs` is running.
+✅ Double check that the enumeration works by running [`cargo xtask usb-list`](./nrf52-usb-listing-usb-devices.md) while `usb-4.rs` is running.
 
 ```console
 Bus 001 Device 013: ID 1366:1015 <- J-Link on the nRF52840 Development Kit
@@ -65,4 +65,4 @@ Bus 001 Device 016: ID 1209:0717 <- nRF52840 on the nRF52840 Development Kit
 
 Both the J-Link and the device implemented by your firmware should appear in the list.
 
-You can find a working solution up to this point in `nrf52-code/usb-app-solutions/src/bin/usb-4.rs`. Note that the solution uses the `usb2` crate to parse SETUP packets and that crate supports parsing all standard requests.
+You can find a working solution up to this point in [`nrf52-code/usb-app-solutions/src/bin/usb-4.rs`](../../nrf52-code/usb-app-solutions/src/bin/usb-4.rs). Note that the solution uses the `usb2` crate to parse SETUP packets and that crate supports parsing all standard requests.

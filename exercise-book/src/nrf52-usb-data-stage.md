@@ -1,10 +1,10 @@
 # USB-3: DATA Stage
 
-The next step is to respond to the GET_DESCRIPTOR request with a device descriptor.
+The next step is to respond to the `GET_DESCRIPTOR` request for our device descriptor, with an actual device descriptor that describes our USB Device.
 
-❗️ Keep the cable connected to the J3 port for the rest of the workshop
+## Handle the request
 
-## ✅ Open the `nrf52-code/usb-app/src/bin/usb-3.rs` file
+✅ Open the [`nrf52-code/usb-app/src/bin/usb-3.rs`][usb_3] file
 
 Part of this response is already implemented. We'll go through this.
 
@@ -12,13 +12,13 @@ We'll use the `dk::usb::Ep0In` abstraction. An instance of it is available in th
 
 The `Ep0In` API has two methods: `start` and `end`. `start` is used to start a DATA stage; this method takes a *slice of bytes* (`[u8]`) as argument; this argument is the response data. The `end` method needs to be called after `start`, when the EP0DATADONE event is raised, to complete the control transfer. `Ep0In` will automatically issue the STATUS stage that must follow the DATA stage.
 
-## ✅ Handle the EP0DATADONE event
+✅ Handle the `EP0DATADONE` event
 
-Do this by calling the `end` method of the `EP0In` API.
+Do this by calling the `end` method on the `EP0In` instance.
 
-## ✅ Implement the response to the GET_DESCRIPTOR request.
+✅ Implement the response to the `GET_DESCRIPTOR` request for device descriptors.
 
-Extend `usb-3.rs` so that it uses `Ep0In` to respond to the `GET_DESCRIPTOR Device` request (and only to that request).
+Extend [`nrf52-code/usb-app/src/bin/usb-3.rs`][usb_3] so that it uses `Ep0In` to respond to the `GET_DESCRIPTOR` request (but only for device descriptors - no other kind of descriptor).
 
 ### Values of the device descriptor
 
@@ -38,7 +38,7 @@ The raw values you need to pack into the descriptor are as follows. Note, we won
 
 ### Use the `usb2::device::Descriptor` abstraction
 
-Although you can create the device descriptor by hand as an array filled with magic values we *strongly* recommend you use the `usb2::device::Descriptor` abstraction. The crate is already in the dependency list of the project; you can open its API documentation with the following command: `cargo doc -p usb2 --open`.
+Although you can create the device descriptor by hand as an array filled with magic values we *strongly* recommend you use the `usb2::device::Descriptor` abstraction. The crate is already in the dependency list of the project; browse to the `usb2` crate in the `cargo doc` output [you opened earlier](./nrf52-usb-api-documentation.md).
 
 ### The length of the device descriptor
 
@@ -48,7 +48,7 @@ The device descriptor is 18 bytes long but the host may ask for fewer bytes (see
 
 ### Expected log output
 
-Once you have successfully responded to the GET_DESCRIPTOR Device request you should get logs like these (if you are logging like `usb-3` does):
+Once you have successfully responded to the GET_DESCRIPTOR Device request you should get logs like these (if you are logging like our solution does):
 
 ```text
 USB: UsbReset @ Duration { secs: 0, nanos: 211334227 }
@@ -72,4 +72,6 @@ ERROR unknown request (goal achieved if GET_DESCRIPTOR Device was handled before
 `dk::exit()` called; exiting ...
 ```
 
-A solution to this exercise can be found in `nrf52-code/usb-app-solutions/src/bin/usb-3.rs`.
+A solution to this exercise can be found in [`nrf52-code/usb-app-solutions/src/bin/usb-3.rs`](../../nrf52-code/usb-app-solutions/src/bin/usb-3.rs).
+
+[usb_3]: ../../nrf52-code/usb-app/src/bin/usb-3.rs

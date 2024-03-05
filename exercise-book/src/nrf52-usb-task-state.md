@@ -14,7 +14,7 @@ In the starter code a resource is used to *move* (by value) the POWER peripheral
 
 To elaborate more on this *move* action: in the `svd2rust` API, peripheral types like `POWER` are *singletons* (only a single value of that type can ever exist). The consequence of this design is that holding a peripheral instance, like `POWER`, *by value* means that the function (or task) has exclusive access, or ownership, over the peripheral. This is the case of the `init` function: it owns the `POWER` peripheral but then transfers ownership over it to a task using the resource initialization mechanism.
 
-We have moved the POWER peripheral into the task because we want to clear the USBDETECTED interrupt flag after it has been set by the hardware. If we miss this step the `on_power_event` task (function) will be called again once it returns and then again and again and again (ad infinitum).
+We have moved the POWER peripheral into the task because we want to clear the `USBDETECTED` interrupt flag after it has been set by the hardware. If we miss this step the `on_power_event` task (function) will be called again once it returns and then again and again and again (ad infinitum).
 
 Also note that in the starter code the `idle` function has been modified. Pay attention to the logs when you run the starter code.
 

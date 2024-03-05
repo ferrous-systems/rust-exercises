@@ -50,13 +50,8 @@ mod app {
 
         match event {
             Event::UsbReset => todo!(),
-
+            Event::UsbEp0Setup => todo!(),
             Event::UsbEp0DataDone => todo!(),
-            // leave this at it is for now.
-            Event::UsbEp0Setup => {
-                defmt::println!("goal reached; move to the next section");
-                dk::exit();
-            }
         }
     }
 }

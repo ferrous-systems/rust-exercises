@@ -50,15 +50,13 @@ mod app {
 
         match event {
             Event::UsbReset => {
-                // going from the Default state to the Default state is a no-operation
                 defmt::println!("returning to the Default state");
             }
-            Event::UsbEp0DataDone => todo!(),
-            // leave this at it is for now.
             Event::UsbEp0Setup => {
-                defmt::println!("goal reached; move to the next section");
+                defmt::println!("usb-1 exercise complete");
                 dk::exit();
             }
+            Event::UsbEp0DataDone => todo!(),
         }
     }
 }

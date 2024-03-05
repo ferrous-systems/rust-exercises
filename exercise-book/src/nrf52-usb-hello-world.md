@@ -12,7 +12,9 @@ Give rust-analyzer some time to analyze the file and its dependency graph. When 
 
 If you are not using VS code run the `cargo run --bin hello` command from the `nrf52-code/usb-app` folder.
 
-> NOTE if you run into an error along the lines of "Debug power request failed" retry the operation and the error should disappear
+> __NOTE:__ Recent version of the nRF52840-DK have flash-read-out protection to stop people dumping the contents of flash on an nRF52 they received pre-programmed, so if you have problems immediately after first plugging your board in, see [this page](./nrf52-tools.md#setup-check).
+>
+> If you run into an error along the lines of "Debug power request failed" retry the operation and the error should disappear.
 
 The `usb-app` package has been configured to cross-compile applications to the ARM Cortex-M architecture and then run them using the `probe-rs` custom Cargo runner. The `probe-rs` tool will load and run the embedded application on the microcontroller and collect logs from the microcontroller.
 

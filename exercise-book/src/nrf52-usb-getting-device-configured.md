@@ -2,6 +2,8 @@
 
 At this stage the device will be in the `Address` stage. It has been identified and enumerated by the host but cannot yet be used by host applications. The device must first move to the `Configured` state before the host can start, for example, HID communication or send non-standard requests over the control endpoint.
 
+There is no template for this step - start with your solution to USB-4.
+
 Windows will enumerate the device but not automatically configure it after enumeration. Here's what you should do to force the host to configure the device.
 
 ## Linux and macOS
@@ -10,7 +12,7 @@ Nothing extra needs to be done if you're working on a Linux or macOS host. The h
 
 ## Windows
 
-After getting the device enumerated and into the idle state, open the Zadig tool (covered in the setup instructions; see the top README) and use it to associate the nRF52840 USB device to the WinUSB driver. The nRF52840 will appear as a "unknown device" with a VID and PID that matches the ones defined in the `common` crate
+After getting the device enumerated and into the idle state, open the Zadig tool (covered in the setup instructions; see the top README) and use it to associate the nRF52840 USB device to the WinUSB driver. The nRF52840 will appear as a "unknown device" with a VID and PID that matches the ones defined in the [`consts` crate](../../nrf52-code/consts/src/lib.rs).
 
 Now modify the `usb-descriptors` command within the `xtask` package to "open" the device -- this operation is commented out in the source code. With this modification `usb-descriptors` will cause Windows to send a `SET_CONFIGURATION` request to configure the device. You'll need to run `cargo xtask usb-descriptors` to test out the correct handling of the `SET_CONFIGURATION` request.
 
@@ -23,7 +25,7 @@ The SET_CONFIGURATION request is sent by the host to configure the device. Its c
 - `wValue` contains the requested configuration value
 - `wIndex` and `wLength` are 0, there is no `wData`
 
-[usb_spec]: https://www.usb.org/document-library/usb-20-specification
+[usb_spec]: ./nrf52-usb-usb-specification.md
 
 ✅ To handle a SET_CONFIGURATION, do the following:
 

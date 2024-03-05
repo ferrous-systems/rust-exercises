@@ -1,16 +1,22 @@
 # USB Enumeration
 
-A USB device, like the nRF52840, can be one of these three states: the `Default` state, the Address state or the Configured state. After being powered the device will start in the `Default` state. The enumeration process will take the device from the `Default` state to the Address state. As a result of the enumeration process the device will be assigned an address, in the range `1..=127`, by the host.
+A USB device, like the nRF52840, can be one of these three states:
+
+* Default
+* Address
+* Configured
+
+After being powered the device will start in the __Default__ state. The enumeration process will take the device from the __Default__ state to the __Address__ state. As a result of the enumeration process the device will be assigned an address, in the range `1..=127`, by the host.
 
 The USB protocol is complex so we'll leave out many details and focus only on the concepts required to get enumeration and configuration working. There are also several USB specific terms so we recommend checking chapter 2, "Terms and Abbreviations", of the USB specification (linked at the bottom of this document) every now and then.
 
 Each OS may perform the enumeration process slightly differently but the process will always involve these host actions:
 
-- USB reset. This will put the device in the `Default` state, regardless of what state it was in.
-- `GET_DESCRIPTOR` request to get the device descriptor.
-- `SET_ADDRESS` request to assign an address to the device.
+* A USB reset, to put the device in the __Default__ state, regardless of what state it was in.
+* A `GET_DESCRIPTOR` request, to get the device descriptor.
+* A `SET_ADDRESS` request, to assign an address to the device.
 
-These host actions will be perceived as *events* by the nRF52840. During this workshop, we will gradually parse and handle these events and learn more about Embedded Rust along the way.
+These host actions will be perceived as *events* by the nRF52840 and these *events* will cause some bits to be set in the relevant register, and then an *interrupt* to be fired. During this workshop, we will gradually parse and handle these events and learn more about Embedded Rust along the way.
 
 There are more USB concepts involved that we'll need to cover, like descriptors, configurations, interfaces and endpoints but for now let's see how to handle USB events.
 
