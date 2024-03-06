@@ -4,7 +4,7 @@ In this section we'll explore the `recv_timeout` method of the Radio API. As the
 
 The `loopback` application running on the Dongle will broadcast a radio packet after receiving one over channel 20. The contents of this outgoing packet will be the contents of the received one but reversed.
 
-✅ Open the `nrf52-code/radio-app/src/bin/radio-recv.rs` file. Make sure that the Dongle and the Radio are set to the same channel. Click the "Run" button.
+✅ Open the [`nrf52-code/radio-app/src/bin/radio-recv.rs`](../../nrf52-code/radio-app/src/bin/radio-recv.rs) file. Make sure that the Dongle and the Radio are set to the same channel. Click the "Run" button.
 
 The Dongle does not inspect the contents of your packet and does not require them to be ASCII, or UTF-8. It will simply send a packet back containing the same bytes it received, except the bytes will be in reverse order to how you sent it.
 

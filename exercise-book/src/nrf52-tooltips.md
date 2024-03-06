@@ -34,7 +34,7 @@ This breaks down the size of the `.text` section by function. This breakdown can
 
 The [probe-rs](https://probe.rs) team have produced a VS Code plugin. It uses the `probe-rs` library to talk directly to your supported Debug Probe (J-Link, ST-Link, CMSIS-DAP, or whatever) and supports both single-stepping and `defmt` logging.
 
-Install the `probe-rs.probe-rs-debugger` extension in VS Studio, and when you open the `nrf52-code/radio-app` folder in VS Code, the `.vscode/launch.json` file we supply should give you a *Run with probe-rs* entry in the *Run and Debug* panel. Press the green triangle and it will build the code, flash device, set up defmt and then start the chip running. You can set breakpoints in the usual way (by clicking to the left of your source code to place a red dot).
+Install the `probe-rs.probe-rs-debugger` extension in VS Studio, and when you open the [`nrf52-code/radio-app`](../../nrf52-code/radio-app) folder in VS Code, the `.vscode/launch.json` file we supply should give you a *Run with probe-rs* entry in the *Run and Debug* panel. Press the green triangle and it will build the code, flash device, set up defmt and then start the chip running. You can set breakpoints in the usual way (by clicking to the left of your source code to place a red dot).
 
 ## Using `gdb` and `probe-rs`
 
