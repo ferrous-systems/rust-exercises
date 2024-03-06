@@ -1,6 +1,6 @@
 # `location info is incomplete` error
 
-Problem: Using cargo run --bin hello from within the `nrf52-code/radio-app` folder finishes compiling and starts up probe-rs. But then the following error is returned:
+Problem: Using cargo run --bin hello from within the [`nrf52-code/radio-app`](../../nrf52-code/radio-app) folder finishes compiling and starts up probe-rs. But then the following error is returned:
 
 ```sh
 Running `probe-rs run --chip nRF52840_xxAA target/thumbv7em-none-eabihf/debug/hello`

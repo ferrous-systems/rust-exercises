@@ -39,17 +39,19 @@ To get VS Code to pick up the environment variable, you can either:
 
 ## Running from VS Code
 
-✅ Open the `nrf52-code/radio-app/src/bin/hello.rs` file, go to the "Run and Debug" button on the left, and then click the "Run" triangle next to *Debug Microcontroller*.
+✅ Open the [`nrf52-code/radio-app/src/bin/hello.rs`](../../nrf52-code/radio-app/src/bin/hello.rs) file, go to the "Run and Debug" button on the left, and then click the "Run" triangle next to *Debug Microcontroller*.
 
-> Note: you will get the "Run" button if the Rust analyzer's workspace is set to the `nrf52-code/radio-app` folder. This will be the case if the current folder in VS code (left side panel) is set to `nrf52-code/radio-app`.
+> Note: you will get the "Run" button if the Rust analyzer's workspace is set to the [`nrf52-code/radio-app`](../../nrf52-code/radio-app) folder. This will be the case if the current folder in VS code (left side panel) is set to [`nrf52-code/radio-app`](../../nrf52-code/radio-app).
 
 ## Running from the console
 
-If you are not using VS code, you can run the program out of your console. Enter the command `cargo run --bin hello` from within the `nrf52-code/radio-app` folder. Rust Analyzer's "Run" button is a short-cut for that command.
+If you are not using VS code, you can run the program out of your console. Enter the command `cargo run --bin hello` from within the [`nrf52-code/radio-app`](../../nrf52-code/radio-app) folder. Rust Analyzer's "Run" button is a short-cut for that command.
 
 ## Expected output
 
-> NOTE: If you run into an error along the lines of "Debug power request failed" retry the operation and the error should disappear.
+> __NOTE:__ Recent version of the nRF52840-DK have flash-read-out protection to stop people dumping the contents of flash on an nRF52 they received pre-programmed, so if you have problems immediately after first plugging your board in, see [this page](./nrf52-tools.md#setup-check).
+>
+> If you run into an error along the lines of "Debug power request failed" retry the operation and the error should disappear.
 
 ```console
 $ cargo run --bin hello

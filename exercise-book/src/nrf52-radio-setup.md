@@ -1,6 +1,6 @@
 # Radio Setup
 
-✅ Open the `nrf52-code/radio-app/src/bin/radio-send.rs` file.
+✅ Open the [`nrf52-code/radio-app/src/bin/radio-send.rs`](../../nrf52-code/radio-app/src/bin/radio-send.rs) file.
 
 ✅ First run the program `radio-send.rs` as it is. You should see new output in the output of `cargo xtask serial-term`, if you left your Dongle on channel 20. If you change your Dongle's channel to avoid interference, change to the channel to match in `radio-send.rs` before you run it.
 
