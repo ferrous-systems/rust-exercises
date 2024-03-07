@@ -2,7 +2,7 @@
 
 In this and the next section we'll look into RTIC's event handling features. To explore these features we'll use the action of connecting a USB cable to the DK's port J2 as the event we'd like to handle.
 
-✅ Open the `nrf52-code/usb-app/src/bin/events.rs` file.
+✅ Open the [`nrf52-code/usb-app/src/bin/events.rs`](../../nrf52-code/usb-app/src/bin/events.rs) file.
 
 We'll read the code and explain what it does.
 

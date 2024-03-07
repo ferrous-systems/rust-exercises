@@ -16,3 +16,9 @@ You will need an nRF52840 Development Kit for this exercise, but not the nRF USB
 The board has two USB ports: J2 and J3 and an on-board J-Link programmer / debugger -- [there are instructions to identify the ports in a previous section][id-ports]. USB port J2 is the J-Link's USB port. USB port J3 is the nRF52840's USB port. Connect the Development Kit to your computer using both ports.
 
 [id-ports]: ./nrf52-hardware.md#nrf52840-development-kit-dk
+
+## Workshop Steps
+
+You will need to complete the workshop steps in order. It's OK if you don't get them all finished, but you must complete one before starting the next one. You can look at the solution for each step if you get stuck.
+
+If you are reading the book view, the steps are listed on the left in the sidebar (use the hamburger if that is hidden). If you are reading the source on Github, go back to the [SUMMARY.md](./SUMMARY.md) file to see the steps.

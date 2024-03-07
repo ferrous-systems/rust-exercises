@@ -2,7 +2,7 @@
 
 RTIC, Real-Time Interrupt-driven Concurrency, is a framework for building evented, time sensitive applications.
 
-✅ Open the `nrf52-code/usb-app/src/bin/rtic-hello.rs` file.
+✅ Open the [`nrf52-code/usb-app/src/bin/rtic-hello.rs`](../../nrf52-code/usb-app/src/bin/rtic-hello.rs) file.
 
 RTIC applications are written in RTIC's Domain Specific Language (DSL). The DSL extends Rust syntax with custom attributes like `#[init]` and `#[idle]`.
 

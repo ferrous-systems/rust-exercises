@@ -1,12 +1,12 @@
 # Stack Overflow Protection
 
-The `usb-app` crate in which we developed our advanced workshop solutions (i.e. `nrf52-code/usb-app`) uses our open-source [`flip-link`] tool for zero-cost stack overflow protection.
+The `usb-app` crate in which we developed our advanced workshop solutions (i.e. [`nrf52-code/usb-app`](../../nrf52-code/usb-app)) uses our open-source [`flip-link`] tool for zero-cost stack overflow protection.
 
 This means that your application will warn you by crashing if you accidentally overreach the boundaries of your application's stack instead of running into *undefined behavior* and behaving erratically in irreproducible ways. This memory protection mechanism comes at no additional computational or memory-usage cost.
 
 🔎  For a detailed description of how `flip-link` and Stack Overflows in bare metal Rust in general work, please refer to the [`flip-link` README].
 
-You can see this in action in the `stack_overflow.rs` file that can be found in `nrf52-code/usb-app/src/bin/stack_overflow.rs`:
+You can see this in action in the `stack_overflow.rs` file that can be found in [`nrf52-code/usb-app/src/bin/stack_overflow.rs`](../../nrf52-code/usb-app/src/bin/stack_overflow.rs):
 
 ```rust ignore
 {{#include ../../nrf52-code/usb-app/src/bin/stack_overflow.rs}}
@@ -38,7 +38,7 @@ stack backtrace:
 
 ❗️ `flip-link` is a third-party tool, so make sure you've installed it through `cargo install flip-link`
 
-To see how we've activated `flip-link`, take a look at `nrf52-code/usb-app/.cargo/config.toml`:
+To see how we've activated `flip-link`, take a look at [`nrf52-code/usb-app/.cargo/config.toml`](../../nrf52-code/usb-app/.cargo/config.toml):
 
 ```toml
 rustflags = [
