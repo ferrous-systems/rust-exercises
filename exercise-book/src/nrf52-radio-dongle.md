@@ -37,7 +37,7 @@ For the next section you'll need to flash the `loopback` file onto the Dongle.
 ✅ Run the following command:
 
 ```console
-nrfdfu nrf52-code/boards/dongle-fw/loopback
+nrfdfu nrf52-code/boards/dongle-fw/loopback-fw
 ```
 
 If the file is missing, you might be in a git checkout instead of a Github release tarball. Grab the Github release tarball and find the binary in there.
