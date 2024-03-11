@@ -2,6 +2,8 @@
 
 use core::sync::atomic::{self, Ordering};
 
+use grounded::uninit::GroundedArrayCell;
+
 use crate::{
     errata,
     peripheral::{POWER, USBD},
@@ -9,14 +11,14 @@ use crate::{
 
 /// Endpoint IN 0
 pub struct Ep0In {
-    buffer: &'static mut [u8; 64],
+    buffer: &'static GroundedArrayCell<u8, 64>,
     busy: bool,
 }
 
 impl Ep0In {
     /// # Safety
     /// Must be created at most once (singleton)
-    pub(crate) unsafe fn new(buffer: &'static mut [u8; 64]) -> Self {
+    pub(crate) unsafe fn new(buffer: &'static GroundedArrayCell<u8, 64>) -> Self {
         Self {
             buffer,
             busy: false,
@@ -30,14 +32,17 @@ impl Ep0In {
     /// - This function panics if the last transfer was not finished by calling the `end` function
     /// - This function panics if `bytes` is larger than the maximum packet size (64 bytes)
     pub fn start(&mut self, bytes: &[u8], usbd: &USBD) {
+        let (buffer_ptr, buffer_len) = self.buffer.get_ptr_len();
         assert!(!self.busy, "EP0IN: last transfer has not completed");
         assert!(
-            bytes.len() <= self.buffer.len(),
+            bytes.len() <= buffer_len,
             "EP0IN: multi-packet data transfers are not supported"
         );
 
         let n = bytes.len();
-        self.buffer[..n].copy_from_slice(bytes);
+        unsafe {
+            core::ptr::copy_nonoverlapping(bytes.as_ptr(), buffer_ptr, n);
+        }
 
         // use a "shortcut" to issue a status stage after the data transfer is complete
         usbd.shorts
@@ -47,7 +52,7 @@ impl Ep0In {
             .write(|w| unsafe { w.maxcnt().bits(n as u8) });
         usbd.epin0
             .ptr
-            .write(|w| unsafe { w.ptr().bits(self.buffer.as_ptr() as u32) });
+            .write(|w| unsafe { w.ptr().bits(buffer_ptr as u32) });
 
         self.busy = true;
 
