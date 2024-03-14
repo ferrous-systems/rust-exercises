@@ -15,7 +15,11 @@ use core::{
 use cortex_m::peripheral::NVIC;
 use cortex_m_semihosting::debug;
 use embedded_hal::digital::v2::{OutputPin, StatefulOutputPin};
-#[cfg(feature = "radio")]
+#[cfg(any(feature = "advanced"))]
+use grounded::uninit::GroundedArrayCell;
+#[cfg(any(feature = "radio"))]
+use grounded::uninit::GroundedCell;
+#[cfg(any(feature = "radio"))]
 pub use hal::ieee802154;
 pub use hal::pac::{interrupt, Interrupt, NVIC_PRIO_BITS, RTC0};
 use hal::{
@@ -39,6 +43,14 @@ mod errata;
 pub mod peripheral;
 #[cfg(feature = "advanced")]
 pub mod usbd;
+
+#[cfg(feature = "radio")]
+struct ClockSyncWrapper<H, L, LSTAT> {
+    clocks: Clocks<H, L, LSTAT>,
+}
+
+#[cfg(feature = "radio")]
+unsafe impl<H, L, LSTAT> Sync for ClockSyncWrapper<H, L, LSTAT> {}
 
 /// Components on the board
 pub struct Board {
@@ -199,12 +211,16 @@ pub fn init() -> Result<Board, Error> {
     };
     // NOTE(static mut) this branch runs at most once
     #[cfg(feature = "advanced")]
-    static mut EP0IN_BUF: [u8; 64] = [0; 64];
+    static EP0IN_BUF: GroundedArrayCell<u8, 64> = GroundedArrayCell::const_init();
     #[cfg(feature = "radio")]
-    static mut CLOCKS: Option<
-        Clocks<clocks::ExternalOscillator, clocks::ExternalOscillator, clocks::LfOscStarted>,
-    > = None;
-
+    // We need the wrapper to make this type Sync, as it contains raw pointers
+    static CLOCKS: GroundedCell<
+        ClockSyncWrapper<
+            clocks::ExternalOscillator,
+            clocks::ExternalOscillator,
+            clocks::LfOscStarted,
+        >,
+    > = GroundedCell::uninit();
     defmt::debug!("Initializing the board");
 
     let clocks = Clocks::new(periph.CLOCK);
@@ -214,7 +230,14 @@ pub fn init() -> Result<Board, Error> {
     let _clocks = clocks.enable_ext_hfosc();
     // extend lifetime to `'static`
     #[cfg(feature = "radio")]
-    let clocks = unsafe { CLOCKS.get_or_insert(_clocks) };
+    let clocks = unsafe {
+        let clocks_ptr = CLOCKS.get();
+        clocks_ptr.write(ClockSyncWrapper { clocks: _clocks });
+        // Now it's initialised, we can take a static reference to the clocks
+        // object it contains.
+        let clock_wrapper: &'static ClockSyncWrapper<_, _, _> = &*clocks_ptr;
+        &clock_wrapper.clocks
+    };
 
     defmt::debug!("Clocks configured");
 
@@ -274,7 +297,7 @@ pub fn init() -> Result<Board, Error> {
         #[cfg(feature = "advanced")]
         power: periph.POWER,
         #[cfg(feature = "advanced")]
-        ep0in: unsafe { Ep0In::new(&mut EP0IN_BUF) },
+        ep0in: unsafe { Ep0In::new(&EP0IN_BUF) },
     })
 }
 

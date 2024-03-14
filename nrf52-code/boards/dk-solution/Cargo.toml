@@ -12,6 +12,7 @@ cortex-m-semihosting = "0.5.0"
 defmt = "0.3.5"
 defmt-rtt = "0.4"
 embedded-hal = "0.2.7"
+grounded = { version = "0.2.0", features = ["cas"] }
 hal = { package = "nrf52840-hal", version = "0.16.0" }
 
 [features]
