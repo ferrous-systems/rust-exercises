@@ -60,6 +60,9 @@ static NEW_CHANNEL: AtomicU32 = AtomicU32::new(u32::MAX);
 /// We print some info in response.
 static WANT_INFO: AtomicBool = AtomicBool::new(false);
 
+/// How many address bytes we reflect back
+const ADDR_BYTES: usize = 6;
+
 #[entry]
 fn main() -> ! {
     // The USB Bus, statically allocated
@@ -165,41 +168,60 @@ fn main() -> ! {
                     pkt.lqi(),
                     pkt.len()
                 );
+                let mut reply = true;
                 match handle_packet(&mut pkt, &dict) {
-                    Command::SendSecret => {
-                        pkt.copy_from_slice(ENCODED_MESSAGE);
+                    None => {
+                        // not enough bytes - send nothing back
+                        reply = false;
+                    }
+                    Some(Command::SendSecret) => {
+                        pkt.set_len(ENCODED_MESSAGE.len() as u8 + ADDR_BYTES as u8);
+                        for (src, dest) in ENCODED_MESSAGE.iter().zip(&mut pkt[ADDR_BYTES..]) {
+                            *dest = *src;
+                        }
                         let _ = writeln!(&RING_BUFFER, "TX Secret");
                         board.leds.ld2_blue.on();
                         board.leds.ld2_green.off();
                         board.leds.ld2_red.off();
                     }
-                    Command::MapChar(plain, cipher) => {
-                        pkt.copy_from_slice(&[cipher]);
+                    Some(Command::MapChar(plain, cipher)) => {
+                        pkt.set_len(1 + ADDR_BYTES as u8);
+                        pkt[ADDR_BYTES] = cipher;
                         let _ = writeln!(&RING_BUFFER, "TX Map({plain}) => {cipher}");
                         board.leds.ld2_blue.off();
                         board.leds.ld2_green.on();
                         board.leds.ld2_red.off();
                     }
-                    Command::Correct => {
-                        pkt.copy_from_slice(b"correct");
+                    Some(Command::Correct) => {
+                        let message = b"correct";
+                        pkt.set_len(message.len() as u8 + ADDR_BYTES as u8);
+                        for (src, dest) in message.iter().zip(&mut pkt[ADDR_BYTES..]) {
+                            *dest = *src;
+                        }
                         let _ = writeln!(&RING_BUFFER, "TX Correct");
                         board.leds.ld2_blue.on();
                         board.leds.ld2_green.on();
                         board.leds.ld2_red.on();
                     }
-                    Command::Wrong => {
-                        pkt.copy_from_slice(b"incorrect");
+                    Some(Command::Wrong) => {
+                        let message = b"incorrect";
+                        pkt.set_len(message.len() as u8 + ADDR_BYTES as u8);
+                        for (src, dest) in message.iter().zip(&mut pkt[ADDR_BYTES..]) {
+                            *dest = *src;
+                        }
                         let _ = writeln!(&RING_BUFFER, "TX Incorrect");
                         board.leds.ld2_blue.off();
                         board.leds.ld2_green.on();
                         board.leds.ld2_red.on();
                     }
                 }
-                // send packet after 5ms (we know the client waits for 10ms and
+                // send packet after 500us (we know the client waits for 10ms and
                 // we want to ensure they are definitely in receive mode by the
                 // time we send this reply)
-                board.timer.delay(5000);
-                board.radio.send(&mut pkt);
+                if reply {
+                    board.timer.delay(500);
+                    board.radio.send(&mut pkt);
+                }
                 RX_COUNT.fetch_add(1, Ordering::Relaxed);
             }
             Err(dongle::ieee802154::Error::Crc(_)) => {
@@ -263,28 +285,29 @@ enum Command {
     Wrong,
 }
 
-fn handle_packet(packet: &mut Packet, dict: &heapless::LinearMap<u8, u8, 128>) -> Command {
-    if packet.len() == 0 {
-        Command::SendSecret
-    } else if packet.len() == 1 {
+fn handle_packet(packet: &mut Packet, dict: &heapless::LinearMap<u8, u8, 128>) -> Option<Command> {
+    let payload = packet.get_mut(ADDR_BYTES..)?;
+    if payload.len() == 0 {
+        Some(Command::SendSecret)
+    } else if payload.len() == 1 {
         // They give us plaintext, we give them ciphertext
-        let plain = packet[0];
+        let plain = payload[0];
         let cipher = *dict.get(&plain).unwrap_or(&0);
-        Command::MapChar(plain, cipher)
+        Some(Command::MapChar(plain, cipher))
     } else {
         // They give us plaintext, we tell them if it is correct
         // Encrypt every byte of plaintext they give us
-        for slot in packet.iter_mut() {
+        for slot in payload.iter_mut() {
             if let Some(c) = dict.get(slot) {
                 *slot = *c;
             } else {
                 *slot = 0;
             }
         }
-        if &packet[..] == ENCODED_MESSAGE {
-            Command::Correct
+        if &payload[..] == ENCODED_MESSAGE {
+            Some(Command::Correct)
         } else {
-            Command::Wrong
+            Some(Command::Wrong)
         }
     }
 }

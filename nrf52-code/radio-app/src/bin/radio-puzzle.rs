@@ -33,17 +33,15 @@ fn main() -> ! {
 
     // let msg = b"Hello?";
 
-    packet.copy_from_slice(msg);
     defmt::println!(
         "sending: {}",
         str::from_utf8(msg).expect("msg was not valid UTF-8 data")
     );
 
-    radio.send(&mut packet);
-    if radio.recv_timeout(&mut packet, &mut timer, TEN_MS).is_ok() {
+    if let Ok(reply) = dk::send_recv(&mut packet, msg, &mut radio, &mut timer, TEN_MS) {
         defmt::println!(
             "received: {}",
-            str::from_utf8(&packet).expect("response was not valid UTF-8 data")
+            str::from_utf8(reply).expect("response was not valid UTF-8 data")
         );
     } else {
         defmt::error!("no response or response packet was corrupted");

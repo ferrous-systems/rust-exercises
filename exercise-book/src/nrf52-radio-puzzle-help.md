@@ -40,7 +40,7 @@ Something you will likely run into while solving this exercise are *character* l
 
 *IMPORTANT* you do not need to use the `str` or `char` API to solve this problem, other than for printing purposes. Work directly with slices of bytes (`[u8]`) and bytes (`u8`); and only convert those to `str` or `char` when you are about to print them.
 
-> Note: The plaintext string is *not* stored in `puzzle-fw` so running `strings` on it will not give you the answer. Nice try.
+> Note: The plaintext secret string is *not* stored in `puzzle-fw` so running `strings` on it will not give you the answer. Nice try.
 
 ## Make sure not to flood the log buffer
 

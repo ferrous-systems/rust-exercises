@@ -26,18 +26,13 @@ fn main() -> ! {
     let dict = LinearMap::<u8, u8, 128>::new();
 
     let mut packet = Packet::new();
-    for source in 0..=127 {
-        packet.copy_from_slice(&[source]);
-
-        radio.send(&mut packet);
-
-        if radio.recv_timeout(&mut packet, &mut timer, TEN_MS).is_ok() {
+    for input in 0..=127 {
+        if let Ok(data) = dk::send_recv(&mut packet, &[input], &mut radio, &mut timer, TEN_MS) {
             // response should be one byte large
-            if packet.len() == 1 {
-                let _destination = packet[0];
-
-            // TODO insert the key-value pair
-            // dict.insert(/* ? */, /* ? */).expect("dictionary full");
+            if data.len() == 1 {
+                let _output = data[0];
+                // TODO insert the key-value pair
+                // dict.insert(/* ? */, /* ? */).expect("dictionary full");
             } else {
                 defmt::error!("response packet was not a single byte");
                 dk::exit()
@@ -49,24 +44,21 @@ fn main() -> ! {
     }
 
     /* # Retrieve the secret string */
-    packet.copy_from_slice(&[]); // empty packet
-    radio.send(&mut packet);
-
-    if radio.recv_timeout(&mut packet, &mut timer, TEN_MS).is_err() {
+    let Ok(secret) = dk::send_recv(&mut packet, &[], &mut radio, &mut timer, TEN_MS) else {
         defmt::error!("no response or response packet was corrupted");
         dk::exit()
-    }
+    };
 
     defmt::println!(
         "ciphertext: {}",
-        str::from_utf8(&packet).expect("packet was not valid UTF-8")
+        str::from_utf8(&secret).expect("packet was not valid UTF-8")
     );
 
     /* # Decrypt the string */
     let mut buffer = Vec::<u8, 128>::new();
 
     // iterate over the bytes
-    for byte in packet.iter() {
+    for byte in secret.iter() {
         // NOTE this should map from the encrypted letter to the plaintext letter
         let key = byte;
         let value = dict[key];

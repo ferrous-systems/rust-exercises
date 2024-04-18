@@ -25,24 +25,21 @@ fn main() -> ! {
     let mut packet = Packet::new();
 
     /* # Retrieve the secret string */
-    packet.copy_from_slice(&[]); // empty packet
-    radio.send(&mut packet);
-
-    if radio.recv_timeout(&mut packet, &mut timer, TEN_MS).is_err() {
+    let Ok(secret) = dk::send_recv(&mut packet, &[], &mut radio, &mut timer, TEN_MS) else {
         defmt::error!("no response or response packet was corrupted");
         dk::exit()
-    }
+    };
 
     defmt::println!(
         "ciphertext: {}",
-        str::from_utf8(&packet).expect("packet was not valid UTF-8")
+        str::from_utf8(&secret).expect("packet was not valid UTF-8")
     );
 
     /* # Decrypt the string */
     let mut buf = Vec::<u8, 128>::new();
 
     // iterate over the bytes
-    for input in packet.iter() {
+    for input in secret.iter() {
         // process each byte
         // here we should do the reverse mapping; instead we'll do a shift for illustrative purposes
         let output = input + 1;
