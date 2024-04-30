@@ -16,4 +16,4 @@ The Dongle will respond as soon as it receives a packet. If you insert a delay b
 
 Having log statements between `send` and `recv_timeout` can also cause packets to be missed so try to keep those two calls as close to each other as possible and with as little code in between as possible.
 
-> NOTE Packet loss can always occur in wireless networks, even if the radios are close to each other. The `Radio` API we are using will not detect lost packets because it does not implement IEEE 802.15.4 Acknowledgement Requests. If you are having trouble with lost packets, consider adding a retry loop, but remember you are sharing the airwaves with other users, so make sure not to spam incessantly by accident!
+> NOTE Packet loss can always occur in wireless networks, even if the radios are close to each other. The `Radio` API we are using will not detect lost packets because it does not implement IEEE 802.15.4 Acknowledgement Requests. For the next step in the workshop, we will use a new function to handle this for us. For the sake of other radio users, please do ensure you never call `send()` in a tight loop!

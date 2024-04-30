@@ -19,7 +19,18 @@ Like in the previous sections the Dongle will listen for radio packets -- this t
 
 ✅ Open the [`nrf52-code/radio-app`](../../nrf52-code/radio-app) folder in VS Code; then open the `src/bin/radio-puzzle.rs` file. Run the program.
 
-This will send a zero sized packet `let msg = b""` to the dongle.
+This will send a zero sized packet `let msg = b""` to the dongle. It does this using a special function called `dk::send_recv`. This function will:
+
+1. Determine a unique address for your nRF52840 (Nordic helpfully bake a different random address into every nRF52 chip they make)
+2. Construct a packet where the first six bytes are the unique address, and the remainder are the ones you passed to the `send_recv()` function
+3. Use the `Radio::send()` method to wait for the channel to be clear (using a *Clear Channel Assessment*) before actually sending the packet 
+4. Use the `Radio::recv_timeout()` method to wait for a reply, up to the given number of microseconds specified
+5. Check that the first six bytes in the reply match our six byte address
+   a. If so, the remainder of the reply is returned as the `Ok` variant
+   b. Otherwise, increment a retry counter and, if we have run out of retry attempts, we return the `Err` variant
+   c. Otherwise, we go back to step 2 and try again.
+
+This function allows communication with the USB dongle to be relatively robust, even in the presence of other devices on the same channel. However, it's not perfect and sometimes you will run out of retry attempts and your program will need to be restarted.
 
 ❗ The Dongle responds to the DK's requests wirelessly (i.e. by sending back radio packets) as well. You'll see the dongle responses printed by the DK. This means you don't have to worry if serial-term doesn't work on your machine.
 
@@ -33,13 +44,13 @@ What happens?
 <details>
     <summary>Answer</summary>
 
-The Dongle will respond differently depending on the length of the incoming packet:
+The Dongle will respond differently depending on the length of the payload in the incoming packet:
 
-- On zero-sized packets it will respond with the encrypted string.
-- On one-byte sized packets it will respond with the *direct* mapping from a *plaintext* letter (single `u8` value) -- the letter contained in the packet -- to the *ciphertext* letter (`u8` value).
-- On packets of any other length the Dongle will respond with the string `correct` if it received the decrypted string, otherwise it will respond with the `incorrect` string.
+- On zero-sized payloads (i.e. packets that only contain the device address and nothing else) it will respond with the encrypted string.
+- On one-byte sized payloads it will respond with the *direct* mapping from the given *plaintext* letter (single `u8` value) to the corresponding *ciphertext* letter (another `u8` value).
+- On payloads of any other length the Dongle will respond with the string `correct` if it received the correct secret string, otherwise it will respond with the string `incorrect`.
 
-The Dongle will always respond with packets that are valid UTF-8 so you can use `str::from_utf8` on the response packets.
+The Dongle will always respond with payloads that are valid UTF-8 so you can use `str::from_utf8` on the response packets. However, do not attempt to look inside the raw packet, as it will contain six random address bytes at the start, and they will not be valid UTF-8. Only look at the `&[u8]` that the `send_recv()` function returns, and treat the `Packet` as just a storage area that you don't look inside.
 
 This step is illustrated in `src/bin/radio-puzzle-1.rs`
 

@@ -221,6 +221,94 @@ impl ops::DerefMut for Timer {
     }
 }
 
+#[cfg(feature = "radio")]
+mod radio_retry {
+    use super::ieee802154::Packet;
+
+    const RETRY_COUNT: u32 = 10;
+    const ADDR_LEN: usize = 6;
+
+    fn get_id() -> [u8; ADDR_LEN] {
+        let ficr = unsafe { &*hal::pac::FICR::ptr() };
+        let id = ficr.deviceaddr[0].read().bits();
+        let id2 = ficr.deviceaddr[1].read().bits();
+        let id = u64::from(id) << 32 | u64::from(id2);
+        defmt::trace!("Device ID: {:#08x}", id);
+        let id_bytes = id.to_be_bytes();
+        [
+            id_bytes[0],
+            id_bytes[1],
+            id_bytes[2],
+            id_bytes[3],
+            id_bytes[4],
+            id_bytes[5],
+        ]
+    }
+
+    /// Send a packet, containing the device address and the given data, and
+    /// wait for a response.
+    ///
+    /// If we get a response containing the same device address, it returns a
+    /// slice of the remaining payload (i.e. not including the device address).
+    ///
+    /// If we don't get a response, or we get a bad response (with the wrong
+    /// address in it), we try again.
+    ///
+    /// If we try too many times, we give up.
+    pub fn send_recv<'packet, I>(
+        packet: &'packet mut Packet,
+        data_to_send: &[u8],
+        radio: &mut hal::ieee802154::Radio,
+        timer: &mut hal::timer::Timer<I>,
+        microseconds: u32,
+    ) -> Result<&'packet [u8], hal::ieee802154::Error>
+    where
+        I: hal::timer::Instance,
+    {
+        assert!(data_to_send.len() + ADDR_LEN < usize::from(Packet::CAPACITY));
+
+        let id_bytes = get_id();
+        // Short delay before sending, so we don't get into a tight loop and steal all the bandwidth
+        timer.delay(5000);
+        for i in 0..RETRY_COUNT {
+            packet.set_len(ADDR_LEN as u8 + data_to_send.len() as u8);
+            let source_iter = id_bytes.iter().chain(data_to_send.iter());
+            let dest_iter = packet.iter_mut();
+            for (source, dest) in source_iter.zip(dest_iter) {
+                *dest = *source;
+            }
+            defmt::debug!("TX: {=[u8]:02x}", &packet[..]);
+            radio.send(packet);
+            match radio.recv_timeout(packet, timer, microseconds) {
+                Ok(_crc) => {
+                    defmt::debug!("RX: {=[u8]:02x}", packet[..]);
+                    // packet is long enough
+                    if packet[0..ADDR_LEN] == id_bytes {
+                        // and it has the right bytes at the start
+                        defmt::debug!("OK: {=[u8]:02x}", packet[ADDR_LEN..]);
+                        return Ok(&packet[ADDR_LEN..]);
+                    } else {
+                        defmt::warn!("RX Wrong Address try {}", i);
+                        timer.delay(10000);
+                    }
+                }
+                Err(hal::ieee802154::Error::Timeout) => {
+                    defmt::warn!("RX Timeout try {}", i);
+                    timer.delay(10000);
+                }
+                Err(hal::ieee802154::Error::Crc(_)) => {
+                    defmt::warn!("RX CRC Error try {}", i);
+                    timer.delay(10000);
+                }
+            }
+        }
+        Err(hal::ieee802154::Error::Timeout)
+    }
+}
+
+#[cfg(feature = "radio")]
+pub use radio_retry::send_recv;
+
 /// The ways that initialisation can fail
 #[derive(Debug, Copy, Clone, defmt::Format)]
 pub enum Error {

@@ -25,18 +25,13 @@ fn main() -> ! {
 
     let mut packet = Packet::new();
     // TODO do the whole ASCII range [0, 127]
-    for source in b'A'..=b'B' {
-        packet.copy_from_slice(&[source]);
-
-        radio.send(&mut packet);
-
-        if radio.recv_timeout(&mut packet, &mut timer, TEN_MS).is_ok() {
+    for input in b'A'..=b'B' {
+        if let Ok(data) = dk::send_recv(&mut packet, &[input], &mut radio, &mut timer, TEN_MS) {
             // response should be one byte large
-            if packet.len() == 1 {
-                let _destination = packet[0];
-
-            // TODO insert the key-value pair
-            // dict.insert(/* ? */, /* ? */).expect("dictionary full");
+            if data.len() == 1 {
+                let _output = data[0];
+                // TODO insert the key-value pair
+                // dict.insert(/* ? */, /* ? */).expect("dictionary full");
             } else {
                 defmt::error!("response packet was not a single byte");
                 dk::exit()

@@ -24,24 +24,20 @@ fn main() -> ! {
 
     // first exchange a single packet with the Dongle
     // letter 'A' (uppercase)
-    let source = 65;
-    // let source = b'A'; // this is the same as above
+    let input = 65;
+    // let input = b'A'; // this is the same as above
 
     // TODO try other letters
 
     // single letter (byte) packet
-    packet.copy_from_slice(&[source]);
-
-    radio.send(&mut packet);
-
-    if radio.recv_timeout(&mut packet, &mut timer, TEN_MS).is_ok() {
+    if let Ok(data) = dk::send_recv(&mut packet, &[input], &mut radio, &mut timer, TEN_MS) {
         // response should be one byte large
-        if packet.len() == 1 {
-            let destination = packet[0];
+        if data.len() == 1 {
+            let output = packet[0];
 
-            defmt::println!("{} -> {}", source, destination);
+            defmt::println!("{:02x} -> {:02x}", input, output);
             // or cast to `char` for a more readable output
-            defmt::println!("{:?} -> {:?}", source as char, destination as char);
+            defmt::println!("'{:?}' -> '{:?}'", input as char, output as char);
         } else {
             defmt::error!("response packet was not a single byte");
             dk::exit()
@@ -55,7 +51,7 @@ fn main() -> ! {
     // start small: just 'A' and 'B' at first
     // NOTE: `a..=b` means inclusive range; `a` and `b` are included in the range
     // `a..b` means open-ended range; `a` is included in the range but `b` isn't
-    for _source in b'A'..=b'B' {
+    for _input in b'A'..=b'B' {
         // TODO similar procedure as above
     }
 

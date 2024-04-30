@@ -24,24 +24,16 @@ fn main() -> ! {
 
     /* # Build a dictionary */
     let mut dict = LinearMap::<u8, u8, 128>::new();
-    //                                                 ^^^ NOTE larger capacity
 
-    // the IEEE 802.15.4 packet that will carry our data
     let mut packet = Packet::new();
-    for plainletter in 0..=127 {
-        //             ^^^^^^^ NOTE complete ASCII range
-        packet.copy_from_slice(&[plainletter]);
-
-        radio.send(&mut packet);
-
-        if radio.recv_timeout(&mut packet, &mut timer, TEN_MS).is_ok() {
+    for input in 0..=127 {
+        // send the plaintext
+        if let Ok(data) = dk::send_recv(&mut packet, &[input], &mut radio, &mut timer, TEN_MS) {
             // response should be one byte large
-            if packet.len() == 1 {
-                let cipherletter = packet[0];
-
-                // NOTE we want to map in reverse: from cipherletter to plainletter
-                dict.insert(cipherletter, plainletter)
-                    .expect("dictionary full");
+            if data.len() == 1 {
+                // get back the ciphertext, which we use as the key in our map
+                let output = data[0];
+                dict.insert(output, input).expect("dictionary full");
             } else {
                 defmt::error!("response packet was not a single byte");
                 dk::exit()
@@ -53,46 +45,39 @@ fn main() -> ! {
     }
 
     /* # Retrieve the secret string */
-    packet.copy_from_slice(&[]); // empty packet
-    radio.send(&mut packet);
-
-    if radio.recv_timeout(&mut packet, &mut timer, TEN_MS).is_err() {
+    let Ok(secret) = dk::send_recv(&mut packet, &[], &mut radio, &mut timer, TEN_MS) else {
         defmt::error!("no response or response packet was corrupted");
         dk::exit()
-    }
+    };
 
     defmt::println!(
         "ciphertext: {}",
-        str::from_utf8(&packet).expect("packet was not valid UTF-8")
+        str::from_utf8(&secret).expect("packet was not valid UTF-8")
     );
 
     /* # Decrypt the string */
     let mut buffer = Vec::<u8, 128>::new();
 
     // iterate over the bytes
-    for cipherletter in packet.iter() {
+    for cipherletter in secret.iter() {
         let plainletter = dict[cipherletter];
         buffer.push(plainletter).expect("buffer full");
     }
 
     defmt::println!(
-        "plaintext:  {}",
+        "plaintext: {}",
         str::from_utf8(&buffer).expect("buffer contains non-UTF-8 data")
     );
 
-    /* # Verify decrypted text */
-    packet.copy_from_slice(&buffer);
-
-    radio.send(&mut packet);
-
-    if radio.recv_timeout(&mut packet, &mut timer, TEN_MS).is_err() {
+    /* # (NEW) Verify decrypted text */
+    let Ok(response) = dk::send_recv(&mut packet, &buffer, &mut radio, &mut timer, TEN_MS) else {
         defmt::error!("no response or response packet was corrupted");
         dk::exit()
-    }
+    };
 
     defmt::println!(
         "Dongle response: {}",
-        str::from_utf8(&packet).expect("response was not UTF-8")
+        str::from_utf8(&response).expect("response was not UTF-8")
     );
 
     dk::exit()
