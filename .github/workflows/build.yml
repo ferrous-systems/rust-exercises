@@ -22,7 +22,11 @@ jobs:
           rustup target add thumbv7em-none-eabihf
           rustup toolchain add beta
           rustup component add rust-src --toolchain beta
-          
+
+      - name: Install tools
+        run: |
+          sudo apt-get update && sudo apt-get install gcc-arm-none-eabi
+
       - name: Find slug name
         run: |
           slug=$(./describe.sh "${GITHUB_REF}")
