@@ -1,0 +1,9 @@
+[target.armv8r-none-eabihf]
+rustflags = [
+    "-Clink-arg=-Tlinker.ld",
+]
+
+runner = "qemu-system-arm -machine mps3-an536 -cpu cortex-r52 -semihosting -nographic -kernel"
+
+[build]
+target = ["armv8r-none-eabihf"]

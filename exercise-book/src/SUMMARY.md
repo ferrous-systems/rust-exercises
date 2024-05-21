@@ -25,7 +25,7 @@
 
 - [Self-check project](./self-check.md)
 
-# Embedded Rust on the nRF52
+# Bare-Metal Firmware on the nRF52
 
 - [Preparation](./nrf52-preparation.md)
   - [Code Organization](./nrf52-code-organisation.md)
@@ -102,6 +102,11 @@
     - [USB Endpoint descriptor](./nrf52-usb-endpoint-descriptor.md)
     - [Inspecting the Descriptors](./nrf52-usb-inspecting-descriptors.md)
     - [Stack Overflow Protection](./nrf52-usb-stack-overflow-protection.md)
+
+# Bare-Metal Firmware on Cortex-R52
+
+- [Preparation](./qemu-v8r-preparation.md)
+- [UART Driver](./qemu-v8r-uart.md)
 
 # Async Rust
 
