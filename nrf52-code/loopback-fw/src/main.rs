@@ -103,13 +103,12 @@ fn main() -> ! {
 
     let vid_pid = UsbVidPid(consts::USB_VID_DEMO, consts::USB_PID_DONGLE_LOOPBACK);
     // See https://www.usb.org/sites/default/files/iadclasscode_r10.pdf
+    // and https://learn.microsoft.com/en-us/windows-hardware/drivers/usbcon/usb-interface-association-descriptor
     USB_DEVICE.load(
         UsbDeviceBuilder::new(bus_ref, vid_pid)
             .manufacturer("Ferrous Systems")
             .product("Dongle Loopback")
-            .device_class(0xEF) // miscellaneous
-            .device_sub_class(2)
-            .device_protocol(1)
+            .composite_with_iads()
             .max_packet_size_0(64) // (makes control transfers 8x faster)
             .build(),
     );
