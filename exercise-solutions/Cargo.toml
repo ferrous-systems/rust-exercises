@@ -10,4 +10,5 @@ members = [
   "shapes-part-2",
   "shapes-part-3",
   "tcp-server-exercises",
+  "async-chat",
 ]
