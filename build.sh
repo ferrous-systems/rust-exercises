@@ -18,6 +18,12 @@ cargo test
 cargo fmt --check
 popd
 popd
+pushd qemu-code
+pushd uart-driver
+# Build in beta because armv8r-none-eabihf isn't in stable 1.77
+RUSTC_BOOTSTRAP=1 cargo +beta build -Zbuild-std=core
+popd
+popd
 pushd nrf52-code
 pushd boards/dk
 cargo build --target=thumbv7em-none-eabihf

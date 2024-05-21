@@ -1,0 +1,12 @@
+[package]
+name = "uart-exercise"
+version = "0.1.0"
+edition = "2021"
+authors = ["Ferrous Systems"]
+license = "MIT OR Apache-2.0"
+description = "A simple ARMv8-R UART driver exercise that runs in QEMU and compiles with Ferrocene"
+
+[dependencies]
+
+[profile.release]
+opt-level = "s"

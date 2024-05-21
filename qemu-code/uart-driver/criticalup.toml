@@ -1,0 +1,13 @@
+manifest-version = 1
+
+[products.ferrocene]
+release = "pre-rolling-2024-05-21"
+packages = [
+    "rustc-${rustc-host}",
+    "rust-std-${rustc-host}",
+    "cargo-${rustc-host}",
+    "rustfmt-${rustc-host}",
+    "rust-src",
+    "rust-std-armv8r-none-eabihf",
+    "rust-std-thumbv7em-none-eabihf",
+]

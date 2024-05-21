@@ -20,6 +20,8 @@ jobs:
       - name: Install targets
         run: |
           rustup target add thumbv7em-none-eabihf
+          rustup toolchain add beta
+          rustup component add rust-src --toolchain beta
           
       - name: Find slug name
         run: |
