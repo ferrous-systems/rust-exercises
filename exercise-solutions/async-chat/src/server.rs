@@ -93,6 +93,8 @@ async fn connection_writer_loop(
     loop {
         tokio::select! {
             msg = messages.recv() => match msg {
+                // TODO: explain why this works even with cancellation safety in mind
+                // hint: it's because there cannot be a concurrent shutdown message
                 Some(msg) => stream.write_all(msg.as_bytes()).await?,
                 None => break,
             },
