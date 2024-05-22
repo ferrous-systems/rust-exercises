@@ -15,8 +15,8 @@ use uart_exercise::PERIPHERAL_CLOCK;
 
 /// The entry-point to the Rust application.
 ///
-/// It is called by the start-up code in [`boot.S`](./boot.S) and thus exported
-/// as a C-compatible symbol.
+/// It is called by the start-up assembly code in [`lib.rs`](./lib.rs) and thus
+/// exported as a C-compatible symbol.
 #[no_mangle]
 pub extern "C" fn kmain() {
     if let Err(e) = main() {
