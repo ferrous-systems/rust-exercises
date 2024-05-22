@@ -30,7 +30,7 @@ Bus 001 Device 016: ID 1915:521f <- nRF52840 Dongle (in bootloader mode)
 
 🔎 [`cargo xtask`](https://github.com/matklad/cargo-xtask) lets us extend `cargo` with custom commands which are installed as you run them for the first time. We've used it to add some helper tools to our workshop materials while keeping the preparation installations as minimal as possible.
 
-Now that the device is in bootloader mode browse to the [`nrf52-code/boards/dongle`](../../nrf52-code/boards/dongle) directory. You'll find some `ELF` files (without a file ending) there. These are pre-compiled Rust programs to be flashed onto your dongle.
+Now that the device is in bootloader mode browse to the [`nrf52-code/boards/dongle-fw`](../../nrf52-code/boards/dongle-fw) directory. You'll find some `ELF` files (without a file ending) there. These are pre-compiled Rust programs to be flashed onto your dongle.
 
 For the next section you'll need to flash the `loopback` file onto the Dongle.
 
