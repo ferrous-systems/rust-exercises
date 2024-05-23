@@ -127,14 +127,9 @@ rustup +stable component add llvm-tools
 
 ### General purpose tools
 
-Install the [`flip-link`](https://crates.io/crates/flip-link), [`probe-rs`](https://crates.io/crates/probe-rs) and [`nrf-dfu`](https://crates.io/crates/nrfdfu) tools using the following Cargo commands:
+Install the [`flip-link`](https://crates.io/crates/flip-link) and [`nrf-dfu`](https://crates.io/crates/nrfdfu) tools from source using the following Cargo commands:
 
 ```console
-
-$ cargo install probe-rs --features=cli
-(..)
-Installed package `probe-rs v0.22.0` (executables `cargo-embed`, `cargo-flash`, `probe-rs`)
-
 $ cargo install flip-link
 (..)
 Installed package `flip-link v0.1.7` (..)
@@ -142,6 +137,18 @@ Installed package `flip-link v0.1.7` (..)
 $ cargo install nrfdfu
 (..)
 Installed package `nrfdfu v0.1.3` (..)
+```
+
+Install `probe-rs` 0.24 pre-compiled binaries on Linux or macOS with:
+
+```bash
+curl --proto '=https' --tlsv1.2 -LsSf https://github.com/probe-rs/probe-rs/releases/download/v0.24.0/probe-rs-tools-installer.sh | sh
+```
+
+Install `probe-rs` 0.24 pre-compiled binaries on Windows with:
+
+```bash
+powershell -c "irm https://github.com/probe-rs/probe-rs/releases/download/v0.24.0/probe-rs-tools-installer.ps1 | iex"
 ```
 
 ## Setup check
