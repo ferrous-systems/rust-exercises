@@ -1,5 +1,5 @@
 use tokio::{
-    io::{stdin, BufReader, AsyncBufReadExt, AsyncWriteExt},
+    io::{stdin, AsyncBufReadExt, AsyncWriteExt, BufReader},
     net::{TcpStream, ToSocketAddrs},
 };
 

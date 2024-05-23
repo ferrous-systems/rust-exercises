@@ -1,15 +1,15 @@
 use std::{
     collections::hash_map::{Entry, HashMap},
-    sync::Arc,
     future::Future,
+    sync::Arc,
 };
 
 use tokio::sync::mpsc;
 
 use tokio::{
-    io::{BufReader,AsyncWriteExt, AsyncBufReadExt},
-    net::{TcpListener, TcpStream, ToSocketAddrs},
+    io::{AsyncBufReadExt, AsyncWriteExt, BufReader},
     net::tcp::{OwnedReadHalf, OwnedWriteHalf},
+    net::{TcpListener, TcpStream, ToSocketAddrs},
     task,
 };
 
@@ -159,10 +159,9 @@ async fn broker_loop(mut events: Receiver<Event>) {
                     let mut disconnect_sender = disconnect_sender.clone();
                     spawn_and_log_error(async move {
                         let res =
-                            connection_writer_loop(&mut client_receiver, &mut stream, shutdown).await;
-                        disconnect_sender
-                            .send((name, client_receiver))
-                            .unwrap();
+                            connection_writer_loop(&mut client_receiver, &mut stream, shutdown)
+                                .await;
+                        disconnect_sender.send((name, client_receiver)).unwrap();
                         res
                     });
                 }
