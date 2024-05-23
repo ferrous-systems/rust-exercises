@@ -103,10 +103,17 @@
     - [Inspecting the Descriptors](./nrf52-usb-inspecting-descriptors.md)
     - [Stack Overflow Protection](./nrf52-usb-stack-overflow-protection.md)
 
-# Bare-Metal Firmware on Cortex-R52
+# Rust for Real-Time Systems
 
-- [Preparation](./qemu-v8r-preparation.md)
-- [UART Driver](./qemu-v8r-uart.md)
+## Working without std
+
+- [Working without std](./realtime-withoutstd.md)
+  - [Replacing println!](./realtime-withoutstd-println.md)
+
+## Bare-Metal Firmware on Cortex-R52
+
+- [Bare-Metal Firmware on Cortex-R52](./realtime-v8r-preparation.md)
+  - [UART Driver](./realtime-v8r-uart.md)
 
 # Async Rust
 
