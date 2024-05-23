@@ -21,4 +21,4 @@ example directory and an appropriate toolchain will be provided.
 If you use Rust, you will need a version that supports `armv8r-none-eabihf`.
 This should be included in Rust 1.78 or newer, or a nightly from around March
 2024 or newer. You will also need to compile the standard library from source -
-see the [README](../../qemu-code/uart-driver/README.md) for more details.
+see the [README](../../qemu-code/uart-driver) for more details.
