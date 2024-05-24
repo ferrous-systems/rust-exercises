@@ -33,7 +33,7 @@ fn main() -> ! {
     if let Ok(data) = dk::send_recv(&mut packet, &[input], &mut radio, &mut timer, TEN_MS) {
         // response should be one byte large
         if data.len() == 1 {
-            let output = packet[0];
+            let output = data[0];
 
             defmt::println!("{:02x} -> {:02x}", input, output);
             // or cast to `char` for a more readable output
