@@ -1,14 +1,13 @@
 use std::{
     collections::hash_map::{Entry, HashMap},
     future::Future,
-    sync::Arc,
 };
 
-use tokio::sync::mpsc;
+use tokio::sync::{mpsc,oneshot};
 
 use tokio::{
     io::{AsyncBufReadExt, AsyncWriteExt, BufReader},
-    net::tcp::{OwnedReadHalf, OwnedWriteHalf},
+    net::tcp::OwnedWriteHalf,
     net::{TcpListener, TcpStream, ToSocketAddrs},
     task,
 };
@@ -16,9 +15,6 @@ use tokio::{
 type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>>;
 type Sender<T> = mpsc::UnboundedSender<T>;
 type Receiver<T> = mpsc::UnboundedReceiver<T>;
-
-#[derive(Debug)]
-enum Void {}
 
 #[tokio::main]
 pub(crate) async fn main() -> Result<()> {
@@ -31,17 +27,17 @@ async fn accept_loop(addr: impl ToSocketAddrs) -> Result<()> {
     let (broker_sender, broker_receiver) = mpsc::unbounded_channel();
     let broker = task::spawn(broker_loop(broker_receiver));
 
-    while let Ok((stream, socket_addr)) = listener.accept().await {
+    while let Ok((stream, _socket_addr)) = listener.accept().await {
         println!("Accepting from: {}", stream.peer_addr()?);
         spawn_and_log_error(connection_loop(broker_sender.clone(), stream));
     }
     drop(broker_sender);
-    broker.await;
+    broker.await?;
     Ok(())
 }
 
-async fn connection_loop(mut broker: Sender<Event>, stream: TcpStream) -> Result<()> {
-    let (reader, mut writer) = stream.into_split();
+async fn connection_loop(broker: Sender<Event>, stream: TcpStream) -> Result<()> {
+    let (reader, writer) = stream.into_split();
     let reader = BufReader::new(reader);
     let mut lines = reader.lines();
 
@@ -53,7 +49,7 @@ async fn connection_loop(mut broker: Sender<Event>, stream: TcpStream) -> Result
 
     println!("user {} connected", name);
 
-    let (_shutdown_sender, shutdown_receiver) = mpsc::unbounded_channel::<Void>();
+    let (_shutdown_sender, shutdown_receiver) = oneshot::channel::<()>();
     broker
         .send(Event::NewPeer {
             name: name.clone(),
@@ -88,20 +84,15 @@ async fn connection_loop(mut broker: Sender<Event>, stream: TcpStream) -> Result
 async fn connection_writer_loop(
     messages: &mut Receiver<String>,
     stream: &mut OwnedWriteHalf,
-    mut shutdown: Receiver<Void>,
+    mut shutdown: oneshot::Receiver<()>,
 ) -> Result<()> {
     loop {
         tokio::select! {
             msg = messages.recv() => match msg {
-                // TODO: fix this with a cancellation safe variant, pulling
-                // write_all out of the select
                 Some(msg) => stream.write_all(msg.as_bytes()).await?,
                 None => break,
             },
-            void = shutdown.recv() => match void {
-                Some(void) => match void {},
-                None => break,
-            }
+            _ = &mut shutdown => break
         }
     }
     Ok(())
@@ -112,7 +103,7 @@ enum Event {
     NewPeer {
         name: String,
         stream: OwnedWriteHalf,
-        shutdown: Receiver<Void>,
+        shutdown: oneshot::Receiver<()>,
     },
     Message {
         from: String,
@@ -156,7 +147,7 @@ async fn broker_loop(mut events: Receiver<Event>) {
                 Entry::Vacant(entry) => {
                     let (client_sender, mut client_receiver) = mpsc::unbounded_channel();
                     entry.insert(client_sender);
-                    let mut disconnect_sender = disconnect_sender.clone();
+                    let disconnect_sender = disconnect_sender.clone();
                     spawn_and_log_error(async move {
                         let res =
                             connection_writer_loop(&mut client_receiver, &mut stream, shutdown)
