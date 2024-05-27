@@ -42,6 +42,5 @@ Add the following lines to `Cargo.toml`:
 
 ```toml
 [dependencies]
-futures = "0.3.0"
-async-std = "1"
+tokio = { version = "1", features = ["full"] }
 ```
