@@ -9,4 +9,5 @@
   - [All Together](./all_together.md)
   - [Clean Shutdown](./clean_shutdown.md)
   - [Handling Disconnection](./handling_disconnection.md)
+  - [Final Server Code](./final_server_code.md)
   - [Implementing a Client](./implementing_a_client.md)
