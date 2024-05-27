@@ -11,7 +11,7 @@ By hiding `peers` inside such an "actor" task, we remove the need for mutexes an
 The order of events "Bob sends message to Alice" and "Alice joins" is determined by the order of the corresponding events in the broker's event queue.
 
 ```rust
-# extern crate async_std;
+# extern crate tokio;
 # extern crate futures;
 # use async_std::{
 #     net::TcpStream,

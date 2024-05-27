@@ -13,7 +13,7 @@ With async, the `select!` macro is all that is needed.
 
 
 ```rust
-# extern crate async_std;
+# extern crate tokio;
 # extern crate futures;
 use async_std::{
     io::{stdin, BufReader},

@@ -8,7 +8,7 @@ We need to:
 3. parse the rest of the lines as a  `login: message`
 
 ```rust
-# extern crate async_std;
+# extern crate tokio;
 # use async_std::{
 #     net::{TcpListener, ToSocketAddrs},
 #     prelude::*,
@@ -77,7 +77,7 @@ We can "fix" it by waiting for the task to be joined, like this:
 
 ```rust
 # #![feature(async_closure)]
-# extern crate async_std;
+# extern crate tokio;
 # use async_std::{
 #     io::BufReader,
 #     net::{TcpListener, TcpStream, ToSocketAddrs},
@@ -126,7 +126,7 @@ A correct way to handle client errors in this case is log them, and continue ser
 So let's use a helper function for this:
 
 ```rust
-# extern crate async_std;
+# extern crate tokio;
 # use async_std::{
 #     io,
 #     prelude::*,

@@ -18,7 +18,7 @@ This way, we statically guarantee that we issue shutdown exactly once, even if w
 First, let's add a shutdown channel to the `connection_loop`:
 
 ```rust
-# extern crate async_std;
+# extern crate tokio;
 # extern crate futures;
 # use async_std::net::TcpStream;
 # use futures::channel::mpsc;
@@ -68,7 +68,7 @@ In the `connection_writer_loop`, we now need to choose between shutdown and mess
 We use the `select` macro for this purpose:
 
 ```rust
-# extern crate async_std;
+# extern crate tokio;
 # extern crate futures;
 # use async_std::{net::TcpStream, prelude::*};
 # use futures::channel::mpsc;
@@ -118,7 +118,7 @@ This also allows us to establish a useful invariant that the message channel str
 The final code looks like this:
 
 ```rust
-# extern crate async_std;
+# extern crate tokio;
 # extern crate futures;
 use async_std::{
     io::BufReader,

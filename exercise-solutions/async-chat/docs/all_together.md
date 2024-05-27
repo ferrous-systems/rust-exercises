@@ -3,7 +3,7 @@
 At this point, we only need to start the broker to get a fully-functioning (in the happy case!) chat:
 
 ```rust
-# extern crate async_std;
+# extern crate tokio;
 # extern crate futures;
 use async_std::{
     io::BufReader,

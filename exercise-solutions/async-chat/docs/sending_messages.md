@@ -12,7 +12,7 @@ This task would be the point of serialization of messages.
 if Alice and Charley send two messages to Bob at the same time, Bob will see the messages in the same order as they arrive in the channel.
 
 ```rust
-# extern crate async_std;
+# extern crate tokio;
 # extern crate futures;
 # use async_std::{
 #     net::TcpStream,

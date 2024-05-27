@@ -21,7 +21,7 @@ However, we never wait for broker and writers, which might cause some messages t
 Let's add waiting to the server:
 
 ```rust
-# extern crate async_std;
+# extern crate tokio;
 # extern crate futures;
 # use async_std::{
 #     io::{self, BufReader},
@@ -154,7 +154,7 @@ async fn accept_loop(addr: impl ToSocketAddrs) -> Result<()> {
 And to the broker:
 
 ```rust
-# extern crate async_std;
+# extern crate tokio;
 # extern crate futures;
 # use async_std::{
 #     io::{self, BufReader},
