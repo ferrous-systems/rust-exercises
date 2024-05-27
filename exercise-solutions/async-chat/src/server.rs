@@ -124,6 +124,7 @@ async fn broker_loop(mut events: Receiver<Event>) {
             disconnect = disconnect_receiver.recv() => {
                 let (name, _pending_messages) = disconnect.unwrap();
                 assert!(peers.remove(&name).is_some());
+                println!("user {} disconnected", name);
                 continue;
             },
         };
