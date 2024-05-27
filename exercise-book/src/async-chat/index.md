@@ -1,4 +1,4 @@
-# Tutorial: Writing a chat
+# Writing an async chat
 
 Nothing is simpler than creating a chat server, right?
 Not quite, chat servers expose you to all the fun of asynchronous programming:

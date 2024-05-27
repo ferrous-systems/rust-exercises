@@ -1,13 +1,15 @@
 use std::{
     collections::hash_map::{Entry, HashMap},
     future::Future,
+    sync::Arc,
 };
 
 use tokio::{
     io::{AsyncBufReadExt, AsyncWriteExt, BufReader},
     net::{tcp::OwnedWriteHalf, TcpListener, TcpStream, ToSocketAddrs},
-    sync::{mpsc, oneshot},
+    sync::{mpsc, oneshot, Notify},
     task,
+    time::{sleep, Duration},
 };
 
 type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>>;
@@ -24,17 +26,25 @@ async fn accept_loop(addr: impl ToSocketAddrs) -> Result<()> {
 
     let (broker_sender, broker_receiver) = mpsc::unbounded_channel();
     let broker = task::spawn(broker_loop(broker_receiver));
+    let shutdown_notification = Arc::new(Notify::new());
 
-    while let Ok((stream, _socket_addr)) = listener.accept().await {
-        println!("Accepting from: {}", stream.peer_addr()?);
-        spawn_and_log_error(connection_loop(broker_sender.clone(), stream));
+    loop {
+        tokio::select!{
+            Ok((stream, _socket_addr)) = listener.accept() => {
+                println!("Accepting from: {}", stream.peer_addr()?);
+                spawn_and_log_error(connection_loop(broker_sender.clone(), stream, shutdown_notification.clone()));
+            },
+            _ = tokio::signal::ctrl_c() => break,
+        }
     }
+    println!("Shutting down!");
+    shutdown_notification.notify_waiters();
     drop(broker_sender);
     broker.await?;
     Ok(())
 }
 
-async fn connection_loop(broker: Sender<Event>, stream: TcpStream) -> Result<()> {
+async fn connection_loop(broker: Sender<Event>, stream: TcpStream, shutdown: Arc<Notify>) -> Result<()> {
     let (reader, writer) = stream.into_split();
     let reader = BufReader::new(reader);
     let mut lines = reader.lines();
@@ -47,42 +57,47 @@ async fn connection_loop(broker: Sender<Event>, stream: TcpStream) -> Result<()>
 
     println!("user {} connected", name);
 
-    let (_shutdown_sender, shutdown_receiver) = oneshot::channel::<()>();
     broker
         .send(Event::NewPeer {
             name: name.clone(),
             stream: writer,
-            shutdown: shutdown_receiver,
+            shutdown: shutdown.clone(),
         })
         .unwrap();
+    
+    loop {
+        tokio::select! {
+            Ok(Some(line)) = lines.next_line() => {
+                let (dest, msg) = match line.split_once(':') {
 
-    while let Ok(Some(line)) = lines.next_line().await {
-        let (dest, msg) = match line.split_once(':') {
-            None => continue,
-            Some((dest, msg)) => (dest, msg.trim()),
-        };
-        let dest: Vec<String> = dest
-            .split(',')
-            .map(|name| name.trim().to_string())
-            .collect();
-        let msg: String = msg.trim().to_string();
-
-        broker
-            .send(Event::Message {
-                from: name.clone(),
-                to: dest,
-                msg,
-            })
-            .unwrap();
+                    None => continue,
+                    Some((dest, msg)) => (dest, msg.trim()),
+                };
+                let dest: Vec<String> = dest
+                    .split(',')
+                    .map(|name| name.trim().to_string())
+                    .collect();
+                let msg: String = msg.trim().to_string();
+        
+                broker
+                    .send(Event::Message {
+                        from: name.clone(),
+                        to: dest,
+                        msg,
+                    })
+                    .unwrap();
+            },
+            _ = shutdown.notified() => break,
+        }
     }
-
+    println!("Closing connection loop!");
     Ok(())
 }
 
 async fn connection_writer_loop(
     messages: &mut Receiver<String>,
     stream: &mut OwnedWriteHalf,
-    mut shutdown: oneshot::Receiver<()>,
+    mut shutdown: Arc<Notify>,
 ) -> Result<()> {
     loop {
         tokio::select! {
@@ -90,9 +105,12 @@ async fn connection_writer_loop(
                 Some(msg) => stream.write_all(msg.as_bytes()).await?,
                 None => break,
             },
-            _ = &mut shutdown => break
+            _ = shutdown.notified() => break
         }
     }
+
+    println!("Closing connection_writer loop!");
+
     Ok(())
 }
 
@@ -101,7 +119,7 @@ enum Event {
     NewPeer {
         name: String,
         stream: OwnedWriteHalf,
-        shutdown: oneshot::Receiver<()>,
+        shutdown: Arc<Notify>,
     },
     Message {
         from: String,

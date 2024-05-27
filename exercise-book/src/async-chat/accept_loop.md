@@ -20,8 +20,8 @@ type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>
 1. Import some traits required to work with futures and streams.
 2. The `task` module roughly corresponds to the `std::thread` module, but tasks are much lighter weight.
    A single thread can run many tasks.
-3. For the socket type, we use `TcpListener` from `tokio`, which is just like `std::net::TcpListener`, but is non-blocking and uses `async` API.
-4. We will skip implementing comprehensive error handling in this example.
+3. For the socket type, we use `TcpListener` from `tokio`, which is similar to the sync `std::net::TcpListener`, but is non-blocking and uses `async` API.
+4. We will skip implementing detailled error handling in this example.
    To propagate the errors, we will use a boxed error trait object.
    Do you know that there's `From<&'_ str> for Box<dyn Error>` implementation in stdlib, which allows you to use strings with `?` operator?
 
