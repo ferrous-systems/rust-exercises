@@ -5,7 +5,7 @@ At this point, we only need to start the broker to get a fully-functioning (in t
 ```rust
 # extern crate tokio;
 # extern crate futures;
-use async_std::{
+use tokio::{
     io::BufReader,
     net::{TcpListener, TcpStream, ToSocketAddrs},
     prelude::*,

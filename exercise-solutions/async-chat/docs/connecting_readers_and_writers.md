@@ -13,7 +13,7 @@ The order of events "Bob sends message to Alice" and "Alice joins" is determined
 ```rust
 # extern crate tokio;
 # extern crate futures;
-# use async_std::{
+# use tokio::{
 #     net::TcpStream,
 #     prelude::*,
 #     task,

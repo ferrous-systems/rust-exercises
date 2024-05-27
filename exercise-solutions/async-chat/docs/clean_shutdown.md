@@ -23,7 +23,7 @@ Let's add waiting to the server:
 ```rust
 # extern crate tokio;
 # extern crate futures;
-# use async_std::{
+# use tokio::{
 #     io::{self, BufReader},
 #     net::{TcpListener, TcpStream, ToSocketAddrs},
 #     prelude::*,
@@ -156,7 +156,7 @@ And to the broker:
 ```rust
 # extern crate tokio;
 # extern crate futures;
-# use async_std::{
+# use tokio::{
 #     io::{self, BufReader},
 #     net::{TcpListener, TcpStream, ToSocketAddrs},
 #     prelude::*,

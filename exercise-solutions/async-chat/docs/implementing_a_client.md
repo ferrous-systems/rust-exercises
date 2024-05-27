@@ -15,7 +15,7 @@ With async, the `select!` macro is all that is needed.
 ```rust
 # extern crate tokio;
 # extern crate futures;
-use async_std::{
+use tokio::{
     io::{stdin, BufReader},
     net::{TcpStream, ToSocketAddrs},
     prelude::*,

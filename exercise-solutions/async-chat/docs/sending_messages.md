@@ -14,7 +14,7 @@ if Alice and Charley send two messages to Bob at the same time, Bob will see the
 ```rust
 # extern crate tokio;
 # extern crate futures;
-# use async_std::{
+# use tokio::{
 #     net::TcpStream,
 #     prelude::*,
 # };

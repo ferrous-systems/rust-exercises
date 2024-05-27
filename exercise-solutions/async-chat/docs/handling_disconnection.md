@@ -20,7 +20,7 @@ First, let's add a shutdown channel to the `connection_loop`:
 ```rust
 # extern crate tokio;
 # extern crate futures;
-# use async_std::net::TcpStream;
+# use tokio::net::TcpStream;
 # use futures::channel::mpsc;
 # use futures::sink::SinkExt;
 # use std::sync::Arc;
@@ -70,7 +70,7 @@ We use the `select` macro for this purpose:
 ```rust
 # extern crate tokio;
 # extern crate futures;
-# use async_std::{net::TcpStream, prelude::*};
+# use tokio::{net::TcpStream, prelude::*};
 # use futures::channel::mpsc;
 use futures::{select, FutureExt};
 # use std::sync::Arc;
@@ -120,7 +120,7 @@ The final code looks like this:
 ```rust
 # extern crate tokio;
 # extern crate futures;
-use async_std::{
+use tokio::{
     io::BufReader,
     net::{TcpListener, TcpStream, ToSocketAddrs},
     prelude::*,
