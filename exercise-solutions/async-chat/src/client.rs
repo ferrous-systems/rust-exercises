@@ -12,12 +12,9 @@ pub(crate) async fn main() -> Result<()> {
 
 async fn try_main(addr: impl ToSocketAddrs) -> Result<()> {
     let stream = TcpStream::connect(addr).await?;
-    let (reader, mut writer) = tokio::io::split(stream);
-    let reader = BufReader::new(reader);
-    let mut lines_from_server = reader.lines();
-
-    let stdin = BufReader::new(stdin());
-    let mut lines_from_stdin = stdin.lines();
+    let (reader, mut writer) = stream.into_split();
+    let mut lines_from_server = BufReader::new(reader).lines();
+    let mut lines_from_stdin = BufReader::new(stdin()).lines();
     loop {
         tokio::select! {
             line = lines_from_server.next_line() => match line {

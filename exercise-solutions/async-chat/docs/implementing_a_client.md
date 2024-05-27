@@ -14,43 +14,41 @@ With async, the `select!` macro is all that is needed.
 
 ```rust
 # extern crate tokio;
-# extern crate futures;
 use tokio::{
-    io::{stdin, BufReader},
+    io::{stdin, AsyncBufReadExt, AsyncWriteExt, BufReader},
     net::{TcpStream, ToSocketAddrs},
-    prelude::*,
-    task,
 };
-use futures::{select, FutureExt};
 
 type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>>;
 
-// main
-fn run() -> Result<()> {
-    task::block_on(try_run("127.0.0.1:8080"))
+#[tokio::main]
+async fn main() -> Result<()> {
+    try_main("127.0.0.1:8080").await
 }
 
-async fn try_run(addr: impl ToSocketAddrs) -> Result<()> {
+async fn try_main(addr: impl ToSocketAddrs) -> Result<()> {
     let stream = TcpStream::connect(addr).await?;
-    let (reader, mut writer) = (&stream, &stream); // 1
-    let mut lines_from_server = BufReader::new(reader).lines().fuse(); // 2
-    let mut lines_from_stdin = BufReader::new(stdin()).lines().fuse(); // 2
+    let (reader, mut writer) = stream.into_split();
+
+    let mut lines_from_server = BufReader::new(reader).lines(); // 2
+    let mut lines_from_stdin = BufReader::new(stdin()).lines(); // 2
+
     loop {
-        select! { // 3
-            line = lines_from_server.next().fuse() => match line {
-                Some(line) => {
-                    let line = line?;
+        tokio::select! { // 3
+            line = lines_from_server.next_line() => match line {
+                Ok(Some(line)) => {
                     println!("{}", line);
                 },
-                None => break,
+                Ok(None) => break,
+                Err(e) => eprintln!("Error {:?}:", e),
             },
-            line = lines_from_stdin.next().fuse() => match line {
-                Some(line) => {
-                    let line = line?;
+            line = lines_from_stdin.next_line() => match line {
+                Ok(Some(line)) => {
                     writer.write_all(line.as_bytes()).await?;
                     writer.write_all(b"\n").await?;
-                }
-                None => break,
+                },
+                Ok(None) => break,
+                Err(e) => eprintln!("Error {:?}:", e),
             }
         }
     }
@@ -58,6 +56,6 @@ async fn try_run(addr: impl ToSocketAddrs) -> Result<()> {
 }
 ```
 
-1. Here we split `TcpStream` into read and write halves: there's `impl AsyncRead for &'_ TcpStream`, just like the one in std.
+1. Here we split `TcpStream` into read and write halves.
 2. We create a stream of lines for both the socket and stdin.
 3. In the main select loop, we print the lines we receive from the server and send the lines we read from the console.
