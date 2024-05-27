@@ -9,6 +9,4 @@ How will it handle them disconnecting?
 
 How will it distribute the messages?
 
-This tutorial explains how to write a chat server in `async-std`.
-
-You can also find the tutorial in [our repository](https://github.com/async-rs/async-std/blob/HEAD/examples/a-chat).
+This tutorial explains how to write a chat server in `tokio`.
