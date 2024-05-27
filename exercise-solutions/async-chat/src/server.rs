@@ -57,9 +57,9 @@ async fn connection_loop(broker: Sender<Event>, stream: TcpStream) -> Result<()>
         .unwrap();
 
     while let Ok(Some(line)) = lines.next_line().await {
-        let (dest, msg) = match line.find(':') {
+        let (dest, msg) = match line.split_once(':') {
             None => continue,
-            Some(idx) => (&line[..idx], line[idx + 1..].trim()),
+            Some((dest, msg)) => (dest, msg.trim()),
         };
         let dest: Vec<String> = dest
             .split(',')
