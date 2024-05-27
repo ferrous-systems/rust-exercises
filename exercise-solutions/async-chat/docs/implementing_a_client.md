@@ -12,7 +12,7 @@ Programming this with threads is cumbersome, especially when implementing a clea
 With async, the `select!` macro is all that is needed.
 
 
-```rust,edition2018
+```rust
 # extern crate async_std;
 # extern crate futures;
 use async_std::{

@@ -4,7 +4,7 @@ Let's implement the scaffold of the server: a loop that binds a TCP socket to an
 
 First of all, let's add required import boilerplate:
 
-```rust,edition2018
+```rust
 # extern crate async_std;
 use async_std::{
     prelude::*, // 1
@@ -25,7 +25,7 @@ type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>
 
 Now we can write the server's accept loop:
 
-```rust,edition2018
+```rust
 # extern crate async_std;
 # use async_std::{
 #     net::{TcpListener, ToSocketAddrs},
@@ -52,7 +52,7 @@ async fn accept_loop(addr: impl ToSocketAddrs) -> Result<()> { // 1
    Mirroring API of `std` is an explicit design goal of `async_std`.
 3. Here, we would like to iterate incoming sockets, just how one would do in `std`:
 
-```rust,edition2018,should_panic
+```rust,should_panic
 let listener: std::net::TcpListener = unimplemented!();
 for stream in listener.incoming() {
 }
@@ -63,7 +63,7 @@ For this reason we have to implement the loop manually, by using `while let Some
 
 Finally, let's add main:
 
-```rust,edition2018
+```rust
 # extern crate async_std;
 # use async_std::{
 #     net::{TcpListener, ToSocketAddrs},

@@ -11,7 +11,7 @@ So let's create a `connection_writer_loop` task which receives messages over a c
 This task would be the point of serialization of messages.
 if Alice and Charley send two messages to Bob at the same time, Bob will see the messages in the same order as they arrive in the channel.
 
-```rust,edition2018
+```rust
 # extern crate async_std;
 # extern crate futures;
 # use async_std::{

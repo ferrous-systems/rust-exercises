@@ -7,7 +7,7 @@ We need to:
 2. interpret the first line as a login
 3. parse the rest of the lines as a  `login: message`
 
-```rust,edition2018
+```rust
 # extern crate async_std;
 # use async_std::{
 #     net::{TcpListener, ToSocketAddrs},
@@ -75,7 +75,7 @@ One serious problem in the above solution is that, while we correctly propagate 
 That is, `task::spawn` does not return an error immediately (it can't, it needs to run the future to completion first), only after it is joined.
 We can "fix" it by waiting for the task to be joined, like this:
 
-```rust,edition2018
+```rust
 # #![feature(async_closure)]
 # extern crate async_std;
 # use async_std::{
@@ -125,7 +125,7 @@ That is, a flaky internet connection of one peer brings down the whole chat room
 A correct way to handle client errors in this case is log them, and continue serving other clients.
 So let's use a helper function for this:
 
-```rust,edition2018
+```rust
 # extern crate async_std;
 # use async_std::{
 #     io,

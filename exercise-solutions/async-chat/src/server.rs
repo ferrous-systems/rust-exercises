@@ -3,12 +3,10 @@ use std::{
     future::Future,
 };
 
-use tokio::sync::{mpsc, oneshot};
-
 use tokio::{
     io::{AsyncBufReadExt, AsyncWriteExt, BufReader},
-    net::tcp::OwnedWriteHalf,
-    net::{TcpListener, TcpStream, ToSocketAddrs},
+    net::{tcp::OwnedWriteHalf, TcpListener, TcpStream, ToSocketAddrs},
+    sync::{mpsc, oneshot},
     task,
 };
 

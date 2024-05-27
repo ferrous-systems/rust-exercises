@@ -10,7 +10,7 @@ We can create a dedicated broker task which owns the `peers` map and communicate
 By hiding `peers` inside such an "actor" task, we remove the need for mutexes and also make the serialization point explicit.
 The order of events "Bob sends message to Alice" and "Alice joins" is determined by the order of the corresponding events in the broker's event queue.
 
-```rust,edition2018
+```rust
 # extern crate async_std;
 # extern crate futures;
 # use async_std::{

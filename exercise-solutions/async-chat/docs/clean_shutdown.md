@@ -20,7 +20,7 @@ In `a-chat`, we already have an unidirectional flow of messages: `reader -> brok
 However, we never wait for broker and writers, which might cause some messages to get dropped.
 Let's add waiting to the server:
 
-```rust,edition2018
+```rust
 # extern crate async_std;
 # extern crate futures;
 # use async_std::{
@@ -153,7 +153,7 @@ async fn accept_loop(addr: impl ToSocketAddrs) -> Result<()> {
 
 And to the broker:
 
-```rust,edition2018
+```rust
 # extern crate async_std;
 # extern crate futures;
 # use async_std::{
