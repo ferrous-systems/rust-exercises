@@ -7,3 +7,6 @@ title = "Async programming tutorial in Rust with tokio"
 
 [rust]
 edition = "2021"
+
+[output.html.playground]
+runnable = false
