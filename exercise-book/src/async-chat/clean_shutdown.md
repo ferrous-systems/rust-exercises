@@ -11,7 +11,7 @@ A more correct shutdown sequence would be:
 A clean shutdown in a channel based architecture is easy, although it can appear a magic trick at first.
 In Rust, receiver side of a channel is closed as soon as all senders are dropped.
 That is, as soon as producers exit and drop their senders, the rest of the system shuts down naturally.
-In `async_std` this translates to two rules:
+In `tokio` this translates to two rules:
 
 1. Make sure that channels form an acyclic graph.
 2. Take care to wait, in the correct order, until intermediate layers of the system process pending messages.
