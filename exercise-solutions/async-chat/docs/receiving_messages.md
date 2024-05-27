@@ -9,24 +9,22 @@ We need to:
 
 ```rust
 # extern crate tokio;
-# use async_std::{
-#     net::{TcpListener, ToSocketAddrs},
-#     prelude::*,
+# use std::{
+#     collections::hash_map::{Entry, HashMap},
+#     future::Future,
+# };
+# use tokio::{
+#     io::{AsyncBufReadExt, AsyncWriteExt, BufReader},
+#     net::{tcp::OwnedWriteHalf, TcpListener, TcpStream, ToSocketAddrs},
+#     sync::{mpsc, oneshot},
 #     task,
 # };
 #
 # type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>>;
 #
-use async_std::{
-    io::BufReader,
-    net::TcpStream,
-};
-
 async fn accept_loop(addr: impl ToSocketAddrs) -> Result<()> {
     let listener = TcpListener::bind(addr).await?;
-    let mut incoming = listener.incoming();
-    while let Some(stream) = incoming.next().await {
-        let stream = stream?;
+    while let Ok((stream, _socket_addr)) = listener.accept().await {
         println!("Accepting from: {}", stream.peer_addr()?);
         let _handle = task::spawn(connection_loop(stream)); // 1
     }
@@ -34,23 +32,28 @@ async fn accept_loop(addr: impl ToSocketAddrs) -> Result<()> {
 }
 
 async fn connection_loop(stream: TcpStream) -> Result<()> {
-    let reader = BufReader::new(&stream); // 2
-    let mut lines = reader.lines();
+    let reader = BufReader::new(stream);
+    let mut lines = reader.lines(); // 2
 
-    let name = match lines.next().await { // 3
+    // 3
+    let name = match lines.next_line().await? {
         None => Err("peer disconnected immediately")?,
-        Some(line) => line?,
+        Some(line) => line,
     };
     println!("name = {}", name);
 
-    while let Some(line) = lines.next().await { // 4
-        let line = line?;
-        let (dest, msg) = match line.find(':') { // 5
+    // 4
+    while let Some(line) = lines.next_line().await? {
+        // 5
+        let (dest, msg) = match line.find(':') {
             None => continue,
-            Some(idx) => (&line[..idx], line[idx + 1 ..].trim()),
+            Some(idx) => (&line[..idx], line[idx + 1..].trim()),
         };
-        let dest: Vec<String> = dest.split(',').map(|name| name.trim().to_string()).collect();
-        let msg: String = msg.to_string();
+        let dest = dest
+            .split(',')
+            .map(|name| name.trim().to_string())
+            .collect::<Vec<_>>();
+        let msg = msg.to_string();
     }
     Ok(())
 }
@@ -65,7 +68,7 @@ async fn connection_loop(stream: TcpStream) -> Result<()> {
 
 3. We get the first line -- login
 
-4. And, once again, we implement a manual async for loop.
+4. And, once again, we implement a manual async loop.
 
 5. Finally, we parse each line into a list of destination logins and the message itself.
 
@@ -76,38 +79,13 @@ That is, `task::spawn` does not return an error immediately (it can't, it needs 
 We can "fix" it by waiting for the task to be joined, like this:
 
 ```rust
-# #![feature(async_closure)]
 # extern crate tokio;
-# use async_std::{
-#     io::BufReader,
-#     net::{TcpListener, TcpStream, ToSocketAddrs},
-#     prelude::*,
+# use tokio::{
+#     net::TcpStream,
 #     task,
 # };
-#
 # type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>>;
-#
-# async fn connection_loop(stream: TcpStream) -> Result<()> {
-#     let reader = BufReader::new(&stream); // 2
-#     let mut lines = reader.lines();
-#
-#     let name = match lines.next().await { // 3
-#         None => Err("peer disconnected immediately")?,
-#         Some(line) => line?,
-#     };
-#     println!("name = {}", name);
-#
-#     while let Some(line) = lines.next().await { // 4
-#         let line = line?;
-#         let (dest, msg) = match line.find(':') { // 5
-#             None => continue,
-#             Some(idx) => (&line[..idx], line[idx + 1 ..].trim()),
-#         };
-#         let dest: Vec<String> = dest.split(',').map(|name| name.trim().to_string()).collect();
-#         let msg: String = msg.trim().to_string();
-#     }
-#     Ok(())
-# }
+# async fn connection_loop(stream: TcpStream) -> Result<()> {}
 #
 # async move |stream| {
 let handle = task::spawn(connection_loop(stream));
@@ -127,11 +105,8 @@ So let's use a helper function for this:
 
 ```rust
 # extern crate tokio;
-# use async_std::{
-#     io,
-#     prelude::*,
-#     task,
-# };
+# use std::future::Future;
+# use tokio::task;
 fn spawn_and_log_error<F>(fut: F) -> task::JoinHandle<()>
 where
     F: Future<Output = Result<()>> + Send + 'static,
