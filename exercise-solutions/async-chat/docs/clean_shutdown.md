@@ -21,6 +21,43 @@ However, we never wait for broker and writers, which might cause some messages t
 Let's add waiting to the server:
 
 ```rust
+# extern crate tokio;
+# use std::{
+#     collections::hash_map::{Entry, HashMap},
+#     future::Future,
+# };
+# use tokio::{
+#     io::{AsyncBufReadExt, AsyncWriteExt, BufReader},
+#     net::{tcp::OwnedWriteHalf, TcpListener, TcpStream, ToSocketAddrs},
+#     sync::{mpsc, oneshot},
+#     task,
+# };
+# type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>>;
+# type Sender<T> = mpsc::UnboundedSender<T>;
+# type Receiver<T> = mpsc::UnboundedReceiver<T>;
+# enum Event {
+#     NewPeer {
+#         name: String,
+#         stream: OwnedWriteHalf,
+#         shutdown: oneshot::Receiver<()>,
+#     },
+#     Message {
+#         from: String,
+#         to: Vec<String>,
+#         msg: String,
+#     },
+# }
+# async fn broker_loop(mut events: Receiver<Event>) {}
+# async fn connection_loop(broker: Sender<Event>, stream: TcpStream) -> Result<()> {
+#     Ok(())
+# }
+# fn spawn_and_log_error<F>(fut: F) -> task::JoinHandle<()>
+# where
+#     F: Future<Output = Result<()>> + Send + 'static,
+# {
+#     unimplemented!()
+# }
+# 
 async fn accept_loop(addr: impl ToSocketAddrs) -> Result<()> {
     let listener = TcpListener::bind(addr).await?;
 
@@ -40,9 +77,24 @@ async fn accept_loop(addr: impl ToSocketAddrs) -> Result<()> {
 Event + connection_loop:
 
 ```rust
+# extern crate tokio;
+# use std::{
+#     collections::hash_map::{Entry, HashMap},
+#     future::Future,
+# };
+# use tokio::{
+#     io::{AsyncBufReadExt, AsyncWriteExt, BufReader},
+#     net::{tcp::OwnedWriteHalf, TcpListener, TcpStream, ToSocketAddrs},
+#     sync::{mpsc, oneshot},
+#     task,
+# };
+# type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>>;
+# type Sender<T> = mpsc::UnboundedSender<T>;
+# type Receiver<T> = mpsc::UnboundedReceiver<T>;
+# 
 #[derive(Debug)]
 enum Event {
-    NewPeer {unchanged
+    NewPeer {
         name: String,
         stream: OwnedWriteHalf,
         shutdown: oneshot::Receiver<()>,
@@ -51,6 +103,10 @@ enum Event {
 }
 
 async fn connection_loop(broker: Sender<Event>, stream: TcpStream) -> Result<()> {
+    # let (reader, writer) = stream.into_split();
+    # let reader = BufReader::new(reader);
+    # let mut lines = reader.lines();
+    # let name = String::new();
     // ...
     let (_shutdown_sender, shutdown_receiver) = oneshot::channel::<()>();
     broker
@@ -72,6 +128,49 @@ async fn connection_loop(broker: Sender<Event>, stream: TcpStream) -> Result<()>
 And to the broker:
 
 ```rust
+# extern crate tokio;
+# use std::{
+#     collections::hash_map::{Entry, HashMap},
+#     future::Future,
+# };
+# use tokio::{
+#     io::{AsyncBufReadExt, AsyncWriteExt, BufReader},
+#     net::{tcp::OwnedWriteHalf, TcpListener, TcpStream, ToSocketAddrs},
+#     sync::{mpsc, oneshot},
+#     task,
+# };
+# type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>>;
+# type Sender<T> = mpsc::UnboundedSender<T>;
+# type Receiver<T> = mpsc::UnboundedReceiver<T>;
+# enum Event {
+#     NewPeer {
+#         name: String,
+#         stream: OwnedWriteHalf,
+#         shutdown: oneshot::Receiver<()>,
+#     },
+#     Message {
+#         from: String,
+#         to: Vec<String>,
+#         msg: String,
+#     },
+# }
+# async fn connection_loop(broker: Sender<Event>, stream: TcpStream) -> Result<()> {
+#     Ok(())
+# }
+# fn spawn_and_log_error<F>(fut: F) -> task::JoinHandle<()>
+# where
+#     F: Future<Output = Result<()>> + Send + 'static,
+# {
+#     unimplemented!()
+# }
+# async fn connection_writer_loop(
+#     messages: &mut Receiver<String>,
+#     stream: &mut OwnedWriteHalf,
+#     mut shutdown: oneshot::Receiver<()>,
+# ) -> Result<()> {
+#     Ok(())
+# }
+# 
 async fn broker_loop(mut events: Receiver<Event>) {
     let mut peers: HashMap<String, Sender<String>> = HashMap::new();
 
@@ -102,6 +201,21 @@ async fn broker_loop(mut events: Receiver<Event>) {
 connection_writer_loop:
 
 ```rust
+# extern crate tokio;
+# use std::{
+#     collections::hash_map::{Entry, HashMap},
+#     future::Future,
+# };
+# use tokio::{
+#     io::{AsyncBufReadExt, AsyncWriteExt, BufReader},
+#     net::{tcp::OwnedWriteHalf, TcpListener, TcpStream, ToSocketAddrs},
+#     sync::{mpsc, oneshot},
+#     task,
+# };
+# type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>>;
+# type Sender<T> = mpsc::UnboundedSender<T>;
+# type Receiver<T> = mpsc::UnboundedReceiver<T>;
+# 
 async fn connection_writer_loop(
     messages: &mut Receiver<String>,
     stream: &mut OwnedWriteHalf,

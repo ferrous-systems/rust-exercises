@@ -12,10 +12,7 @@ The order of events "Bob sends message to Alice" and "Alice joins" is determined
 
 ```rust
 # extern crate tokio;
-# use std::{
-#     collections::hash_map::{Entry, HashMap},
-#     future::Future,
-# };
+# use std::future::Future;
 # use tokio::{
 #     io::{AsyncBufReadExt, AsyncWriteExt, BufReader},
 #     net::{tcp::OwnedWriteHalf, TcpListener, TcpStream, ToSocketAddrs},
@@ -27,14 +24,18 @@ The order of events "Bob sends message to Alice" and "Alice joins" is determined
 # type Receiver<T> = mpsc::UnboundedReceiver<T>;
 #
 # async fn connection_writer_loop(
-#     mut messages: Receiver<String>,
-#     stream: Arc<TcpStream>,
-# ) -> Result<()> {}
+#     messages: &mut Receiver<String>,
+#     stream: &mut OwnedWriteHalf,
+# ) -> Result<()> {
+# Ok(())
+# }
 #
 # fn spawn_and_log_error<F>(fut: F) -> task::JoinHandle<()>
 # where
 #     F: Future<Output = Result<()>> + Send + 'static,
-# {}
+# {
+#     unimplemented!()
+# }
 #
 use std::collections::hash_map::{Entry, HashMap};
 

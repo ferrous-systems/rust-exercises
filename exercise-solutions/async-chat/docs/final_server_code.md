@@ -20,8 +20,8 @@ type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>
 type Sender<T> = mpsc::UnboundedSender<T>;
 type Receiver<T> = mpsc::UnboundedReceiver<T>;
 
-#[tokio::main]
-pub(crate) async fn main() -> Result<()> {
+// main
+async fn run() -> Result<()> {
     accept_loop("127.0.0.1:8080").await
 }
 

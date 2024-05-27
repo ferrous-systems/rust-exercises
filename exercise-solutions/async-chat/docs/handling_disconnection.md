@@ -19,15 +19,30 @@ First, let's add a shutdown channel to the `connection_loop`:
 
 ```rust
 # extern crate tokio;
-# extern crate futures;
-# use tokio::net::TcpStream;
-# use futures::channel::mpsc;
-# use futures::sink::SinkExt;
-# use std::sync::Arc;
-#
+# use std::future::Future;
+# use tokio::{
+#     io::{AsyncBufReadExt, AsyncWriteExt, BufReader},
+#     net::{tcp::OwnedWriteHalf, TcpListener, TcpStream, ToSocketAddrs},
+#     sync::{mpsc, oneshot},
+#     task,
+# };
 # type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>>;
 # type Sender<T> = mpsc::UnboundedSender<T>;
 # type Receiver<T> = mpsc::UnboundedReceiver<T>;
+#
+# async fn connection_writer_loop(
+#     messages: &mut Receiver<String>,
+#     stream: &mut OwnedWriteHalf,
+# ) -> Result<()> {
+# Ok(())
+# }
+#
+# fn spawn_and_log_error<F>(fut: F) -> task::JoinHandle<()>
+# where
+#     F: Future<Output = Result<()>> + Send + 'static,
+# {
+#     unimplemented!()
+# }
 #
 
 #[derive(Debug)]
@@ -44,9 +59,12 @@ enum Event {
     },
 }
 
-async fn connection_loop(mut broker: Sender<Event>, stream: Arc<TcpStream>) -> Result<()> {
+async fn connection_loop(broker: Sender<Event>, stream: TcpStream) -> Result<()> {
+    # let (reader, writer) = stream.into_split();
+    # let reader = BufReader::new(reader);
+    # let mut lines = reader.lines();
+    # let name: String = String::new();
     // ...
-#   let name: String = unimplemented!();
     let (_shutdown_sender, shutdown_receiver) = oneshot::channel::<()>();
     broker
         .send(Event::NewPeer {
@@ -69,15 +87,17 @@ We use the `select` macro for this purpose:
 
 ```rust
 # extern crate tokio;
-# extern crate futures;
-# use tokio::{net::TcpStream, prelude::*};
-# use futures::channel::mpsc;
-use futures::{select, FutureExt};
-# use std::sync::Arc;
-# type Receiver<T> = mpsc::UnboundedReceiver<T>;
+# use std::future::Future;
+# use tokio::{
+#     io::{AsyncBufReadExt, AsyncWriteExt, BufReader},
+#     net::{tcp::OwnedWriteHalf, TcpListener, TcpStream, ToSocketAddrs},
+#     sync::{mpsc, oneshot},
+#     task,
+# };
 # type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>>;
 # type Sender<T> = mpsc::UnboundedSender<T>;
-
+# type Receiver<T> = mpsc::UnboundedReceiver<T>;
+#
 async fn connection_writer_loop(
     messages: &mut Receiver<String>,
     stream: &mut OwnedWriteHalf,

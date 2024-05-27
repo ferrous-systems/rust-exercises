@@ -21,8 +21,8 @@ use tokio::{
 
 type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>>;
 
-#[tokio::main]
-async fn main() -> Result<()> {
+// main
+async fn run() -> Result<()> {
     try_main("127.0.0.1:8080").await
 }
 

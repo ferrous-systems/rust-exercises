@@ -21,7 +21,7 @@ If Alice and Charley send two messages to Bob at the same time, Bob will see the
 # use tokio::{
 #     io::{AsyncBufReadExt, AsyncWriteExt, BufReader},
 #     net::{tcp::OwnedWriteHalf, TcpListener, TcpStream, ToSocketAddrs},
-#     sync::{mpsc, oneshot},
+#     sync::oneshot,
 #     task,
 # };
 # 
@@ -49,8 +49,9 @@ async fn connection_writer_loop(
     ```rust
     # extern crate tokio;
     # use tokio::net::TcpStream;
-    # let stream: TcpStream = unimplemented!();
+    # async fn connection_loop(stream: TcpStream) {
     #
     use tokio::net::tcp;
     let (reader, writer): (tcp::OwnedReadHalf, tcp::OwnedWriteHalf) = stream.into_split();
+    # }
     ```

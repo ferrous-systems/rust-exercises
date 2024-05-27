@@ -85,12 +85,14 @@ We can "fix" it by waiting for the task to be joined, like this:
 #     task,
 # };
 # type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>>;
-# async fn connection_loop(stream: TcpStream) -> Result<()> {}
+# async fn connection_loop(stream: TcpStream) -> Result<()> {
+# Ok(())
+# }
 #
-# async move |stream| {
+# async fn accept_loop(stream: TcpStream) -> Result<()> {
 let handle = task::spawn(connection_loop(stream));
 handle.await?
-# };
+# }
 ```
 
 The `.await` waits until the client finishes, and `?` propagates the result.
@@ -107,6 +109,7 @@ So let's use a helper function for this:
 # extern crate tokio;
 # use std::future::Future;
 # use tokio::task;
+# type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>>;
 fn spawn_and_log_error<F>(fut: F) -> task::JoinHandle<()>
 where
     F: Future<Output = Result<()>> + Send + 'static,

@@ -6,7 +6,7 @@ First of all, let's add required import boilerplate:
 
 ```rust
 # extern crate tokio;
-use std::future::Future, // 1
+use std::future::Future; // 1
 use tokio::{
     io::{AsyncBufReadExt, AsyncWriteExt, BufReader}, // 1
     net::{tcp::OwnedWriteHalf, TcpListener, TcpStream, ToSocketAddrs}, // 3
@@ -61,7 +61,9 @@ Finally, let's add main:
 # extern crate tokio;
 # use tokio::net::{ToSocketAddrs};
 # type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>>;
-# async fn accept_loop(addr: impl ToSocketAddrs) -> Result<()> {}
+# async fn accept_loop(addr: impl ToSocketAddrs) -> Result<()> {
+# Ok(())
+# }
 #
 #[tokio::main]
 pub(crate) async fn main() -> Result<()> {
