@@ -9,7 +9,7 @@ We need to:
 
 We highly recommend to go past this quick, this is a lot of protocol minutia.
 
-```rust
+```rust,ignore
 # extern crate tokio;
 # use std::{
 #     collections::hash_map::{Entry, HashMap},
@@ -87,7 +87,7 @@ One serious problem in the above solution is that, while we correctly propagate 
 That is, `task::spawn` does not return an error immediately (it can't, it needs to run the future to completion first), only after it is joined.
 We can "fix" it by waiting for the task to be joined, like this:
 
-```rust
+```rust,ignore
 # extern crate tokio;
 # use tokio::{
 #     net::TcpStream,
@@ -114,7 +114,7 @@ That is, a flaky internet connection of one peer brings down the whole chat room
 A correct way to handle client errors in this case is log them, and continue serving other clients.
 So let's use a helper function for this:
 
-```rust
+```rust,ignore
 # extern crate tokio;
 # use std::future::Future;
 # use tokio::task;

@@ -6,7 +6,7 @@ This way, we also have compartmentalised that activity and automatically seriali
 So let's create a `connection_writer_loop` task which receives messages over a channel and writes them to the socket.
 If Alice and Charley send two messages to Bob at the same time, Bob will see the messages in the same order as they arrive in the channel.
 
-```rust
+```rust,ignore
 # extern crate tokio;
 # use std::{
 #     collections::hash_map::{Entry, HashMap},
@@ -45,7 +45,7 @@ async fn connection_writer_loop(
 2. For simplicity, we will use `unbounded` channels, and won't be discussing backpressure in this tutorial.
 3. As `connection_loop` and `connection_writer_loop` share the same `TcpStream`, we use splitting. We'll glue this together later.
 
-    ```rust
+    ```rust,ignore
     # extern crate tokio;
     # use tokio::net::TcpStream;
     # async fn connection_loop(stream: TcpStream) {

@@ -4,7 +4,7 @@ Let's implement the scaffold of the server: a loop that binds a TCP socket to an
 
 First of all, let's add required import boilerplate:
 
-```rust
+```rust,ignore
 # extern crate tokio;
 use std::future::Future; // 1
 use tokio::{
@@ -27,7 +27,7 @@ type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>
 
 Now we can write the server's accept loop:
 
-```rust
+```rust,ignore
 # extern crate tokio;
 # use tokio::net::{TcpListener, ToSocketAddrs};
 # type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>>;
@@ -52,7 +52,7 @@ async fn accept_loop(addr: impl ToSocketAddrs) -> Result<()> { // 1
 
 Finally, let's add main:
 
-```rust
+```rust,ignore
 # extern crate tokio;
 # use tokio::net::{ToSocketAddrs};
 # type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>>;

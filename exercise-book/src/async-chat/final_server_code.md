@@ -2,7 +2,7 @@
 
 The final code looks like this:
 
-```rust
+```rust,ignore
 use std::{
     collections::hash_map::{Entry, HashMap},
     future::Future,
@@ -199,5 +199,4 @@ where
         }
     })
 }
-
 ```

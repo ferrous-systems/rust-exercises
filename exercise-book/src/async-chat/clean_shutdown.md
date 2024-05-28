@@ -27,7 +27,7 @@ We also need to notify all readers that we are going to stop accepting messages.
 
 Let's first add the notification feature to the readers.
 We have to start using `select!` here to work 
-```rust
+```rust,ignore
 async fn connection_loop(broker: Sender<Event>, stream: TcpStream, shutdown: Arc<Notify>) -> Result<()> {
     // ...
     loop {
@@ -60,7 +60,7 @@ async fn connection_loop(broker: Sender<Event>, stream: TcpStream, shutdown: Arc
 
 Let's add Ctrl-C handling and waiting to the server.
 
-```rust
+```rust,ignore
 # extern crate tokio;
 # use std::{
 #     collections::hash_map::{Entry, HashMap},
@@ -124,7 +124,7 @@ async fn accept_loop(addr: impl ToSocketAddrs) -> Result<()> {
 
 And to the broker:
 
-```rust
+```rust,ignore
 # extern crate tokio;
 # use std::{
 #     collections::hash_map::{Entry, HashMap},

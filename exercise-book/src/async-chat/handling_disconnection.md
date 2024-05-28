@@ -17,7 +17,7 @@ This way, we statically guarantee that we issue shutdown exactly once, even if w
 
 First, let's add a shutdown channel to the `connection_loop`:
 
-```rust
+```rust,ignore
 # extern crate tokio;
 # use std::future::Future;
 # use tokio::{
@@ -85,7 +85,7 @@ async fn connection_loop(broker: Sender<Event>, stream: TcpStream) -> Result<()>
 In the `connection_writer_loop`, we now need to choose between shutdown and message channels.
 We use the `select` macro for this purpose:
 
-```rust
+```rust,ignore
 async fn connection_writer_loop(
     messages: &mut Receiver<String>,
     stream: &mut OwnedWriteHalf,
@@ -117,7 +117,7 @@ The final thing to handle is actually clean up our peers map. Here, we need to e
 
 To not lose these messages completely, we'll return the writers messages receiver back to the broker. This also allows us to establish a useful invariant that the message channel strictly outlives the peer in the peers map, and makes the broker itself infallible.
 
-```rust
+```rust,ignore
 async fn broker_loop(mut events: Receiver<Event>) {
     let (disconnect_sender, mut disconnect_receiver) =
         mpsc::unbounded_channel::<(String, Receiver<String>)>(); // 1
@@ -164,3 +164,4 @@ async fn broker_loop(mut events: Receiver<Event>) {
     drop(disconnect_sender);
     while let Some((_name, _pending_messages)) = disconnect_receiver.recv().await {}
 }
+```

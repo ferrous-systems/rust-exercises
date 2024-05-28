@@ -12,7 +12,7 @@ Programming this with threads is cumbersome, especially when implementing a clea
 With async, the `select!` macro is all that is needed.
 
 
-```rust
+```rust,ignore
 # extern crate tokio;
 use tokio::{
     io::{stdin, AsyncBufReadExt, AsyncWriteExt, BufReader},

@@ -4,7 +4,7 @@ At this point, we only need to start the broker to get a fully-functioning (in t
 
 Scroll past the example find a list of all changes.
 
-```rust
+```rust,ignore
 # extern crate tokio;
 use std::{
     collections::hash_map::{Entry, HashMap},

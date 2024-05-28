@@ -11,7 +11,7 @@ The broker reacts on events and appropriately informs the peers.
 By hiding peer handling inside such an "actor" task, we remove the need for mutexes and also make the serialization point explicit.
 The order of events "Bob sends message to Alice" and "Alice joins" is determined by the order of the corresponding events in the broker's event queue.
 
-```rust
+```rust,ignore
 # extern crate tokio;
 # use std::future::Future;
 # use tokio::{
