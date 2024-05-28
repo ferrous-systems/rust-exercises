@@ -86,24 +86,12 @@ In the `connection_writer_loop`, we now need to choose between shutdown and mess
 We use the `select` macro for this purpose:
 
 ```rust
-# extern crate tokio;
-# use std::future::Future;
-# use tokio::{
-#     io::{AsyncBufReadExt, AsyncWriteExt, BufReader},
-#     net::{tcp::OwnedWriteHalf, TcpListener, TcpStream, ToSocketAddrs},
-#     sync::{mpsc, oneshot},
-#     task,
-# };
-# type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>>;
-# type Sender<T> = mpsc::UnboundedSender<T>;
-# type Receiver<T> = mpsc::UnboundedReceiver<T>;
-#
 async fn connection_writer_loop(
     messages: &mut Receiver<String>,
     stream: &mut OwnedWriteHalf,
-    mut shutdown: oneshot::Receiver<()>, // 1
+    mut shutdown: oneshot::Receiver<()>,
 ) -> Result<()> {
-    loop { // 2
+    loop {
         tokio::select! {
             msg = messages.recv() => match msg {
                 Some(msg) => stream.write_all(msg.as_bytes()).await?,
@@ -112,6 +100,9 @@ async fn connection_writer_loop(
             _ = &mut shutdown => break
         }
     }
+
+    println!("Closing connection_writer loop!");
+
     Ok(())
 }
 ```

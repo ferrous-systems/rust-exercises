@@ -1,6 +1,8 @@
-## All Together
+## Gluing all together
 
-At this point, we only need to start the broker to get a fully-functioning (in the happy case!) chat:
+At this point, we only need to start the broker to get a fully-functioning (in the happy case!) chat.
+
+Scroll past the example find a list of all changes.
 
 ```rust
 # extern crate tokio;
@@ -20,8 +22,8 @@ type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>
 type Sender<T> = mpsc::UnboundedSender<T>;
 type Receiver<T> = mpsc::UnboundedReceiver<T>;
 
-// main
-async fn run() -> Result<()> {
+#[tokio::main]
+pub(crate) async fn main() -> Result<()> {
     accept_loop("127.0.0.1:8080").await
 }
 
@@ -38,8 +40,8 @@ async fn accept_loop(addr: impl ToSocketAddrs) -> Result<()> {
     Ok(())
 }
 
-async fn connection_loop(broker: Sender<Event>, stream: TcpStream) -> Result<()> {
-    let (reader, writer) = stream.into_split(); // 2
+async fn connection_loop(broker: Sender<Event>, stream: TcpStream) -> Result<()> { // 2
+    let (reader, writer) = stream.into_split(); // 3
     let reader = BufReader::new(reader);
     let mut lines = reader.lines();
 
@@ -56,26 +58,30 @@ async fn connection_loop(broker: Sender<Event>, stream: TcpStream) -> Result<()>
             name: name.clone(),
             stream: writer,
         })
-        .unwrap(); // 3
+        .unwrap(); // 5
 
-    while let Ok(Some(line)) = lines.next_line().await {
-        let (dest, msg) = match line.find(':') {
-            None => continue,
-            Some(idx) => (&line[..idx], line[idx + 1..].trim()),
-        };
-        let dest: Vec<String> = dest
-            .split(',')
-            .map(|name| name.trim().to_string())
-            .collect();
-        let msg: String = msg.trim().to_string();
+    loop {
+        if let Some(line) = lines.next_line().await? {
+            let (dest, msg) = match line.find(':') {
+                None => continue,
+                Some(idx) => (&line[..idx], line[idx + 1..].trim()),
+            };
+            let dest: Vec<String> = dest
+                .split(',')
+                .map(|name| name.trim().to_string())
+                .collect();
+            let msg: String = msg.trim().to_string();
 
-        broker
-            .send(Event::Message { // 4
-                from: name.clone(),
-                to: dest,
-                msg,
-            })
-            .unwrap();
+            broker
+                .send(Event::Message { // 4
+                    from: name.clone(),
+                    to: dest,
+                    msg,
+                })
+                .unwrap();
+        } else {
+            break;
+        }
     }
 
     Ok(())
@@ -83,10 +89,14 @@ async fn connection_loop(broker: Sender<Event>, stream: TcpStream) -> Result<()>
 
 async fn connection_writer_loop(
     messages: &mut Receiver<String>,
-    stream: &mut OwnedWriteHalf,
+    stream: &mut OwnedWriteHalf // 3
 ) -> Result<()> {
-    while let Some(msg) = messages.recv().await {
-        stream.write_all(msg.as_bytes()).await?;
+    loop {
+        let msg = messages.recv().await;
+        match msg {
+            Some(msg) => stream.write_all(msg.as_bytes()).await?,
+            None => break,
+        }
     }
     Ok(())
 }
@@ -107,7 +117,11 @@ enum Event {
 async fn broker_loop(mut events: Receiver<Event>) {
     let mut peers: HashMap<String, Sender<String>> = HashMap::new();
 
-    while let Some(event) = events.recv().await {
+    loop {
+        let event = match events.recv().await {
+            Some(event) => event,
+            None => break,
+        };
         match event {
             Event::Message { from, to, msg } => {
                 for addr in to {
@@ -144,7 +158,8 @@ where
 ```
 
 1. Inside the `accept_loop`, we create the broker's channel and `task`.
-2. Inside `connection_loop`, we need to split the `TcpStream`, to be able to share it with the `connection_writer_loop`.
-3. On login, we notify the broker.
+2. We need the connection_loop to accept a handle to the broker.
+3. Inside `connection_loop`, we need to split the `TcpStream`, to be able to share it with the `connection_writer_loop`.
+4. On login, we notify the broker.
    Note that we `.unwrap` on send: broker should outlive all the clients and if that's not the case the broker probably panicked, so we can escalate the panic as well.
-4. Similarly, we forward parsed messages to the broker, assuming that it is alive.
+5. Similarly, we forward parsed messages to the broker, assuming that it is alive.

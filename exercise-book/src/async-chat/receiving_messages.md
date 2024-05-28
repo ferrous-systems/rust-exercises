@@ -7,6 +7,8 @@ We need to:
 2. interpret the first line as a login
 3. parse the rest of the lines as a  `login: message`
 
+We highly recommend to go past this quick, this is a lot of protocol minutia.
+
 ```rust
 # extern crate tokio;
 # use std::{
@@ -24,9 +26,10 @@ We need to:
 #
 async fn accept_loop(addr: impl ToSocketAddrs) -> Result<()> {
     let listener = TcpListener::bind(addr).await?;
-    while let Ok((stream, _socket_addr)) = listener.accept().await {
+    loop {
+        let (stream, _socket_addr) = listener.accept().await?;
         println!("Accepting from: {}", stream.peer_addr()?);
-        let _handle = task::spawn(connection_loop(stream)); // 1
+        let _handle = task::spawn(connection_loop(stream));
     }
     Ok(())
 }
@@ -56,7 +59,7 @@ async fn connection_loop(stream: TcpStream) -> Result<()> {
                 .collect::<Vec<_>>();
             let msg = msg.to_string();
             // TODO: this is temporary
-            println!("Received message:", msg);
+            println!("Received message: {}", msg);
         } else {
             break
         }

@@ -28,7 +28,7 @@ type Receiver<T> = mpsc::UnboundedReceiver<T>;
 
 async fn connection_writer_loop(
     messages: &mut Receiver<String>,
-    stream: &mut OwnedWriteHalf
+    stream: &mut OwnedWriteHalf // 3
 ) -> Result<()> {
     loop {
         let msg = messages.recv().await;
@@ -43,7 +43,7 @@ async fn connection_writer_loop(
 
 1. We will use `mpsc` channels from `tokio`.
 2. For simplicity, we will use `unbounded` channels, and won't be discussing backpressure in this tutorial.
-3. As `connection_loop` and `connection_writer_loop` share the same `TcpStream`, we need to split it into a reader and a writer:
+3. As `connection_loop` and `connection_writer_loop` share the same `TcpStream`, we use splitting. We'll glue this together later.
 
     ```rust
     # extern crate tokio;

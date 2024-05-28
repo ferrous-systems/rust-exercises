@@ -2,11 +2,15 @@
 
 One of the problems of the current implementation is that it doesn't handle graceful shutdown.
 If we break from the accept loop for some reason, all in-flight tasks are just dropped on the floor.
+
+We will intercept `Ctrl-C`.
+
 A more correct shutdown sequence would be:
 
 1. Stop accepting new clients
-2. Deliver all pending messages
-3. Exit the process
+2. Notify the readers we're not accepting new messages
+3. Deliver all pending messages
+4. Exit the process
 
 A clean shutdown in a channel based architecture is easy, although it can appear a magic trick at first.
 In Rust, receiver side of a channel is closed as soon as all senders are dropped.
@@ -21,7 +25,40 @@ However, we never wait for broker and writers, which might cause some messages t
 
 We also need to notify all readers that we are going to stop accepting messages. Here, we use `tokio::sync::Notify`.
 
-Let's add waiting to the server:
+Let's first add the notification feature to the readers.
+We have to start using `select!` here to work 
+```rust
+async fn connection_loop(broker: Sender<Event>, stream: TcpStream, shutdown: Arc<Notify>) -> Result<()> {
+    // ...
+    loop {
+        tokio::select! {
+            Ok(Some(line)) = lines.next_line() => {
+                let (dest, msg) = match line.split_once(':') {
+
+                    None => continue,
+                    Some((dest, msg)) => (dest, msg.trim()),
+                };
+                let dest: Vec<String> = dest
+                    .split(',')
+                    .map(|name| name.trim().to_string())
+                    .collect();
+                let msg: String = msg.trim().to_string();
+        
+                broker
+                    .send(Event::Message {
+                        from: name.clone(),
+                        to: dest,
+                        msg,
+                    })
+                    .unwrap();
+            },
+            _ = shutdown.notified() => break,
+        }
+    }
+}
+```
+
+Let's add Ctrl-C handling and waiting to the server.
 
 ```rust
 # extern crate tokio;
@@ -68,15 +105,18 @@ async fn accept_loop(addr: impl ToSocketAddrs) -> Result<()> {
     let broker = task::spawn(broker_loop(broker_receiver));
     let shutdown_notification = Arc::new(Notify::new());
 
-
     loop {
-        let (stream, _) = listener.accept().await?;
-        println!("Accepting from: {}", stream.peer_addr()?);
-        spawn_and_log_error(connection_loop(broker_sender.clone(), stream, shutdown_notification));
+        tokio::select!{
+            Ok((stream, _socket_addr)) = listener.accept() => {
+                println!("Accepting from: {}", stream.peer_addr()?);
+                spawn_and_log_error(connection_loop(broker_sender.clone(), stream, shutdown_notification.clone()));
+            },
+            _ = tokio::signal::ctrl_c() => break,
+        }
     }
     println!("Shutting down server!");
-    shutdown_notification.notify_waiters();
-    drop(broker_sender); // 1
+    shutdown_notification.notify_waiters(); // 1
+    drop(broker_sender); // 2
     broker.await?; // 5
     Ok(())
 }
@@ -131,7 +171,11 @@ And to the broker:
 async fn broker_loop(mut events: Receiver<Event>) {
     let mut peers: HashMap<String, Sender<String>> = HashMap::new();
 
-    while let Some(event) = events.recv().await {
+    loop {
+        let event = match events.recv().await {
+            Some(event) => event,
+            None => break,
+        };        
         match event {
             Event::Message { from, to, msg } => {
                 // ...
@@ -156,11 +200,13 @@ async fn broker_loop(mut events: Receiver<Event>) {
 }
 ```
 
+
 Notice what happens with all of the channels once we exit the accept loop:
 
-1. First, we drop the main broker's sender.
+1. We notify all readers to stop accepting messages.
+2. We drop the main broker's sender.
    That way when the readers are done, there's no sender for the broker's channel, and the channel closes.
-2. Next, the broker exits `while let Some(event) = events.next().await` loop.
+3. Next, the broker exits `while let Some(event) = events.next().await` loop.
 3. It's crucial that, at this stage, we drop the `peers` map.
    This drops writer's senders.
 4. Tokio will automatically wait for all finishing futures

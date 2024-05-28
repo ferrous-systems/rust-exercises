@@ -35,6 +35,6 @@ async fn try_main(addr: impl ToSocketAddrs) -> Result<()> {
         }
     }
 
-    println!("Client disconnected! Hit enter to quit.");
+    println!("Server disconnected! Hit enter to quit.");
     Ok(())
 }
