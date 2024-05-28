@@ -63,7 +63,7 @@ async fn connection_loop(stream: TcpStream) -> Result<()> {
 
 async fn connection_writer_loop(
     messages: &mut Receiver<String>,
-    stream: &mut OwnedWriteHalf
+    stream: &mut OwnedWriteHalf,
 ) -> Result<()> {
     loop {
         let msg = messages.recv().await;
