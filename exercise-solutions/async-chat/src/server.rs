@@ -28,7 +28,7 @@ async fn accept_loop(addr: impl ToSocketAddrs) -> Result<()> {
     let shutdown_notification = Arc::new(Notify::new());
 
     loop {
-        tokio::select!{
+        tokio::select! {
             Ok((stream, _socket_addr)) = listener.accept() => {
                 println!("Accepting from: {}", stream.peer_addr()?);
                 spawn_and_log_error(connection_loop(broker_sender.clone(), stream, shutdown_notification.clone()));
@@ -43,7 +43,11 @@ async fn accept_loop(addr: impl ToSocketAddrs) -> Result<()> {
     Ok(())
 }
 
-async fn connection_loop(broker: Sender<Event>, stream: TcpStream, shutdown: Arc<Notify>) -> Result<()> {
+async fn connection_loop(
+    broker: Sender<Event>,
+    stream: TcpStream,
+    shutdown: Arc<Notify>,
+) -> Result<()> {
     let (reader, writer) = stream.into_split();
     let reader = BufReader::new(reader);
     let mut lines = reader.lines();
@@ -64,7 +68,7 @@ async fn connection_loop(broker: Sender<Event>, stream: TcpStream, shutdown: Arc
             shutdown: shutdown_receiver,
         })
         .unwrap();
-    
+
     loop {
         tokio::select! {
             Ok(Some(line)) = lines.next_line() => {
@@ -78,7 +82,7 @@ async fn connection_loop(broker: Sender<Event>, stream: TcpStream, shutdown: Arc
                     .map(|name| name.trim().to_string())
                     .collect();
                 let msg: String = msg.trim().to_string();
-        
+
                 broker
                     .send(Event::Message {
                         from: name.clone(),
