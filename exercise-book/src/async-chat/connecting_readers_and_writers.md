@@ -55,7 +55,12 @@ enum Event { // 1
 async fn broker_loop(mut events: Receiver<Event>) {
     let mut peers: HashMap<String, Sender<String>> = HashMap::new(); // 2
 
-    while let Some(event) = events.recv().await {
+    loop {
+        let event = match events.recv().await {
+            Some(event) => event,
+            None => break,
+        };
+
         match event {
             Event::Message { from, to, msg } => { // 3
                 for addr in to {

@@ -35,9 +35,11 @@ Now we can write the server's accept loop:
 async fn accept_loop(addr: impl ToSocketAddrs) -> Result<()> { // 1
     let listener = TcpListener::bind(addr).await?; // 2
 
-    while let Ok((stream, _socket_addr)) = listener.accept().await { // 3
+    loop { // 3
+        let (stream, _) = listener.accept().await?;
         // TODO
     }
+
     Ok(())
 }
 ```
@@ -46,14 +48,7 @@ async fn accept_loop(addr: impl ToSocketAddrs) -> Result<()> { // 1
 2. `TcpListener::bind` call returns a future, which we `.await` to extract the `Result`, and then `?` to get a `TcpListener`.
    Note how `.await` and `?` work nicely together.
    This is exactly how `std::net::TcpListener` works, but with `.await` added.
-3. Here, we would like to iterate incoming sockets, similar to how one would do in `std`:
-
-```rust,should_panic
-let listener: std::net::TcpListener = unimplemented!();
-for stream in listener.incoming() {
-    // ...
-}
-```
+3. We generally use `loop` and `break` for looping in Futures, that makes things easier down the line.
 
 Finally, let's add main:
 

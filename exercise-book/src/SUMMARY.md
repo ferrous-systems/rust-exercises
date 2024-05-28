@@ -115,7 +115,7 @@
 
 # Async chat
 
-- [Tutorial: Implementing a chat](./async-chat/index.md)
+- [Implementing a chat](./async-chat/index.md)
   - [Specification and Getting started](./async-chat/specification.md)
   - [Writing an Accept Loop](./async-chat/accept_loop.md)
   - [Receiving Messages](./async-chat/receiving_messages.md)

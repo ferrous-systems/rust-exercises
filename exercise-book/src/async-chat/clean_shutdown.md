@@ -18,6 +18,9 @@ In `tokio` this translates to two rules:
 
 In `a-chat`, we already have an unidirectional flow of messages: `reader -> broker -> writer`.
 However, we never wait for broker and writers, which might cause some messages to get dropped.
+
+We also need to notify all readers that we are going to stop accepting messages. Here, we use `tokio::sync::Notify`.
+
 Let's add waiting to the server:
 
 ```rust
@@ -29,7 +32,7 @@ Let's add waiting to the server:
 # use tokio::{
 #     io::{AsyncBufReadExt, AsyncWriteExt, BufReader},
 #     net::{tcp::OwnedWriteHalf, TcpListener, TcpStream, ToSocketAddrs},
-#     sync::{mpsc, oneshot},
+#     sync::{mpsc, oneshot, Notify},
 #     task,
 # };
 # type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>>;
@@ -63,64 +66,18 @@ async fn accept_loop(addr: impl ToSocketAddrs) -> Result<()> {
 
     let (broker_sender, broker_receiver) = mpsc::unbounded_channel();
     let broker = task::spawn(broker_loop(broker_receiver));
+    let shutdown_notification = Arc::new(Notify::new());
 
-    while let Ok((stream, _socket_addr)) = listener.accept().await {
+
+    loop {
+        let (stream, _) = listener.accept().await?;
         println!("Accepting from: {}", stream.peer_addr()?);
-        spawn_and_log_error(connection_loop(broker_sender.clone(), stream));
+        spawn_and_log_error(connection_loop(broker_sender.clone(), stream, shutdown_notification));
     }
+    println!("Shutting down server!");
+    shutdown_notification.notify_waiters();
     drop(broker_sender); // 1
     broker.await?; // 5
-    Ok(())
-}
-```
-
-Event + connection_loop:
-
-```rust
-# extern crate tokio;
-# use std::{
-#     collections::hash_map::{Entry, HashMap},
-#     future::Future,
-# };
-# use tokio::{
-#     io::{AsyncBufReadExt, AsyncWriteExt, BufReader},
-#     net::{tcp::OwnedWriteHalf, TcpListener, TcpStream, ToSocketAddrs},
-#     sync::{mpsc, oneshot},
-#     task,
-# };
-# type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>>;
-# type Sender<T> = mpsc::UnboundedSender<T>;
-# type Receiver<T> = mpsc::UnboundedReceiver<T>;
-# 
-#[derive(Debug)]
-enum Event {
-    NewPeer {
-        name: String,
-        stream: OwnedWriteHalf,
-        shutdown: oneshot::Receiver<()>,
-    },
-    Message { /* unchanged */ },
-}
-
-async fn connection_loop(broker: Sender<Event>, stream: TcpStream) -> Result<()> {
-    # let (reader, writer) = stream.into_split();
-    # let reader = BufReader::new(reader);
-    # let mut lines = reader.lines();
-    # let name = String::new();
-    // ...
-    let (_shutdown_sender, shutdown_receiver) = oneshot::channel::<()>();
-    broker
-        .send(Event::NewPeer {
-            name: name.clone(),
-            stream: writer,
-            shutdown: shutdown_receiver,
-        })
-        .unwrap();
-
-    while let Ok(Some(line)) = lines.next_line().await {
-        // ...
-    }
-
     Ok(())
 }
 ```
@@ -182,55 +139,20 @@ async fn broker_loop(mut events: Receiver<Event>) {
             Event::NewPeer {
                 name,
                 mut stream,
-                shutdown,
             } => match peers.entry(name.clone()) {
                 Entry::Occupied(..) => (),
                 Entry::Vacant(entry) => {
                     let (client_sender, mut client_receiver) = mpsc::unbounded_channel();
                     entry.insert(client_sender);
                     spawn_and_log_error(async move {
-                        connection_writer_loop(&mut client_receiver, &mut stream, shutdown).await
+                        connection_writer_loop(&mut client_receiver, &mut stream).await
                     });
                 }
             },
         }
     }
-}
-```
 
-connection_writer_loop:
-
-```rust
-# extern crate tokio;
-# use std::{
-#     collections::hash_map::{Entry, HashMap},
-#     future::Future,
-# };
-# use tokio::{
-#     io::{AsyncBufReadExt, AsyncWriteExt, BufReader},
-#     net::{tcp::OwnedWriteHalf, TcpListener, TcpStream, ToSocketAddrs},
-#     sync::{mpsc, oneshot},
-#     task,
-# };
-# type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>>;
-# type Sender<T> = mpsc::UnboundedSender<T>;
-# type Receiver<T> = mpsc::UnboundedReceiver<T>;
-# 
-async fn connection_writer_loop(
-    messages: &mut Receiver<String>,
-    stream: &mut OwnedWriteHalf,
-    mut shutdown: oneshot::Receiver<()>,
-) -> Result<()> {
-    loop {
-        tokio::select! {
-            msg = messages.recv() => match msg {
-                Some(msg) => stream.write_all(msg.as_bytes()).await?,
-                None => break,
-            },
-            _ = &mut shutdown => break
-        }
-    }
-    Ok(())
+    drop(peers) //4
 }
 ```
 
@@ -241,5 +163,5 @@ Notice what happens with all of the channels once we exit the accept loop:
 2. Next, the broker exits `while let Some(event) = events.next().await` loop.
 3. It's crucial that, at this stage, we drop the `peers` map.
    This drops writer's senders.
-4. Now we can join all of the writers.
+4. Tokio will automatically wait for all finishing futures
 5. Finally, we join the broker, which also guarantees that all the writes have terminated.

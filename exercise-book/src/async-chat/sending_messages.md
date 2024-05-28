@@ -28,10 +28,14 @@ type Receiver<T> = mpsc::UnboundedReceiver<T>;
 
 async fn connection_writer_loop(
     messages: &mut Receiver<String>,
-    stream: &mut OwnedWriteHalf,
+    stream: &mut OwnedWriteHalf
 ) -> Result<()> {
-    while let Some(msg) = messages.recv().await {
-        stream.write_all(msg.as_bytes()).await?;
+    loop {
+        let msg = messages.recv().await;
+        match msg {
+            Some(msg) => stream.write_all(msg.as_bytes()).await?,
+            None => break,
+        }
     }
     Ok(())
 }

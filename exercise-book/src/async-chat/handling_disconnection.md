@@ -121,5 +121,55 @@ async fn connection_writer_loop(
 3. In the shutdown case break the loop.
 
 Another problem is that between the moment we detect disconnection in `connection_writer_loop` and the moment when we actually remove the peer from the `peers` map, new messages might be pushed into the peer's channel.
-To not lose these messages completely, we'll return the messages channel back to the broker.
-This also allows us to establish a useful invariant that the message channel strictly outlives the peer in the `peers` map, and makes the broker itself infallible.
+
+The final thing to handle is actually clean up our peers map. Here, we need to establish a communication back to the broker. However, we can handle that completely within the brokers scope, to not infect the writer loop with this concern.
+
+To not lose these messages completely, we'll return the writers messages receiver back to the broker. This also allows us to establish a useful invariant that the message channel strictly outlives the peer in the peers map, and makes the broker itself infallible.
+
+```rust
+async fn broker_loop(mut events: Receiver<Event>) {
+    let (disconnect_sender, mut disconnect_receiver) =
+        mpsc::unbounded_channel::<(String, Receiver<String>)>(); // 1
+    let mut peers: HashMap<String, Sender<String>> = HashMap::new();
+
+    loop {
+        let event = tokio::select! {
+            event = events.recv() => match event {
+                None => break,
+                Some(event) => event,
+            },
+            disconnect = disconnect_receiver.recv() => {
+                let (name, _pending_messages) = disconnect.unwrap();
+                assert!(peers.remove(&name).is_some());
+                println!("user {} disconnected", name);
+                continue;
+            },
+        };
+        match event {
+            Event::Message { from, to, msg } => {
+                // ...
+            }
+            Event::NewPeer {
+                name,
+                mut stream,
+                shutdown,
+            } => match peers.entry(name.clone()) {
+                Entry::Occupied(..) => (),
+                Entry::Vacant(entry) => {
+                    // ...
+                    spawn_and_log_error(async move {
+                        let res =
+                            connection_writer_loop(&mut client_receiver, &mut stream, shutdown)
+                                .await;
+                        println!("user {} disconnected", name);
+                        disconnect_sender.send((name, client_receiver)).unwrap(); // 2
+                        res
+                    });
+                }
+            },
+        }
+    }
+    drop(peers);
+    drop(disconnect_sender);
+    while let Some((_name, _pending_messages)) = disconnect_receiver.recv().await {}
+}

@@ -9,7 +9,6 @@ use tokio::{
     net::{tcp::OwnedWriteHalf, TcpListener, TcpStream, ToSocketAddrs},
     sync::{mpsc, oneshot, Notify},
     task,
-    time::{sleep, Duration},
 };
 
 type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>>;
@@ -48,6 +47,7 @@ async fn connection_loop(broker: Sender<Event>, stream: TcpStream, shutdown: Arc
     let (reader, writer) = stream.into_split();
     let reader = BufReader::new(reader);
     let mut lines = reader.lines();
+    let (shutdown_sender, shutdown_receiver) = oneshot::channel::<()>();
 
     let name = match lines.next_line().await {
         Ok(Some(line)) => line,
@@ -61,7 +61,7 @@ async fn connection_loop(broker: Sender<Event>, stream: TcpStream, shutdown: Arc
         .send(Event::NewPeer {
             name: name.clone(),
             stream: writer,
-            shutdown: shutdown.clone(),
+            shutdown: shutdown_receiver,
         })
         .unwrap();
     
@@ -91,13 +91,15 @@ async fn connection_loop(broker: Sender<Event>, stream: TcpStream, shutdown: Arc
         }
     }
     println!("Closing connection loop!");
+    drop(shutdown_sender);
+
     Ok(())
 }
 
 async fn connection_writer_loop(
     messages: &mut Receiver<String>,
     stream: &mut OwnedWriteHalf,
-    mut shutdown: Arc<Notify>,
+    mut shutdown: oneshot::Receiver<()>,
 ) -> Result<()> {
     loop {
         tokio::select! {
@@ -105,7 +107,7 @@ async fn connection_writer_loop(
                 Some(msg) => stream.write_all(msg.as_bytes()).await?,
                 None => break,
             },
-            _ = shutdown.notified() => break
+            _ = &mut shutdown => break
         }
     }
 
@@ -119,7 +121,7 @@ enum Event {
     NewPeer {
         name: String,
         stream: OwnedWriteHalf,
-        shutdown: Arc<Notify>,
+        shutdown: oneshot::Receiver<()>,
     },
     Message {
         from: String,
@@ -169,6 +171,7 @@ async fn broker_loop(mut events: Receiver<Event>) {
                         let res =
                             connection_writer_loop(&mut client_receiver, &mut stream, shutdown)
                                 .await;
+                        println!("user {} disconnected", name);
                         disconnect_sender.send((name, client_receiver)).unwrap();
                         res
                     });

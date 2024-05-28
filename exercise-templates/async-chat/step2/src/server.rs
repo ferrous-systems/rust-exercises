@@ -24,19 +24,14 @@ pub(crate) async fn main() -> Result<()> {
 async fn accept_loop(addr: impl ToSocketAddrs) -> Result<()> {
     let listener = TcpListener::bind(addr).await?;
 
-    let (broker_sender, broker_receiver) = mpsc::unbounded_channel();
-    let broker = task::spawn(broker_loop(broker_receiver));
-
     while let Ok((stream, _socket_addr)) = listener.accept().await {
         println!("Accepting from: {}", stream.peer_addr()?);
-        spawn_and_log_error(connection_loop(broker_sender.clone(), stream));
+        task::spawn(connection_loop(stream));
     }
-    drop(broker_sender);
-    broker.await?;
     Ok(())
 }
 
-async fn connection_loop(broker: Sender<Event>, stream: TcpStream) -> Result<()> {
+async fn connection_loop(stream: TcpStream) -> Result<()> {
     let (reader, writer) = stream.into_split();
     let reader = BufReader::new(reader);
     let mut lines = reader.lines();
@@ -68,8 +63,7 @@ async fn connection_loop(broker: Sender<Event>, stream: TcpStream) -> Result<()>
 
 async fn connection_writer_loop(
     messages: &mut Receiver<String>,
-    stream: &mut OwnedWriteHalf,
-    mut shutdown: oneshot::Receiver<()>,
+    stream: &mut OwnedWriteHalf
 ) -> Result<()> {
     loop {
         let msg = messages.recv().await;
@@ -79,34 +73,4 @@ async fn connection_writer_loop(
         }
     }
     Ok(())
-}
-
-#[derive(Debug)]
-enum Event {
-    NewPeer {
-        name: String,
-        stream: OwnedWriteHalf,
-        shutdown: oneshot::Receiver<()>,
-    },
-    Message {
-        from: String,
-        to: Vec<String>,
-        msg: String,
-    },
-}
-
-async fn broker_loop(mut events: Receiver<Event>) {
-    loop {
-    }
-}
-
-fn spawn_and_log_error<F>(fut: F) -> task::JoinHandle<()>
-where
-    F: Future<Output = Result<()>> + Send + 'static,
-{
-    task::spawn(async move {
-        if let Err(e) = fut.await {
-            eprintln!("{}", e)
-        }
-    })
 }

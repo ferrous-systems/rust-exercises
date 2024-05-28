@@ -43,17 +43,23 @@ async fn connection_loop(stream: TcpStream) -> Result<()> {
     println!("name = {}", name);
 
     // 4
-    while let Some(line) = lines.next_line().await? {
-        // 5
-        let (dest, msg) = match line.find(':') {
-            None => continue,
-            Some(idx) => (&line[..idx], line[idx + 1..].trim()),
-        };
-        let dest = dest
-            .split(',')
-            .map(|name| name.trim().to_string())
-            .collect::<Vec<_>>();
-        let msg = msg.to_string();
+    loop {
+        if let Some(line) = lines.next_line().await? {
+            // 5
+            let (dest, msg) = match line.find(':') {
+                None => continue,
+                Some(idx) => (&line[..idx], line[idx + 1..].trim()),
+            };
+            let dest = dest
+                .split(',')
+                .map(|name| name.trim().to_string())
+                .collect::<Vec<_>>();
+            let msg = msg.to_string();
+            // TODO: this is temporary
+            println!("Received message:", msg);
+        } else {
+            break
+        }
     }
     Ok(())
 }
