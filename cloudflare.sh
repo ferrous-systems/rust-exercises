@@ -29,28 +29,36 @@ mkdir -p "${OUTPUT_DIR}"
 cp ./_redirects "${OUTPUT_DIR}/_redirects"
 
 # Build the book and slides
+#
+# $1 is the output folder name
+# $2 is the git tag name
 function build_and_store {
-    if [ "$1" == "latest" ]; then
-        tag="main"
-    else
-        tag="$1"
-    fi
     mkdir -p "${OUTPUT_DIR}/$1"
     # Munge all the relative source code links to point at Github
     for folder in ${CODE_FOLDER_LIST}; do
         echo "Processing ${folder}"
         # This finds a Markdown links with relative URLs
-        find ./exercise-book -type f -name "*.md" -exec sed -e "s~(../../${folder}/~(https://github.com/ferrous-systems/rust-exercises/tree/${tag}/${folder}/~g" -i.backup {} \;
+        find ./exercise-book -type f -name "*.md" -exec sed -e "s~(../../${folder}/~(https://github.com/ferrous-systems/rust-exercises/tree/$2/${folder}/~g" -i.backup {} \;
         # This finds a Markdown references with relative URLs
-        find ./exercise-book -type f -name "*.md" -exec sed -e "s~]: ../../${folder}/~]: https://github.com/ferrous-systems/rust-exercises/tree/${tag}/${folder}/~g" -i.backup {} \;
+        find ./exercise-book -type f -name "*.md" -exec sed -e "s~]: ../../${folder}/~]: https://github.com/ferrous-systems/rust-exercises/tree/$2/${folder}/~g" -i.backup {} \;
     done
     # Build the book first, because mdbook will create any empty sections
     # The PATH override lets it find our local copy of mdbook-mermaid
     PATH=$PATH:. ./mdbook build -d "${OUTPUT_DIR}/$1/book" ./exercise-book
 }
 
+# What branch are we building first?
+git_branch=$(git branch --show-current)
+current_branch="${CF_PAGES_BRANCH:-$git_branch}"
+
+if [ "$current_branch" == "" ]; then
+    echo "Current branch unknown"
+    exit 1
+fi
+
 # Build what we currently have checked out
-build_and_store latest
+# Use what CloudFlare thinks is the current branch, or what git thinks
+build_and_store latest "${current_branch}"
 
 # Fetch all the git tags (in case this is some kind of shallow clone)
 git fetch --tags
@@ -61,5 +69,6 @@ for tag in $(git tag); do
     mkdir -p "${OUTPUT_DIR}/${tag}"
     # Fetch a clean copy of the source material for this tag
     git checkout -f "${tag}"
-    build_and_store "${tag}"
+    # Output dir and git tag are the same
+    build_and_store "${tag}" "${tag}"
 done
