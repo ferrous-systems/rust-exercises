@@ -1,6 +1,6 @@
 # Introduction
 
-This book contains a collection of Rust Exercises, written by Ferrous Systems.
+This book contains a collection of Rust Exercises, written by Ferrous Systems. See [ferrous-systems.com/training](https://ferrous-systems.com/training) for more details or a custom quote. You can view this material on-line at <https://rust-exercises.ferrous-systems.com>.
 
 We use these exercises as part of our [Rust Training](https://ferrous-systems.com/training/), but you are welcome to try them for yourself as well.
 
@@ -33,4 +33,4 @@ This work is licensed under a [Creative Commons Attribution-ShareAlike 4.0 Inter
 
 We encourage the use of this material, under the terms of the above license, in the production and/or delivery of commercial or open-source Rust training programmes.
 
-Copyright (c) Ferrous Systems, 2023
+Copyright (c) Ferrous Systems, 2024
