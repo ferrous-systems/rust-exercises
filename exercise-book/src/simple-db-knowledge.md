@@ -8,23 +8,21 @@ In general, we also recommend to use the Rust documentation to figure out things
 
 `#[derive(PartialEq, Eq)]`
 
-  This enables comparison between 2 instances of the type, by comparing every field/variant. This enables the `assert_eq!` macro, which relies on equality being defined. `Eq` for total equality isn’t strictly necessary for this example, but it is good practice to derive it if it applies.
+This enables comparison between 2 instances of the type, by comparing every field/variant. This enables the `assert_eq!` macro, which relies on equality being defined. `Eq` for total equality isn’t strictly necessary for this example, but it is good practice to derive it if it applies.
 
 `#[derive(Debug)]`
 
-This enables automatic debug output for the type. The `assert_eq!`macro requires this for testing.
-
+This enables the automatic generation of a debug formatting function for the type. The `assert_eq!` macro requires this for testing.
 
 ## Control flow and pattern matching, returning values
 
 This exercise involves handling a number of cases. You are already familiar with `if/else` and a basic form of `match`. Here, we’ll introduce you to `if let`.
 
 ```rust, ignore
-    if let Some(payload) = substrings.next() {
-        // execute if the above statement is true
-    }
+if let Some(message) = message.strip_prefix('\n') {
+    // executes if the above pattern is a match
+}
 ```
-
 
 ### When to use what?
 

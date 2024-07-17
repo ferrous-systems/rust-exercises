@@ -1,7 +1,0 @@
-[package]
-authors = ["Ferrous Systems"]
-edition = "2021"
-name = "simple-db-step4d"
-version = "0.1.0"
-
-[dependencies]

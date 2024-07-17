@@ -12,7 +12,7 @@ fn test_missing_nl() {
 fn test_trailing_data() {
     let line = "PUBLISH The message\n is wrong \n";
     let result: Result<Command, Error> = parse(line);
-    let expected = Err(Error::TrailingData);
+    let expected = Err(Error::UnexpectedNewline);
     assert_eq!(result, expected);
 }
 
