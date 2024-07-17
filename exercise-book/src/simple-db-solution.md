@@ -55,7 +55,7 @@ Note that both functions will take either a string slice, or a character, or wil
 
 7. Check if the remainder is `"RETRIEVE"` - if so, return `Ok(Command::Retrieve)`
 
-8. Otherwise, it's return an unknown command error.
+8. Otherwise, return an unknown command error.
 
 </details>
 
