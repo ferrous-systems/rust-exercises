@@ -6,7 +6,7 @@ pub enum Command {
 
 #[derive(Eq, PartialEq, Debug)]
 pub enum Error {
-    TrailingData,
+    UnexpectedNewline,
     IncompleteMessage,
     EmptyMessage,
     UnknownCommand,
@@ -15,19 +15,26 @@ pub enum Error {
 }
 
 pub fn parse(input: &str) -> Result<Command, Error> {
-    let message = match input.split_once('\n') {
-        Some((message, "")) => message,
-        Some(_) => return Err(Error::TrailingData),
-        None => return Err(Error::IncompleteMessage),
+    let Some(message) = input.strip_suffix('\n') else {
+        return Err(Error::IncompleteMessage);
     };
 
-    let mut substrings = message.splitn(2, ' ');
+    if message.contains('\n') {
+        return Err(Error::UnexpectedNewline);
+    }
 
-    // Note: `splitn` *always* returns at least one value
-    let command = substrings.next().unwrap();
-    match command {
-        "" => Err(Error::EmptyMessage),
-        _ => Err(Error::UnknownCommand),
+    if let Some(payload) = message.strip_prefix("PUBLISH ") {
+        Ok(Command::Publish(String::from(payload)))
+    } else if message == "PUBLISH" {
+        Err(Error::MissingPayload)
+    } else if message == "RETRIEVE" {
+        Ok(Command::Retrieve)
+    } else if let Some(_payload) = message.strip_prefix("RETRIEVE ") {
+        Err(Error::UnexpectedPayload)
+    } else if message == "" {
+        Err(Error::EmptyMessage)
+    } else {
+        Err(Error::UnknownCommand)
     }
 }
 
@@ -47,7 +54,15 @@ mod tests {
     fn test_trailing_data() {
         let line = "PUBLISH The message\n is wrong \n";
         let result: Result<Command, Error> = parse(line);
-        let expected = Err(Error::TrailingData);
+        let expected = Err(Error::UnexpectedNewline);
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn test_empty_string() {
+        let line = "";
+        let result: Result<Command, Error> = parse(line);
+        let expected = Err(Error::IncompleteMessage);
         assert_eq!(result, expected);
     }
 
@@ -66,6 +81,58 @@ mod tests {
         let line = "SERVE \n";
         let result: Result<Command, Error> = parse(line);
         let expected = Err(Error::UnknownCommand);
+        assert_eq!(result, expected);
+    }
+
+    // Tests correct formatting of RETRIEVE command
+
+    #[test]
+    fn test_retrieve_w_whitespace() {
+        let line = "RETRIEVE \n";
+        let result: Result<Command, Error> = parse(line);
+        let expected = Err(Error::UnexpectedPayload);
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn test_retrieve_payload() {
+        let line = "RETRIEVE this has a payload\n";
+        let result: Result<Command, Error> = parse(line);
+        let expected = Err(Error::UnexpectedPayload);
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn test_retrieve() {
+        let line = "RETRIEVE\n";
+        let result: Result<Command, Error> = parse(line);
+        let expected = Ok(Command::Retrieve);
+        assert_eq!(result, expected);
+    }
+
+    // Tests correct formatting of PUBLISH command
+
+    #[test]
+    fn test_publish() {
+        let line = "PUBLISH TestMessage\n";
+        let result: Result<Command, Error> = parse(line);
+        let expected = Ok(Command::Publish("TestMessage".into()));
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn test_empty_publish() {
+        let line = "PUBLISH \n";
+        let result: Result<Command, Error> = parse(line);
+        let expected = Ok(Command::Publish("".into()));
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn test_missing_payload() {
+        let line = "PUBLISH\n";
+        let result: Result<Command, Error> = parse(line);
+        let expected = Err(Error::MissingPayload);
         assert_eq!(result, expected);
     }
 }

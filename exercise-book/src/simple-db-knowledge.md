@@ -8,27 +8,32 @@ In general, we also recommend to use the Rust documentation to figure out things
 
 `#[derive(PartialEq, Eq)]`
 
-  This enables comparison between 2 instances of the type, by comparing every field/variant. This enables the `assert_eq!` macro, which relies on equality being defined. `Eq` for total equality isn’t strictly necessary for this example, but it is good practice to derive it if it applies.
+This enables comparison between 2 instances of the type, by comparing every field/variant. This enables the `assert_eq!` macro, which relies on equality being defined. `Eq` for total equality isn’t strictly necessary for this example, but it is good practice to derive it if it applies.
 
 `#[derive(Debug)]`
 
-This enables automatic debug output for the type. The `assert_eq!`macro requires this for testing.
-
+This enables the automatic generation of a debug formatting function for the type. The `assert_eq!` macro requires this for testing.
 
 ## Control flow and pattern matching, returning values
 
-This exercise involves handling a number of cases. You are already familiar with `if/else` and a basic form of `match`. Here, we’ll introduce you to `if let`.
+This exercise involves handling a number of cases. You are already familiar with `if/else` and a basic form of `match`. Here, we’ll introduce you to `if let`, and `let else`:
 
 ```rust, ignore
-    if let Some(payload) = substrings.next() {
-        // execute if the above statement is true
-    }
-```
+if let Some(message) = message.strip_prefix("PREFIX:") {
+    // Executes if the above pattern is a match.
+}
+// The variable `message` is NOT available here.
 
+let Some(message) = message.strip_prefix("PREFIX:") else {
+    // Executes if the above pattern is NOT a match.
+    // Must have an early return in this block.
+}
+// The variable `message` is still available here.
+```
 
 ### When to use what?
 
-`if let` is like a pattern-matching `match` block with only one arm. So, if your `match` only has one arm of interest, consider an `if let` instead.
+`if let` is like a pattern-matching `match` block with only one arm. So, if your `match` only has one arm of interest, consider an `if let` or `let else` instead (depending on whether the pattern match means success, or the pattern match means there's an error).
 
 `match` can be used to handle more fine grained and complex pattern matching, especially when there are several, equally ranked possibilities. The match arms may have to include a catch all `_ =>` arm, for every possible case that is not explicitly spelled out. The order of the match arms matter: The catch all branch needs to be last, otherwise, it catches all…
 

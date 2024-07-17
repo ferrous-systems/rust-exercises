@@ -7,7 +7,7 @@ pub enum Command {
 
 #[derive(Eq, PartialEq, Debug)]
 pub enum Error {
-    TrailingData,
+    UnexpectedNewline,
     IncompleteMessage,
     EmptyMessage,
     UnknownCommand,
@@ -16,11 +16,15 @@ pub enum Error {
 }
 
 pub fn parse(input: &str) -> Result<Command, Error> {
-    match input.split_once('\n') {
-        Some((_message, "")) => Ok(Command::Command),
-        Some(_) => return Err(Error::TrailingData),
-        None => return Err(Error::IncompleteMessage),
+    let Some(message) = input.strip_suffix('\n') else {
+        return Err(Error::IncompleteMessage);
+    };
+
+    if message.contains('\n') {
+        return Err(Error::UnexpectedNewline);
     }
+
+    Ok(Command::Command)
 }
 
 #[cfg(test)]
@@ -31,7 +35,7 @@ mod tests {
     fn test_trailing_data() {
         let line = "PUBLISH The message\n is wrong \n";
         let result: Result<Command, Error> = parse(line);
-        let expected = Err(Error::TrailingData);
+        let expected = Err(Error::UnexpectedNewline);
         assert_eq!(result, expected);
     }
 

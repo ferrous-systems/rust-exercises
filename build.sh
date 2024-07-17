@@ -20,8 +20,8 @@ popd
 popd
 pushd qemu-code
 pushd uart-driver
-# Build in beta because armv8r-none-eabihf isn't in stable 1.77
-RUSTC_BOOTSTRAP=1 cargo +beta build -Zbuild-std=core
+# Build from source because armv8r-none-eabihf isn't Tier 2
+RUSTC_BOOTSTRAP=1 cargo build -Zbuild-std=core
 popd
 popd
 pushd nrf52-code

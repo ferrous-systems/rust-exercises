@@ -79,9 +79,9 @@ With the additional properties:
 Violations against the form of the messages and the properties are
 handled with the following error codes:
 
-- `TrailingData` (bytes found after newline)
+- `UnexpectedNewline` (a newline not at the end of the line)
 
-- `IncompleteMessage` (no newline)
+- `IncompleteMessage` (no newline at the end)
 
 - `EmptyMessage` (empty string instead of a command)
 
@@ -113,14 +113,14 @@ mod tests {
     fn test_trailing_data() {
         let line = "PUBLISH The message\n is wrong \n";
         let result: Result<Command, Error> = parse(line);
-        let expected = Err(Error::TrailingData);
+        let expected = Err(Error::UnexpectedNewline);
         assert_eq!(result, expected);
     }
 
     #[test]
     fn test_empty_string() {
         let line = "";
-        let result = parse(line);
+        let result: Result<Command, Error> = parse(line);
         let expected = Err(Error::IncompleteMessage);
         assert_eq!(result, expected);
     }
