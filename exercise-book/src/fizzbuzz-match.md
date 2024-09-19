@@ -17,7 +17,7 @@ For completing this exercise you need to have
 
 Rewrite the body of `fn fizzbuzz()` so the different cases are not distinguished with `if` statements, but with pattern matching of a tuple containing the remainders.
 
-If you need it, we have provided a [complete solution](../../exercise-solutions/fizzbuzz/src/examples/fizzbuzz-match.rs) for this exercise.
+If you need it, we have provided a [complete solution](../../exercise-solutions/fizzbuzz/src/examples/fizzbuzz_match.rs) for this exercise.
 
 ## Knowledge
 
