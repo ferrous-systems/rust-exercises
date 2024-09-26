@@ -8,4 +8,3 @@ description = "Library for parsing USB requests"
 
 [dependencies]
 
-
