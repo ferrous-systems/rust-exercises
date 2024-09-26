@@ -104,10 +104,6 @@ Go to [https://rustup.rs](https://rustup.rs/) and follow the instructions.
 
 **Windows**: It's OK to ignore the message about `git` not being installed, if you get one!
 
-### Better TOML
-
-**All**: For better handling of `Cargo.toml` files, we recommend you install [Better TOML](https://marketplace.visualstudio.com/items?itemName=bungcip.better-toml) if you're using VS Code.
-
 ### Rust Cross compilation support
 
 **All**: Run this command in a terminal:
