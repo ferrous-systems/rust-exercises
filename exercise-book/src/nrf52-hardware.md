@@ -66,7 +66,7 @@ After connecting the DK to your PC/laptop it will show up as:
 ```console
 $ lsusb
 (..)
-Bus 001 Device 014: ID 1366:1015 SEGGER 4-Port USB 2.0 Hub
+Bus 001 Device 014: ID 1366:1051 SEGGER 4-Port USB 2.0 Hub
 ```
 
 The device will also show up in the `/dev` directory as a `ttyACM` device:

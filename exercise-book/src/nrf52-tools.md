@@ -82,7 +82,7 @@ In Zadig's graphical user interface,
 
 2. From the device (top) drop down menu select "BULK interface (Interface nnn)"
 
-3. Once that device is selected, `1366 1015` should be displayed in the USB ID field. That's the Vendor ID - Product ID pair.
+3. Once that device is selected, `1366 1051` should be displayed in the USB ID field. That's the Vendor ID - Product ID pair.
 
 4. Select 'WinUSB' as the target driver (right side)
 
