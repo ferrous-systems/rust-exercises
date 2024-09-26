@@ -1,18 +1,20 @@
 # Listing USB Devices
 
-✅ To list all USB devices, run `cargo xtask usb-list` from the top-level checkout.
+As we showed in [Preparation/Software Tools](./nrf52-tools.md), we can use `cyme` to list USB devices on our system.
+
+✅ To list all USB devices, run `cyme` from the top-level checkout.
 
 ```console
-$ cargo xtask usb-list
+$ cyme
 (...) random other USB devices will be listed
-Bus 001 Device 010: ID 1366:1015 <- J-Link on the nRF52840 Development Kit
+  2  15  0x1366 0x1051 J-Link                   001050255503      12.0 Mb/s
 ```
 
-The goal of this workshop is to get the nRF52840 SoC to show in this list. The embedded application will use the USB Vendor ID (VID) and USB Product ID (PID) defined in [`nrf52-code/consts`](../../nrf52-code/consts); `cargo xtask usb-list` will highlight the USB device that matches that VID/PID pair, like this:
+The goal of this workshop is to get the nRF52840 SoC to show in this list. The embedded application will use the USB Vendor ID (VID) 0x1209 and USB Product ID (PID) 0x0717, as defined in [`nrf52-code/consts`](../../nrf52-code/consts):
 
 ```console
-$ cargo xtask usb-list
+$ cyme
 (...) random other USB devices will be listed
-Bus 001 Device 010: ID 1366:1015 <- J-Link on the nRF52840 Development Kit
-Bus 001 Device 059: ID 1209:0717 <- nRF52840 on the nRF52840 Development Kit
-```
+  2  15  0x1366 0x1051 J-Link                   001050255503      12.0 Mb/s
+  2  16  0x1209 0x0717 composite_device         -                 12.0 Mb/s
+````

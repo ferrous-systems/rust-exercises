@@ -121,9 +121,9 @@ cargo install cargo-binutils
 rustup +stable component add llvm-tools
 ```
 
-### General purpose tools
+### Third-party tools written in Rust
 
-Install the [`flip-link`](https://crates.io/crates/flip-link) and [`nrf-dfu`](https://crates.io/crates/nrfdfu) tools from source using the following Cargo commands:
+Install the [`flip-link`](https://crates.io/crates/flip-link), [`nrf-dfu`](https://crates.io/crates/nrfdfu) and [`cyme`](https://crates.io/crates/cyme) tools from source using the following Cargo commands:
 
 ```console
 $ cargo install flip-link
@@ -133,6 +133,10 @@ Installed package `flip-link v0.1.7` (..)
 $ cargo install nrfdfu
 (..)
 Installed package `nrfdfu v0.1.3` (..)
+
+$ cargo install cyme
+(..)
+Installed package `cyme v1.7.0` (..)
 ```
 
 Install `probe-rs` 0.24 pre-compiled binaries on Linux or macOS with:
@@ -157,6 +161,27 @@ cargo-size 0.3.6
 ```
 
 ✅ Connect the nRF52840-DK with your computer by plugging the usb-cable into the J2 connector on the DK (the usb connector on the short side of the board).
+
+✅ Use `cyme` to list the USB devices on your computer.
+
+```console
+$ cyme
+(..)
+  2  15  0x1366 0x1051 J-Link                   001050255503      12.0 Mb/s
+(..)
+```
+
+Your nRF52840-DK should appear as "J-Link" with USB Vendor ID (VID) of 0x1366 and a USB Product ID (PID) 0x1051.
+
+🔎 If `cyme` doesn't work for any reason, you can use `cargo xtask usb-list`, which does the same thing but is much more basic. Run it from the root of the extracted tarball / git checkout:
+
+```console
+$ cargo xtask usb-list
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.04s
+     Running `xtask/target/debug/xtask usb-list`
+Bus 002 Device 015: ID 1366:1051 <- J-Link on the nRF52840 Development Kit
+(...) random other USB devices will be listed
+```
 
 ✅ In the terminal run the following command from the [`nrf52-code/radio-app`](../../nrf52-code/radio-app) folder. This will build and run a simple program on the DK to test the set-up.
 

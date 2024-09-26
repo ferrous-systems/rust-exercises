@@ -55,12 +55,13 @@ You can find traces for other OSes in these files (they are in the [`nrf52-code/
 - `macos-enumeration.txt`
 - `win-enumeration.txt`
 
-✅ Double check that the enumeration works by running [`cargo xtask usb-list`](./nrf52-usb-listing-usb-devices.md) while `usb-4.rs` is running.
+✅ Double check that the enumeration works by running [`cyme`](./nrf52-usb-listing-usb-devices.md) while `usb-4.rs` is running.
 
 ```console
-Bus 001 Device 013: ID 1366:1015 <- J-Link on the nRF52840 Development Kit
-(..)
-Bus 001 Device 016: ID 1209:0717 <- nRF52840 on the nRF52840 Development Kit
+$ cyme
+(...) random other USB devices will be listed
+  2  15  0x1366 0x1051 J-Link                   001050255503      12.0 Mb/s
+  2  16  0x1209 0x0717 composite_device         -                 12.0 Mb/s
 ```
 
 Both the J-Link and the device implemented by your firmware should appear in the list.
