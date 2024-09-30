@@ -1,8 +1,8 @@
 # Green and Yellow Game
 
-In this assignment we will implement the game "Green and Yellow". It’s like Wordle, but with numerical digits instead of letters. But for legal reasons it’s also entirely unlike Wordle, nor remotely similar to the 1970’s board-game "Mastermind".
+In this assignment we will implement the game "Green and Yellow". It’s like Wordle, but with numerical digits instead of letters. But for legal reasons it’s also entirely unlike Wordle, and entirely unlike the 1970’s board-game "Mastermind".
 
-## After completing this exercise you are able to
+## After completing this exercise you will be able to
 
 - Work with rust slices and vectors
 - Accept input from stdin
@@ -11,7 +11,7 @@ In this assignment we will implement the game "Green and Yellow". It’s like Wo
 
 ## Prerequisites
 
-For completing this exercise you need to have:
+To complete this exercise you need to have:
 
 - basic Rust programming skills
 - the Rust Syntax Cheat Sheet
@@ -129,11 +129,11 @@ You need to grab a standard input handle with `std::io::stdin()`. This implement
 
 ### Parsing Strings into Integers
 
-Strings have a `parse()` method, which returns a `Result`, because of course the user may not have typed in a proper digit. The `parse()` function works out what you are trying to create based on context - so if you want a `u8`, try `let x: u8 = my_str.parse().unwrap()`. Or you can say `let x = my_str.parse::<u8>().unwrap()`. Of course, try and do something better than unwrap!
+Strings have a `parse()` method, which returns a `Result`, because of course the user may not have typed in a proper digit. The `parse()` function works out what you are trying to create based on context - so if you want a `u8`, try `let x: u8 = my_str.parse().unwrap()`. Or you can say `let x = my_str.parse::<u8>().unwrap()`. Of course, try to do something better than unwrap!
 
 ## Step-by-Step-Solution
 
-In general, we also recommend to use the Rust documentation to figure out things you are missing to familiarize yourself with it. If you ever feel completely stuck or that you haven’t understood something, please hail the trainers quickly.
+We also recommend using the official Rust documentation to figure out unfamiliar concepts. If you ever feel completely stuck, or if you haven’t understood something specific, please hail the trainers quickly.
 
 ### Step 1: New Project
 
@@ -144,7 +144,7 @@ Create a new binary Cargo project, check the build and see if it runs.
 
 ```shell
 cargo new green-yellow
-cd fizzbuzz
+cd green-yellow
 cargo run
 ```
 
