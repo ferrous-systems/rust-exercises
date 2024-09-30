@@ -1,5 +1,4 @@
 //! Some USB 2.0 data types
-// NOTE this is a partial solution to exercise `usb-2`
 
 #![deny(missing_docs)]
 #![deny(warnings)]
@@ -40,7 +39,6 @@ pub enum Request {
 
     /// SET_CONFIGURATION
     // see section 9.4.7 of the USB specification
-    #[cfg(TODO)]
     SetConfiguration {
         /// bConfigurationValue to change the device to
         value: Option<NonZeroU8>,
@@ -60,26 +58,28 @@ impl Request {
         windex: u16,
         wlength: u16,
     ) -> Result<Self, Error> {
-        // see table 9-4 (USB specification)
+        // see table 9-4
         const SET_ADDRESS: u8 = 5;
         const GET_DESCRIPTOR: u8 = 6;
+        const SET_CONFIGURATION: u8 = 9;
 
         if bmrequesttype == 0b10000000 && brequest == GET_DESCRIPTOR {
             // see table 9-5
             const DEVICE: u8 = 1;
+            const CONFIGURATION: u8 = 2;
 
-            // 1. get descriptor type and descriptor index from wValue
             let desc_ty = (wvalue >> 8) as u8;
             let desc_index = wvalue as u8;
             let langid = windex;
 
-            // 2. confirm that the descriptor
-            //    - is of type DEVICE and
-            //    - has descriptor index 0 (i.e. it is the first implemented descriptor for this type) and
-            //    - has wIndex 0 (i.e. no language ID since it's not a string descriptor)
             if desc_ty == DEVICE && desc_index == 0 && langid == 0 {
                 Ok(Request::GetDescriptor {
                     descriptor: Descriptor::Device,
+                    length: wlength,
+                })
+            } else if desc_ty == CONFIGURATION && langid == 0 {
+                Ok(Request::GetDescriptor {
+                    descriptor: Descriptor::Configuration { index: desc_index },
                     length: wlength,
                 })
             } else {
@@ -97,6 +97,14 @@ impl Request {
             } else {
                 Err(Error::BadRequest)
             }
+        } else if bmrequesttype == 0b00000000 && brequest == SET_CONFIGURATION {
+            if wvalue < 256 && windex == 0 && wlength == 0 {
+                Ok(Request::SetConfiguration {
+                    value: NonZeroU8::new(wvalue as u8),
+                })
+            } else {
+                Err(Error::BadRequest)
+            }
         } else {
             Err(Error::UnknownRequest)
         }
@@ -110,7 +118,6 @@ pub enum Descriptor {
     Device,
 
     /// Configuration descriptor
-    #[cfg(TODO)]
     Configuration {
         /// Index of the descriptor
         index: u8,
@@ -173,7 +180,6 @@ mod tests {
         //                                                    ^
     }
 
-    #[cfg(TODO)]
     #[test]
     fn get_descriptor_configuration() {
         // OK: GET_DESCRIPTOR Configuration 0 [length=9]
@@ -190,7 +196,6 @@ mod tests {
         //                                                 ^^^^
     }
 
-    #[cfg(TODO)]
     #[test]
     fn set_configuration() {
         // OK: SET_CONFIGURATION 1

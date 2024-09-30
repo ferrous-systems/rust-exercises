@@ -28,8 +28,8 @@ The raw values you need to pack into the descriptor are as follows. Note, we won
 - `bDescriptorType = 1`, device descriptor type (must always be this value)
 - `bDeviceClass = bDeviceSubClass = bDeviceProtocol = 0`, these are unimportant for enumeration
 - `bMaxPacketSize0 = 64`, this is the most performant option (minimizes exchanges between the device and the host) and it's assumed by the `Ep0In` abstraction
-- `idVendor = consts::VID`, value expected by `cargo xtask usb-list` (\*)
-- `idProduct = consts::PID`, value expected by `cargo xtask usb-list` (\*)
+- `idVendor = consts::VID`, our example's USB Vendor ID (\*)
+- `idProduct = consts::PID`, our example's USB Product ID (\*)
 - `bcdDevice = 0x0100`, this means version 1.0 but any value should do
 - `iManufacturer = iProduct = iSerialNumber = None`, string descriptors not supported
 - `bNumConfigurations = 1`, must be at least `1` so this is the minimum value

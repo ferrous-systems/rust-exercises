@@ -15,20 +15,20 @@ When put in bootloader mode the Dongle will run a bootloader program instead of 
 
 When the Dongle is in bootloader mode its red LED will pulsate. The Dongle will also appear as a USB CDC ACM device with vendor ID `0x1915` and product ID `0x521f`.
 
-You can also use our `cargo xtask usb-list` tool, a minimal cross-platform version of the `lsusb` tool, to check out the status of the Dongle.
+You can also use `cyme`, a cross-platform version of the `lsusb` tool, to check out the status of the Dongle.
 
-✅ Run `cargo xtask usb-list` **in the root** of the rust-exercises checkout to list all USB devices; the Dongle will be highlighted in the output, along with a note if in bootloader mode.
+✅ Run `cyme` to list all USB devices.
 
 Output should look like this:
 
 ```console
-radio-app/ $ cd ../..
-rust-exercises/ $ cargo xtask usb-list
+$ cyme
 (..)
-Bus 001 Device 016: ID 1915:521f <- nRF52840 Dongle (in bootloader mode)
+  2  16  0x1915 0x521f Open DFU Bootloader      E1550CA275E7      12.0 Mb/s
+(..)
 ```
 
-🔎 [`cargo xtask`](https://github.com/matklad/cargo-xtask) lets us extend `cargo` with custom commands which are installed as you run them for the first time. We've used it to add some helper tools to our workshop materials while keeping the preparation installations as minimal as possible.
+The first two values depend on your host computer and which USB port you used, so they will be different for you. The hex-string is the device's unique ID and that will also be different.
 
 Now that the device is in bootloader mode browse to the [`nrf52-code/boards/dongle-fw`](../../nrf52-code/boards/dongle-fw) directory. You'll find some `ELF` files (without a file ending) there. These are pre-compiled Rust programs to be flashed onto your dongle.
 
@@ -56,19 +56,19 @@ After the device has been programmed it will automatically reset and start runni
 
 🔎 The `loopback` application will make the Dongle enumerate itself as a CDC ACM device.
 
-✅ Run `cargo xtask usb-list` tool to see the newly enumerated Dongle in the output:
+✅ Run `cyme` to see the newly enumerated Dongle in the output:
 
 ```console
-$ cargo xtask usb-list
+$ cyme
 (..)
-Bus 001 Device 020: ID 1209:0309 <- nRF52840 Dongle (loopback-fw)
+  2  16  0x1209 0x0309 Dongle Loopback          -                 12.0 Mb/s
 ```
 
 The `loopback` app will log messages over the USB interface. To display these messages on the host we have provided a cross-platform tool: `cargo xtask serial-term`.
 
 ❗ Do not use serial terminal emulators like `minicom` or `screen`. They use the USB TTY ACM interface in a slightly different manner and may result in data loss.
 
-✅ Run `cargo xtask serial-term`. It shows you the logging output the Dongle is sending on its serial interface to your computer. This helps you monitor what's going on at the Dongle and debug connection issues. Start with the Dongle unplugged and you should see the following output:
+✅ Run `cargo xtask serial-term` from the root of the extracted tarball / git checkout. It shows you the logging output the Dongle is sending on its serial interface to your computer. This helps you monitor what's going on at the Dongle and debug connection issues. Start with the Dongle unplugged and you should see the following output:
 
 ```console
 $ cargo xtask serial-term
