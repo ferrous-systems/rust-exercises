@@ -31,10 +31,10 @@ async fn try_main(addr: impl ToSocketAddrs) -> Result<()> {
     let (reader, mut writer) = stream.into_split();
 
     let mut lines_from_server = BufReader::new(reader).lines(); // 2
-    let mut lines_from_stdin = BufReader::new(stdin()).lines(); // 2
+    let mut lines_from_stdin = BufReader::new(stdin()).lines(); // 3
 
     loop {
-        tokio::select! { // 3
+        tokio::select! { // 4
             line = lines_from_server.next_line() => match line {
                 Ok(Some(line)) => {
                     println!("{}", line);
@@ -57,5 +57,6 @@ async fn try_main(addr: impl ToSocketAddrs) -> Result<()> {
 ```
 
 1. Here we split `TcpStream` into read and write halves.
-2. We create a stream of lines for both the socket and stdin.
-3. In the main select loop, we print the lines we receive from the server and send the lines we read from the console.
+2. We create a stream of lines for the socket.
+2. We create a stream of lines for stdin.
+4. In the main select loop, we print the lines we receive from the server and send the lines we read from the console.
