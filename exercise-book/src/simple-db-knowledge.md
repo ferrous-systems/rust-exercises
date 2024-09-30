@@ -2,7 +2,7 @@
 
 This section explains concepts necessary to solve the simpleDB exercise.
 
-In general, we also recommend to use the Rust documentation to figure out things you are missing to familiarize yourself with it. If you ever feel completely stuck or that you haven’t understood something, please hail the trainers quickly.
+We also recommend using the official Rust documentation to figure out unfamiliar concepts. If you ever feel completely stuck, or if you haven’t understood something specific, please hail the trainers quickly.
 
 ## Derives
 
