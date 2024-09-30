@@ -63,7 +63,7 @@ let i = 4;
 let s = format!("{}", i);
 ```
 
-We'll cover these in more detail later, but either can be used to convert string literals (`"hello"`) and integers (`123`) into values of type `String`, which is all you'll need here. We'll use the latter in our examples.
+We'll cover these in more detail later, but either can be used to convert string literals (`"hello"`) and integers (`123`) into values of type `String`, which is all you'll need here. We'll use `format!` in our examples. It's flexible and equally efficient as other methods.
 
 ### Returning data
 
