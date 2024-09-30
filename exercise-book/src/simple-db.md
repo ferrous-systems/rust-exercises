@@ -2,7 +2,7 @@
 
 In this exercise, we will implement a toy protocol parser for a simple protocol for databank queries. We call it simpleDB. The protocol has two commands, one of them can be sent with a payload of additional data. Your parser parses the incoming data strings, makes sure the commands are formatted correctly and returns errors for the different ways the formatting can go wrong.
 
-## After completing this exercise you are able to
+## After completing this exercise you will be able to
 
 - write a simple Rust library from scratch
 
@@ -62,7 +62,7 @@ With the additional properties:
 4. Empty payloads are allowed. In this case, the command is
     `PUBLISH \n`.
 
-Violations against the form of the messages and the properties are
+Errors in the form or properties of the messages are
 handled with the following error codes:
 
 - `UnexpectedNewline` (a newline not at the end of the line)
