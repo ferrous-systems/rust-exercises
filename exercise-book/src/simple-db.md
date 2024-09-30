@@ -62,7 +62,7 @@ With the additional properties:
 4. Empty payloads are allowed. In this case, the command is
     `PUBLISH \n`.
 
-Errors in the form or properties of the messages are
+Issues with the format (or other properties) of the messages are
 handled with the following error codes:
 
 - `UnexpectedNewline` (a newline not at the end of the line)
