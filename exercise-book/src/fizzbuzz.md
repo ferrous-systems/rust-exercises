@@ -41,7 +41,7 @@ If you need it, we have provided a [complete solution](../../exercise-solutions/
 The recommended way to print to the console in this exercise is `println!`. `println!` *always* needs a format string - it uses `{}` as a placeholder to mean **print the next argument**, like Python 3 or C#.
 
 ```rust
-let s = String::from("Fizz");
+let s = "Fizz";
 println!("The value is s is {}. That's nice.", s);
 ```
 
@@ -51,17 +51,19 @@ The two recommended ways to get a `String` type for this exercise are:
 
 ```rust
 // 1.
-let string = String::from("Fizz");
+let s = "Fizz".to_string();
 
 let i = 4;
-let string = i.to_string();
+let s = i.to_string();
 
 // 2. 
-let string = format!("Buzz");
+let s = format!("Fizz");
 
 let i = 4;
-let string = format!("{}", i);
+let s = format!("{}", i);
 ```
+
+We'll cover these in more detail later, but either can be used to convert string literals (`"hello"`) and integers (`123`) into values of type `String`, which is all you'll need here. We'll use `format!` in our examples. It's flexible and equally efficient as other methods.
 
 ### Returning data
 
@@ -71,11 +73,10 @@ If you have issues returning data from multiple branches of your solution, liber
 # fn returner() -> String {
     # let x = 10;
     if x % 5 == 0 {
-        return String::from("Buzz");
+        return format!("Buzz");
     }
-    String::from("Fizz")
+    format!("Fizz")
 # }
-
 ```
 
 ## Step-by-Step-Solution
@@ -164,7 +165,7 @@ fn fizzbuzz(i: u32) -> String {
 
 ### Step 4: Call the function
 
-Add the function call to `fn fizzbuzz()` to the formatted string in the `println!()` statement. 
+Add the function call to `fn fizzbuzz()` to the formatted string in the `println!()` statement.
 
 Running this code should print numbers, interlaced with `Fizz`, `Buzz` and `FizzBuzz` according to the rules mentioned above.
 
