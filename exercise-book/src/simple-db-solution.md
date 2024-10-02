@@ -16,7 +16,7 @@ cargo test
 
 </details>
 
-## Step 2: Appropriate data structures
+## Step 2: Define appropriate data structures
 
 Define two enums, one is called `Command` and one is called `Error`. `Command` has 2 variants for the two possible commands. `Publish` carries data (the message), `Retrieve` does not. `Error` is just a list of error *kinds*. Use `#[derive(Eq,PartialEq,Debug)]` for both `enums`.
 
