@@ -1,9 +1,6 @@
 # Shapes
 
-In this exercise we're going to define methods for a struct, define and implement a trait, and look into how to make these generic. 
-
-
-You will learn:
+In this exercise we're going to define methods for a struct, define and implement a trait, and look into how to make structs and traits generic.
 
 ## Learning Goals
 
@@ -53,11 +50,11 @@ You can find a [complete solution](../../exercise-solutions/shapes-part-3/)
 We want to make `Square` and `Circle` generic over `T`, so we can use other numeric types and not just `u32` and `f32`.
 
 1. Add the generic type parameter `<T>` to `Square`. You can temporarily remove `enum Shape` to make this easier.
-2. Import the `num` crate, version 0.4.0, in order to be able to use the `num::Num` trait as bound for the generic type `<T>`. This assures, whatever type is used for `T` is a numeric type and also makes some guarantees about operations that can be performed.
+2. Import the `num` crate, version 0.4.0, to use the `num::Num` trait as bound for the generic type `<T>`. This assures that `T` is a numeric type, and also makes some guarantees about operations that can be performed on `<T>`.
 3. Add a `where` clause on the methods of `Square`, as required, e.g.:
 
    ```rust, ignore
-   where T: num::Num 
+   where T: num::Num
    ```
 
 4. Depending on the operations performed in that function, you may need to add further trait bounds, such as `Copy` and `std::ops::MulAssign`. You can add them to the `where` clause with a `+` sign, like `T: num::Num + Copy`.
@@ -68,17 +65,14 @@ We want to make `Square` and `Circle` generic over `T`, so we can use other nume
 
 This section gives partial solutions to look at or refer to.
 
-In general, we also recommend to use the Rust documentation to figure
-out things you are missing to familiarize yourself with it. If you ever
-feel completely stuck or that you haven’t understood something, please
-hail the trainers quickly.
+We also recommend using the official Rust documentation to figure out unfamiliar concepts. If you ever feel completely stuck, or if you haven’t understood something specific, please hail the trainers quickly.
 
 ### Getting Started
 
 Create a new library Cargo project, check the build and see if it runs:
 
 ```console
-$ cargo new --lib shapes 
+$ cargo new --lib shapes
 $ cd shapes
 $ cargo run
 ```
@@ -156,7 +150,7 @@ This restricts T to values that can be converted *from* an `f32` (or, types you 
 
 ### Defining a `Trait`
 
-A trait has a name, and lists function definitions that make guarantees about the name of a method, it's arguments and return types. 
+A trait has a name, and lists function definitions that make guarantees about the name of a method, its arguments and return types.
 
 ```rust
 pub trait Color {
