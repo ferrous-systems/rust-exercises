@@ -2,7 +2,7 @@
 
 In this exercise you will complete a number of mini exercises to learn about
 Error Handling. The final result will be a url parser that reads lines from a
-text file and can distinguish the content between URLs and non-urls.
+text file and distinguishes between URLs and non-urls.
 
 ## In this exercise, you will learn how to
 
@@ -87,8 +87,8 @@ expressions depending on which arm matches first.
 
 ### How to use `match`
 
-`match` is a way of control flow based on pattern matching. A pattern on the
-left results in the expression on the right side.
+`match` is a way of controlling flow based on pattern matching. A pattern on the
+left results in the expression on the right.
 
  ```rust
 let value = true;
@@ -99,8 +99,8 @@ match value {
 }
 ```
 
-Unlike with if/else, every case has to be handled explicitly, at least with a
-last catch all arm that uses a place holder:
+Unlike with if/else, every case has to be handled explicitly, although you can use a
+ catch-all pattern to cover 'everything else':
 
 ```rust
 let value = 50_u32;
@@ -197,7 +197,7 @@ opening the file: {:?}", e)`.
 ✅ Fix the path of the file so that the program no longer prints an error.
 
 <details>
-  <summary>Click me</summary>
+  <summary>Click to see the code using the fixed path </summary>
 
 ```rust, ignore
 {{#include ../../exercise-solutions/urls-match-result/examples/step_1.rs}}
@@ -220,7 +220,7 @@ you can see that your program did run. Try changing the file path back to the
 wrong value to see what happens if there is an error.
 
 <details>
-  <summary>Click me</summary>
+  <summary>Click to see the solution</summary>
 
 ```rust, ignore
 {{#include ../../exercise-solutions/urls-match-result/examples/step_2.rs}}
@@ -242,7 +242,7 @@ the for loop.
 ✅ Print the number of lines the file contains.
 
 <details>
-  <summary>Click me</summary>
+  <summary>Click to see the solution</summary>
 
 ```rust, ignore
 {{#include ../../exercise-solutions/urls-match-result/examples/step_3.rs}}
@@ -257,7 +257,7 @@ the for loop.
 method can help you here.
 
 <details>
-  <summary>Click me</summary>
+  <summary>Click to see the solution</summary>
 
 ```rust, ignore
 {{#include ../../exercise-solutions/urls-match-result/examples/step_4.rs}}
