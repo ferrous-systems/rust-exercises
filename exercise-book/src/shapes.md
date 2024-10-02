@@ -150,7 +150,7 @@ This restricts T to values that can be converted *from* an `f32` (or, types you 
 
 ### Defining a `Trait`
 
-A trait has a name, and lists function definitions that make guarantees about the name of a method, it's arguments and return types.
+A trait has a name, and lists function definitions that make guarantees about the name of a method, its arguments and return types.
 
 ```rust
 pub trait Color {
