@@ -44,9 +44,9 @@ You will learn how to
 
 - If the word does not begin with a vowel add suffix “`rs`” to the word.
 
-The function returns a `String` containing the modified words.
+For example, the sentence `Implement a function that splits a sentence into its words` becomes `srImplement sra functionrs thatrs splitsrs sra sentencers srinto srits wordsre`. 
 
-In order to learn as much as possible we recommend following the step-by-step solution.
+The function returns a `String` containing the modified words.
 
 ### Getting started
 
@@ -60,7 +60,7 @@ Complete solutions are available [`../../exercise-solutions/rustlatin`](../../ex
 
 ### Rust Analyzer
 
-A part of this exercise is seeing type inference in action and to use it to help to determine the type the function is going to return. To make sure the file can be indexed by Rust Analyzer, make sure you open the relevant step by itself - e.g. `exercise-templates/rustlatin/step1`. You can close each step when complete and open the next one.
+A part of this exercise is seeing type inference in action and using it to help to determine the type the function is going to return. To make sure the file can be indexed by Rust Analyzer, make sure you open the relevant step by itself - e.g. `exercise-templates/rustlatin/step1`. You can close each step when complete and open the next one.
 
 ## Step-by-step-Solution
 
