@@ -100,7 +100,7 @@ match value {
 ```
 
 Unlike with if/else, every case has to be handled explicitly, although you can use a
- catch-all with a place holder:
+ catch-all pattern to cover 'everything else':
 
 ```rust
 let value = 50_u32;
