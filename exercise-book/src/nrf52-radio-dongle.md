@@ -30,17 +30,20 @@ $ cyme
 
 The first two values depend on your host computer and which USB port you used, so they will be different for you. The hex-string is the device's unique ID and that will also be different.
 
-Now that the device is in bootloader mode browse to the [`nrf52-code/boards/dongle-fw`](../../nrf52-code/boards/dongle-fw) directory. You'll find some `ELF` files (without a file ending) there. These are pre-compiled Rust programs to be flashed onto your dongle.
+Now that the device is in bootloader mode, you need to get the Dongle Firmware.
 
-For the next section you'll need to flash the `loopback` file onto the Dongle.
+❗️ This firmware will not be found in the git checkout - you need to get it from <https://github.com/ferrous-systems/rust-exercises/releases>.
 
-✅ Run the following command:
+* If you have downloaded and unpacked the complete rust-exercises release zip file, the firmware will be in the [`nrf52-code/boards/dongle-fw`](../../nrf52-code/boards/dongle-fw) directory.
+* If not, you can download the individual firmware files from the [releases](https://github.com/ferrous-systems/rust-exercises/releases) page. You need `puzzle-fw` and `loopback-fw`.
+
+For the next section you'll need to flash the `loopback-fw` file onto the Dongle.
+
+✅ Change to the directory where the `loopback-fw` file is located and run:
 
 ```console
-nrfdfu nrf52-code/boards/dongle-fw/loopback-fw
+nrfdfu ./loopback-fw
 ```
-
-If the file is missing, you might be in a git checkout instead of a Github release tarball. Grab the Github release tarball and find the binary in there.
 
 Expected output:
 
@@ -52,7 +55,7 @@ Expected output:
 
 After the device has been programmed it will automatically reset and start running the new application.
 
-🔎 Alternatively, you can also use nordic's own [`nrfutil`](https://infocenter.nordicsemi.com/index.jsp?topic=%2Fug_nrfutil%2FUG%2Fnrfutil%2Fnrfutil_intro.html) tool to convert a .hex file and flash it for you, among many other things `nrfutil` is a very powerful tool, but also unstable at times, which is why we replaced the parts we needed from it with `nrfdfu`.
+🔎 Alternatively, you can also use nordic's own [`nrfutil`](https://www.nordicsemi.com/Products/Development-tools/nRF-Util) tool to convert a .hex file and flash it for you, among many other things `nrfutil` is a very powerful tool, but also unstable at times, which is why we replaced the parts we needed from it with `nrfdfu`.
 
 🔎 The `loopback` application will make the Dongle enumerate itself as a CDC ACM device.
 
@@ -98,7 +101,7 @@ received 5 bytes (CRC=Ok(0xdad9), LQI=0)
 received 6 bytes (CRC=Ok(0x72bb), LQI=0)
 ```
 
-That means the device is observing interference traffic, likely from 2.4 GHz WiFi or Bluetooth. In this scenario you should switch the listening channel to one where you don't observe interference. Use the `cargo xtask change-channel` tool to do this in a second window. The tool takes a single argument: the new listening channel which must be in the range 11-26.
+That means the device is observing interference traffic, likely from 2.4 GHz Zigbee, WiFi or Bluetooth. In this scenario you should switch the listening channel to one where you don't observe interference. Use the `cargo xtask change-channel` tool to do this in a second window. The tool takes a single argument: the new listening channel which must be in the range 11-26.
 
 ```console
 $ cargo xtask change-channel 11
