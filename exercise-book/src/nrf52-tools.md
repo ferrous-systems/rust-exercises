@@ -126,17 +126,9 @@ rustup +stable component add llvm-tools
 Install the [`flip-link`](https://crates.io/crates/flip-link), [`nrf-dfu`](https://crates.io/crates/nrfdfu) and [`cyme`](https://crates.io/crates/cyme) tools from source using the following Cargo commands:
 
 ```console
-$ cargo install flip-link
-(..)
-Installed package `flip-link v0.1.7` (..)
-
-$ cargo install nrfdfu
-(..)
-Installed package `nrfdfu v0.1.3` (..)
-
-$ cargo install cyme
-(..)
-Installed package `cyme v1.7.0` (..)
+cargo install flip-link
+cargo install nrfdfu
+cargo install cyme
 ```
 
 Install `probe-rs` 0.24 pre-compiled binaries on Linux or macOS with:
