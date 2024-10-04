@@ -10,7 +10,8 @@ use core::sync::atomic::{AtomicBool, AtomicU32, Ordering};
 
 use cortex_m_rt::entry;
 use usb_device::class_prelude::UsbBusAllocator;
-use usb_device::device::{UsbDevice, UsbDeviceBuilder, UsbVidPid};
+use usb_device::device::{StringDescriptors, UsbDevice, UsbDeviceBuilder, UsbVidPid};
+use usb_device::LangID;
 use usbd_hid::hid_class::HIDClass;
 use usbd_serial::SerialPort;
 
@@ -101,15 +102,21 @@ fn main() -> ! {
     ];
     USB_HID.load(HIDClass::new(bus_ref, desc, 100));
 
+    let strings = StringDescriptors::new(LangID::EN)
+        .manufacturer("Ferrous Systems")
+        .product("Dongle Puzzle");
+
     let vid_pid = UsbVidPid(consts::USB_VID_DEMO, consts::USB_PID_DONGLE_LOOPBACK);
     // See https://www.usb.org/sites/default/files/iadclasscode_r10.pdf
     // and https://learn.microsoft.com/en-us/windows-hardware/drivers/usbcon/usb-interface-association-descriptor
     USB_DEVICE.load(
         UsbDeviceBuilder::new(bus_ref, vid_pid)
-            .manufacturer("Ferrous Systems")
-            .product("Dongle Loopback")
             .composite_with_iads()
-            .max_packet_size_0(64) // (makes control transfers 8x faster)
+            .strings(&[strings])
+            .expect("adding strings")
+            // (makes control transfers 8x faster)
+            .max_packet_size_0(64)
+            .expect("set packet size")
             .build(),
     );
 

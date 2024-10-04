@@ -14,7 +14,7 @@ use core::{
 
 use cortex_m::peripheral::NVIC;
 use cortex_m_semihosting::debug;
-use embedded_hal::digital::v2::{InputPin, OutputPin, StatefulOutputPin};
+use embedded_hal::digital::{InputPin, OutputPin, StatefulOutputPin};
 #[cfg(any(feature = "advanced"))]
 use grounded::uninit::GroundedArrayCell;
 #[cfg(any(feature = "radio"))]
@@ -126,12 +126,12 @@ impl Led {
     }
 
     /// Returns `true` if the LED is in the OFF state
-    pub fn is_off(&self) -> bool {
+    pub fn is_off(&mut self) -> bool {
         self.inner.is_set_high() == Ok(true)
     }
 
     /// Returns `true` if the LED is in the ON state
-    pub fn is_on(&self) -> bool {
+    pub fn is_on(&mut self) -> bool {
         !self.is_off()
     }
 
