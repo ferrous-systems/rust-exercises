@@ -38,7 +38,7 @@ mod app {
     }
 
     #[task(binds = USBD, local = [usbd, ep0in])]
-    fn main(cx: main::Context) {
+    fn handle_usb_interrupt(cx: handle_usb_interrupt::Context) {
         let usbd = cx.local.usbd;
         let ep0in = cx.local.ep0in;
 

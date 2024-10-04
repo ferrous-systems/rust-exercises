@@ -4,7 +4,7 @@ The `USBD` peripheral on the nRF52840 contains a series of registers, called `EV
 
 ✅ Open the [`nrf52-code/usb-app/src/bin/usb-1.rs`][usb_1] file.
 
-In this starter code the `USBD` peripheral is initialized in `init` and a task, named `main`, is bound to the interrupt signal called `USBD`. This task will be called every time a new `USBD` event needs to be handled. The `main` task uses `usbd::next_event()` to check all the event registers; if any event is set (i.e. that event just occurred) then the function returns the event, represented by the `Event` enum, wrapped in the `Some` variant. This `Event` is then passed to the `on_event` function for further processing.
+In this starter code the `USBD` peripheral is initialized in `init` and a task, named `handle_usb_interrupt`, is bound to the interrupt signal called `USBD`. This task will be called every time a new `USBD` event needs to be handled. The `handle_usb_interrupt` task uses `usbd::next_event()` to check all the event registers; if any event is set (i.e. that event just occurred) then the function returns the event, represented by the `Event` enum, wrapped in the `Some` variant. This `Event` is then passed to the `on_event` function for further processing.
 
 ✅ Connect the USB cable to the port J3 then run the starter code.
 
