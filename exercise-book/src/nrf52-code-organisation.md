@@ -75,21 +75,21 @@ $ tree -L 2
 27 directories, 17 files
 ```
 
-### board/dk
+### boards/dk
 
 Contains a Board Support Package for the nRF52840 Developer Kit.
 
-### board/dk-solution
+### boards/dk-solution
 
 Contains a Board Support Package for the nRF52840 Developer Kit, with a solution to the [BSP exercise](./nrf52-hal-buttons.md).
 
-### board/dongle
+### boards/dongle
 
 Contains a Board Support Package for the nRF52840 USB Dongle. You won't be using this.
 
-### board/dongle-fw
+### boards/dongle-fw
 
-Contains pre-compiled firmware for the nRF52 USB Dongle. Use in the *nRF52 Radio Exercise*.
+In the release zip file, this contains pre-compiled firmware for the nRF52 USB Dongle, which you use in the *nRF52 Radio Exercise*. In the Git repository, it's empty.
 
 ### consts
 

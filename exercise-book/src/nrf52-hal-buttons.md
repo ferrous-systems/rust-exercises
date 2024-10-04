@@ -10,7 +10,7 @@ It should now fail to compile, because the `dk` crate doesn't have support for b
 
 ## Define a Button
 
-✅ Open up the `dk` crate in VS Code (`nrf52-code/board/dk`) and open `src/lib.rs`.
+✅ Open up the `dk` crate in VS Code (`nrf52-code/boards/dk`) and open `src/lib.rs`.
 
 ✅ Add a `struct Button` which represents a single button.
 
@@ -58,4 +58,4 @@ If you're stuck for ideas, you could have the LEDs do some kind of animation. Th
 
 ## Troubleshooting
 
-🔎 If you get totally stuck, ask for help! If all else fails, you could peek in `board/dk-solution`, which has a complete set of the required BSP changes.
+🔎 If you get totally stuck, ask for help! If all else fails, you could peek in `nrf52-code/boards/dk-solution`, which has a complete set of the required BSP changes.
