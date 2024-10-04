@@ -48,6 +48,6 @@ jobs:
         id: create_release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: ./rust-exercises-${{ env.slug }}.zip
+          artifacts: "./rust-exercises-${{ env.slug }}.zip,./rust-exercises-${{ env.slug }}/nrf52-code/boards/dongle-fw/*-fw"
           allowUpdates: true
           updateOnlyUnreleased: true
