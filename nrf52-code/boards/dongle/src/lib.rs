@@ -14,10 +14,7 @@ use core::{
 
 use cortex_m::peripheral::NVIC;
 use cortex_m_semihosting::debug;
-use embedded_hal::{
-    digital::v2::{OutputPin, StatefulOutputPin},
-    timer::CountDown,
-};
+use embedded_hal::digital::{OutputPin, StatefulOutputPin};
 
 pub use hal::{self, ieee802154};
 use hal::{
@@ -112,12 +109,12 @@ impl Led {
     }
 
     /// Returns `true` if the LED is in the OFF state
-    pub fn is_off(&self) -> bool {
+    pub fn is_off(&mut self) -> bool {
         self.inner.is_set_high() == Ok(true)
     }
 
     /// Returns `true` if the LED is in the ON state
-    pub fn is_on(&self) -> bool {
+    pub fn is_on(&mut self) -> bool {
         !self.is_off()
     }
 
@@ -171,11 +168,6 @@ impl Timer {
     /// Start a timer running for `timeout_us` microseconds
     pub fn start(&mut self, timeout_us: u32) {
         self.inner.start(timeout_us)
-    }
-
-    /// Returns `true` if the timer is still running after a call to `start(nnn)`
-    pub fn is_running(&mut self) -> bool {
-        self.inner.wait().is_err()
     }
 }
 

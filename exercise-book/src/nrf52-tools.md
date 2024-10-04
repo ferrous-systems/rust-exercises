@@ -186,7 +186,5 @@ Bus 002 Device 015: ID 1366:1051 <- J-Link on the nRF52840 Development Kit
 ✅ In the terminal run the following command from the [`nrf52-code/radio-app`](../../nrf52-code/radio-app) folder. This will build and run a simple program on the DK to test the set-up.
 
 ```console
-cargo run --bin hello -- --allow-erase-all
+cargo run --bin hello
 ```
-
-The `-- --allow-erase-all` option gives the `--allow-erase-all` argument to `probe-rs`, which gives it permission to clear out the pre-installed Nordic bootloader code. You only need that the first time you try and program the nRF52840-DK with `cargo run`.
