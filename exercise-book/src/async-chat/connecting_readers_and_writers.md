@@ -3,7 +3,7 @@
 
 So how do we make sure that messages read in `connection_loop` flow into the relevant `connection_writer_loop`?
 We should somehow maintain a `peers: HashMap<String, Sender<String>>` map which allows a client to find destination channels.
-However, this map would be a bit of shared mutable state, so we'll have to wrap an `RwLock` over it and answer tough questions of what should happen if the client joins at the same moment as it receives a message.
+However, this map would be a bit of shared mutable state, so we'll have to wrap an `RwLock` over it and answer tough questions about what should happen if the client joins at the same moment as it receives a message.
 
 One trick to make reasoning about state simpler is by taking inspiration from the actor model.
 We can create a dedicated broker task which owns the `peers` map and communicates with other tasks using channels.
