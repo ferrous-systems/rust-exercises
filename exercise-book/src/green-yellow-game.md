@@ -215,6 +215,8 @@ Let's do this by copying the input, so we can make it mutable, and mark off any 
 
 Add `rand = "0.8"` to your Cargo.toml, and make a random number generator with `rand::thread_rng()` (Random Number Generator). You will also have to `use rand::Rng;` to bring the trait into scope.
 
+(A built-in [random number generator](https://github.com/rust-lang/rust/issues/130703) is proposed for the Standard Library but is still nightly only as of October 2024).
+
 Call `your_rng.gen_range()` in a loop.
 
 <details>
