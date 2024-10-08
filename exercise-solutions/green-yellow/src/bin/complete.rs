@@ -4,21 +4,34 @@ use rand::Rng;
 
 fn calc_green_and_yellow(guess: &[u8; 4], secret: &[u8; 4]) -> String {
     let mut result = ["⬜"; 4];
-    let mut guess = guess.clone();
-    let mut secret = secret.clone();
+    let mut secret_handled = [false; 4];
 
     for i in 0..guess.len() {
         if guess[i] == secret[i] {
+            // that's a match
             result[i] = "🟩";
-            secret[i] = 0;
-            guess[i] = 0;
+            // don't match this secret digit again
+            secret_handled[i] = true;
         }
     }
 
-    for i in 0..guess.len() {
-        for j in 0..secret.len() {
-            if guess[i] == secret[j] && secret[j] != 0 && guess[i] != 0 {
-                result[i] = "🟨";
+    'guess: for g_idx in 0..guess.len() {
+        // only process guess digits we haven't already dealt with
+        if result[g_idx] == "🟩" {
+            continue;
+        }
+        for s_idx in 0..secret.len() {
+            // only process secret digits we haven't already dealt with
+            if secret_handled[s_idx] {
+                continue;
+            }
+            if guess[g_idx] == secret[s_idx] {
+                // put a yellow block in for this guess
+                result[g_idx] = "🟨";
+                // never match this secret digit again
+                secret_handled[s_idx] = true;
+                // stop comparing this guessed digit to any other secret digits
+                continue 'guess;
             }
         }
     }
