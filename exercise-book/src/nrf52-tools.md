@@ -178,7 +178,7 @@ Bus 002 Device 015: ID 1366:1051 <- J-Link on the nRF52840 Development Kit
 ✅ In the terminal run `cargo run --bin hello` from the [`nrf52-code/radio-app`](../../nrf52-code/radio-app) folder, to build and run a simple program on the DK to test the set-up.
 
 ```console
-❯ cargo run --bin hello -- --allow-erase-all
+❯ cargo run --bin hello
     Finished `dev` profile [optimized + debuginfo] target(s) in 0.06s
      Running `probe-rs run --chip nRF52840_xxAA target/thumbv7em-none-eabihf/debug/hello --allow-erase-all`
       Erasing ✔ [00:00:00] [################################################] 8.00 KiB/8.00 KiB @ 31.22 KiB/s (eta 0s )
