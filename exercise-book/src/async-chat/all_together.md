@@ -1,4 +1,4 @@
-## Gluing all together
+## Gluing it all together
 
 At this point, we only need to start the broker to get a fully-functioning (in the happy case!) chat.
 
