@@ -175,8 +175,16 @@ Bus 002 Device 015: ID 1366:1051 <- J-Link on the nRF52840 Development Kit
 (...) random other USB devices will be listed
 ```
 
-✅ In the terminal run the following command from the [`nrf52-code/radio-app`](../../nrf52-code/radio-app) folder. This will build and run a simple program on the DK to test the set-up.
+✅ In the terminal run `cargo run --bin hello` from the [`nrf52-code/radio-app`](../../nrf52-code/radio-app) folder, to build and run a simple program on the DK to test the set-up.
 
 ```console
-cargo run --bin hello
+❯ cargo run --bin hello
+    Finished `dev` profile [optimized + debuginfo] target(s) in 0.06s
+     Running `probe-rs run --chip nRF52840_xxAA target/thumbv7em-none-eabihf/debug/hello --allow-erase-all`
+      Erasing ✔ [00:00:00] [################################################] 8.00 KiB/8.00 KiB @ 31.22 KiB/s (eta 0s )
+  Programming ✔ [00:00:00] [################################################] 8.00 KiB/8.00 KiB @ 36.25 KiB/s (eta 0s )    Finished in 0.496s
+<lvl> Hello, world!
+└─ hello::__cortex_m_rt_main @ src/bin/hello.rs:21  
+<lvl> `dk::exit()` called; exiting ...
+└─ dk::exit @ /home/samuel/src/ferrous/rust-exercises/nrf52-code/boards/dk/src/lib.rs:415 
 ```
