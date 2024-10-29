@@ -134,4 +134,8 @@
   - [Final Server Code](./async-chat/final_server_code.md)
   - [Implementing a Client](./async-chat/implementing_a_client.md)
 
+# Kani Rust Verifier
+
+- [Verifying Data Structures with Kani](./kani-linked-list.md)
+
 # Other Topics

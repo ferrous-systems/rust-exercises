@@ -11,4 +11,5 @@ members = [
   "shapes-part-3",
   "tcp-server-exercises",
   "async-chat",
+  "kani-linked-list",
 ]
