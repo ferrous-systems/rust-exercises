@@ -8,11 +8,13 @@ This chapter contains information about the nRF52-based exercises, the required 
 - [nRF52840 Dongle](https://www.nordicsemi.com/Software-and-tools/Development-Kits/nRF52840-Dongle)
 - 2 micro-USB cables
   - ❗️ make sure you're using micro usb cables which can transmit data (some are charging-only; these are not suitable for these exercises)
-- 2 available USB-A ports on your laptop / PC (you can use a USB hub if you don't have enough ports)
+- 2 corresponding available USB ports on your laptop / PC (you can use a USB hub if you don't have enough ports)
 
 In our nRF52-focussed exercises we will use both the nRF52840 Development Kit (DK) and the nRF52840 Dongle. We'll mainly develop programs for the DK and use the Dongle to assist with some exercises.
 
-For the span of these exercises keep the nRF52840 DK connected to your PC using a micro-USB cable. Connect the USB cable to the J2 port on the nRF52840 DK. Instructions to identify the USB ports on the nRF52840 board can be found in the top level README file.
+For the span of these exercises keep the nRF52840 DK connected to your PC using a micro-USB cable. Connect the USB cable to the J2 port on the nRF52840 DK.
+
+![Labeled Diagram of the nRF52840 Development Kit (DK)](img/nrf52840_dk_board.jpg)
 
 ## Starter code
 

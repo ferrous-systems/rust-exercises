@@ -1,43 +1,48 @@
 # nRF52 Tools
 
-## VS Code
+Follow the entire section for the operating system that you're using, then go to [Setup check](#setup-check).
 
-**Windows**: Go to [https://code.visualstudio.com](https://code.visualstudio.com) and run the installer.
+## Linux
 
-**Linux**: Follow the instructions for your distribution on [https://code.visualstudio.com/docs/setup/linux](https://code.visualstudio.com/docs/setup/linux).
+<!-- TODO would be nice to have an automated local table of contents here,
+     and it's probably not worth putting them in manually. -->
 
-**macOS**: Go to [https://code.visualstudio.com](https://code.visualstudio.com) and click on "Download for Mac"
+### Install VS Code
 
-## OS specific dependencies
+Follow the instructions for your distribution on [https://code.visualstudio.com/docs/setup/linux](https://code.visualstudio.com/docs/setup/linux).
 
-### Linux only: USB
+### Install dependencies
 
-Some of our tools depend on `pkg-config` and `libudev.pc`. Ensure you have the proper packages installed; on Debian based distributions you can use:
+Some of our tools depend on `pkg-config` and `libudev.pc`.
+
+Ensure you have the proper packages installed.
+On Debian based distributions you can use:
 
 ```console
 sudo apt-get install libudev-dev libusb-1.0-0-dev
 ```
 
+### Configure dongle access for non-root users
+
+Connect the dongle and check its permissions with these commands:
+
+```console
+$ lsusb -d 1915:521f
+Bus 001 Device 016: ID 1915:521f Nordic Semiconductor ASA USB Billboard
+$ #   ^         ^^
+
+$ # take note of the bus and device numbers that appear for you when run the next command
+$ ls -l /dev/bus/usb/001/016
+crw-rw-r-- 1 root root 189, 15 May 20 12:00 /dev/bus/usb/001/016
+```
+
+The `root root` part in `crw-rw-r-- 1 root root` indicates the device can only be accessed by the `root` user.
+
 To access the USB devices as a non-root user, follow these steps:
 
-1. (Optional) Connect the dongle and check its permissions with these commands:
+1. As root, create `/etc/udev/rules.d/50-ferrous-training.rules` with the following contents:
 
     ```console
-    $ lsusb -d 1915:521f
-    Bus 001 Device 016: ID 1915:521f Nordic Semiconductor ASA USB Billboard
-    $ #   ^         ^^
-
-    $ # take note of the bus and device numbers that appear for you when run the next command
-    $ ls -l /dev/bus/usb/001/016
-    crw-rw-r-- 1 root root 189, 15 May 20 12:00 /dev/bus/usb/001/016
-    ```
-
-    The `root root` part in `crw-rw-r-- 1 root root` indicates the device can only be accessed by the `root` user.
-
-2. Create the following file with the displayed contents. You'll need root permissions to create the file.
-
-    ```console
-    $ cat /etc/udev/rules.d/50-ferrous-training.rules
     # udev rules to allow access to USB devices as a non-root user
 
     # nRF52840 Dongle in bootloader mode
@@ -50,13 +55,13 @@ To access the USB devices as a non-root user, follow these steps:
     ATTRS{idVendor}=="1366", ENV{ID_MM_DEVICE_IGNORE}="1", TAG+="uaccess"
     ```
 
-3. Run the following command to make the new udev rules effective
+2. Run the following command to put the new udev rules into effect
 
     ```console
     sudo udevadm control --reload-rules
     ```
 
-4. (Optional) Disconnect and reconnect the dongle. Then check its permissions again.
+To check the permissions again, first disconnect and reconnect the dongle. Then run `lsusb`.
 
     ```console
     $ lsusb
@@ -66,55 +71,27 @@ To access the USB devices as a non-root user, follow these steps:
     crw-rw-r--+ 1 root root 189, 16 May 20 12:11 /dev/bus/usb/001/017
     ```
 
-    The `+` part in `crw-rw-r--+` indicates the device can be accessed without `root` permissions.
+The `+` part in `crw-rw-r--+` indicates the device can be accessed without `root` permissions.
 
-### Windows only: Zadig JLink driver
-
-On Windows you'll need to associate the nRF52840 Development Kit's USB device to the WinUSB driver.
-
-To do that connect the nRF52840 DK to your PC using micro-USB port J2 (as done before) then download and run the [Zadig] tool.
-
-[Zadig]: https://zadig.akeo.ie/
-
-In Zadig's graphical user interface,
-
-1. Select the 'List all devices' option from the Options menu at the top.
-
-2. From the device (top) drop down menu select "BULK interface (Interface nnn)"
-
-3. Once that device is selected, `1366 1051` should be displayed in the USB ID field. That's the Vendor ID - Product ID pair.
-
-4. Select 'WinUSB' as the target driver (right side)
-
-5. Click "Install Driver". The process may take a few minutes to complete and might not appear to do anything right away. Click it once and wait.
-
-> You do not need to do anything for the **nRF52840 Dongle** device.
-
-## Rust and tooling
-
-### Base Rust installation
+### Install base rust tooling
 
 Go to [https://rustup.rs](https://rustup.rs/) and follow the instructions.
 
-**Windows**: Be sure to select the optional "Desktop development with C++" part of the [C++ build tools package](https://visualstudio.microsoft.com/visual-cpp-build-tools/). The installation size may take up to 5.7 GB of disk space.
+### Install rust analyzer
 
-### Rust Analyzer
+Open VS Code, find [Rust Analyzer](https://marketplace.visualstudio.com/items?itemName=matklad.rust-analyzer) in the marketplace (bottom icon in the left panel), then install it.
 
-**All**: Open VS Code and look for [Rust Analyzer](https://marketplace.visualstudio.com/items?itemName=matklad.rust-analyzer) in the marketplace (bottom icon in the left panel). Then install it.
+### Configure Rust Cross compilation support
 
-**Windows**: It's OK to ignore the message about `git` not being installed, if you get one!
-
-### Rust Cross compilation support
-
-**All**: Run this command in a terminal:
+Run this command in a terminal:
 
 ```console
 rustup +stable target add thumbv7em-none-eabihf
 ```
 
-### ELF analysis tools
+### Install ELF analysis tools
 
-**All**: Run these commands in a terminal:
+Run these commands in a terminal:
 
 ```console
 cargo install cargo-binutils
@@ -142,6 +119,141 @@ Install `probe-rs` 0.24 pre-compiled binaries on Windows with:
 ```bash
 powershell -c "irm https://github.com/probe-rs/probe-rs/releases/download/v0.24.0/probe-rs-tools-installer.ps1 | iex"
 ```
+
+## Windows
+
+### Install VS Code
+
+Go to [https://code.visualstudio.com](https://code.visualstudio.com) and run the installer.
+
+### Associate the device with the WinUSB drivers
+
+On Windows you'll need to associate the nRF52840 Development Kit's USB device to the WinUSB driver.
+
+To do that connect the nRF52840 DK to your PC using micro-USB port J2, then download and run the [Zadig] tool.
+
+[Zadig]: https://zadig.akeo.ie/
+
+In Zadig's graphical user interface,
+
+1. Select the 'List all devices' option from the Options menu at the top.
+
+2. From the device (top) drop down menu select "BULK interface (Interface nnn)"
+
+3. Once that device is selected, `1366 1051` should be displayed in the USB ID field. That's the Vendor ID - Product ID pair.
+
+4. Select 'WinUSB' as the target driver (right side)
+
+5. Click "Install Driver". The process may take a few minutes to complete and might not appear to do anything right away. Click it once and wait.
+
+> You do not need to do anything for the **nRF52840 Dongle** device.
+
+### Install base rust tooling
+
+Go to [https://rustup.rs](https://rustup.rs/) and follow the instructions.
+
+Be sure to select the optional "Desktop development with C++" part of the [C++ build tools package](https://visualstudio.microsoft.com/visual-cpp-build-tools/). The installation may take up to 5.7 GB of disk space.
+
+
+### Install rust analyzer
+
+Open VS Code, find [Rust Analyzer](https://marketplace.visualstudio.com/items?itemName=matklad.rust-analyzer) in the marketplace (bottom icon in the left panel), then install it.
+
+If you get a message about `git` not being installed, ignore it!
+
+### Configure Rust Cross compilation support
+
+Run this command in a terminal:
+
+```console
+rustup +stable target add thumbv7em-none-eabihf
+```
+
+### Install ELF analysis tools
+
+Run these commands in a terminal:
+
+```console
+cargo install cargo-binutils
+rustup +stable component add llvm-tools
+```
+
+### Third-party tools written in Rust
+
+Install the [`flip-link`](https://crates.io/crates/flip-link), [`nrf-dfu`](https://crates.io/crates/nrfdfu) and [`cyme`](https://crates.io/crates/cyme) tools from source using the following Cargo commands:
+
+```console
+cargo install flip-link
+cargo install nrfdfu
+cargo install cyme
+```
+
+Install `probe-rs` 0.24 pre-compiled binaries on Linux or macOS with:
+
+```bash
+curl --proto '=https' --tlsv1.2 -LsSf https://github.com/probe-rs/probe-rs/releases/download/v0.24.0/probe-rs-tools-installer.sh | sh
+```
+
+Install `probe-rs` 0.24 pre-compiled binaries on Windows with:
+
+```bash
+powershell -c "irm https://github.com/probe-rs/probe-rs/releases/download/v0.24.0/probe-rs-tools-installer.ps1 | iex"
+```
+
+## macOS
+
+### Install VS Code
+
+Go to [https://code.visualstudio.com](https://code.visualstudio.com) and click on "Download for Mac".
+
+### Install base rust tooling
+
+Go to [https://rustup.rs](https://rustup.rs/) and follow the instructions.
+
+### Install rust analyzer
+
+Open VS Code, find [Rust Analyzer](https://marketplace.visualstudio.com/items?itemName=matklad.rust-analyzer) in the marketplace (bottom icon in the left panel), then install it.
+
+### Configure Rust Cross compilation support
+
+Run this command in a terminal:
+
+```console
+rustup +stable target add thumbv7em-none-eabihf
+```
+
+### Install ELF analysis tools
+
+Run these commands in a terminal:
+
+```console
+cargo install cargo-binutils
+rustup +stable component add llvm-tools
+```
+
+### Third-party tools written in Rust
+
+Install the [`flip-link`](https://crates.io/crates/flip-link), [`nrf-dfu`](https://crates.io/crates/nrfdfu) and [`cyme`](https://crates.io/crates/cyme) tools from source using the following Cargo commands:
+
+```console
+cargo install flip-link
+cargo install nrfdfu
+cargo install cyme
+```
+
+Install `probe-rs` 0.24 pre-compiled binaries on Linux or macOS with:
+
+```bash
+curl --proto '=https' --tlsv1.2 -LsSf https://github.com/probe-rs/probe-rs/releases/download/v0.24.0/probe-rs-tools-installer.sh | sh
+```
+
+Install `probe-rs` 0.24 pre-compiled binaries on Windows with:
+
+```bash
+powershell -c "irm https://github.com/probe-rs/probe-rs/releases/download/v0.24.0/probe-rs-tools-installer.ps1 | iex"
+```
+
+---
 
 ## Setup check
 
@@ -184,7 +296,7 @@ Bus 002 Device 015: ID 1366:1051 <- J-Link on the nRF52840 Development Kit
       Erasing ✔ [00:00:00] [################################################] 8.00 KiB/8.00 KiB @ 31.22 KiB/s (eta 0s )
   Programming ✔ [00:00:00] [################################################] 8.00 KiB/8.00 KiB @ 36.25 KiB/s (eta 0s )    Finished in 0.496s
 <lvl> Hello, world!
-└─ hello::__cortex_m_rt_main @ src/bin/hello.rs:21  
+└─ hello::__cortex_m_rt_main @ src/bin/hello.rs:21
 <lvl> `dk::exit()` called; exiting ...
-└─ dk::exit @ /home/samuel/src/ferrous/rust-exercises/nrf52-code/boards/dk/src/lib.rs:415 
+└─ dk::exit @ /home/samuel/src/ferrous/rust-exercises/nrf52-code/boards/dk/src/lib.rs:415
 ```
