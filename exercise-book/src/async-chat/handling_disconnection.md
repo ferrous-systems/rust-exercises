@@ -11,7 +11,7 @@ If the read side finishes we will notify the write side that it should stop as w
 That is, we need to add an ability to signal shutdown for the writer task.
 
 One way to approach this is a `shutdown: Receiver<()>` channel.
-There's a more minimal solution however, which makes clever use of RAII.
+There's a more minimal solution however, which makes clever use of [RAII (Resource Acquisition Is Initialization)](https://doc.rust-lang.org/rust-by-example/scope/raii.html).
 Closing a channel is a synchronization event, so we don't need to send a shutdown message, we can just drop the sender.
 This way, we statically guarantee that we issue shutdown exactly once, even if we early return via `?` or panic.
 
@@ -50,7 +50,7 @@ enum Event {
     NewPeer {
         name: String,
         stream: OwnedWriteHalf,
-        shutdown: oneshot::Receiver<()>,
+        shutdown: oneshot::Receiver<()>, // 1
     },
     Message {
         from: String,
@@ -65,12 +65,12 @@ async fn connection_loop(broker: Sender<Event>, stream: TcpStream) -> Result<()>
     # let mut lines = reader.lines();
     # let name: String = String::new();
     // ...
-    let (_shutdown_sender, shutdown_receiver) = oneshot::channel::<()>();
+    let (_shutdown_sender, shutdown_receiver) = oneshot::channel::<()>(); // 3
     broker
         .send(Event::NewPeer {
             name: name.clone(),
             stream: writer,
-            shutdown: shutdown_receiver,
+            shutdown: shutdown_receiver, // 2
         })
         .unwrap();
     // ...
@@ -89,15 +89,15 @@ We use the `select` macro for this purpose:
 async fn connection_writer_loop(
     messages: &mut Receiver<String>,
     stream: &mut OwnedWriteHalf,
-    mut shutdown: oneshot::Receiver<()>,
+    mut shutdown: oneshot::Receiver<()>, // 1
 ) -> Result<()> {
-    loop {
+    loop { // 2
         tokio::select! {
             msg = messages.recv() => match msg {
                 Some(msg) => stream.write_all(msg.as_bytes()).await?,
                 None => break,
             },
-            _ = &mut shutdown => break
+            _ = &mut shutdown => break // 3
         }
     }
 

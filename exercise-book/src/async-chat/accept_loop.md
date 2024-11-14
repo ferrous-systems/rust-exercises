@@ -8,20 +8,21 @@ First of all, let's add required import boilerplate:
 # extern crate tokio;
 use std::future::Future; // 1
 use tokio::{
-    io::{AsyncBufReadExt, AsyncWriteExt, BufReader}, // 1
+    io::{AsyncBufReadExt, AsyncWriteExt, BufReader}, // 2
     net::{tcp::OwnedWriteHalf, TcpListener, TcpStream, ToSocketAddrs}, // 3
     sync::{mpsc, oneshot},
-    task, // 2
+    task, // 4
 };
 
-type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>>; // 4
+type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>>; // 5
 ```
 
-1. Import some traits required to work with futures and streams.
-2. The `task` module roughly corresponds to the `std::thread` module, but tasks are much lighter weight.
-   A single thread can run many tasks.
+1. Import traits required to work with futures.
+2. Import traits required to work with streams.
 3. For the socket type, we use `TcpListener` from `tokio`, which is similar to the sync `std::net::TcpListener`, but is non-blocking and uses `async` API.
-4. We will skip implementing detailled error handling in this example.
+4. The `task` module roughly corresponds to the `std::thread` module, but tasks are much lighter weight.
+   A single thread can run many tasks.
+5. We will skip implementing detailed error handling in this example.
    To propagate the errors, we will use a boxed error trait object.
    Do you know that there's `From<&'_ str> for Box<dyn Error>` implementation in stdlib, which allows you to use strings with `?` operator?
 
@@ -66,7 +67,7 @@ pub(crate) async fn main() -> Result<()> {
 }
 ```
 
-The crucial thing to realise that is in Rust, unlike other languages, calling an async function does **not** run any code.
+The crucial thing to realise is that in Rust, unlike in other languages, calling an async function does **not** run any code.
 Async functions only construct futures, which are inert state machines.
 To start stepping through the future state-machine in an async function, you should use `.await`.
 In a non-async function, a way to execute a future is to hand it to the executor.

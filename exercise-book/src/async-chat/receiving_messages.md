@@ -7,7 +7,7 @@ We need to:
 2. interpret the first line as a login
 3. parse the rest of the lines as a  `login: message`
 
-We highly recommend to go past this quick, this is a lot of protocol minutia.
+We recommend that you speed through this quickly, it is mostly a lot of uninteresting protocol minutia.
 
 ```rust,ignore
 # extern crate tokio;
@@ -29,7 +29,7 @@ async fn accept_loop(addr: impl ToSocketAddrs) -> Result<()> {
     loop {
         let (stream, _socket_addr) = listener.accept().await?;
         println!("Accepting from: {}", stream.peer_addr()?);
-        let _handle = task::spawn(connection_loop(stream));
+        let _handle = task::spawn(connection_loop(stream)); // 1
     }
     Ok(())
 }
@@ -83,7 +83,7 @@ async fn connection_loop(stream: TcpStream) -> Result<()> {
 
 ## Managing Errors
 
-One serious problem in the above solution is that, while we correctly propagate errors in the `connection_loop`, we just drop the error on the floor afterwards!
+One issue with the previous solution is that while we correctly propagate errors in the `connection_loop`, we just drop the error afterwards!
 That is, `task::spawn` does not return an error immediately (it can't, it needs to run the future to completion first), only after it is joined.
 We can "fix" it by waiting for the task to be joined, like this:
 
@@ -107,11 +107,11 @@ handle.await?
 The `.await` waits until the client finishes, and `?` propagates the result.
 
 There are two problems with this solution however!
-*First*, because we immediately await the client, we can only handle one client at a time, and that completely defeats the purpose of async!
-*Second*, if a client encounters an IO error, the whole server immediately exits.
+- *First*, because we immediately await the client, we can only handle one client at a time, and that completely defeats the purpose of async!
+- *Second*, if a client encounters an IO error, the whole server immediately exits.
 That is, a flaky internet connection of one peer brings down the whole chat room!
 
-A correct way to handle client errors in this case is log them, and continue serving other clients.
+The correct way to handle client errors in this case is log them, and continue serving other clients.
 So let's use a helper function for this:
 
 ```rust,ignore

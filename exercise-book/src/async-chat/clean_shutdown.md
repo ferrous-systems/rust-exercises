@@ -1,11 +1,9 @@
 ## Clean Shutdown
 
-One of the problems of the current implementation is that it doesn't handle graceful shutdown.
-If we break from the accept loop for some reason, all in-flight tasks are just dropped on the floor.
+One of the problems with the current implementation is that it doesn't handle graceful shutdown.
+If we break from the accept loop for some reason, all in-flight tasks are just dropped.
 
-We will intercept `Ctrl-C`.
-
-A more correct shutdown sequence would be:
+Instead, let's intercept `Ctrl-C` and implment a more correct shutdown sequence:
 
 1. Stop accepting new clients
 2. Notify the readers we're not accepting new messages
@@ -26,7 +24,7 @@ However, we never wait for broker and writers, which might cause some messages t
 We also need to notify all readers that we are going to stop accepting messages. Here, we use `tokio::sync::Notify`.
 
 Let's first add the notification feature to the readers.
-We have to start using `select!` here to work 
+We have to start using `select!` here to work
 ```rust,ignore
 async fn connection_loop(broker: Sender<Event>, stream: TcpStream, shutdown: Arc<Notify>) -> Result<()> {
     // ...
@@ -43,7 +41,7 @@ async fn connection_loop(broker: Sender<Event>, stream: TcpStream, shutdown: Arc
                     .map(|name| name.trim().to_string())
                     .collect();
                 let msg: String = msg.trim().to_string();
-        
+
                 broker
                     .send(Event::Message {
                         from: name.clone(),
@@ -97,7 +95,7 @@ Let's add Ctrl-C handling and waiting to the server.
 # {
 #     unimplemented!()
 # }
-# 
+#
 async fn accept_loop(addr: impl ToSocketAddrs) -> Result<()> {
     let listener = TcpListener::bind(addr).await?;
 
@@ -167,7 +165,7 @@ And to the broker:
 # ) -> Result<()> {
 #     Ok(())
 # }
-# 
+#
 async fn broker_loop(mut events: Receiver<Event>) {
     let mut peers: HashMap<String, Sender<String>> = HashMap::new();
 
@@ -175,7 +173,7 @@ async fn broker_loop(mut events: Receiver<Event>) {
         let event = match events.recv().await {
             Some(event) => event,
             None => break,
-        };        
+        };
         match event {
             Event::Message { from, to, msg } => {
                 // ...
