@@ -20,11 +20,11 @@ The board has several switches to configure its behavior. The out of the box con
 
 ### Windows
 
-When the development board is connected to your pc it shows up as a removable USB flash drive (named JLINK) and also as a USB Serial Device (COM port) in the Device Manager under the Ports section.
+When the nRF52-DK is connected to your PC it shows up as a removable USB Flash Drive (named JLINK) and also as a USB Serial Device (COM port) in the Device Manager under the Ports section.
 
 ### Linux
 
-When the development board is connected to your pc it shows up as a USB device under `lsusb`. The device will have a VID of `0x1366` and a PID of `0x10??` or `0x01??` (`?` is a hex digit)  -- the `0x` prefix will be omitted in the output of `lsusb`:
+When the nRF52-DK is connected to your PC it shows up as a USB device under `lsusb`. The device will have a VID of `1366` and a PID of `10xx` or `01xx`, where `x` can vary:
 
 ```console
 $ lsusb
@@ -41,7 +41,7 @@ $ ls /dev/ttyACM*
 
 ### macOS
 
-When the development board is connected to your pc it shows up as a removable USB flash drive (named JLINK) in Finder and also a USB device named "J-Link" when executing `ioreg -p IOUSB -b -n "J-Link"`.
+When the nRF52-DK is connected to your Mac it shows up as a removable USB flash drive (named JLINK) on the Desktop, and also a USB device named "J-Link" when executing `ioreg -p IOUSB -b -n "J-Link"`.
 
 ```console
 $ ioreg -p IOUSB -b -n "J-Link"
@@ -79,7 +79,7 @@ The device shows up as a USB Serial Device (COM port) in the Device Manager unde
 
 ### Linux
 
-The device shows up as a USB device under `lsusb`. The device will have a VID of `0x1915` and a PID of `0x521f` -- the `0x` prefix will be omitted in the output of `lsusb`:
+The dongle shows up as a USB device under `lsusb`. The device will have a VID of `0x1915` and a PID of `0x521f` -- the `0x` prefix will be omitted in the output of `lsusb`:
 
 ```console
 $ lsusb

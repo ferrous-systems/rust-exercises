@@ -22,7 +22,7 @@ On Debian based distributions you can use:
 sudo apt-get install libudev-dev libusb-1.0-0-dev
 ```
 
-### Configure dongle access for non-root users
+### Configure USB Device access for non-root users
 
 Connect the dongle and check its permissions with these commands:
 
@@ -71,7 +71,7 @@ To check the permissions again, first disconnect and reconnect the dongle. Then 
     crw-rw-r--+ 1 root root 189, 16 May 20 12:11 /dev/bus/usb/001/017
     ```
 
-The `+` part in `crw-rw-r--+` indicates the device can be accessed without `root` permissions.
+The `+` part in `crw-rw-r--+` indicates the device can be accessed without `root` permissions. If you have permission to access them dongle, then the nRF52-DK should also work because both were listed in the udev rules file.
 
 ### Install base rust tooling
 
@@ -152,7 +152,7 @@ In Zadig's graphical user interface,
 
 Go to [https://rustup.rs](https://rustup.rs/) and follow the instructions.
 
-Be sure to select the optional "Desktop development with C++" part of the [C++ build tools package](https://visualstudio.microsoft.com/visual-cpp-build-tools/). The installation may take up to 5.7 GB of disk space.
+You will need a C compiler to use Rust on Windows. The rustup installer will suggest you install either Visual Studio, or the Build Tools for Visual Studio - either is fine. When that is installing, be sure to select the optional "Desktop development with C++" part of the [C++ build tools package](https://visualstudio.microsoft.com/visual-cpp-build-tools/). The installation may take up to 5.7 GB of disk space. Please also be aware of the license conditions attached to these products, especially in an enterprise environment.
 
 
 ### Install rust analyzer
