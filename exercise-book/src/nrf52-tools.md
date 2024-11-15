@@ -63,13 +63,13 @@ To access the USB devices as a non-root user, follow these steps:
 
 To check the permissions again, first disconnect and reconnect the dongle. Then run `lsusb`.
 
-    ```console
-    $ lsusb
-    Bus 001 Device 017: ID 1915:521f Nordic Semiconductor ASA 4-Port USB 2.0 Hub
+```console
+$ lsusb
+Bus 001 Device 017: ID 1915:521f Nordic Semiconductor ASA 4-Port USB 2.0 Hub
 
-    $ ls -l /dev/bus/usb/001/017
-    crw-rw-r--+ 1 root root 189, 16 May 20 12:11 /dev/bus/usb/001/017
-    ```
+$ ls -l /dev/bus/usb/001/017
+crw-rw-r--+ 1 root root 189, 16 May 20 12:11 /dev/bus/usb/001/017
+```
 
 The `+` part in `crw-rw-r--+` indicates the device can be accessed without `root` permissions. If you have permission to access them dongle, then the nRF52-DK should also work because both were listed in the udev rules file.
 
@@ -108,16 +108,10 @@ cargo install nrfdfu
 cargo install cyme
 ```
 
-Install `probe-rs` 0.24 pre-compiled binaries on Linux or macOS with:
+Install `probe-rs` 0.24 pre-compiled binaries on Linux with:
 
 ```bash
 curl --proto '=https' --tlsv1.2 -LsSf https://github.com/probe-rs/probe-rs/releases/download/v0.24.0/probe-rs-tools-installer.sh | sh
-```
-
-Install `probe-rs` 0.24 pre-compiled binaries on Windows with:
-
-```bash
-powershell -c "irm https://github.com/probe-rs/probe-rs/releases/download/v0.24.0/probe-rs-tools-installer.ps1 | iex"
 ```
 
 ## Windows
@@ -188,12 +182,6 @@ cargo install nrfdfu
 cargo install cyme
 ```
 
-Install `probe-rs` 0.24 pre-compiled binaries on Linux or macOS with:
-
-```bash
-curl --proto '=https' --tlsv1.2 -LsSf https://github.com/probe-rs/probe-rs/releases/download/v0.24.0/probe-rs-tools-installer.sh | sh
-```
-
 Install `probe-rs` 0.24 pre-compiled binaries on Windows with:
 
 ```bash
@@ -241,16 +229,10 @@ cargo install nrfdfu
 cargo install cyme
 ```
 
-Install `probe-rs` 0.24 pre-compiled binaries on Linux or macOS with:
+Install `probe-rs` 0.24 pre-compiled binaries on macOS with:
 
 ```bash
 curl --proto '=https' --tlsv1.2 -LsSf https://github.com/probe-rs/probe-rs/releases/download/v0.24.0/probe-rs-tools-installer.sh | sh
-```
-
-Install `probe-rs` 0.24 pre-compiled binaries on Windows with:
-
-```bash
-powershell -c "irm https://github.com/probe-rs/probe-rs/releases/download/v0.24.0/probe-rs-tools-installer.ps1 | iex"
 ```
 
 ---
