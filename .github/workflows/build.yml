@@ -19,8 +19,10 @@ jobs:
 
       - name: Install targets
         run: |
-          rustup target add thumbv7em-none-eabihf
-          rustup component add rust-src
+          rustup install 1.82 --profile=default
+          rustup default 1.82
+          rustup target add thumbv7em-none-eabihf --toolchain=1.82
+          rustup component add rust-src --toolchain=1.82
 
       - name: Find slug name
         run: |
