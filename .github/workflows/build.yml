@@ -23,6 +23,7 @@ jobs:
           rustup default 1.82
           rustup target add thumbv7em-none-eabihf --toolchain=1.82
           rustup component add rust-src --toolchain=1.82
+          rustup component add rustfmt
 
       - name: Find slug name
         run: |
