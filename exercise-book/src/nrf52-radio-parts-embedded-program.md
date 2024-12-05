@@ -25,4 +25,4 @@ The `#![no_main]` language attribute indicates that the program will use a custo
 
 ### `#[entry]`
 
-The `#[entry]` macro attribute marks the custom entry point of the program. The entry point must be a divergent function whose return type is the never type `!`. The function is not allowed to return; therefore the program is not allowed to terminate. The macro comes from the [cortex-m-rt crate](https://docs.rs/cortex-m-rt/0.7.3/cortex_m_rt/attr.entry.html) and is not part of the Rust language.
+The `#[entry]` macro attribute marks the custom entry point of the program. The entry point must be a divergent function whose return type is the never type `!`. The function is not allowed to return; therefore the program is not allowed to terminate. The macro comes from the [cortex-m-rt crate](https://docs.rs/cortex-m-rt/0.7.5/cortex_m_rt/attr.entry.html) and is not part of the Rust language.
