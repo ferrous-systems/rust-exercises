@@ -20,7 +20,7 @@ mod app {
     struct MySharedResources {}
 
     #[init]
-    fn init(_cx: init::Context) -> (MySharedResources, MyLocalResources, init::Monotonics) {
+    fn init(_cx: init::Context) -> (MySharedResources, MyLocalResources) {
         let board = dk::init().unwrap();
 
         // initialize the USBD peripheral
@@ -29,11 +29,7 @@ mod app {
 
         defmt::println!("USBD initialized");
 
-        (
-            MySharedResources {},
-            MyLocalResources { usbd: board.usbd },
-            init::Monotonics(),
-        )
+        (MySharedResources {}, MyLocalResources { usbd: board.usbd })
     }
 
     #[task(binds = USBD, local = [usbd])]

@@ -15,7 +15,7 @@ mod app {
     struct MySharedResources {}
 
     #[init]
-    fn init(_cx: init::Context) -> (MySharedResources, MyLocalResources, init::Monotonics) {
+    fn init(_cx: init::Context) -> (MySharedResources, MyLocalResources) {
         let board = dk::init().unwrap();
 
         // `POWER` is a peripheral, or register block
@@ -47,11 +47,7 @@ mod app {
         //                                               ^^^^^^^^^^ bitfield name
         defmt::println!("USBREGSTATUS.VBUSDETECT: {}", vbusdetect);
 
-        (
-            MySharedResources {},
-            MyLocalResources {},
-            init::Monotonics(),
-        )
+        (MySharedResources {}, MyLocalResources {})
     }
 
     #[idle]

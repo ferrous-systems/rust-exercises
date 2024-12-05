@@ -26,7 +26,7 @@ If you'd like to continue working on your workshop project, we recommend adding 
 
 We have covered only a few of the core features of the RTIC framework but the framework has many more features like *software* tasks, tasks that can be spawned by the software; message passing between tasks; and task scheduling, which allows the creation of periodic tasks. We encourage to check the [RTIC book][rtic-book] which describes the features we haven't covered here.
 
-[rtic-book]: https://rtic.rs/0.5/book/en/
+[rtic-book]: https://rtic.rs/2/book/en/
 
 ## usb-device
 

@@ -6,4 +6,4 @@ Another way to deal with interrupts is to use a framework like Real-Time Interru
 
 [concurrency]: https://rust-embedded.github.io/book/concurrency/index.html
 [RTIC]: https://crates.io/crates/cortex-m-rtic
-[book]: https://rtic.rs/1/book/en/
+[book]: https://rtic.rs/2/book/en/
