@@ -19,7 +19,7 @@ mod app {
     struct MySharedResources {}
 
     #[init]
-    fn init(_cx: init::Context) -> (MySharedResources, MyLocalResources, init::Monotonics) {
+    fn init(_cx: init::Context) -> (MySharedResources, MyLocalResources) {
         let board = dk::init().unwrap();
 
         let power = board.power;
@@ -34,7 +34,6 @@ mod app {
                 power,
                 counter: 0, // <- initialize the new resource
             },
-            init::Monotonics(),
         )
     }
 

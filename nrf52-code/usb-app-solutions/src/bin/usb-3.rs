@@ -22,7 +22,7 @@ mod app {
     struct MySharedResources {}
 
     #[init]
-    fn init(_cx: init::Context) -> (MySharedResources, MyLocalResources, init::Monotonics) {
+    fn init(_cx: init::Context) -> (MySharedResources, MyLocalResources) {
         let board = dk::init().unwrap();
 
         usbd::init(board.power, &board.usbd);
@@ -33,7 +33,6 @@ mod app {
                 usbd: board.usbd,
                 ep0in: board.ep0in,
             },
-            init::Monotonics(),
         )
     }
 

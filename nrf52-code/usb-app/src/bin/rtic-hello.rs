@@ -15,15 +15,11 @@ mod app {
     struct MySharedResources {}
 
     #[init]
-    fn init(_cx: init::Context) -> (MySharedResources, MyLocalResources, init::Monotonics) {
+    fn init(_cx: init::Context) -> (MySharedResources, MyLocalResources) {
         dk::init().unwrap();
 
         defmt::println!("Hello");
-        (
-            MySharedResources {},
-            MyLocalResources {},
-            init::Monotonics(),
-        )
+        (MySharedResources {}, MyLocalResources {})
     }
 
     #[idle]

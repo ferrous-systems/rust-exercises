@@ -18,7 +18,7 @@ mod app {
     struct MySharedResources {}
 
     #[init]
-    fn init(_cx: init::Context) -> (MySharedResources, MyLocalResources, init::Monotonics) {
+    fn init(_cx: init::Context) -> (MySharedResources, MyLocalResources) {
         let board = dk::init().unwrap();
 
         let power = board.power;
@@ -27,11 +27,7 @@ mod app {
 
         defmt::println!("USBDETECTED interrupt enabled");
 
-        (
-            MySharedResources {},
-            MyLocalResources { power },
-            init::Monotonics(),
-        )
+        (MySharedResources {}, MyLocalResources { power })
     }
 
     #[idle]
