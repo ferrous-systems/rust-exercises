@@ -6,8 +6,6 @@ use usb_app as _;
 
 #[rtic::app(device = dk, peripherals = false)]
 mod app {
-    use cortex_m::asm;
-
     #[local]
     struct MyLocalResources {}
 
@@ -25,9 +23,6 @@ mod app {
     #[idle]
     fn idle(_cx: idle::Context) -> ! {
         defmt::println!("world!");
-
-        loop {
-            asm::bkpt();
-        }
+        dk::fail();
     }
 }
