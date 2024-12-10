@@ -19,7 +19,7 @@ fn main() -> ! {
     for _ in 0..10 {
         led.toggle();
         timer.wait(Duration::from_secs(1));
-        defmt::println!("LED toggled @ {=u64:tus}", dk::uptime_us());
+        defmt::debug!("LED toggled @ {=u64:tus}", dk::uptime_us());
     }
 
     dk::exit()

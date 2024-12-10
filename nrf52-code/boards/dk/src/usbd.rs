@@ -56,7 +56,7 @@ impl Ep0In {
 
         self.busy = true;
 
-        defmt::println!("EP0IN: start {}B transfer", n);
+        defmt::debug!("EP0IN: start {}B transfer", n);
 
         // start DMA transfer
         dma_start();
@@ -80,7 +80,7 @@ impl Ep0In {
             usbd.events_ep0datadone.reset();
 
             self.busy = false;
-            defmt::println!("EP0IN: transfer done");
+            defmt::info!("EP0IN: transfer done");
         }
     }
 }
@@ -115,7 +115,7 @@ pub fn init(power: POWER, usbd: &USBD) {
     // wait until the USB cable has been connected
     while power.events_usbdetected.read().bits() == 0 {
         if once {
-            defmt::println!("waiting for USB connection on port J3");
+            defmt::info!("waiting for USB connection on port J3");
             once = false;
         }
 

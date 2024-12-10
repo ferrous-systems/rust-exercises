@@ -54,17 +54,17 @@ mod app {
     }
 
     fn on_event(usbd: &USBD, ep0in: &mut Ep0In, state: &mut State, event: Event) {
-        defmt::println!("USB: {} @ {}", event, dk::uptime());
+        defmt::debug!("USB: {} @ {=u64:tus}", event, dk::uptime_us());
 
         match event {
             // TODO change `state` as specified in chapter 9.1 USB Device States, of the USB specification
             Event::UsbReset => {
-                defmt::println!("USB reset condition detected");
+                defmt::warn!("USB reset condition detected");
                 todo!();
             }
 
             Event::UsbEp0DataDone => {
-                defmt::println!("EP0IN: transfer complete");
+                defmt::info!("EP0IN: transfer complete");
                 ep0in.end(usbd);
             }
 
@@ -85,8 +85,8 @@ mod app {
         let windex = usbd::windex(usbd);
         let wvalue = usbd::wvalue(usbd);
 
-        defmt::println!(
-            "bmrequesttype: {}, brequest: {}, wlength: {}, windex: {}, wvalue: {}",
+        defmt::debug!(
+            "SETUP: bmrequesttype: 0b{=u8:08b}, brequest: {=u8}, wlength: {=u16}, windex: 0x{=u16:04x}, wvalue: 0x{=u16:04x}",
             bmrequesttype,
             brequest,
             wlength,
@@ -96,7 +96,7 @@ mod app {
 
         let request = Request::parse(bmrequesttype, brequest, wvalue, windex, wlength)
             .expect("Error parsing request");
-        defmt::println!("EP0: {}", defmt::Debug2Format(&request));
+        defmt::info!("EP0: {}", defmt::Debug2Format(&request));
         //                        ^^^^^^^^^^^^^^^^^^^ this adapter is currently needed to log
         //                                            `StandardRequest` with `defmt`
 

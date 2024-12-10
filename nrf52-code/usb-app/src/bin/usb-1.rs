@@ -42,7 +42,7 @@ mod app {
     }
 
     fn on_event(_usbd: &USBD, event: Event) {
-        defmt::println!("USB: {} @ {}", event, dk::uptime());
+        defmt::debug!("USB: {} @ {=u64:tus}", event, dk::uptime_us());
 
         match event {
             Event::UsbReset => todo!(),
