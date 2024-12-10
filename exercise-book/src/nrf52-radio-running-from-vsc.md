@@ -79,7 +79,12 @@ Should you need to configure the `probe-rs` invocation to e.g. flash a different
 
 ```toml
 [target.thumbv7em-none-eabihf]
-runner = "probe-rs run --chip nRF52840_xxAA" # <- add/remove/modify flags here
+runner = [
+  "probe-rs",
+  "run",
+  "--chip",
+  "nRF52840_xxAA"
+]
 # ..
 ```
 
