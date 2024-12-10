@@ -49,59 +49,58 @@ NOTE: On Windows, you may get a `GET_STATUS` request *before* the `SET_CONFIGURA
 
 ## Expected output
 
-✅ Run the progam and check the log output.
+✅ Run the program and check the log output.
 
 Once you are correctly handling the `SET_CONFIGURATION` request you should get logs like these:
 
-```console
-INFO:usb_5 -- USB: UsbReset @ 397.15576ms
-INFO:usb_5 -- USB reset condition detected
-INFO:usb_5 -- USB: UsbEp0Setup @ 470.00122ms
-INFO:usb_5 -- EP0: GetDescriptor { descriptor: Device, length: 64 }
-INFO:dk::usbd -- EP0IN: start 18B transfer
-INFO:usb_5 -- USB: UsbEp0DataDone @ 470.306395ms
-INFO:usb_5 -- EP0IN: transfer complete
-INFO:dk::usbd -- EP0IN: transfer done
-INFO:usb_5 -- USB: UsbReset @ 520.721433ms
-INFO:usb_5 -- USB reset condition detected
-INFO:usb_5 -- USB: UsbEp0Setup @ 593.292235ms
-INFO:usb_5 -- EP0: SetAddress { address: Some(21) }
-INFO:usb_5 -- USB: UsbEp0Setup @ 609.954832ms
-INFO:usb_5 -- EP0: GetDescriptor { descriptor: Device, length: 18 }
-INFO:dk::usbd -- EP0IN: start 18B transfer
-INFO:usb_5 -- USB: UsbEp0DataDone @ 610.260008ms
-INFO:usb_5 -- EP0IN: transfer complete
-INFO:dk::usbd -- EP0IN: transfer done
-INFO:usb_5 -- USB: UsbEp0Setup @ 610.443113ms
-INFO:usb_5 -- EP0: GetDescriptor { descriptor: DeviceQualifier, length: 10 }
-WARN:usb_5 -- EP0IN: stalled
-INFO:usb_5 -- USB: UsbEp0Setup @ 610.809325ms
-INFO:usb_5 -- EP0: GetDescriptor { descriptor: DeviceQualifier, length: 10 }
-WARN:usb_5 -- EP0IN: stalled
-INFO:usb_5 -- USB: UsbEp0Setup @ 611.175535ms
-INFO:usb_5 -- EP0: GetDescriptor { descriptor: DeviceQualifier, length: 10 }
-WARN:usb_5 -- EP0IN: stalled
-INFO:usb_5 -- USB: UsbEp0Setup @ 611.511228ms
-INFO:usb_5 -- EP0: GetDescriptor { descriptor: Configuration { index: 0 }, length: 9 }
-INFO:dk::usbd -- EP0IN: start 9B transfer
-INFO:usb_5 -- USB: UsbEp0DataDone @ 611.846922ms
-INFO:usb_5 -- EP0IN: transfer complete
-INFO:dk::usbd -- EP0IN: transfer done
-INFO:usb_5 -- USB: UsbEp0Setup @ 612.030027ms
-INFO:usb_5 -- EP0: GetDescriptor { descriptor: Configuration { index: 0 }, length: 18 }
-INFO:dk::usbd -- EP0IN: start 18B transfer
-INFO:usb_5 -- USB: UsbEp0DataDone @ 612.365721ms
-INFO:usb_5 -- EP0IN: transfer complete
-INFO:dk::usbd -- EP0IN: transfer done
-INFO:usb_5 -- USB: UsbEp0Setup @ 612.640378ms
-INFO:usb_5 -- EP0: SetConfiguration { value: Some(42) }
-INFO:usb_5 -- entering the configured state
+```text
+[DEBUG] Initializing the board (dk dk/src/lib.rs:312)
+[DEBUG] Clocks configured (dk dk/src/lib.rs:330)
+[DEBUG] RTC started (dk dk/src/lib.rs:349)
+[DEBUG] I/O pins have been configured for digital output (dk dk/src/lib.rs:359)
+[DEBUG] USB: UsbReset @ 00:00:00.324523 (usb_5 src/bin/usb-5.rs:56)
+[WARN ] USB reset condition detected (usb_5 src/bin/usb-5.rs:60)
+[DEBUG] USB: UsbEp0Setup @ 00:00:00.367462 (usb_5 src/bin/usb-5.rs:56)
+[DEBUG] SETUP: bmrequesttype: 0b00000000, brequest: 5, wlength: 0, windex: 0x0000, wvalue: 0x000b (usb_5 src/bin/usb-5.rs:88)
+[INFO ] EP0: SetAddress { address: Some(11) } (usb_5 src/bin/usb-5.rs:99)
+[DEBUG] USB: UsbEp0Setup @ 00:00:00.370758 (usb_5 src/bin/usb-5.rs:56)
+[DEBUG] SETUP: bmrequesttype: 0b10000000, brequest: 6, wlength: 8, windex: 0x0000, wvalue: 0x0100 (usb_5 src/bin/usb-5.rs:88)
+[INFO ] EP0: GetDescriptor { descriptor: Device, length: 8 } (usb_5 src/bin/usb-5.rs:99)
+[DEBUG] EP0IN: start 8B transfer (dk dk/src/usbd.rs:59)
+[DEBUG] USB: UsbEp0DataDone @ 00:00:00.371337 (usb_5 src/bin/usb-5.rs:56)
+[INFO ] EP0IN: transfer complete (usb_5 src/bin/usb-5.rs:65)
+[INFO ] EP0IN: transfer done (dk dk/src/usbd.rs:83)
+[DEBUG] USB: UsbEp0Setup @ 00:00:00.371917 (usb_5 src/bin/usb-5.rs:56)
+[DEBUG] SETUP: bmrequesttype: 0b10000000, brequest: 6, wlength: 18, windex: 0x0000, wvalue: 0x0100 (usb_5 src/bin/usb-5.rs:88)
+[INFO ] EP0: GetDescriptor { descriptor: Device, length: 18 } (usb_5 src/bin/usb-5.rs:99)
+[DEBUG] EP0IN: start 18B transfer (dk dk/src/usbd.rs:59)
+[DEBUG] USB: UsbEp0DataDone @ 00:00:00.372497 (usb_5 src/bin/usb-5.rs:56)
+[INFO ] EP0IN: transfer complete (usb_5 src/bin/usb-5.rs:65)
+[INFO ] EP0IN: transfer done (dk dk/src/usbd.rs:83)
+[DEBUG] USB: UsbEp0Setup @ 00:00:00.373046 (usb_5 src/bin/usb-5.rs:56)
+[DEBUG] SETUP: bmrequesttype: 0b10000000, brequest: 6, wlength: 9, windex: 0x0000, wvalue: 0x0200 (usb_5 src/bin/usb-5.rs:88)
+[INFO ] EP0: GetDescriptor { descriptor: Configuration { index: 0 }, length: 9 } (usb_5 src/bin/usb-5.rs:99)
+[DEBUG] EP0IN: start 9B transfer (dk dk/src/usbd.rs:59)
+[DEBUG] USB: UsbEp0DataDone @ 00:00:00.373748 (usb_5 src/bin/usb-5.rs:56)
+[INFO ] EP0IN: transfer complete (usb_5 src/bin/usb-5.rs:65)
+[INFO ] EP0IN: transfer done (dk dk/src/usbd.rs:83)
+[DEBUG] USB: UsbEp0Setup @ 00:00:00.373901 (usb_5 src/bin/usb-5.rs:56)
+[DEBUG] SETUP: bmrequesttype: 0b10000000, brequest: 6, wlength: 18, windex: 0x0000, wvalue: 0x0200 (usb_5 src/bin/usb-5.rs:88)
+[INFO ] EP0: GetDescriptor { descriptor: Configuration { index: 0 }, length: 18 } (usb_5 src/bin/usb-5.rs:99)
+[DEBUG] EP0IN: start 18B transfer (dk dk/src/usbd.rs:59)
+[DEBUG] USB: UsbEp0DataDone @ 00:00:00.374603 (usb_5 src/bin/usb-5.rs:56)
+[INFO ] EP0IN: transfer complete (usb_5 src/bin/usb-5.rs:65)
+[INFO ] EP0IN: transfer done (dk dk/src/usbd.rs:83)
+[DEBUG] USB: UsbEp0Setup @ 00:00:00.379211 (usb_5 src/bin/usb-5.rs:56)
+[DEBUG] SETUP: bmrequesttype: 0b00000000, brequest: 9, wlength: 0, windex: 0x0000, wvalue: 0x002a (usb_5 src/bin/usb-5.rs:88)
+[INFO ] EP0: SetConfiguration { value: Some(42) } (usb_5 src/bin/usb-5.rs:99)
+[INFO ] entering the configured state (usb_5 src/bin/usb-5.rs:198)
 ```
 
 These logs are from a Linux host. You can find traces for other OSes in these files (they are in the [`nrf52-code/usb-app-solutions/traces`](../../nrf52-code/usb-app-solutions/traces) folder):
 
-- `linux-configured.txt` (same logs as the ones shown above)
+- `linux-configured.txt`
 - `win-configured.txt`, this file only contains the logs produced by running `cargo xtask usb-descriptors`
-- `macos-configured.txt`
+- `macos-configured.txt` (same logs as the ones shown above)
 
 You can find a solution to this part of the exercise in [`nrf52-code/usb-app-solutions/src/bin/usb-5.rs`](../../nrf52-code/usb-app-solutions/src/bin/usb-5.rs).

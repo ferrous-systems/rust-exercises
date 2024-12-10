@@ -53,16 +53,16 @@ mod app {
     }
 
     fn on_event(usbd: &USBD, ep0in: &mut Ep0In, state: &mut State, event: Event) {
-        defmt::println!("USB: {} @ {}", event, dk::uptime());
+        defmt::debug!("USB: {} @ {=u64:tus}", event, dk::uptime_us());
 
         match event {
             Event::UsbReset => {
-                defmt::println!("USB reset condition detected");
+                defmt::warn!("USB reset condition detected");
                 *state = State::Default;
             }
 
             Event::UsbEp0DataDone => {
-                defmt::println!("EP0IN: transfer complete");
+                defmt::info!("EP0IN: transfer complete");
                 ep0in.end(usbd);
             }
 
@@ -85,8 +85,8 @@ mod app {
         let windex = usbd::windex(usbd);
         let wvalue = usbd::wvalue(usbd);
 
-        defmt::println!(
-            "bmrequesttype: {}, brequest: {}, wlength: {}, windex: {}, wvalue: {}",
+        defmt::debug!(
+            "SETUP: bmrequesttype: 0b{=u8:08b}, brequest: {=u8}, wlength: {=u16}, windex: 0x{=u16:04x}, wvalue: 0x{=u16:04x}",
             bmrequesttype,
             brequest,
             wlength,
@@ -96,9 +96,9 @@ mod app {
 
         let request = Request::parse(bmrequesttype, brequest, wvalue, windex, wlength)
             .expect("Error parsing request");
-        defmt::println!("EP0: {}", defmt::Debug2Format(&request));
+        defmt::info!("EP0: {}", defmt::Debug2Format(&request));
         //                        ^^^^^^^^^^^^^^^^^^^ this adapter is currently needed to log
-        //                                            `StandardRequest` with `defmt`
+        //                                            `Request` with `defmt`
 
         match request {
             // section 9.4.3
@@ -195,7 +195,7 @@ mod app {
                     State::Address(address) => {
                         if let Some(value) = value {
                             if value.get() == CONFIG_VAL {
-                                defmt::println!("entering the configured state");
+                                defmt::info!("entering the configured state");
                                 *state = State::Configured { address, value };
                             } else {
                                 defmt::error!("unsupported configuration value");

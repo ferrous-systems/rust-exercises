@@ -40,7 +40,7 @@ mod app {
     }
 
     fn on_event(_usbd: &USBD, event: Event) {
-        defmt::println!("USB: {} @ {}", event, dk::uptime());
+        defmt::debug!("USB: {} @ {=u64:tus}", event, dk::uptime_us());
 
         match event {
             Event::UsbReset => {
@@ -67,8 +67,8 @@ mod app {
                 // composed of a high register (WVALUEH) and a low register (WVALUEL)
                 let wvalue: u16 = 0;
 
-                defmt::println!(
-                    "SETUP: bmrequesttype: {}, brequest: {}, wlength: {}, windex: {}, wvalue: {}",
+                defmt::debug!(
+                    "SETUP: bmrequesttype: 0b{=u8:08b}, brequest: {=u8}, wlength: {=u16}, windex: 0x{=u16:04x}, wvalue: 0x{=u16:04x}",
                     bmrequesttype,
                     brequest,
                     wlength,
@@ -85,7 +85,7 @@ mod app {
                         // TODO modify `Request::parse()` in `nrf52-code/usb-lib/src/lib.rs`
                         // so that this branch is reached
 
-                        defmt::println!("GET_DESCRIPTOR Device [length={}]", length);
+                        defmt::info!("GET_DESCRIPTOR Device [length={}]", length);
 
                         defmt::println!("Goal reached; move to the next section");
                         dk::exit()
