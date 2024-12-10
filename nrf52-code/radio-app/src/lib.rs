@@ -18,3 +18,5 @@ unsafe fn HardFault(_ef: &cortex_m_rt::ExceptionFrame) -> ! {
 fn defmt_panic() -> ! {
     dk::fail();
 }
+
+defmt::timestamp!("{=u64:tus}", dk::uptime_us());

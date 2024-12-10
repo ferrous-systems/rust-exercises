@@ -47,7 +47,7 @@ mod app {
     }
 
     fn on_event(usbd: &USBD, ep0in: &mut Ep0In, event: Event) {
-        defmt::println!("USB: {} @ {}", event, dk::uptime());
+        defmt::debug!("USB: {} @ {=u64:tus}", event, dk::uptime_us());
 
         match event {
             Event::UsbReset => {
@@ -63,8 +63,8 @@ mod app {
                 let windex = usbd::windex(usbd);
                 let wvalue = usbd::wvalue(usbd);
 
-                defmt::println!(
-                    "SETUP: bmrequesttype: {}, brequest: {}, wlength: {}, windex: {}, wvalue: {}",
+                defmt::debug!(
+                    "SETUP: bmrequesttype: 0b{=u8:08b}, brequest: {=u8}, wlength: {=u16}, windex: 0x{=u16:04x}, wvalue: 0x{=u16:04x}",
                     bmrequesttype,
                     brequest,
                     wlength,
@@ -79,7 +79,7 @@ mod app {
                     Request::GetDescriptor { descriptor, length }
                         if descriptor == Descriptor::Device =>
                     {
-                        defmt::println!("GET_DESCRIPTOR Device [length={}]", length);
+                        defmt::info!("GET_DESCRIPTOR Device [length={}]", length);
 
                         // TODO send back a valid device descriptor, truncated to `length` bytes
                         // let desc = usb2::device::Descriptor { .. };

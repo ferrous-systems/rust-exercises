@@ -1,37 +1,49 @@
-INFO:usb_4_solution -- USB: UsbReset @ 101.135252ms
-INFO:usb_4_solution -- USB reset condition detected
-INFO:usb_4_solution -- USB: UsbEp0Setup @ 166.625976ms
-INFO:usb_4_solution -- EP0: SetAddress { address: Some(20) }
-INFO:usb_4_solution -- USB: UsbEp0Setup @ 168.823241ms
-INFO:usb_4_solution -- EP0: GetDescriptor { descriptor: Device, length: 8 }
-INFO:dk::usbd -- EP0IN: start 8B transfer
-INFO:usb_4_solution -- USB: UsbEp0DataDone @ 169.0979ms
-INFO:usb_4_solution -- EP0IN: transfer complete
-INFO:dk::usbd -- EP0IN: transfer done
-INFO:usb_4_solution -- USB: UsbEp0Setup @ 169.34204ms
-INFO:usb_4_solution -- EP0: GetDescriptor { descriptor: Device, length: 18 }
-INFO:dk::usbd -- EP0IN: start 18B transfer
-INFO:usb_4_solution -- USB: UsbEp0DataDone @ 169.616697ms
-INFO:usb_4_solution -- EP0IN: transfer complete
-INFO:dk::usbd -- EP0IN: transfer done
-INFO:usb_4_solution -- USB: UsbEp0Setup @ 171.905516ms
-INFO:usb_4_solution -- EP0: GetDescriptor { descriptor: Configuration { index: 0 }, length: 9 }
-INFO:dk::usbd -- EP0IN: start 9B transfer
-INFO:usb_4_solution -- USB: UsbEp0DataDone @ 172.210691ms
-INFO:usb_4_solution -- EP0IN: transfer complete
-INFO:dk::usbd -- EP0IN: transfer done
-INFO:usb_4_solution -- USB: UsbEp0Setup @ 172.393797ms
-INFO:usb_4_solution -- EP0: GetDescriptor { descriptor: Configuration { index: 0 }, length: 18 }
-INFO:dk::usbd -- EP0IN: start 18B transfer
-INFO:usb_4_solution -- USB: UsbEp0DataDone @ 172.729491ms
-INFO:usb_4_solution -- EP0IN: transfer complete
-INFO:dk::usbd -- EP0IN: transfer done
-INFO:usb_4_solution -- USB: UsbEp0Setup @ 237.640378ms
-INFO:usb_4_solution -- EP0: SetConfiguration { value: Some(42) }
-WARN:usb_4_solution -- EP0IN: unexpected request; stalling the endpoint
-INFO:usb_4_solution -- USB: UsbEp0Setup @ 338.012695ms
-INFO:usb_4_solution -- EP0: SetConfiguration { value: Some(42) }
-WARN:usb_4_solution -- EP0IN: unexpected request; stalling the endpoint
-INFO:usb_4_solution -- USB: UsbEp0Setup @ 438.385008ms
-INFO:usb_4_solution -- EP0: SetConfiguration { value: Some(42) }
-WARN:usb_4_solution -- EP0IN: unexpected request; stalling the endpoint
+[DEBUG] Initializing the board (dk dk/src/lib.rs:312)
+[DEBUG] Clocks configured (dk dk/src/lib.rs:330)
+[DEBUG] RTC started (dk dk/src/lib.rs:349)
+[DEBUG] I/O pins have been configured for digital output (dk dk/src/lib.rs:359)
+[DEBUG] USB: UsbReset @ 00:00:00.347259 (usb_4 src/bin/usb-4.rs:56)
+[WARN ] USB reset condition detected (usb_4 src/bin/usb-4.rs:60)
+[DEBUG] USB: UsbEp0Setup @ 00:00:00.389770 (usb_4 src/bin/usb-4.rs:56)
+[DEBUG] SETUP: bmrequesttype: 0b00000000, brequest: 5, wlength: 0, windex: 0x0000, wvalue: 0x000a (usb_4 src/bin/usb-4.rs:88)
+[INFO ] EP0: SetAddress { address: Some(10) } (usb_4 src/bin/usb-4.rs:99)
+[DEBUG] USB: UsbEp0Setup @ 00:00:00.393066 (usb_4 src/bin/usb-4.rs:56)
+[DEBUG] SETUP: bmrequesttype: 0b10000000, brequest: 6, wlength: 8, windex: 0x0000, wvalue: 0x0100 (usb_4 src/bin/usb-4.rs:88)
+[INFO ] EP0: GetDescriptor { descriptor: Device, length: 8 } (usb_4 src/bin/usb-4.rs:99)
+[DEBUG] EP0IN: start 8B transfer (dk dk/src/usbd.rs:59)
+[DEBUG] USB: UsbEp0DataDone @ 00:00:00.393585 (usb_4 src/bin/usb-4.rs:56)
+[INFO ] EP0IN: transfer complete (usb_4 src/bin/usb-4.rs:65)
+[INFO ] EP0IN: transfer done (dk dk/src/usbd.rs:83)
+[DEBUG] USB: UsbEp0Setup @ 00:00:00.394409 (usb_4 src/bin/usb-4.rs:56)
+[DEBUG] SETUP: bmrequesttype: 0b10000000, brequest: 6, wlength: 18, windex: 0x0000, wvalue: 0x0100 (usb_4 src/bin/usb-4.rs:88)
+[INFO ] EP0: GetDescriptor { descriptor: Device, length: 18 } (usb_4 src/bin/usb-4.rs:99)
+[DEBUG] EP0IN: start 18B transfer (dk dk/src/usbd.rs:59)
+[DEBUG] USB: UsbEp0DataDone @ 00:00:00.394958 (usb_4 src/bin/usb-4.rs:56)
+[INFO ] EP0IN: transfer complete (usb_4 src/bin/usb-4.rs:65)
+[INFO ] EP0IN: transfer done (dk dk/src/usbd.rs:83)
+[DEBUG] USB: UsbEp0Setup @ 00:00:00.395385 (usb_4 src/bin/usb-4.rs:56)
+[DEBUG] SETUP: bmrequesttype: 0b10000000, brequest: 6, wlength: 9, windex: 0x0000, wvalue: 0x0200 (usb_4 src/bin/usb-4.rs:88)
+[INFO ] EP0: GetDescriptor { descriptor: Configuration { index: 0 }, length: 9 } (usb_4 src/bin/usb-4.rs:99)
+[DEBUG] EP0IN: start 9B transfer (dk dk/src/usbd.rs:59)
+[DEBUG] USB: UsbEp0DataDone @ 00:00:00.396057 (usb_4 src/bin/usb-4.rs:56)
+[INFO ] EP0IN: transfer complete (usb_4 src/bin/usb-4.rs:65)
+[INFO ] EP0IN: transfer done (dk dk/src/usbd.rs:83)
+[DEBUG] USB: UsbEp0Setup @ 00:00:00.396270 (usb_4 src/bin/usb-4.rs:56)
+[DEBUG] SETUP: bmrequesttype: 0b10000000, brequest: 6, wlength: 18, windex: 0x0000, wvalue: 0x0200 (usb_4 src/bin/usb-4.rs:88)
+[INFO ] EP0: GetDescriptor { descriptor: Configuration { index: 0 }, length: 18 } (usb_4 src/bin/usb-4.rs:99)
+[DEBUG] EP0IN: start 18B transfer (dk dk/src/usbd.rs:59)
+[DEBUG] USB: UsbEp0DataDone @ 00:00:00.396942 (usb_4 src/bin/usb-4.rs:56)
+[INFO ] EP0IN: transfer complete (usb_4 src/bin/usb-4.rs:65)
+[INFO ] EP0IN: transfer done (dk dk/src/usbd.rs:83)
+[DEBUG] USB: UsbEp0Setup @ 00:00:00.401824 (usb_4 src/bin/usb-4.rs:56)
+[DEBUG] SETUP: bmrequesttype: 0b00000000, brequest: 9, wlength: 0, windex: 0x0000, wvalue: 0x002a (usb_4 src/bin/usb-4.rs:88)
+[INFO ] EP0: SetConfiguration { value: Some(42) } (usb_4 src/bin/usb-4.rs:99)
+[WARN ] EP0IN: unexpected request; stalling the endpoint (usb_4 src/bin/usb-4.rs:71)
+[DEBUG] USB: UsbEp0Setup @ 00:00:00.505432 (usb_4 src/bin/usb-4.rs:56)
+[DEBUG] SETUP: bmrequesttype: 0b00000000, brequest: 9, wlength: 0, windex: 0x0000, wvalue: 0x002a (usb_4 src/bin/usb-4.rs:88)
+[INFO ] EP0: SetConfiguration { value: Some(42) } (usb_4 src/bin/usb-4.rs:99)
+[WARN ] EP0IN: unexpected request; stalling the endpoint (usb_4 src/bin/usb-4.rs:71)
+[DEBUG] USB: UsbEp0Setup @ 00:00:00.608215 (usb_4 src/bin/usb-4.rs:56)
+[DEBUG] SETUP: bmrequesttype: 0b00000000, brequest: 9, wlength: 0, windex: 0x0000, wvalue: 0x002a (usb_4 src/bin/usb-4.rs:88)
+[INFO ] EP0: SetConfiguration { value: Some(42) } (usb_4 src/bin/usb-4.rs:99)
+[WARN ] EP0IN: unexpected request; stalling the endpoint (usb_4 src/bin/usb-4.rs:71)
