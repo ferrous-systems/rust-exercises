@@ -17,7 +17,7 @@ use cortex_m_semihosting::debug;
 use embedded_hal::digital::{OutputPin, StatefulOutputPin};
 #[cfg(feature = "advanced")]
 use grounded::uninit::GroundedArrayCell;
-#[cfg(feature = "radio")]
+#[cfg(any(feature = "radio", feature = "usbd"))]
 use grounded::uninit::GroundedCell;
 #[cfg(feature = "radio")]
 pub use hal::ieee802154;
@@ -44,13 +44,17 @@ pub mod peripheral;
 #[cfg(feature = "advanced")]
 pub mod usbd;
 
-#[cfg(feature = "radio")]
+#[cfg(any(feature = "radio", feature = "usbd"))]
 struct ClockSyncWrapper<H, L, LSTAT> {
     clocks: Clocks<H, L, LSTAT>,
 }
 
-#[cfg(feature = "radio")]
+#[cfg(any(feature = "radio", feature = "usbd"))]
 unsafe impl<H, L, LSTAT> Sync for ClockSyncWrapper<H, L, LSTAT> {}
+
+/// Our USB Device
+#[cfg(feature = "usbd")]
+pub type UsbDevice = hal::usbd::Usbd<hal::usbd::UsbPeripheral<'static>>;
 
 /// Components on the board
 pub struct Board {
@@ -71,6 +75,9 @@ pub struct Board {
     /// USB control endpoint 0
     #[cfg(feature = "advanced")]
     pub ep0in: Ep0In,
+    /// A configured USB Device
+    #[cfg(feature = "usbd")]
+    pub usbd: UsbDevice,
 }
 
 /// All LEDs on the board
@@ -300,7 +307,7 @@ pub fn init() -> Result<Board, Error> {
     // NOTE: this branch runs at most once
     #[cfg(feature = "advanced")]
     static EP0IN_BUF: GroundedArrayCell<u8, 64> = GroundedArrayCell::const_init();
-    #[cfg(feature = "radio")]
+    #[cfg(any(feature = "radio", feature = "usbd"))]
     // We need the wrapper to make this type Sync, as it contains raw pointers
     static CLOCKS: GroundedCell<
         ClockSyncWrapper<
@@ -317,7 +324,7 @@ pub fn init() -> Result<Board, Error> {
     let clocks = clocks.start_lfclk();
     let _clocks = clocks.enable_ext_hfosc();
     // extend lifetime to `'static`
-    #[cfg(feature = "radio")]
+    #[cfg(any(feature = "radio", feature = "usbd"))]
     let clocks = unsafe {
         let clocks_ptr = CLOCKS.get();
         clocks_ptr.write(ClockSyncWrapper { clocks: _clocks });
@@ -370,6 +377,15 @@ pub fn init() -> Result<Board, Error> {
         radio
     };
 
+    #[cfg(feature = "usbd")]
+    {
+        defmt::debug!("Enabling SOF interrupts...");
+        periph.USBD.inten.modify(|_r, w| {
+            w.sof().set_bit();
+            w
+        });
+    }
+
     Ok(Board {
         leds: Leds {
             _1: Led { inner: led1pin },
@@ -386,6 +402,8 @@ pub fn init() -> Result<Board, Error> {
         power: periph.POWER,
         #[cfg(feature = "advanced")]
         ep0in: unsafe { Ep0In::new(&EP0IN_BUF) },
+        #[cfg(feature = "usbd")]
+        usbd: UsbDevice::new(hal::usbd::UsbPeripheral::new(periph.USBD, clocks)),
     })
 }
 
