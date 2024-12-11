@@ -9,8 +9,10 @@ version = "0.0.0"
 consts = { version = "0.1.0", path = "../consts" }
 defmt = "0.3.10"
 defmt-rtt = "0.4.1"
-dk = { version = "0.0.0", path = "../boards/dk", features = ["usbd"] }
+dk = { version = "0.0.0", path = "../boards/dk", features = ["usbd", "radio"] }
+heapless = { version = "0.8.0", features = ["defmt-03"] }
 rtic = { version = "2.1.2", features = ["thumbv7-backend"] }
 rtic-monotonics = { version = "2.0.3", features = ["cortex-m-systick"] }
 usb-device = { version = "0.3.2", features = ["defmt"] }
+usbd-hid = { version = "0.8.2", features = ["defmt"] }
 usbd-serial = "0.2.2"

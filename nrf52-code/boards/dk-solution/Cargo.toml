@@ -18,3 +18,4 @@ hal = { package = "nrf52840-hal", version = "0.18.0" }
 [features]
 advanced = []
 radio = []
+usbd = []
