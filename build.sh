@@ -72,10 +72,6 @@ pushd loopback-fw
 cargo build --target=thumbv7em-none-eabihf --release
 cargo fmt --check
 popd
-pushd loopback-fw-rtic
-cargo build --target=thumbv7em-none-eabihf --release
-cargo fmt --check
-popd
 popd
 
 # Only build the templates (they will panic at run-time due to the use of todo!)
@@ -109,6 +105,5 @@ cp -r ./.cargo "${OUTPUT_NAME}/"
 cp -r ./tools "${OUTPUT_NAME}/"
 cp ./nrf52-code/puzzle-fw/target/thumbv7em-none-eabihf/release/puzzle-fw "${OUTPUT_NAME}/nrf52-code/boards/dongle-fw/puzzle-fw"
 cp ./nrf52-code/loopback-fw/target/thumbv7em-none-eabihf/release/loopback-fw "${OUTPUT_NAME}/nrf52-code/boards/dongle-fw/loopback-fw"
-cp ./nrf52-code/loopback-fw-rtic/target/thumbv7em-none-eabihf/release/loopback-fw-rtic "${OUTPUT_NAME}/nrf52-code/boards/dongle-fw/loopback-fw-rtic"
 find "${OUTPUT_NAME}" -name target -type d -print0 | xargs -0 rm -rf
 zip -r "${OUTPUT_NAME}.zip" "${OUTPUT_NAME}"

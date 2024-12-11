@@ -33,12 +33,6 @@ use hal::{
 use defmt_rtt as _; // global logger
 
 #[cfg(feature = "advanced")]
-use crate::{
-    peripheral::{POWER, USBD},
-    usbd::Ep0In,
-};
-
-#[cfg(feature = "advanced")]
 mod errata;
 pub mod peripheral;
 #[cfg(feature = "advanced")]
@@ -67,17 +61,21 @@ pub struct Board {
     #[cfg(feature = "radio")]
     pub radio: ieee802154::Radio<'static>,
     /// USBD (Universal Serial Bus Device) peripheral
-    #[cfg(feature = "advanced")]
-    pub usbd: USBD,
+    #[cfg(any(feature = "advanced", feature = "usbd"))]
+    pub usbd: hal::pac::USBD,
     /// POWER (Power Supply) peripheral
     #[cfg(feature = "advanced")]
-    pub power: POWER,
+    pub power: hal::pac::POWER,
     /// USB control endpoint 0
     #[cfg(feature = "advanced")]
-    pub ep0in: Ep0In,
-    /// A configured USB Device
-    #[cfg(feature = "usbd")]
-    pub usbd: UsbDevice,
+    pub ep0in: usbd::Ep0In,
+    /// Represents our current clock setup
+    #[cfg(any(feature = "radio", feature = "usbd"))]
+    pub clocks: &'static Clocks<
+        clocks::ExternalOscillator,
+        clocks::ExternalOscillator,
+        clocks::LfOscStarted,
+    >,
 }
 
 /// All LEDs on the board
@@ -396,14 +394,14 @@ pub fn init() -> Result<Board, Error> {
         #[cfg(feature = "radio")]
         radio,
         timer: Timer { inner: timer },
-        #[cfg(feature = "advanced")]
+        #[cfg(any(feature = "advanced", feature = "usbd"))]
         usbd: periph.USBD,
         #[cfg(feature = "advanced")]
         power: periph.POWER,
         #[cfg(feature = "advanced")]
-        ep0in: unsafe { Ep0In::new(&EP0IN_BUF) },
-        #[cfg(feature = "usbd")]
-        usbd: UsbDevice::new(hal::usbd::UsbPeripheral::new(periph.USBD, clocks)),
+        ep0in: unsafe { usbd::Ep0In::new(&EP0IN_BUF) },
+        #[cfg(any(feature = "radio", feature = "usbd"))]
+        clocks,
     })
 }
 

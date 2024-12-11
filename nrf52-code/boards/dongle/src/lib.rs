@@ -17,8 +17,6 @@ use cortex_m_semihosting::debug;
 use embedded_hal::digital::{OutputPin, StatefulOutputPin};
 use grounded::uninit::GroundedCell;
 
-use hal::pac::interrupt;
-pub use hal::{self, ieee802154};
 use hal::{
     clocks::{self, Clocks},
     gpio::{p0, p1, Level, Output, Pin, Port, PushPull},
@@ -28,6 +26,9 @@ use hal::{
 };
 
 use defmt_rtt as _; // global logger
+
+pub use hal::pac::{interrupt, Interrupt, NVIC_PRIO_BITS, RTC0};
+pub use hal::{self, ieee802154};
 
 /// Exports PAC peripherals
 pub mod peripheral {
