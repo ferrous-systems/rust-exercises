@@ -68,6 +68,8 @@ mod app {
         msg_queue_in: heapless::spsc::Producer<'static, Message, QUEUE_LEN>,
         /// The status LEDs
         leds: dongle::Leds,
+        /// Handles the lower-level USB Device interface
+        usb_device: usb_device::device::UsbDevice<'static, dongle::UsbBus>,
     }
 
     #[derive(Debug, defmt::Format, Copy, Clone, PartialEq, Eq)]
@@ -82,8 +84,6 @@ mod app {
         usb_serial: usbd_serial::SerialPort<'static, dongle::UsbBus>,
         /// Handles the USB HID interface
         usb_hid: usbd_hid::hid_class::HIDClass<'static, dongle::UsbBus>,
-        /// Handles the lower-level USB Device interface
-        usb_device: usb_device::device::UsbDevice<'static, dongle::UsbBus>,
     }
 
     #[init(local = [
@@ -169,7 +169,6 @@ mod app {
         let shared = MySharedResources {
             usb_serial,
             usb_hid,
-            usb_device,
         };
         let local = MyLocalResources {
             radio: board.radio,
@@ -181,6 +180,7 @@ mod app {
             msg_queue_out,
             msg_queue_in,
             leds: board.leds,
+            usb_device,
         };
 
         defmt::debug!("Init Complete!");
@@ -427,15 +427,11 @@ mod app {
     ///
     /// USB Device is set to fire this whenever there's a Start of Frame from
     /// the USB Host.
-    #[task(binds = USBD, local = [msg_queue_in], shared = [usb_serial, usb_hid, usb_device])]
-    fn usb_isr(mut ctx: usb_isr::Context) {
-        let mut all = (
-            &mut ctx.shared.usb_serial,
-            &mut ctx.shared.usb_hid,
-            &mut ctx.shared.usb_device,
-        );
-        all.lock(|usb_serial, usb_hid, usb_device| {
-            if usb_device.poll(&mut [usb_serial, usb_hid]) {
+    #[task(binds = USBD, local = [msg_queue_in, usb_device], shared = [usb_serial, usb_hid])]
+    fn usb_isr(ctx: usb_isr::Context) {
+        let mut all = (ctx.shared.usb_serial, ctx.shared.usb_hid);
+        all.lock(|usb_serial, usb_hid| {
+            if ctx.local.usb_device.poll(&mut [usb_serial, usb_hid]) {
                 let mut buffer = [0u8; 64];
                 if let Ok(n) = usb_serial.read(&mut buffer) {
                     if n > 0 {
@@ -472,7 +468,7 @@ mod app {
         dict: &heapless::LinearMap<u8, u8, 128>,
     ) -> Option<Command> {
         let payload = packet.get_mut(ADDR_BYTES..)?;
-        if payload.len() == 0 {
+        if payload.is_empty() {
             Some(Command::SendSecret)
         } else if payload.len() == 1 {
             // They give us plaintext, we give them ciphertext
