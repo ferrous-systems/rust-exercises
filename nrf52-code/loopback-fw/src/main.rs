@@ -51,8 +51,10 @@ mod app {
         msg_queue_out: heapless::spsc::Consumer<'static, Message, QUEUE_LEN>,
         /// A place to write to the message queue
         msg_queue_in: heapless::spsc::Producer<'static, Message, QUEUE_LEN>,
-        /// A status LED
-        led: dongle::Led,
+        /// The status LEDs
+        leds: dongle::Leds,
+        /// Handles the lower-level USB Device interface
+        usb_device: usb_device::device::UsbDevice<'static, dongle::UsbBus>,
     }
 
     #[derive(Debug, defmt::Format, Copy, Clone, PartialEq, Eq)]
@@ -67,8 +69,6 @@ mod app {
         usb_serial: usbd_serial::SerialPort<'static, dongle::UsbBus>,
         /// Handles the USB HID interface
         usb_hid: usbd_hid::hid_class::HIDClass<'static, dongle::UsbBus>,
-        /// Handles the lower-level USB Device interface
-        usb_device: usb_device::device::UsbDevice<'static, dongle::UsbBus>,
     }
 
     #[init(local = [
@@ -154,7 +154,6 @@ mod app {
         let shared = MySharedResources {
             usb_serial,
             usb_hid,
-            usb_device,
         };
         let local = MyLocalResources {
             radio: board.radio,
@@ -165,7 +164,8 @@ mod app {
             err_count: 0,
             msg_queue_out,
             msg_queue_in,
-            led: board.leds.ld1,
+            leds: board.leds,
+            usb_device,
         };
 
         defmt::debug!("Init Complete!");
@@ -173,7 +173,7 @@ mod app {
         (shared, local)
     }
 
-    #[idle(local = [radio, current_channel, packet, timer, rx_count, err_count, msg_queue_out, led], shared = [usb_serial])]
+    #[idle(local = [radio, current_channel, packet, timer, rx_count, err_count, msg_queue_out, leds], shared = [usb_serial])]
     fn idle(mut ctx: idle::Context) -> ! {
         use core::fmt::Write as _;
         let mut writer = Writer(|b: &[u8]| {
@@ -188,6 +188,9 @@ mod app {
             dongle::deviceid0(),
             ctx.local.current_channel
         );
+
+        ctx.local.leds.ld1.on();
+        ctx.local.leds.ld2_blue.on();
 
         loop {
             while let Some(msg) = ctx.local.msg_queue_out.dequeue() {
@@ -298,13 +301,13 @@ mod app {
             }
 
             defmt::debug!("Waiting for packet..");
-            match ctx.local.radio.recv_timeout(
-                &mut ctx.local.packet,
-                &mut ctx.local.timer,
-                1_000_000,
-            ) {
+            match ctx
+                .local
+                .radio
+                .recv_timeout(ctx.local.packet, ctx.local.timer, 1_000_000)
+            {
                 Ok(crc) => {
-                    ctx.local.led.toggle();
+                    ctx.local.leds.ld1.toggle();
                     defmt::info!(
                         "Received {=u8} bytes (CRC=0x{=u16:04x}, LQI={})",
                         ctx.local.packet.len(),
@@ -344,15 +347,11 @@ mod app {
     ///
     /// USB Device is set to fire this whenever there's a Start of Frame from
     /// the USB Host.
-    #[task(binds = USBD, local = [msg_queue_in], shared = [usb_serial, usb_hid, usb_device])]
-    fn usb_isr(mut ctx: usb_isr::Context) {
-        let mut all = (
-            &mut ctx.shared.usb_serial,
-            &mut ctx.shared.usb_hid,
-            &mut ctx.shared.usb_device,
-        );
-        all.lock(|usb_serial, usb_hid, usb_device| {
-            if usb_device.poll(&mut [usb_serial, usb_hid]) {
+    #[task(binds = USBD, local = [msg_queue_in, usb_device], shared = [usb_serial, usb_hid])]
+    fn usb_isr(ctx: usb_isr::Context) {
+        let mut all = (ctx.shared.usb_serial, ctx.shared.usb_hid);
+        all.lock(|usb_serial, usb_hid| {
+            if ctx.local.usb_device.poll(&mut [usb_serial, usb_hid]) {
                 let mut buffer = [0u8; 64];
                 if let Ok(n) = usb_serial.read(&mut buffer) {
                     if n > 0 {
