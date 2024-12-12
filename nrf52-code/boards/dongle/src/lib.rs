@@ -230,51 +230,6 @@ impl core::fmt::Write for &Ringbuffer {
     }
 }
 
-/// The global type for sharing things with an interrupt handler
-pub struct GlobalIrqState<T> {
-    inner: critical_section::Mutex<core::cell::RefCell<Option<T>>>,
-}
-
-impl<T> GlobalIrqState<T> {
-    /// Create a new, empty, object
-    pub const fn new() -> GlobalIrqState<T> {
-        GlobalIrqState {
-            inner: critical_section::Mutex::new(core::cell::RefCell::new(None)),
-        }
-    }
-
-    /// Load a value into the global
-    ///
-    /// Returns the old value, if any
-    pub fn load(&self, value: T) -> Option<T> {
-        critical_section::with(|cs| self.inner.borrow(cs).replace(Some(value)))
-    }
-}
-
-/// The local type for sharing things with an interrupt handler
-pub struct LocalIrqState<T> {
-    inner: Option<T>,
-}
-
-impl<T> LocalIrqState<T> {
-    /// Create a new, empty, object
-    pub const fn new() -> LocalIrqState<T> {
-        LocalIrqState { inner: None }
-    }
-
-    /// Grab a mutable reference to the contents.
-    ///
-    /// If the value is empty, the contents are taken from a mutex-locked global
-    /// variable. That global must have been initialised before calling this
-    /// function. If not, this function panics.
-    pub fn get_or_init_with(&mut self, global: &GlobalIrqState<T>) -> &mut T {
-        let result = self.inner.get_or_insert_with(|| {
-            critical_section::with(|cs| global.inner.borrow(cs).replace(None).unwrap())
-        });
-        result
-    }
-}
-
 /// The ways that initialisation can fail
 #[derive(Debug, Copy, Clone, defmt::Format)]
 pub enum Error {
