@@ -23,7 +23,7 @@ The same principles apply to other, more complex data structures like trees, gra
 1. Create a new library project `kani-linked-list`, copy the code from below
 2. Set up Kani support for the project
 3. Add Kani proof for `remove_at` method.
-4. If Kani discovers bugs in the method generate playback tests.
+4. If Kani discovers bugs in the method, then generate playback tests.
 5. Fix bugs in the code.
 
 ### Starting code
