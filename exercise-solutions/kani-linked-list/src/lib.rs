@@ -284,7 +284,7 @@ mod proofs {
     #[cfg_attr(not(rust_analyzer), kani::unwind(20))]
     fn remove_at() {
         const TOTAL: usize = 10;
-        let items: [u32; TOTAL] = std::array::from_fn(|_| kani::any::<u32>());
+        let items: [u32; TOTAL] = kani::any();
 
         let mut list = DoublyLinkedList::from_iter(items.iter().copied());
         assert_eq!(list.len(), TOTAL);

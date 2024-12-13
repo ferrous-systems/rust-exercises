@@ -396,15 +396,15 @@ mod proofs {
 <p>
 <details>
 <summary>
-Generating a list of random elements.
+Generating a linked list of random elements.
 </summary>
 
-You can make a list by making an array first using [`from_fn`](https://doc.rust-lang.org/std/array/fn.from_fn.html) function.
+You can make a list by making an array first using `kani::any()`.
 Then you can pass the array to a [`from_iter`](https://doc.rust-lang.org/std/iter/trait.FromIterator.html#tymethod.from_iter) method.
 
 ```rust ignore
 const TOTAL: usize = 10;
-let items: [u32; TOTAL] = std::array::from_fn(|_| kani::any::<u32>());
+let items: [u32; TOTAL] = kani::any();
 
 let mut list = DoublyLinkedList::from_iter(items.iter().copied());
 assert_eq!(list.len(), TOTAL);
