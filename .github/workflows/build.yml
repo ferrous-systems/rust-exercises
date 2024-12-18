@@ -1,6 +1,8 @@
 name: Build sample material
 
 on:
+  schedule:
+    - cron: '0 0 * * Mon' # Run this job weekly, on Monday midnights
   push:
   pull_request:
 
@@ -52,3 +54,75 @@ jobs:
           artifacts: "./rust-exercises-${{ env.slug }}.zip,./rust-exercises-${{ env.slug }}/nrf52-code/boards/dongle-fw/*-fw"
           allowUpdates: true
           updateOnlyUnreleased: true
+
+  build-weekly-beta:
+    runs-on: ubuntu-20.04
+    if: needs.pr-check.outputs.number != null 
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install tools
+        uses: taiki-e/install-action@v2
+        with:
+          tool: mdslides@0.3,mdbook@0.4,mdbook-mermaid@0.12,flip-link@0.1.7
+
+      - name: Install targets
+        run: |
+          rustup target add thumbv7em-none-eabihf
+          rustup component add rust-src
+          rustup component add rustfmt
+      
+      - name: Update Beta
+        run: |
+          rustup update beta
+          rustup default beta
+
+      - name: Find slug name
+        run: |
+          slug=$(./describe.sh "${GITHUB_REF}")
+          echo "Building with slug '${slug}'"
+          echo "slug=${slug}" >> "${GITHUB_ENV}"
+
+      - name: Build and test
+        env: # Or as an environment variable
+          HIDDEN_MESSAGE: ${{ secrets.HIDDEN_MESSAGE }}
+        run: |
+          ./build.sh "./rust-exercises-${{ env.slug }}"
+
+  build-weekly-nightly:
+    runs-on: ubuntu-20.04
+    if: needs.pr-check.outputs.number != null 
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install tools
+        uses: taiki-e/install-action@v2
+        with:
+          tool: mdslides@0.3,mdbook@0.4,mdbook-mermaid@0.12,flip-link@0.1.7
+
+      - name: Install targets
+        run: |
+          rustup target add thumbv7em-none-eabihf
+          rustup component add rust-src
+          rustup component add rustfmt
+      
+      - name: Update Nightly
+        run: |
+          rustup update nightly
+          rustup default nightly
+
+      - name: Find slug name
+        run: |
+          slug=$(./describe.sh "${GITHUB_REF}")
+          echo "Building with slug '${slug}'"
+          echo "slug=${slug}" >> "${GITHUB_ENV}"
+
+      - name: Build and test
+        env: # Or as an environment variable
+          HIDDEN_MESSAGE: ${{ secrets.HIDDEN_MESSAGE }}
+        run: |
+          ./build.sh "./rust-exercises-${{ env.slug }}"
