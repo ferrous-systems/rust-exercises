@@ -33,4 +33,4 @@ This work is licensed under a [Creative Commons Attribution-ShareAlike 4.0 Inter
 
 We encourage the use of this material, under the terms of the above license, in the production and/or delivery of commercial or open-source Rust training programmes.
 
-Copyright (c) Ferrous Systems, 2024
+Copyright (c) Ferrous Systems, 2025

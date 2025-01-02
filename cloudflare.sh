@@ -3,7 +3,7 @@
 #
 # Ferrous Systems Cloudflare Deployment Script
 #
-# Copyright (c) Ferrous Systems, 2024
+# Copyright (c) Ferrous Systems, 2025
 #
 # This script will find every tag in this repo and build the material.
 
