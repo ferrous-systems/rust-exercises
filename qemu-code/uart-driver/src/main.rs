@@ -2,7 +2,7 @@
 //!
 //! Written by Jonathan Pallant at Ferrous Systems
 //!
-//! Copyright (c) Ferrous Systems, 2025
+//! Copyright (c) Ferrous Systems, 2024
 
 #![no_std]
 #![no_main]

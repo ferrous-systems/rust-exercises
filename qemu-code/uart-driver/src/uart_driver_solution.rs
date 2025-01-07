@@ -2,7 +2,7 @@
 //!
 //! Written by Jonathan Pallant at Ferrous Systems
 //!
-//! Copyright (c) Ferrous Systems, 2025
+//! Copyright (c) Ferrous Systems, 2024
 
 /// A driver for CMSDK Uart
 pub struct Uart<const ADDR: usize>();
