@@ -1,0 +1,11 @@
+//ignore everything that is not a number
+1
+2
+3
+4
+five
+6
+7
+∞
+9
+X
