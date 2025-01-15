@@ -1,4 +1,4 @@
-name: Weekly Canary
+name: Weekly Canary Build
 
 on:
     schedule:
