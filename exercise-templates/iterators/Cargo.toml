@@ -3,4 +3,8 @@ name = "iterators"
 version = "0.1.0"
 edition = "2021"
 
+[[bin]]
+name = "iter1"
+path = "src/bin/iter1.rs"
+
 [dependencies]

@@ -3,10 +3,9 @@ use std::io::BufReader;
 use std::fs::File;
 use std::error::Error;
 
-#[test]
-fn iterator_test() -> Result<(), Box<dyn Error>> {
+fn main() -> Result<(), Box<dyn Error>> {
     use crate::*;
-    let f = File::open("numbers.txt")?;
+    let f = File::open("../exercise-templates/iterators/numbers.txt")?;
     let mut reader = BufReader::new(f);
 
     // Write your iterator chain here 
