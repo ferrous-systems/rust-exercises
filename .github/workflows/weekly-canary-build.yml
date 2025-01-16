@@ -1,11 +1,14 @@
-name: Build sample material
+name: Weekly Canary Build
 
 on:
-  push:
-  pull_request:
+    schedule:
+        - cron: '0 0 * * Mon'
 
 jobs:
-  deploy:
+  weekly-canary-build:
+    strategy:
+        matrix:
+            rust-channel: [stable, beta, nightly]
     runs-on: ubuntu-20.04
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
@@ -23,6 +26,11 @@ jobs:
           rustup component add rust-src
           rustup component add rustfmt
 
+      - name: Update and set default Rust
+        run: |
+          rustup update ${{ matrix.rust-channel }}
+          rustup default ${{ matrix.rust-channel }}
+
       - name: Find slug name
         run: |
           slug=$(./describe.sh "${GITHUB_REF}")
@@ -34,21 +42,3 @@ jobs:
           HIDDEN_MESSAGE: ${{ secrets.HIDDEN_MESSAGE }}
         run: |
           ./build.sh "./rust-exercises-${{ env.slug }}"
-
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v4
-        if: ${{success()}}
-        with:
-          name: Artifacts
-          if-no-files-found: error
-          path: |
-            ./rust-exercises-*
-
-      - name: Create and Upload Release
-        if: github.event_name == 'push' && startswith(github.ref, 'refs/tags/')
-        id: create_release
-        uses: ncipollo/release-action@v1
-        with:
-          artifacts: "./rust-exercises-${{ env.slug }}.zip,./rust-exercises-${{ env.slug }}/nrf52-code/boards/dongle-fw/*-fw"
-          allowUpdates: true
-          updateOnlyUnreleased: true
