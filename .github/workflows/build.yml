@@ -15,7 +15,7 @@ jobs:
       - name: Install tools
         uses: taiki-e/install-action@v2
         with:
-          tool: mdslides@0.3,mdbook@0.4,mdbook-mermaid@0.12,flip-link@0.1.7
+          tool: mdslides@0.3,mdbook@0.4,mdbook-mermaid@0.12,flip-link@0.1.10
 
       - name: Install targets
         run: |
