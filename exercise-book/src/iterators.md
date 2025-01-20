@@ -136,9 +136,15 @@ let z = x.iter().zip(y.iter())
 
 where the `.map(|(a, b)| a + b)` is iterating over `[(10, 1), (20, 2), (30, 3)]` and calling the left argument `a` and the right argument `b`, in each iteration.
 
+## Iterator chains workflow advice
+
+Start every iterator call on a new line, so that you can see closure arguments and type hints for the iterator at the end of the line clearly.
+
+When in doubt, write `.map(|x| x)` first to see what item types you get and decide on what iterator methods to use and what to do inside a closure based on that.
+
 ## Step-by-Step-Solution
 
-⚠️ NOTICE! ⚠️
+⚠️  NOTICE! ⚠️
 
 When starting out with iterators, it's very easy to be "led astray" by doing what is locally useful as suggested by the compiler.
 
@@ -149,8 +155,6 @@ A second more idiomatic solution will emerge in `Step 6` once we learn a few key
 You, unfortunately, relive similar experiences when learning Rust without knowing the right tools from the standard library to handle errors elegantly.
 
 🧘 END OF NOTICE 🧘
-
-We highly recommend that you consider turning off `inlay hints` in your `rust-analyzer` settings to `offUnlessPressed`, as they can get very noisy very quickly. You can do this by searching for `inlay hints` and choosing the right option in `Settings > Editor > Inlay Hints > Enabled`.
 
 In general, we also recommend using the Rust documentation to get unstuck. In particular, look for the examples in the [Iterator](https://doc.rust-lang.org/stable/std/iter/trait.Iterator.html) page of the standard library for this exercise.
 
