@@ -18,6 +18,7 @@ For completing this exercise you need to have
 
 ## Task
 
+
 - Calculate the sum of all odd numbers in the following string using an iterator chain
 
 ```text
@@ -34,7 +35,9 @@ five
 X
 ```
 
-- Drop this snippet into your `src/main.rs` after you `cargo new iterators`.
+- Do `cargo new iterators`
+- Place the above multi-line string into `iterators/numbers.txt`.
+- Drop this snippet into your `src/main.rs`:
 
 ```rust
 #![allow(unused_imports)]
@@ -47,7 +50,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let f = File::open("../exercise-templates/iterators/numbers.txt")?;
     let reader = BufReader::new(f);
 
-    // Write your iterator chain here 
+    // Write your iterator chain here
     let sum_of_odd_numbers: i32 = todo!("use reader.lines() and Iterator methods");
 
     assert_eq!(sum_of_odd_numbers, 31);
@@ -56,7 +59,6 @@ fn main() -> Result<(), Box<dyn Error>> {
 
 ```
 
-- Place the above multi-line string into `iterators/numbers.txt`.
 - Replace the first `todo!` item with [reader.lines()](https://doc.rust-lang.org/stable/std/io/trait.BufRead.html#method.lines) and continue "chaining" the iterators until you've calculated the desired result.
 - Run the code with `cargo run --bin iterators1` when inside the `exercise-templates` directory if you want a starting template.
 
@@ -100,6 +102,12 @@ The first point is not in vain - the original snippet has a bug in the upper bou
 
 Think of iterators as lazy functions - they only carry out computation when a *consuming adapter* like `.collect()` is called, not the `.map()` itself.
 
+### Iterator chains workflow advice
+
+Start every iterator call on a new line, so that you can see closure arguments and type hints for the iterator at the end of the line clearly.
+
+When in doubt, write `.map(|x| x)` first to see what item types you get and decide on what iterator methods to use and what to do inside a closure based on that.
+
 ### Turbo fish syntax `::<>`
 
 Iterators sometimes struggle to figure out the types of all intermediate steps and need assistance.
@@ -115,6 +123,37 @@ let numbers: Vec<_> = ["1", "2", "3"]
 ```
 
 This `::<SomeType>` syntax is called the [turbo fish operator](https://doc.rust-lang.org/book/appendix-02-operators.html?highlight=turbo%20fish#non-operator-symbols), and it disambiguates calling the same method with different output types, like `.parse::<i32>()` and `.parse::<f64>()` (try it!)
+
+### Dealing with `.unwrap()`s in iterator chains
+
+When starting out with iterators, it's very easy to be "led astray" by locally useful `.unwrap()`s as suggested by the compiler.
+
+It's easy to get a slogging first solution with a lot of `Option` and `Result` wrapping and unwrapping that other languages wouldn't make explicit.
+
+Concretely, the following snippet:
+
+```rust
+
+    let numeric_lines = reader.lines()
+      .map(|l| l.unwrap())
+      .map(|s| s.parse::<i32>())
+      .filter(|s| s.is_ok())
+    //...
+
+```
+
+can be replaced with a judicious use of [.filter_map()](https://doc.rust-lang.org/stable/std/iter/trait.Iterator.html#method.filter_map):
+
+```rust
+let numeric_lines = reader.lines()
+  .filter_map(|line| line.ok())
+  .filter_map(|s| s.parse().ok())
+  //...
+```
+
+You will relive similar experiences when learning Rust without knowing the right tools from the standard library that let you convert `Result` into what you actually need.
+
+We make a special emphasis on avoiding "`.unwrap()` now, refactor later" because later usually never comes.
 
 ### Dereferences
 
@@ -136,25 +175,7 @@ let z = x.iter().zip(y.iter())
 
 where the `.map(|(a, b)| a + b)` is iterating over `[(10, 1), (20, 2), (30, 3)]` and calling the left argument `a` and the right argument `b`, in each iteration.
 
-## Iterator chains workflow advice
-
-Start every iterator call on a new line, so that you can see closure arguments and type hints for the iterator at the end of the line clearly.
-
-When in doubt, write `.map(|x| x)` first to see what item types you get and decide on what iterator methods to use and what to do inside a closure based on that.
-
 ## Step-by-Step-Solution
-
-⚠️  NOTICE! ⚠️
-
-When starting out with iterators, it's very easy to be "led astray" by doing what is locally useful as suggested by the compiler.
-
-Concretely, our first solution will feel like a slog because we'll deal with a lot of `Option` and `Result` wrapping and unwrapping that other languages wouldn't make explicit.
-
-A second more idiomatic solution will emerge in `Step 6` once we learn a few key idioms from the standard library.
-
-You, unfortunately, relive similar experiences when learning Rust without knowing the right tools from the standard library to handle errors elegantly.
-
-🧘 END OF NOTICE 🧘
 
 In general, we also recommend using the Rust documentation to get unstuck. In particular, look for the examples in the [Iterator](https://doc.rust-lang.org/stable/std/iter/trait.Iterator.html) page of the standard library for this exercise.
 
@@ -162,7 +183,7 @@ If you ever feel completely stuck or that you haven’t understood something, pl
 
 ### Step 1: New Project
 
-Create a new binary Cargo project, check the build and see if it runs.
+Create a new binary Cargo project and run it.
 
 Alternatively, use the [exercise-templates/iterators](../../exercise-templates/iterators/) template to get started.
 <details>
@@ -170,13 +191,30 @@ Alternatively, use the [exercise-templates/iterators](../../exercise-templates/i
 
 ```shell
 cargo new iterators
-cd iterators 
+cd iterators
 cargo run
 
 # if in exercise-book/exercise-templates/iterators
 cargo run --bin iterators1
 ```
 
+Place the string
+
+```text
+//ignore everything that is not a number
+1
+2
+3
+4
+five
+6
+7
+∞
+9
+X
+```
+
+and place it in `iterators/numbers.txt`.
 </details>
 
 ### Step 2: Read the string data
@@ -187,6 +225,8 @@ Collect it into a string with `.collect::<String>()` and print it to verify you'
 
 <details>
   <summary>Solution</summary>
+
+We'll get rid of the `.unwrap()` in the next section.
 
 ```rust
 #![allow(unused_imports)]
@@ -200,8 +240,9 @@ fn main() -> Result<(), Box<dyn Error>> {
     let reader = BufReader::new(f);
 
     let file_lines = reader.lines()
-      .map(|l| l.unwrap())
-      .collect::<String>();
+        .map(|l| l.unwrap())
+        .collect::<String>();
+
     println!("{:?}", file_lines);
 
     Ok(())
@@ -210,7 +251,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
 </details>
 
-### Step 3: Filter for the numeric strings
+### Step 3: Skip the non-numeric lines
 
 We'll collect into a `Vec<String>`s with [.parse()](https://doc.rust-lang.org/stable/std/primitive.str.html#method.parse) to show this intermediate step.
 
@@ -218,6 +259,8 @@ Note that you may or may not need type annotations on `.parse()` depending on if
 
 <details>
   <summary>Solution</summary>
+
+If the use of `filter_map` here is unfamiliar, go back and reread the ``Dealing with .unwrap()s in iterator chains`` section.
 
 ```rust
 #![allow(unused_imports)]
@@ -231,11 +274,10 @@ fn main() -> Result<(), Box<dyn Error>> {
     let reader = BufReader::new(f);
 
     let numeric_lines = reader.lines()
-      .map(|l| l.unwrap())
-      .map(|s| s.parse::<i32>())
-      .filter(|s| s.is_ok())
-      .map(|l| l.unwrap().to_string())
-      .collect::<Vec<String>>();
+        .filter_map(|line| line.ok())
+        .filter_map(|line| line.parse::<i32>().ok())
+        .map(|stringy_num| stringy_num.to_string())
+        .collect::<Vec<String>>();
     println!("{:?}", numeric_lines);
 
     Ok(())
@@ -263,12 +305,11 @@ fn main() -> Result<(), Box<dyn Error>> {
     let reader = BufReader::new(f);
 
     let odd_numbers = reader.lines()
-      .map(|l| l.unwrap())
-      .map(|s| s.parse())
-      .filter(|s| s.is_ok())
-      .map(|l| l.unwrap())
-      .filter(|num| num % 2 != 0)
-      .collect::<Vec<i32>>();
+        .filter_map(|line| line.ok())
+        .filter_map(|line| line.parse::<i32>().ok())
+        .map(|stringy_num| stringy_num.to_string())
+        .filter(|num| num % 2 != 0)
+        .collect::<Vec<i32>>();
 
     println!("{:?}", odd_numbers);
 
@@ -299,50 +340,15 @@ fn main() -> Result<(), Box<dyn Error>> {
     let reader = BufReader::new(f);
 
     let result = reader.lines()
-      .map(|l| l.unwrap())
-      .map(|s| s.parse())
-      .filter(|s| s.is_ok())
-      .map(|l| l.unwrap())
-      .filter(|num| num % 2 != 0)
-      .collect::<Vec<i32>>()
-      .iter()
-      .fold(0, |acc, elem| acc + elem);
-    // Also works
-    //.sum::<i32>();
-
-    println!("{:?}", result);
-
-    Ok(())
-}
-```
-
-</details>
-
-### Step 6: Idiomatic Rust
-
-That first solution can be a *slog*. 
-
-Try writing a shorter solution using a [.filter_map()](https://doc.rust-lang.org/stable/std/iter/trait.Iterator.html#method.filter_map).
-
-<details>
-  <summary>Solution</summary>
-
-```rust
-#![allow(unused_imports)]
-use std::io::{BufRead, BufReader};
-use std::fs::File;
-use std::error::Error;
-
-fn main() -> Result<(), Box<dyn Error>> {
-    use crate::*;
-    let f = File::open("../exercise-templates/iterators/numbers.txt")?;
-    let reader = BufReader::new(f);
-
-    let result = reader.lines()
-      .map(|l| l.unwrap())
-      .filter_map(|s| s.parse().ok())
-      .filter(|num| num % 2 != 0)
-      .sum::<i32>();
+        .filter_map(|line| line.ok())
+        .filter_map(|line| line.parse::<i32>().ok())
+        .map(|stringy_num| stringy_num.to_string())
+        .filter(|num| num % 2 != 0)
+        .collect::<Vec<i32>>()
+        .iter()
+        .fold(0, |acc, elem| acc + elem);
+        // Also works
+        //.sum::<i32>();
 
     println!("{:?}", result);
 
