@@ -19,7 +19,7 @@ For completing this exercise you need to have
 
 ## Task
 
-- Add the odd numbers in the following string using an iterator chain
+- Calculate the sum of all odd numbers in the following string using an iterator chain
 
 ```text
 //ignore everything that is not a number
