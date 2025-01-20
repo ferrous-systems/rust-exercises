@@ -65,7 +65,9 @@ If you need it, we have provided a [complete solution](../../exercise-solutions/
 
 ### Iterators and iterator chains
 
-Iterators are a way to write for loops in a functional style. The main idea is to take away the error prone indexing and control flow by giving them a name that you and others can understand and compose safely.
+Iterators are a way to chain function calls instead of writing elaborate for loops.
+
+This lets us have a type safe way of composing control flow together by calling the right functions.
 
 For example, to double every number given by a vector, you could write a for loop:
 
@@ -78,7 +80,7 @@ for idx in 0..=v.len() {
 }
 ```
 
-In this case, the name we give to the procedure `2 * v[idx]` and juggling the index over the entire collection is a [map](https://doc.rust-lang.org/stable/std/iter/trait.Iterator.html#method.map). An idiomatic Rustacean would write something similar to the following (period indented) code.
+In this case, the idea of the procedure `2 * v[idx]` and indexing over the entire collection is called a [map](https://doc.rust-lang.org/stable/std/iter/trait.Iterator.html#method.map). An idiomatic Rustacean would write something similar to the following (period indented) code:
 
 ```rust
 let v = [10, 20, 30];
@@ -95,7 +97,7 @@ No win for brevity, but it has several benefits:
 
 The first point is not in vain - the original snippet has a bug in the upper bound, since `0..=v.len()` is inclusive!
 
-Think of iterators as lazy functions - they only carry out computation when called with a `.collect()` or similar, not the `.map()` itself.
+Think of iterators as lazy functions - they only carry out computation when a *consuming adapter* like `.collect()` is called, not the `.map()` itself.
 
 ### Turbo fish syntax `::<>`
 
