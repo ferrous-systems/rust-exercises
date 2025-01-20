@@ -4,10 +4,9 @@ In this exercise, you will learn to manipulate and chain iterators. Iterators ar
 
 ## After completing this exercise you are able to
 
-- write a Rust iterator
+- chain Rust iterator adapters
 - use closures in iterator chains
 - collect a result to different containers
-- turn off rust-analyzer inlay hints
 
 ## Prerequisites
 
