@@ -103,15 +103,17 @@ Think of iterators as lazy functions - they only carry out computation when a *c
 
 Iterators sometimes struggle to figure out the types of all intermediate steps and need assistance.
 
-We can write
-
 ```rust
-let xs = v.iter()
-          .map(|elem| elem * 2)
-          .collect::<Vec<i32>>();
+let numbers: Vec<_> = ["1", "2", "3"]
+    .iter()
+    .map(|s| s.parse::<i32>().unwrap())
+    // a turbofish in the `parse` call above
+    // helps a compiler determine the type of `n` below
+    .map(|n| n + 1)
+    .collect();
 ```
 
-instead to avoid having a `xs: Vec<_> = ...`. This `::<SomeType>` syntax is called the [turbo fish operator](https://doc.rust-lang.org/book/appendix-02-operators.html?highlight=turbo%20fish#non-operator-symbols), and it disambiguates calling the same method with different output types, like `.collect::<HashSet<i32>>()` and `.collect::<Vec<i32>>()` (try it!)
+This `::<SomeType>` syntax is called the [turbo fish operator](https://doc.rust-lang.org/book/appendix-02-operators.html?highlight=turbo%20fish#non-operator-symbols), and it disambiguates calling the same method with different output types, like `.parse::<i32>()` and `.parse::<f64>()` (try it!)
 
 ### Dereferences
 
