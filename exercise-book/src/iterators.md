@@ -34,7 +34,7 @@ five
 X
 ```
 
-- Take the template in [exercise-templates/iterators](../../exercise-templates/iterators/) as a starting point, or use this snippet to get you started:
+- Drop this snippet into your `src/main.rs` after you `cargo new iterators`.
 
 ```rust
 #![allow(unused_imports)]
@@ -56,8 +56,9 @@ fn main() -> Result<(), Box<dyn Error>> {
 
 ```
 
-- Replace the first `todo!` item with [reader.lines()]() and continue "chaining" the iterators until you've calculated the desired result.
-- Run the code with `cargo run --bin iterators1` when inside the `exercise-templates` directory
+- Place the above multi-line string into `iterators/numbers.txt`.
+- Replace the first `todo!` item with [reader.lines()](https://doc.rust-lang.org/stable/std/io/trait.BufRead.html#method.lines) and continue "chaining" the iterators until you've calculated the desired result.
+- Run the code with `cargo run --bin iterators1` when inside the `exercise-templates` directory if you want a starting template.
 
 If you need it, we have provided a [complete solution](../../exercise-solutions/iterators/src/bin/iterators1.rs) for this exercise.
 
