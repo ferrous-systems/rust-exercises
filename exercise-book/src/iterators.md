@@ -240,7 +240,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let reader = BufReader::new(f);
 
     let file_lines = reader.lines()
-        .map(|l| l.unwrap())
+        .filter_map(|line| line.ok())
         .collect::<String>();
 
     println!("{:?}", file_lines);
