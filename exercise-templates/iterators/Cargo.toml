@@ -1,0 +1,10 @@
+[package]
+name = "iterators"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "iterators1"
+path = "src/bin/iterators1.rs"
+
+[dependencies]

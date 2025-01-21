@@ -5,4 +5,5 @@ members = [
   "rustlatin/*",
   "tcp-echo-server",
   "async-chat/*",
+  "iterators",
 ]
