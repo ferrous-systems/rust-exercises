@@ -39,7 +39,7 @@ X
 - Place the above multi-line string into `iterators/numbers.txt`.
 - Drop this snippet into your `src/main.rs`:
 
-```rust
+```rust [], ignore
 #![allow(unused_imports)]
 use std::io::BufReader;
 use std::fs::File;
@@ -74,7 +74,7 @@ This lets us have a type safe way of composing control flow together by calling 
 
 For example, to double every number given by a vector, you could write a for loop:
 
-```rust
+```rust [], ignore
 let v = [10, 20, 30];
 let mut xs = [0, 0, 0];
 
@@ -85,7 +85,7 @@ for idx in 0..=v.len() {
 
 In this case, the idea of the procedure `2 * v[idx]` and indexing over the entire collection is called a [map](https://doc.rust-lang.org/stable/std/iter/trait.Iterator.html#method.map). An idiomatic Rustacean would write something similar to the following (period indented) code:
 
-```rust
+```rust [], ignore
 let v = [10, 20, 30];
 let xs: Vec<_> = v.iter()
                   .map(|elem| elem * 2)
@@ -112,7 +112,7 @@ When in doubt, write `.map(|x| x)` first to see what item types you get and deci
 
 Iterators sometimes struggle to figure out the types of all intermediate steps and need assistance.
 
-```rust
+```rust [], ignore
 let numbers: Vec<_> = ["1", "2", "3"]
     .iter()
     .map(|s| s.parse::<i32>().unwrap())
@@ -166,7 +166,7 @@ Remember you can select and hover over each expression and rust-analyzer will di
 
 Not all iterator chains operate on a single iterable at a time. This may mean joining several iterators and processing them together by destructuring a tuple when declaring the closure:
 
-```rust
+```rust [], ignore
 let x = [10, 20, 30];
 let y = [1, 2, 3];
 let z = x.iter().zip(y.iter())
@@ -229,7 +229,7 @@ Collect it into a string with `.collect::<String>()` and print it to verify you'
 
 We'll get rid of the `.unwrap()` in the next section.
 
-```rust
+```rust [], ignore
 #![allow(unused_imports)]
 use std::io::{BufRead, BufReader};
 use std::fs::File;
@@ -263,7 +263,7 @@ Note that you may or may not need type annotations on `.parse()` depending on if
 
 If the use of `filter_map` here is unfamiliar, go back and reread the ``Dealing with .unwrap()s in iterator chains`` section.
 
-```rust
+```rust [], ignore
 #![allow(unused_imports)]
 use std::io::{BufRead, BufReader};
 use std::fs::File;
@@ -293,7 +293,7 @@ Use a [.filter()](https://doc.rust-lang.org/stable/std/iter/trait.Iterator.html#
 <details>
   <summary>Solution</summary>
 
-```rust
+```rust [], ignore
 #![allow(unused_imports)]
 use std::io::{BufRead, BufReader};
 use std::fs::File;
@@ -327,7 +327,7 @@ You will probably reach for a `.sum::<i32>()`, but `.fold()`s are common enough 
 <details>
   <summary>Solution</summary>
 
-```rust
+```rust [], ignore
 #![allow(unused_imports)]
 use std::io::{BufRead, BufReader};
 use std::fs::File;
