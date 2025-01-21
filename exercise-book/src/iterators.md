@@ -126,29 +126,30 @@ This `::<SomeType>` syntax is called the [turbo fish operator](https://doc.rust-
 
 ### Dealing with `.unwrap()`s in iterator chains
 
-When starting out with iterators, it's very easy to be "led astray" by locally useful `.unwrap()`s as suggested by the compiler.
+Intermediate steps in iterator chains often produce `Result` or `Option`.
 
-It's easy to get a slogging first solution with a lot of `Option` and `Result` wrapping and unwrapping that other languages wouldn't make explicit.
+You may be compelled to use `unwrap / expect` to get the inner values
+
+However, there are usually better ways that don't require a potentially panicking method.
 
 Concretely, the following snippet:
 
-```rust
-
-    let numeric_lines = reader.lines()
-      .map(|l| l.unwrap())
-      .map(|s| s.parse::<i32>())
-      .filter(|s| s.is_ok())
-    //...
-
+```rust [], ignore
+    let numbers: Vec<_> = ["1", "2", "3"]
+        .iter()
+        .map(|s| s.parse::<i32>())
+        .filter(|r| r.is_ok())
+        .map(|r| r.expect("all `Result`s are Ok here"))
+        .collect();
 ```
 
 can be replaced with a judicious use of [.filter_map()](https://doc.rust-lang.org/stable/std/iter/trait.Iterator.html#method.filter_map):
 
-```rust
-let numeric_lines = reader.lines()
-  .filter_map(|line| line.ok())
-  .filter_map(|s| s.parse().ok())
-  //...
+```rust [], ignore
+    let numbers: Vec<_> = ["1", "2", "3"]
+        .iter()
+        .filter_map(|s| s.parse::<i32>().ok())
+        .collect();
 ```
 
 You will relive similar experiences when learning Rust without knowing the right tools from the standard library that let you convert `Result` into what you actually need.
