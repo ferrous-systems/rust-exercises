@@ -307,7 +307,6 @@ fn main() -> Result<(), Box<dyn Error>> {
     let odd_numbers = reader.lines()
         .filter_map(|line| line.ok())
         .filter_map(|line| line.parse::<i32>().ok())
-        .map(|stringy_num| stringy_num.to_string())
         .filter(|num| num % 2 != 0)
         .collect::<Vec<i32>>();
 
