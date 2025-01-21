@@ -274,11 +274,10 @@ fn main() -> Result<(), Box<dyn Error>> {
     let f = File::open("../exercise-templates/iterators/numbers.txt")?;
     let reader = BufReader::new(f);
 
-    let numeric_lines = reader.lines()
+    let numeric_lines: Vec<i32> = reader.lines()
         .filter_map(|line| line.ok())
         .filter_map(|line| line.parse::<i32>().ok())
-        .map(|stringy_num| stringy_num.to_string())
-        .collect::<Vec<String>>();
+        .collect::<Vec<i32>>();
     println!("{:?}", numeric_lines);
 
     Ok(())
@@ -321,7 +320,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
 ### Step 5: Add the odd numbers
 
-Take the odd numbers, `.collect()` into a vector, and add them using a [.fold()](https://doc.rust-lang.org/stable/std/iter/trait.Iterator.html#method.fold).
+Take the odd numbers, and add them using a [.fold()](https://doc.rust-lang.org/stable/std/iter/trait.Iterator.html#method.fold).
 
 You will probably reach for a `.sum::<i32>()`, but `.fold()`s are common enough in idiomatic Rust that we wanted to showcase one here.
 
@@ -342,10 +341,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let result = reader.lines()
         .filter_map(|line| line.ok())
         .filter_map(|line| line.parse::<i32>().ok())
-        .map(|stringy_num| stringy_num.to_string())
         .filter(|num| num % 2 != 0)
-        .collect::<Vec<i32>>()
-        .iter()
         .fold(0, |acc, elem| acc + elem);
         // Also works
         //.sum::<i32>();
