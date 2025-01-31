@@ -13,4 +13,5 @@ members = [
   "async-chat",
   "kani-linked-list",
   "iterators",
+  "calculator/*",
 ]
