@@ -1,12 +1,11 @@
-#![allow(unused_imports)]
-use std::io::{BufRead, BufReader};
-use std::fs::File;
 use std::error::Error;
+use std::fs::File;
+use std::io::{BufRead, BufReader};
 
 fn main() -> Result<(), Box<dyn Error>> {
-    // Idiomatic solution
     let second_reader = BufReader::new(File::open("../exercise-solutions/iterators/numbers.txt")?);
-    let nicer_sum: i32 = second_reader.lines()
+    let nicer_sum: i32 = second_reader
+        .lines()
         .filter_map(|line| line.ok())
         .filter_map(|s| s.parse().ok())
         .filter(|num| num % 2 != 0)
