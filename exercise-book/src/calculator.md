@@ -129,6 +129,12 @@ You can rewrite bits of it as you see fit.
 For example, the assertion in the `parse` function can go in a way of your tests.
 Feel free to comment it out, or better yet refactor the bit at the end to get rid of it and the `unwrap` call.
 
+### Stretch goals
+
+* Handle overflow and underflow errors in `eval` function ([`checked_add`](https://doc.rust-lang.org/std/primitive.i64.html#method.checked_add) and similar methods can be very useful here).
+* Add support for unary minus `-` operator.
+* *Hard:* change `parse` function to support infix notation, operator precedence, and parentheses.
+
 ## Help
 
 ### Recursive data structures in Rust
