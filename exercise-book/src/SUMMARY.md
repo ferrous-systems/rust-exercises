@@ -10,6 +10,7 @@
 - [Fizzbuzz with match](./fizzbuzz-match.md)
 - [Rust Latin](./rustlatin.md)
 - [URLs, match, result](./urls-match-result.md)
+- [Calculator](./calculator.md)
 - [Iterators](./iterators.md)
 - [SimpleDB](./simple-db.md)
   - [Knowledge](./simple-db-knowledge.md)
