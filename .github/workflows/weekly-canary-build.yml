@@ -20,12 +20,9 @@ jobs:
         with:
           tool: mdslides@0.3,mdbook@0.4,mdbook-mermaid@0.12,flip-link@0.1.10
 
-      - name: Install targets
+      - name: Install targets, update, set default Rust
         run: |
           rustup target add thumbv7em-none-eabihf
-
-      - name: Update and set default Rust
-        run: |
           rustup update ${{ matrix.rust-channel }}
           rustup default ${{ matrix.rust-channel }}
           rustup component add rust-src
