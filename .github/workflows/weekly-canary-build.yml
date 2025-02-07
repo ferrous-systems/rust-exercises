@@ -22,11 +22,11 @@ jobs:
 
       - name: Install targets, update, set default Rust
         run: |
-          rustup target add thumbv7em-none-eabihf
           rustup update ${{ matrix.rust-channel }}
           rustup default ${{ matrix.rust-channel }}
           rustup component add rust-src
           rustup component add rustfmt
+          rustup target add thumbv7em-none-eabihf
 
       - name: Find slug name
         run: |
