@@ -6,15 +6,15 @@ OUTPUT_NAME=${1:-./output}
 
 # Build and test the solutions
 pushd exercise-solutions
-cargo test --frozen
-cargo test --examples
+cargo test --locked
+cargo test --examples --locked
 cargo fmt --check
 pushd connected-mailbox
-cargo test --frozen
+cargo test --locked
 cargo fmt --check
 popd
 pushd multi-threaded-mailbox
-cargo test --frozen
+cargo test --locked
 cargo fmt --check
 popd
 popd
@@ -69,7 +69,7 @@ cargo build --target=thumbv7em-none-eabihf --release
 cargo fmt --check
 popd
 pushd loopback-fw
-cargo build --target=thumbv7em-none-eabihf --release
+cargo build --target=thumbv7em-none-eabihf --release --locked
 cargo fmt --check
 popd
 popd
