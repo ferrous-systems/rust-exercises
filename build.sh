@@ -6,35 +6,35 @@ OUTPUT_NAME=${1:-./output}
 
 # Build and test the solutions
 pushd exercise-solutions
-cargo test
+cargo test --frozen
 cargo test --examples
 cargo fmt --check
 pushd connected-mailbox
-cargo test
+cargo test --frozen
 cargo fmt --check
 popd
 pushd multi-threaded-mailbox
-cargo test
+cargo test --frozen
 cargo fmt --check
 popd
 popd
 pushd qemu-code
 pushd uart-driver
 # Build from source because armv8r-none-eabihf isn't Tier 2
-RUSTC_BOOTSTRAP=1 cargo build -Zbuild-std=core
+RUSTC_BOOTSTRAP=1 cargo build -Zbuild-std=core --frozen
 popd
 popd
 pushd nrf52-code
 pushd boards/dk
-cargo build --target=thumbv7em-none-eabihf
+cargo build --target=thumbv7em-none-eabihf --release
 cargo fmt --check
 popd
 pushd boards/dk-solution
-cargo build --target=thumbv7em-none-eabihf
+cargo build --target=thumbv7em-none-eabihf --release
 cargo fmt --check
 popd
 pushd boards/dongle
-cargo build --target=thumbv7em-none-eabihf
+cargo build --target=thumbv7em-none-eabihf --release
 cargo fmt --check
 popd
 pushd radio-app
@@ -45,7 +45,7 @@ for i in usb-lib-solutions/*; do
     pushd $i
     cargo build --target=thumbv7em-none-eabihf --release
     cargo fmt --check
-    cargo test
+    cargo test --locked
     popd
 done
 pushd usb-lib 
@@ -61,7 +61,7 @@ cargo build --target=thumbv7em-none-eabihf --release
 cargo fmt --check
 popd
 pushd consts
-cargo build
+cargo build --frozen
 cargo fmt --check
 popd
 pushd puzzle-fw
@@ -74,9 +74,9 @@ cargo fmt --check
 popd
 popd
 
-# Only build the templates (they will panic at run-time due to the use of todo!)
+# Only check the templates (they will panic at run-time due to the use of todo!)
 pushd exercise-templates
-cargo build
+cargo check --frozen
 cargo fmt --check
 popd
 
