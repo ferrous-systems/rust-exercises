@@ -69,7 +69,7 @@ cargo build --target=thumbv7em-none-eabihf --release
 cargo fmt --check
 popd
 pushd loopback-fw
-cargo build --target=thumbv7em-none-eabihf --release --locked
+cargo build --target=thumbv7em-none-eabihf --release
 cargo fmt --check
 popd
 popd
