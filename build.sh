@@ -6,15 +6,15 @@ OUTPUT_NAME=${1:-./output}
 
 # Build and test the solutions
 pushd exercise-solutions
-cargo test
-cargo test --examples
+cargo test --locked
+cargo test --examples --locked
 cargo fmt --check
 pushd connected-mailbox
-cargo test
+cargo test --locked
 cargo fmt --check
 popd
 pushd multi-threaded-mailbox
-cargo test
+cargo test --locked
 cargo fmt --check
 popd
 popd
@@ -26,50 +26,50 @@ popd
 popd
 pushd nrf52-code
 pushd boards/dk
-cargo build --target=thumbv7em-none-eabihf
+cargo build --target=thumbv7em-none-eabihf --locked
 cargo fmt --check
 popd
 pushd boards/dk-solution
-cargo build --target=thumbv7em-none-eabihf
+cargo build --target=thumbv7em-none-eabihf --locked
 cargo fmt --check
 popd
 pushd boards/dongle
-cargo build --target=thumbv7em-none-eabihf
+cargo build --target=thumbv7em-none-eabihf --locked
 cargo fmt --check
 popd
 pushd radio-app
-cargo build --target=thumbv7em-none-eabihf --release
+cargo build --target=thumbv7em-none-eabihf --release --locked
 cargo fmt --check
 popd
 for i in usb-lib-solutions/*; do
     pushd $i
-    cargo build --target=thumbv7em-none-eabihf --release
+    cargo build --target=thumbv7em-none-eabihf --release --locked
     cargo fmt --check
-    cargo test
+    cargo test --locked
     popd
 done
 pushd usb-lib 
-    cargo build --target=thumbv7em-none-eabihf --release
+    cargo build --target=thumbv7em-none-eabihf --release --locked
     cargo fmt --check
 popd
 pushd usb-app
-cargo build --target=thumbv7em-none-eabihf --release
+cargo build --target=thumbv7em-none-eabihf --release --locked
 cargo fmt --check
 popd
 pushd usb-app-solutions
-cargo build --target=thumbv7em-none-eabihf --release
+cargo build --target=thumbv7em-none-eabihf --release --locked
 cargo fmt --check
 popd
 pushd consts
-cargo build
+cargo build --locked
 cargo fmt --check
 popd
 pushd puzzle-fw
-cargo build --target=thumbv7em-none-eabihf --release
+cargo build --target=thumbv7em-none-eabihf --release --locked
 cargo fmt --check
 popd
 pushd loopback-fw
-cargo build --target=thumbv7em-none-eabihf --release
+cargo build --target=thumbv7em-none-eabihf --release --locked
 cargo fmt --check
 popd
 popd
