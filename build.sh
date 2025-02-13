@@ -74,9 +74,9 @@ cargo fmt --check
 popd
 popd
 
-# Only build the templates (they will panic at run-time due to the use of todo!)
+# Only check the templates (they will panic at run-time due to the use of todo!)
 pushd exercise-templates
-cargo build
+cargo check --locked
 cargo fmt --check
 popd
 
