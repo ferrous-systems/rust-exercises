@@ -38,45 +38,45 @@ cargo build --target=thumbv7em-none-eabihf --release
 cargo fmt --check
 popd
 pushd radio-app
-cargo build --target=thumbv7em-none-eabihf --release
+cargo build --target=thumbv7em-none-eabihf --release --locked
 cargo fmt --check
 popd
 for i in usb-lib-solutions/*; do
     pushd $i
-    cargo build --target=thumbv7em-none-eabihf --release
+    cargo build --target=thumbv7em-none-eabihf --release --locked
     cargo fmt --check
     cargo test --locked
     popd
 done
 pushd usb-lib 
-    cargo build --target=thumbv7em-none-eabihf --release
+    cargo build --target=thumbv7em-none-eabihf --release --locked
     cargo fmt --check
 popd
 pushd usb-app
-cargo build --target=thumbv7em-none-eabihf --release
+cargo build --target=thumbv7em-none-eabihf --release --locked
 cargo fmt --check
 popd
 pushd usb-app-solutions
-cargo build --target=thumbv7em-none-eabihf --release
+cargo build --target=thumbv7em-none-eabihf --release --locked
 cargo fmt --check
 popd
 pushd consts
-cargo build --frozen
+cargo build --locked
 cargo fmt --check
 popd
 pushd puzzle-fw
-cargo build --target=thumbv7em-none-eabihf --release
+cargo build --target=thumbv7em-none-eabihf --release --locked
 cargo fmt --check
 popd
 pushd loopback-fw
-cargo build --target=thumbv7em-none-eabihf --release
+cargo build --target=thumbv7em-none-eabihf --release --locked
 cargo fmt --check
 popd
 popd
 
 # Only check the templates (they will panic at run-time due to the use of todo!)
 pushd exercise-templates
-cargo check --frozen
+cargo check --locked
 cargo fmt --check
 popd
 
