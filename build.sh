@@ -21,7 +21,7 @@ popd
 pushd qemu-code
 pushd uart-driver
 # Build from source because armv8r-none-eabihf isn't Tier 2
-RUSTC_BOOTSTRAP=1 cargo build -Zbuild-std=core --frozen
+RUSTC_BOOTSTRAP=1 cargo build -Zbuild-std=core --locked
 popd
 popd
 pushd nrf52-code
