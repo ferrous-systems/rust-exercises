@@ -12,6 +12,4 @@ members = [
   "tcp-server-exercises",
   "async-chat",
   "kani-linked-list",
-  "iterators",
-  "calculator/*",
 ]
