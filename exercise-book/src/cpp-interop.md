@@ -21,6 +21,8 @@
 
 ### The bindgen wrapper.h trick
 
+[bindgen docs](https://rust-lang.github.io/rust-bindgen/tutorial-2.html)
+
 ### Dealing with C++ default Parameters
 
 ## Tasks
