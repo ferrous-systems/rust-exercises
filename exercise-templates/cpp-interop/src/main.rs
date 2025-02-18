@@ -1,26 +1,21 @@
-// Copyright 2020 Google LLC
-//
-// Licensed under the Apache License, Version 2.0 <LICENSE-APACHE or
-// https://www.apache.org/licenses/LICENSE-2.0> or the MIT license
-// <LICENSE-MIT or https://opensource.org/licenses/MIT>, at your
-// option. This file may not be copied, modified, or distributed
-// except according to those terms.
+#![allow(unused_variables)]  // Delete me once you start
+#![allow(unused_imports)]    // Delete me once you start
 
 use autocxx::prelude::*;
-include_cpp! {
-    #include "input.h"
+use cxx::let_cxx_string;
+
+use autocxx::prelude::*;
+autocxx::include_cpp! {
+    #include "rapidcsv.h"
+    generate!("rapidcsv::Document")
     safety!(unsafe_ffi)
-    generate!("DoMath")
-    generate!("Goat")
 }
 
+//use crate::ffi::rapidcsv::Document;
+
 fn main() {
-    println!("Hello, world! - C++ math should say 12={}", ffi::DoMath(4));
-    let mut goat = ffi::Goat::new().within_box();
-    goat.as_mut().add_a_horn();
-    goat.as_mut().add_a_horn();
-    assert_eq!(
-        goat.describe().as_ref().unwrap().to_string_lossy(),
-        "This goat has 2 horns."
-    );
+    let_cxx_string!(file_name = "example.csv");
+    // The below lines do **not** work :(
+    //let doc = Document::new(&file_name).within_unique_ptr();
+    //println!("{}", doc.GetRowCount());
 }
