@@ -21,29 +21,29 @@ popd
 pushd qemu-code
 pushd uart-driver
 # Build from source because armv8r-none-eabihf isn't Tier 2
-RUSTC_BOOTSTRAP=1 cargo build -Zbuild-std=core
+RUSTC_BOOTSTRAP=1 cargo build -Zbuild-std=core --locked
 popd
 popd
 pushd nrf52-code
 pushd boards/dk
-cargo build --target=thumbv7em-none-eabihf --locked
+cargo build --target=thumbv7em-none-eabihf --locked --release
 cargo fmt --check
 popd
 pushd boards/dk-solution
-cargo build --target=thumbv7em-none-eabihf --locked
+cargo build --target=thumbv7em-none-eabihf --locked --release
 cargo fmt --check
 popd
 pushd boards/dongle
-cargo build --target=thumbv7em-none-eabihf --locked
+cargo build --target=thumbv7em-none-eabihf --locked --release
 cargo fmt --check
 popd
 pushd radio-app
-cargo build --target=thumbv7em-none-eabihf --release --locked
+cargo build --target=thumbv7em-none-eabihf --locked --release
 cargo fmt --check
 popd
 for i in usb-lib-solutions/*; do
     pushd $i
-    cargo build --target=thumbv7em-none-eabihf --release --locked
+    cargo build --target=thumbv7em-none-eabihf --locked --release
     cargo fmt --check
     cargo test --locked
     popd
