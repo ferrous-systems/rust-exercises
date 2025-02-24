@@ -1,5 +1,10 @@
 name: Build sample material
 
+env:
+  CARGO_TERM_COLOR: always     # We want colors in our CI output
+  CARGO_INCREMENTAL: 0         # Don't waste time writing out incremental build files
+  CARGO_PROFILE_TEST_DEBUG: 0  # These are thrown away anyways, don't produce them
+
 on:
   push:
   pull_request:
@@ -17,8 +22,10 @@ jobs:
         with:
           tool: mdslides@0.3,mdbook@0.4,mdbook-mermaid@0.12,flip-link@0.1.10
 
+        # `minimal` profile avoids downloading `rustdocs`, `clippy`, etc.
       - name: Install targets
         run: |
+          rustup set profile minimal
           rustup target add thumbv7em-none-eabihf
           rustup component add rust-src
           rustup component add rustfmt
