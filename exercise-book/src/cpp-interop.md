@@ -123,7 +123,7 @@ A full solution is available at `rust-exercises/exercises-solutions/cpp-interop`
 * Write a `open_csv` that will act as our constructor in `wrapper.h`
 * Call `doc.GetRowCount();` on your `doc` and print it.
 
-<summary><details> Solution: </details>
+<details><summary> Solution: </summary>
 Once you have this in your `src/wrapper.h`:
 
 ```cpp
@@ -158,13 +158,17 @@ fn main() {
     println!("{count:?}");
 }
 ```
-<summary>
+</details>
 
-### Extension: Write GetStringCell
+And call `doc.getRowCount()` from the Rust side, knowing that all resources will be RAII'd properly.
+
+### Write GetStringCell method
+
+Write an `impl` block to have `doc.get_string_cell(n, i)` work, then print the entries.
 
 We now want to access specific elements to print them:
 
-<summary><details> Solution </details>
+<details><summary> Solution </summary>
 
 We add the method to our `wrapper.h`:
 
@@ -218,4 +222,4 @@ impl GetStringCell for Document {
 }
 ```
 
-<summary>
+</details>
