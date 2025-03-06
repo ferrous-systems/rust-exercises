@@ -18,7 +18,7 @@ int main()
  Run the example file with from the root of `cpp-interop` via
 
  ```
- ❯ clang -lstdc++ -std=c++11 -I src src/ex001.cpp
+ ❯ clang -lstdc++ -std=c++11 -I src src/example.cpp
  # or with GCC
-❯ g++ -std=c++11 -I src src/ex001.cpp
+❯ g++ -std=c++11 -I src src/example.cpp
  ```
