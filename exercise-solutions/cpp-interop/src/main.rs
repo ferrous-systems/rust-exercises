@@ -14,6 +14,7 @@ fn main() {
     let_cxx_string!(file_name = "example.csv");
     let doc = ffi::my_csv::open_csv(&file_name).within_unique_ptr();
     let count = doc.GetRowCount();
+    println!("{count}");
     for i in 0..count {
         let date = doc.get_string_cell(0, i);
         println!("{}", date);
