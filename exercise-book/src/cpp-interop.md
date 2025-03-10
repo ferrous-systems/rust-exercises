@@ -9,12 +9,27 @@
 
 ## Prerequisites
 
-- Advanced Rust
 - FFI
-- C++
+- Some knowledge of C/C++
 
 This exercise does not require writing vast amounts of Rust code, but does require understanding how different parts of the build system in Rust and C++ interact to get the project going.
 
+## Tasks
+
+Use `autocxx` to develop bindings to a `rapidcsv.h` and print out the dates in `example.csv`, from within Rust as well as the `RowCount`.
+
+You should get:
+
+```console
+5
+2017-02-24
+2017-02-23
+2017-02-22
+2017-02-21
+2017-02-17
+```
+
+A full solution is available at `rust-exercises/exercises-solutions/cpp-interop`.
 ## Knowledge
 
 We will learn to use `autocxx` to interface Rust and C++, a usually onerous affair.
@@ -97,24 +112,8 @@ If we didn't do the wrapper trick, we'd have to define each of those `xxxParams(
 
 Remember, `autocxx` does not necessarily define a `Document::new` for us!
 
-## Tasks
 
-Use `autocxx` to develop bindings to a `rapidcsv.h` and print out the dates in `example.csv`, from within Rust as well as the `RowCount`.
-
-You should get:
-
-```console
-5
-2017-02-24
-2017-02-23
-2017-02-22
-2017-02-21
-2017-02-17
-```
-
-A full solution is available at `rust-exercises/exercises-solutions/cpp-interop`.
-
-### Setup
+### Solution
 
 * Add `autocxx`, `build.rs`, `example.csv`, `rapidcsv.h` or look at our `rust-exercises/exercises-template/cpp-interop`.
 
