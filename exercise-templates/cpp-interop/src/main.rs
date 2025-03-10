@@ -1,5 +1,5 @@
-#![allow(unused_variables)]  // Delete me once you start
-#![allow(unused_imports)]    // Delete me once you start
+#![allow(unused_variables)] // Delete me once you start
+#![allow(unused_imports)] // Delete me once you start
 
 use autocxx::prelude::*;
 use cxx::let_cxx_string;

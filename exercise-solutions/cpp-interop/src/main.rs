@@ -30,4 +30,3 @@ impl GetStringCell for Document {
         ffi::my_csv::get_string_cell(self, column, row)
     }
 }
-
