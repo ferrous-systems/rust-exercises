@@ -22,3 +22,6 @@ int main()
  # or with GCC
 ❯ g++ -std=c++11 -I src src/example.cpp
  ```
+
+ The `weather.csv` was taken from [this repository](https://github.com/velicki/Weather_Data_Analysis_Project/blob/main/Weather_Data.csv)
+

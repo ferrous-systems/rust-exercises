@@ -16,7 +16,7 @@ This exercise does not require writing vast amounts of Rust code, but does requi
 
 ## Tasks
 
-Use `autocxx` to develop bindings to a `rapidcsv.h` and print out the dates in `example.csv`, from within Rust as well as the `RowCount`.
+1. Use `autocxx` to develop bindings to a `rapidcsv.h` and print out the dates in `example.csv`, from within Rust as well as the `RowCount`.
 
 You should get:
 
@@ -27,6 +27,13 @@ You should get:
 2017-02-22
 2017-02-21
 2017-02-17
+```
+
+2. Use `autocxx` to read `weather.csv` and report both the number of records in July and the average temperature
+
+```console
+720
+20.134027777777774
 ```
 
 A full solution is available at `rust-exercises/exercises-solutions/cpp-interop`.
