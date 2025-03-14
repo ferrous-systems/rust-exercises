@@ -37,7 +37,7 @@ The mapping is:
 * Button 3: P0.24
 * Button 4: P0.25
 
-You can verify this in the [User Guide](https://infocenter.nordicsemi.com/pdf/nRF52840_DK_User_Guide_v1.3.pdf).
+You can verify this in the [User Guide](https://docs.nordicsemi.com/bundle/ug_nrf52840_dk/page/UG/dk/intro.html).
 
 ## Run your program
 
