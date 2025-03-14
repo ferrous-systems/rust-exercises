@@ -14,4 +14,5 @@ members = [
   "kani-linked-list",
   "iterators",
   "calculator/*",
+  "cpp-interop",
 ]
