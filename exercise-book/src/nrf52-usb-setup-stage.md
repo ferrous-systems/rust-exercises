@@ -6,7 +6,7 @@ In [`nrf52-code/usb-app/src/bin/usb-2.rs`][usb_2], you will find a short descrip
 
 > For in-depth register documentation, refer to Sections 6.35.13.31 to 6.35.13.38 of the [nRF52840 Product Specification][nrf product spec].
 
-[nrf product spec]: https://infocenter.nordicsemi.com/pdf/nRF52840_PS_v1.1.pdf
+[nrf product spec]: https://docs.nordicsemi.com/bundle/ps_nrf52840/page/keyfeatures_html5.html
 
 ## Writing a parser for the data of this SETUP stage
 
