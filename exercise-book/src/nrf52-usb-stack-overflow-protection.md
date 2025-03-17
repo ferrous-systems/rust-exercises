@@ -36,7 +36,7 @@ stack backtrace:
 (HOST) ERROR the program has overflowed its stack
 ```
 
-❗️ `flip-link` is a third-party tool, so make sure you've installed it through `cargo install flip-link`
+❗️ `flip-link` is an external tool written by Ferrous Systems, so make sure you've installed it through `cargo install flip-link`
 
 To see how we've activated `flip-link`, take a look at [`nrf52-code/usb-app/.cargo/config.toml`](../../nrf52-code/usb-app/.cargo/config.toml):
 
