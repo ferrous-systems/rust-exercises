@@ -1,6 +1,20 @@
 # Cpp Interop
 
-This crate also includes a cpp header-only library [rapidcsv](https://github.com/d99kris/rapidcsv) that can help use read and process CSV files like so:
+This crate depends on a cpp header-only library [rapidcsv](https://github.com/d99kris/rapidcsv) that can help use read and process CSV files.
+
+You can download it on Linux/MacOS with:
+
+```console
+curl -o src/rapidcsv.h https://raw.githubusercontent.com/d99kris/rapidcsv/a98b85e663114b8fdc9c0dc03abf22c296f38241/src/rapidcsv.h
+```
+
+and on Windows with Powershell with:
+
+```console
+Invoke-WebRequest -URI "https://raw.githubusercontent.com/d99kris/rapidcsv/a98b85e663114b8fdc9c0dc03abf22c296f38241/src/rapidcsv.h"
+```
+
+You can try it on the `example.cpp` file:
 
 ```
 #include <iostream>
