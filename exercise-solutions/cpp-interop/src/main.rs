@@ -11,14 +11,27 @@ autocxx::include_cpp! {
 }
 
 fn main() {
-    let_cxx_string!(file_name = "example.csv");
+    let_cxx_string!(file_name = "weather.csv");
     let doc = ffi::my_csv::open_csv(&file_name).within_unique_ptr();
     let count = doc.GetRowCount();
-    println!("{count}");
+    let mut june_temps = 0.0;
     for i in 0..count {
         let date = doc.get_string_cell(0, i);
-        println!("{}", date);
+        // Convert to Rust string - with additional memory overhead
+        if let Ok(date_str) = date.to_str() {
+            // Check if it's in June - format MM/DD/YYY
+            if date_str.starts_with("6/") {
+                // Date is in June, so get the Temp_C value in the 2nd column
+                if let Ok(temp) = doc.get_string_cell(1, i).to_str() {
+                    if let Ok(temp_float) = temp.parse::<f64>() {
+                        june_temps += temp_float;
+                    }
+                }
+            }
+        }
     }
+    // June always has 30 days
+    println!("{}", june_temps / 30.0);
 }
 
 trait GetStringCell {
