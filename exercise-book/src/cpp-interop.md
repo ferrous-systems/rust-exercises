@@ -29,14 +29,14 @@ You should get:
 2017-02-17
 ```
 
-2. Use `autocxx` to read `weather.csv` and report both the number of records in July and the average temperature
+2. Use `autocxx` to read `weather.csv` and report average temperature in June
 
 ```console
-720
-20.134027777777774
+1.1999999999999995
 ```
 
 A full solution is available at `rust-exercises/exercises-solutions/cpp-interop`.
+
 ## Knowledge
 
 We will learn to use `autocxx` to interface Rust and C++, a usually onerous affair.
