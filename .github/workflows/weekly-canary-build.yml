@@ -7,7 +7,7 @@ env:
 
 on:
     schedule:
-        - cron: '0 0 * * Mon'
+        - cron: '0 0 * * *'
 
 jobs:
   weekly-canary-build:
@@ -16,8 +16,6 @@ jobs:
         matrix:
             rust-channel: [stable, beta, nightly]
     runs-on: ubuntu-24.04
-    concurrency:
-      group: ${{ github.workflow }}-${{ github.ref }}
     steps:
       - uses: actions/checkout@v4
 
@@ -29,7 +27,7 @@ jobs:
         # `minimal` profile avoids downloading `rustdocs`, `clippy`, etc.
       - name: Install targets, update, set default Rust
         run: |
-          rustup profile set minimal
+          rustup set profile minimal
           rustup update ${{ matrix.rust-channel }}
           rustup default ${{ matrix.rust-channel }}
           rustup component add rust-src
