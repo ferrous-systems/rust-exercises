@@ -1,0 +1,189 @@
+# This is a build file to run build and test all possible crates in rust-exercises.
+# It is cached with Swatinem/rust-cache@v2 and setup so that no jobs depend on any other jobs, 
+# EXCEPT for the last `deploy` job, which marks all other jobs in the `needs:` field as a dependency to fire.
+# The brunt of the work is defined in `build_fns.sh` where the actual testing logic is defined.
+
+name: Parallel rust-exercises
+
+env:
+  CARGO_TERM_COLOR: always     # We want colors in our CI output
+  CARGO_INCREMENTAL: 0         # Don't waste time writing out incremental build files
+  CARGO_PROFILE_TEST_DEBUG: 0  # These are thrown away anyways, don't produce them
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - "**"
+  pull_request:
+    branches:
+      - main
+
+# If you add *ANY* jobs, make sure to add them to the `needs:` field of the `deploy` job, since that
+# ensures `deploy` will run last
+jobs:
+  test_and_build_mdbook:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install mdbook, mdbook-mermaid
+        uses: taiki-e/install-action@v2
+        with:
+          tool: mdbook@0.4,mdbook-mermaid@0.12
+      # From Rust Cache Action:
+      # selecting a toolchain either by action or manual `rustup` calls should happen
+      # before the plugin, as the cache uses the current rustc version as its cache key
+      - run: rustup toolchain install stable --profile minimal
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Install targets
+        run: |
+          . build_fns.sh
+          mdbook_test_build exercise-book
+  
+  test_exercise_solutions_and_examples:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - run: rustup toolchain install stable --profile minimal --component rustfmt
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Test exercise-solutions and examples
+        run: |
+          . build_fns.sh
+          test_examples exercise-solutions
+  
+  test_exercise_solutions_standalone_crates:
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        crates: [exercise-solutions/connected-mailbox,
+          exercise-solutions/multi-threaded-mailbox]
+    steps:
+      - uses: actions/checkout@v4
+      - run: rustup toolchain install stable --profile minimal --component rustfmt
+      - uses: Swatinem/rust-cache@v2
+    
+      - name: Test exercise-solutions standalone crates
+        run: |
+          . build_fns.sh
+          test ${{matrix.crates}}
+
+  build_qemu_core:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - run: rustup toolchain install stable --profile minimal --component rust-src
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Build qemu-code/uart-driver
+        run: |
+          . build_fns.sh
+          build_core qemu-code/uart-driver
+
+  build_nrf52_usb_crates:
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        crates: [nrf52-code/boards/dk,
+         nrf52-code/boards/dk-solution,
+         nrf52-code/boards/dongle,
+         nrf52-code/radio-app,
+         nrf52-code/usb-app,
+         nrf52-code/usb-app-solutions,
+         nrf52-code/consts,
+         nrf52-code/puzzle-fw,
+         nrf52-code/loopback-fw]
+    steps:
+      - name: Install flip-link
+        uses: taiki-e/install-action@v2
+        with:
+          tool: flip-link@0.1.10
+
+      - uses: actions/checkout@v4
+      - run: rustup toolchain install stable --profile minimal --component rustfmt --target thumbv7em-none-eabihf
+      - uses: Swatinem/rust-cache@v2
+        
+      - name: build-only nrf52 crates
+        run: |
+          . build_fns.sh
+          build_thumbv7em ${{matrix.crates}}
+  
+  build_and_test_nrf52_crates:
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        crates: [nrf52-code/usb-lib-solutions/complete,
+          nrf52-code/usb-lib-solutions/get-descriptor-config,
+          nrf52-code/usb-lib-solutions/get-device,
+          nrf52-code/usb-lib-solutions/set-config]
+    steps:
+      - name: Install flip-link
+        uses: taiki-e/install-action@v2
+        with:
+          tool: flip-link@0.1.10
+
+      - uses: actions/checkout@v4
+      - run: rustup toolchain install stable --profile minimal --component rustfmt --target thumbv7em-none-eabihf
+      - uses: Swatinem/rust-cache@v2
+        
+      - name: build-and-test nrf52 crates
+        run: |
+          . build_fns.sh
+          build_test_thumbv7em ${{matrix.crates}}
+
+  check_templates:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - run: rustup toolchain install stable --profile minimal --component rustfmt
+      - uses: Swatinem/rust-cache@v2
+      - name: Check exercise-templates
+        run: |
+          . build_fns.sh
+          check_templates exercise-templates 
+
+  deploy:
+     runs-on: ubuntu-24.04
+     needs: [test_and_build_mdbook,
+             test_exercise_solutions_and_examples,
+             test_exercise_solutions_standalone_crates,
+             build_qemu_core,
+             build_nrf52_usb_crates,
+             build_and_test_nrf52_crates,
+             check_templates]
+
+     steps:
+       - uses: actions/checkout@v4
+
+       - name: Find slug name
+         run: |
+           slug=$(./describe.sh "${GITHUB_REF}")
+           echo "Building with slug '${slug}'"
+           echo "slug=${slug}" >> "${GITHUB_ENV}"
+
+       - name: Build and test
+         env: # Or as an environment variable
+           HIDDEN_MESSAGE: ${{ secrets.HIDDEN_MESSAGE }}
+         run: |
+           . build_fns.sh
+           zip_output "./rust-exercises-${{ env.slug }}"
+
+       - name: Upload Artifacts
+         uses: actions/upload-artifact@v4
+         if: ${{success()}}
+         with:
+           name: Artifacts
+           if-no-files-found: error
+           path: |
+             ./rust-exercises-*
+
+       - name: Create and Upload Release
+         if: github.event_name == 'push' && startswith(github.ref, 'refs/tags/')
+         id: create_release
+         uses: ncipollo/release-action@v1
+         with:
+           artifacts: "./rust-exercises-${{ env.slug }}.zip,./rust-exercises-${{ env.slug }}/nrf52-code/boards/dongle-fw/*-fw"
+           allowUpdates: true
+           updateOnlyUnreleased: true
