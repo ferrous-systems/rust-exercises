@@ -29,7 +29,7 @@ jobs:
       - name: Install targets
         run: |
           . build_fns.sh
-          mdbook_test_build exercise_book
+          mdbook_test_build exercise-book
   
   test_exercise_solutions_and_examples:
     runs-on: ubuntu-24.04
@@ -80,6 +80,11 @@ jobs:
          nrf52-code/boards/dongle,
          nrf52-code/radio-app]
     steps:
+      - name: Install flip-link
+        uses: taiki-e/install-action@v2
+        with:
+          tool: flip-link@0.1.10
+
       - uses: actions/checkout@v4
       - run: rustup toolchain install stable --profile minimal --component rustfmt --target thumbv7em-none-eabihf
       - uses: Swatinem/rust-cache@v2
@@ -104,7 +109,7 @@ jobs:
           nrf52-code/puzzle-fw,
           nrf52-code/loopback-fw]
     steps:
-      - name: Install tools
+      - name: Install flip-link
         uses: taiki-e/install-action@v2
         with:
           tool: flip-link@0.1.10
