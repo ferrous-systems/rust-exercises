@@ -1,4 +1,4 @@
-name: Parallel Build Sample Material
+name: Parallel rust-exercises
 
 env:
   CARGO_TERM_COLOR: always     # We want colors in our CI output
@@ -28,8 +28,8 @@ jobs:
         # `minimal` profile avoids downloading `rustdocs`, `clippy`, etc.
       - name: Install targets
         run: |
-          mdbook test
-          mdbook build
+          . build_fns.sh
+          mdbook_test_build exercise_book
   
   test_exercise_solutions_and_examples:
     runs-on: ubuntu-24.04
@@ -63,7 +63,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-      - run: rustup toolchain install stable --profile minimal
+      - run: rustup toolchain install stable --profile minimal --component rust-src
       - uses: Swatinem/rust-cache@v2
 
       - name: Build qemu-code/uart-driver
@@ -78,7 +78,7 @@ jobs:
         crates: [nrf52-code/boards/dk,
          nrf52-code/boards/dk-solution,
          nrf52-code/boards/dongle,
-         nrf52-code/boards/radio-app]
+         nrf52-code/radio-app]
     steps:
       - uses: actions/checkout@v4
       - run: rustup toolchain install stable --profile minimal --component rustfmt --target thumbv7em-none-eabihf
