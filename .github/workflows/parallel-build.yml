@@ -1,0 +1,182 @@
+name: Parallel Build Sample Material
+
+env:
+  CARGO_TERM_COLOR: always     # We want colors in our CI output
+  CARGO_INCREMENTAL: 0         # Don't waste time writing out incremental build files
+  CARGO_PROFILE_TEST_DEBUG: 0  # These are thrown away anyways, don't produce them
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test_and_build_mdbook:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      # From Rust Cache Action:
+      # selecting a toolchain either by action or manual `rustup` calls should happen
+      # before the plugin, as the cache uses the current rustc version as its cache key
+      - run: rustup toolchain install stable --profile minimal
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Install tools
+        uses: taiki-e/install-action@v2
+        with:
+          tool: mdslides@0.3,mdbook@0.4,mdbook-mermaid@0.12
+
+        # `minimal` profile avoids downloading `rustdocs`, `clippy`, etc.
+      - name: Install targets
+        run: |
+          mdbook test
+          mdbook build
+  
+  test_exercise_solutions_and_examples:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - run: rustup toolchain install stable --profile minimal --component rustfmt
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Test exercise-solutions and examples
+        run: |
+          . build_fns.sh
+          test_examples exercise-solutions
+  
+  test_exercise_solutions_standalone_crates:
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        crates: [exercise-solutions/connected-mailbox,
+          exercise-solutions/multi-threaded-mailbox]
+    steps:
+      - uses: actions/checkout@v4
+      - run: rustup toolchain install stable --profile minimal --component rustfmt
+      - uses: Swatinem/rust-cache@v2
+    
+      - name: Test exercise-solutions standalone crates
+        run: |
+          . build_fns.sh
+          test ${{matrix.crates}}
+
+  build_qemu_core:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - run: rustup toolchain install stable --profile minimal
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Build qemu-code/uart-driver
+        run: |
+          . build_fns.sh
+          build_core qemu-code/uart-driver
+
+  build_nrf52_usb_crates:
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        crates: [nrf52-code/boards/dk,
+         nrf52-code/boards/dk-solution,
+         nrf52-code/boards/dongle,
+         nrf52-code/boards/radio-app]
+    steps:
+      - uses: actions/checkout@v4
+      - run: rustup toolchain install stable --profile minimal --component rustfmt --target thumbv7em-none-eabihf
+      - uses: Swatinem/rust-cache@v2
+        
+      - name: Build and Test nrf52 usb crates
+        run: |
+          . build_fns.sh
+          build_thumbv7em ${{matrix.crates}}
+  
+  build_and_test_nrf52_crates:
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        crates: [nrf52-code/usb-lib-solutions/complete,
+          nrf52-code/usb-lib-solutions/get-descriptor-config,
+          nrf52-code/usb-lib-solutions/get-device,
+          nrf52-code/usb-lib-solutions/set-config,
+          nrf52-code/usb-lib,
+          nrf52-code/usb-app,
+          nrf52-code/usb-app-solutions,
+          nrf52-code/consts,
+          nrf52-code/puzzle-fw,
+          nrf52-code/loopback-fw]
+    steps:
+      - name: Install tools
+        uses: taiki-e/install-action@v2
+        with:
+          tool: flip-link@0.1.10
+
+      - uses: actions/checkout@v4
+      - run: rustup toolchain install stable --profile minimal --component rustfmt --target thumbv7em-none-eabihf
+      - uses: Swatinem/rust-cache@v2
+        
+      - name: Build and Test nrf52 crates
+        run: |
+          . build_fns.sh
+          build_test_thumbv7em ${{matrix.crates}}
+
+  check_templates:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - run: rustup toolchain install stable --profile minimal --component rustfmt
+      - uses: Swatinem/rust-cache@v2
+      - name: Check exercise-templates
+        run: |
+          . build_fns.sh
+          check_templates exercise-templates 
+
+# TODO: Deploy/upload script
+  # deploy:
+  #   runs-on: ubuntu-24.04
+  #   concurrency:
+  #     group: ${{ github.workflow }}-${{ github.ref }}
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: Swatinem/rust-cache@v2
+
+  #     - name: Install tools
+  #       uses: taiki-e/install-action@v2
+  #       with:
+  #         tool: mdslides@0.3,mdbook@0.4,mdbook-mermaid@0.12,flip-link@0.1.10
+
+  #       # `minimal` profile avoids downloading `rustdocs`, `clippy`, etc.
+  #     - name: Install targets
+  #       run: |
+  #         rustup set profile minimal
+  #         rustup target add thumbv7em-none-eabihf
+  #         rustup component add rust-src
+  #         rustup component add rustfmt
+
+  #     - name: Find slug name
+  #       run: |
+  #         slug=$(./describe.sh "${GITHUB_REF}")
+  #         echo "Building with slug '${slug}'"
+  #         echo "slug=${slug}" >> "${GITHUB_ENV}"
+
+  #     - name: Build and test
+  #       env: # Or as an environment variable
+  #         HIDDEN_MESSAGE: ${{ secrets.HIDDEN_MESSAGE }}
+  #       run: |
+  #         ./build.sh "./rust-exercises-${{ env.slug }}"
+
+  #     - name: Upload Artifacts
+  #       uses: actions/upload-artifact@v4
+  #       if: ${{success()}}
+  #       with:
+  #         name: Artifacts
+  #         if-no-files-found: error
+  #         path: |
+  #           ./rust-exercises-*
+
+  #     - name: Create and Upload Release
+  #       if: github.event_name == 'push' && startswith(github.ref, 'refs/tags/')
+  #       id: create_release
+  #       uses: ncipollo/release-action@v1
+  #       with:
+  #         artifacts: "./rust-exercises-${{ env.slug }}.zip,./rust-exercises-${{ env.slug }}/nrf52-code/boards/dongle-fw/*-fw"
+  #         allowUpdates: true
+  #         updateOnlyUnreleased: true
