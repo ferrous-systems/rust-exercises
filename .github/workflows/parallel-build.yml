@@ -20,6 +20,8 @@ on:
     branches:
       - main
 
+# If you add *ANY* jobs, make sure to add them to the `needs:` field of the `deploy` job, since that
+# ensures `deploy` will run last
 jobs:
   test_and_build_mdbook:
     runs-on: ubuntu-24.04
@@ -142,54 +144,46 @@ jobs:
           . build_fns.sh
           check_templates exercise-templates 
 
-# TODO: Deploy/upload script
-  # deploy:
-  #   runs-on: ubuntu-24.04
-  #   concurrency:
-  #     group: ${{ github.workflow }}-${{ github.ref }}
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - uses: Swatinem/rust-cache@v2
+  deploy:
+     runs-on: ubuntu-24.04
+     needs: [test_and_build_mdbook,
+             test_exercise_solutions_and_examples,
+             test_exercise_solutions_standalone_crates,
+             build_qemu_core,
+             build_nrf52_usb_crates,
+             build_and_test_nrf52_crates,
+             check_templates]
 
-  #     - name: Install tools
-  #       uses: taiki-e/install-action@v2
-  #       with:
-  #         tool: mdslides@0.3,mdbook@0.4,mdbook-mermaid@0.12,flip-link@0.1.10
+     steps:
+       - uses: actions/checkout@v4
 
-  #       # `minimal` profile avoids downloading `rustdocs`, `clippy`, etc.
-  #     - name: Install targets
-  #       run: |
-  #         rustup set profile minimal
-  #         rustup target add thumbv7em-none-eabihf
-  #         rustup component add rust-src
-  #         rustup component add rustfmt
+       - name: Find slug name
+         run: |
+           slug=$(./describe.sh "${GITHUB_REF}")
+           echo "Building with slug '${slug}'"
+           echo "slug=${slug}" >> "${GITHUB_ENV}"
 
-  #     - name: Find slug name
-  #       run: |
-  #         slug=$(./describe.sh "${GITHUB_REF}")
-  #         echo "Building with slug '${slug}'"
-  #         echo "slug=${slug}" >> "${GITHUB_ENV}"
+       - name: Build and test
+         env: # Or as an environment variable
+           HIDDEN_MESSAGE: ${{ secrets.HIDDEN_MESSAGE }}
+         run: |
+           . build_fns.sh
+           zip_output "./rust-exercises-${{ env.slug }}"
 
-  #     - name: Build and test
-  #       env: # Or as an environment variable
-  #         HIDDEN_MESSAGE: ${{ secrets.HIDDEN_MESSAGE }}
-  #       run: |
-  #         ./build.sh "./rust-exercises-${{ env.slug }}"
+       - name: Upload Artifacts
+         uses: actions/upload-artifact@v4
+         if: ${{success()}}
+         with:
+           name: Artifacts
+           if-no-files-found: error
+           path: |
+             ./rust-exercises-*
 
-  #     - name: Upload Artifacts
-  #       uses: actions/upload-artifact@v4
-  #       if: ${{success()}}
-  #       with:
-  #         name: Artifacts
-  #         if-no-files-found: error
-  #         path: |
-  #           ./rust-exercises-*
-
-  #     - name: Create and Upload Release
-  #       if: github.event_name == 'push' && startswith(github.ref, 'refs/tags/')
-  #       id: create_release
-  #       uses: ncipollo/release-action@v1
-  #       with:
-  #         artifacts: "./rust-exercises-${{ env.slug }}.zip,./rust-exercises-${{ env.slug }}/nrf52-code/boards/dongle-fw/*-fw"
-  #         allowUpdates: true
-  #         updateOnlyUnreleased: true
+       - name: Create and Upload Release
+         if: github.event_name == 'push' && startswith(github.ref, 'refs/tags/')
+         id: create_release
+         uses: ncipollo/release-action@v1
+         with:
+           artifacts: "./rust-exercises-${{ env.slug }}.zip,./rust-exercises-${{ env.slug }}/nrf52-code/boards/dongle-fw/*-fw"
+           allowUpdates: true
+           updateOnlyUnreleased: true
