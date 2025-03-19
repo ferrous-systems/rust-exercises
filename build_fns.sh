@@ -41,7 +41,7 @@ function build_core() {
 # nrf52-code/boards/radio-app
 function build_thumbv7em() {
 	cd "$1" || return 1
-	cargo build --target=thumb7em-none-eabihf --locked --release
+	cargo build --target=thumbv7em-none-eabihf --locked --release
 	cargo fmt --check
 	return 0
 }
@@ -59,7 +59,7 @@ function build_thumbv7em() {
 #
 function build_test_thumbv7em() {
 	cd "$1" || return 1
-	cargo build --target=thumb7em-none-eabihf --locked --release
+	cargo build --target=thumbv7em-none-eabihf --locked --release
 	cargo fmt --check
 	cargo test --locked
 	return 0
