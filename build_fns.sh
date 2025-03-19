@@ -74,8 +74,10 @@ function check_templates() {
 }
 
 function mdbook_test_build() {
+	cd "$1" || return 1
 	mdbook test
 	mdbook build
+	return 0
 }	
 
 function zip_output() {
