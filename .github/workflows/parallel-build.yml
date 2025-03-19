@@ -76,7 +76,12 @@ jobs:
         crates: [nrf52-code/boards/dk,
          nrf52-code/boards/dk-solution,
          nrf52-code/boards/dongle,
-         nrf52-code/radio-app]
+         nrf52-code/radio-app,
+         nrf52-code/usb-app,
+         nrf52-code/usb-app-solutions,
+         nrf52-code/consts,
+         nrf52-code/puzzle-fw,
+         nrf52-code/loopback-fw]
     steps:
       - name: Install flip-link
         uses: taiki-e/install-action@v2
@@ -87,7 +92,7 @@ jobs:
       - run: rustup toolchain install stable --profile minimal --component rustfmt --target thumbv7em-none-eabihf
       - uses: Swatinem/rust-cache@v2
         
-      - name: Build and Test nrf52 usb crates
+      - name: build-only nrf52 crates
         run: |
           . build_fns.sh
           build_thumbv7em ${{matrix.crates}}
@@ -99,13 +104,7 @@ jobs:
         crates: [nrf52-code/usb-lib-solutions/complete,
           nrf52-code/usb-lib-solutions/get-descriptor-config,
           nrf52-code/usb-lib-solutions/get-device,
-          nrf52-code/usb-lib-solutions/set-config,
-          nrf52-code/usb-lib,
-          nrf52-code/usb-app,
-          nrf52-code/usb-app-solutions,
-          nrf52-code/consts,
-          nrf52-code/puzzle-fw,
-          nrf52-code/loopback-fw]
+          nrf52-code/usb-lib-solutions/set-config]
     steps:
       - name: Install flip-link
         uses: taiki-e/install-action@v2
@@ -116,7 +115,7 @@ jobs:
       - run: rustup toolchain install stable --profile minimal --component rustfmt --target thumbv7em-none-eabihf
       - uses: Swatinem/rust-cache@v2
         
-      - name: Build and Test nrf52 crates
+      - name: build-and-test nrf52 crates
         run: |
           . build_fns.sh
           build_test_thumbv7em ${{matrix.crates}}

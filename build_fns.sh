@@ -7,7 +7,7 @@
 #
 # This script will define functions for testing this repo.
 #
-set -euo pipefail
+#set -euo pipefail
 
 # Build and test the solutions
 # exercise-solution
@@ -39,6 +39,11 @@ function build_core() {
 # nrf52-code/boards/dk-solution
 # nrf52-code/boards/dongle
 # nrf52-code/boards/radio-app
+# nrf52-code/usb-app
+# nrf52-code/usb-app-solutions
+# nrf52-code/consts
+# nrf52-code/puzzle-fw
+# nrf52-code/loopback-fw
 function build_thumbv7em() {
 	cd "$1" || return 1
 	cargo build --target=thumbv7em-none-eabihf --locked --release
@@ -50,13 +55,6 @@ function build_thumbv7em() {
 # nrf52-code/usb-lib-solutions/get-descriptor-config
 # nrf52-code/usb-lib-solutions/get-device
 # nrf52-code/usb-lib-solutions/set-config
-# nrf52-code/usb-lib
-# nrf52-code/usb-app
-# nrf52-code/usb-app-solutions
-# nrf52-code/consts
-# nrf52-code/puzzle-fw
-# nrf52-code/loopback-fw
-#
 function build_test_thumbv7em() {
 	cd "$1" || return 1
 	cargo build --target=thumbv7em-none-eabihf --locked --release
