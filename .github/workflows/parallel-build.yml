@@ -1,3 +1,8 @@
+# This is a build file to run build and test all possible crates in rust-exercises.
+# It is cached with Swatinem/rust-cache@v2 and setup so that no jobs depend on any other jobs, 
+# EXCEPT for the last `deploy` job, which marks all other jobs in the `needs:` field as a dependency to fire.
+# The brunt of the work is defined in `build_fns.sh` where the actual testing logic is defined.
+
 name: Parallel rust-exercises
 
 env:
@@ -7,7 +12,13 @@ env:
 
 on:
   push:
+    branches:
+      - main
+    tags:
+      - "**"
   pull_request:
+    branches:
+      - main
 
 jobs:
   test_and_build_mdbook:
