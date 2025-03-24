@@ -72,7 +72,7 @@ impl Request {
         //    - the descriptor index is 0 (i.e. it is the first implemented descriptor for this type) and
         //    - `wIndex` is 0 (i.e. no language ID since it's not a string descriptor)
         //
-        // For more details, see https://embedded-trainings.ferrous-systems.com/setup-stage.html
+        // For more details, see https://rust-exercises.ferrous-systems.com/latest/book/nrf52-usb-setup-stage
 
         if bmrequesttype == 0b00000000 && brequest == SET_ADDRESS {
             // Set the device address for all future accesses.
