@@ -62,7 +62,7 @@ With the additional properties:
 4. Sending a `PUBLISH` with an empty payload is allowed. In this case, the command `PUBLISH \n` 
 will publish an empty payload.
 
-*Note*: depending on the order in which the rules are implement, you may obtain different behaviours.
+*Note*: depending on the order in which the rules are implemented, you may obtain different behaviours.
 
 Issues with the format (or other properties) of the messages are
 handled with the following error codes:
