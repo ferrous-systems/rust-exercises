@@ -1,7 +1,7 @@
 # URLs, Match and Result
 
 In this exercise you will complete a number of mini exercises to learn about
-Error Handling. The final result will be a script that reads lines from a
+Error Handling. The final result will be a binary that reads lines from a
 text file and distinguishes between URLs and non-URLs by using the `url` parsing library.
 
 ## In this exercise, you will learn how to
