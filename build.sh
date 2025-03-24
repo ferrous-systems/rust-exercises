@@ -4,6 +4,10 @@ set -euo pipefail
 
 OUTPUT_NAME=${1:-./output}
 
+# `rapidcsv.h` is a 3rd party tool, so we have to curl it to have our repo retain all our copyright
+curl -o exercise-solutions/cpp-interop/src/rapidcsv.h https://raw.githubusercontent.com/d99kris/rapidcsv/a98b85e663114b8fdc9c0dc03abf22c296f38241/src/rapidcsv.h
+cp exercise-solutions/cpp-interop/src/rapidcsv.h exercise-templates/cpp-interop/src/rapidcsv.h
+
 # Build and test the solutions
 pushd exercise-solutions
 cargo test --locked
