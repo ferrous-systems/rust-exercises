@@ -17,7 +17,7 @@ fn main() {
     let mut june_temps = 0.0;
     for i in 0..count {
         let date = doc.get_string_cell(0, i);
-        // Convert to Rust string - with additional memory overhead
+        // Convert to Rust str - with type-guaranteed no additional memory overhead
         if let Ok(date_str) = date.to_str() {
             // Check if it's in June - format MM/DD/YYY
             if date_str.starts_with("6/") {

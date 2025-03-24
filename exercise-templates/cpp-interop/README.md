@@ -1,6 +1,6 @@
 # Cpp Interop
 
-This crate depends on a cpp header-only library [rapidcsv](https://github.com/d99kris/rapidcsv) that can help use read and process CSV files.
+This crate depends on a cpp header-only library [rapidcsv](https://github.com/d99kris/rapidcsv) that can read and process CSV files.
 
 You can download it on Linux/MacOS with:
 

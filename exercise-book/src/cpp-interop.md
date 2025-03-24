@@ -47,7 +47,7 @@ Modern C++ dependencies can have exceptions, their own heap, variadic templates,
 
 `autocxx` helps us automate this bridge, up to a point, and we'll see how to overcome its limitations and understand where they come from.
 
-To get started, we've provided a header-only C++ library called [rapidcsv](https://github.com/d99kris/rapidcsv) inside `rust-exercises/exercise-templates/cpp-interop` that can load and process CSV files.
+To get started, we'll download a header-only C++ library called [rapidcsv](https://github.com/d99kris/rapidcsv) inside `rust-exercises/exercise-templates/cpp-interop` that can load and process CSV files.
 
 `autocxx` works by inspecting the declared data structures  in `rapidcsv.h` and generating the necessary methods and types from the Rust side.
 
@@ -79,6 +79,8 @@ let_cxx_string!(file_name = "example.csv");
 
 which comes with `cxx`. This can become a very painful constructor otherwise since we'd have to turn our Rust strings into `CxxStrings` for opening a file with a C++ method, so this is very handy.
 
+Note that converting these to `&str`s uses at most a fat pointer as overhead, but incurs no further memory allocation on the string object itself.
+
 ### Unique Ptr and RAII
 
 Interfacing with C++ normally means that we have to keep track of which data types are allocated on the Rust or C++ heap if we were writing our bindings manually.
@@ -105,7 +107,7 @@ namespace my_csv {
 
 Note that we even have access to namespaces!
 
-This trick is also useful for dealing with the `rapidcsv::Document` C++ constructor that have many default parameters:
+This trick is also useful for dealing with the `rapidcsv::Document` C++ constructor that has many default parameters:
 
 ```c++
 explicit Document(const std::string& pPath = std::string(),
@@ -117,7 +119,7 @@ explicit Document(const std::string& pPath = std::string(),
 
 `autocxx` does not pick up on the `rapidcsv::Document` constructor having all these default parameters.
 
-If we didn't do the wrapper trick, we'd have to define each of those `xxxParams()` objects separately and pass it into each constructor.
+If we didn't do the wrapper trick, we'd have to define each of those `xxxParams()` objects separately and pass it into each constructor call.
 
 Remember, `autocxx` does not necessarily define a `Document::new` for us!
 
@@ -259,7 +261,7 @@ fn main() {
     let mut june_temps = 0.0;
     for i in 0..count {
         let date = doc.get_string_cell(0, i);
-        // Convert to Rust string - with additional memory overhead
+        // Convert to Rust str - with type-guaranteed no additional memory overhead
         if let Ok(date_str) = date.to_str() {
             // Check if it's in June - format MM/DD/YYY
             if date_str.starts_with("6/") {
