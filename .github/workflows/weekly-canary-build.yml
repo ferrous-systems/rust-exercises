@@ -16,8 +16,6 @@ jobs:
         matrix:
             rust-channel: [stable, beta, nightly]
     runs-on: ubuntu-24.04
-    concurrency:
-      group: ${{ github.workflow }}-${{ github.ref }}
     steps:
       - uses: actions/checkout@v4
 
