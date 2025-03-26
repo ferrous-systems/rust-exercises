@@ -2,102 +2,124 @@
 //!
 //! Written by Jonathan Pallant at Ferrous Systems
 //!
-//! Copyright (c) Ferrous Systems, 2024
+//! Copyright (c) Ferrous Systems, 2025
 
-/// A driver for CMSDK Uart
-pub struct Uart<const ADDR: usize>();
+/// A CMSDK UART Driver
+pub struct Uart {
+    registers: MmioRegisters,
+}
 
-impl Uart<0xe7c0_0000> {
-    /// Create a new UART object for UART0
+impl Uart {
+    /// Create a new UART handle at the MPS3-AN536 default address for UART 0
     ///
     /// # Safety
     ///
-    /// Only construct one object per UART at any given time.
-    pub unsafe fn new_uart0() -> Self {
-        Uart()
+    /// Only call this function once. Creating two handles to the same UART
+    /// is Undefined Behaviour.
+    pub const unsafe fn new_uart0() -> Uart {
+        Uart {
+            registers: Registers::new_mmio_at(0xe7c0_0000),
+        }
     }
-}
-
-impl<const ADDR: usize> Uart<ADDR> {
-    /// Offset of the data register from the starting address, in u32 words
-    const DATA_OFFSET: usize = 0;
-
-    /// Offset of the status register from the starting address, in u32 words
-    const STATUS_OFFSET: usize = 1;
-
-    /// Offset of the control register from the starting address, in u32 words
-    const CONTROL_OFFSET: usize = 2;
-
-    /// Offset of the baud-rate-divider register from the starting address, in
-    /// u32 words
-    const BAUDDIV_OFFSET: usize = 4;
-
-    /// Converting the const-param into a pointer
-    const ADDR_PTR: *mut u32 = ADDR as *mut u32;
-
-    /// The TX_FULL bit in the status register
-    const STATUS_TX_FULL: u32 = 1 << 0;
-
-    /// The TX_EN bit in the control register
-    const CONTROL_TX_EN: u32 = 1 << 0;
 
     /// Turn on TX and RX
     pub fn enable(&mut self, baudrate: u32, system_clock: u32) {
         let divider = system_clock / baudrate;
         // Set the `bauddiv` register to the value `divider`
-        self.set_bauddiv(divider);
-        // Set the `control` register to `Self::CONTROL_TX_EN`
-        self.set_control(Self::CONTROL_TX_EN);
+        self.registers.write_baud_div(divider);
+        // Set the `tx_en` and `rx_en` bits in the `control` register
+        self.registers.modify_control(|mut r| {
+            r.set_tx_en(true);
+            r
+        });
     }
 
     /// Write a byte (blocking if there's no space)
     pub fn write(&mut self, byte: u8) {
-        // Wait until the TX_FULL bit in the `status` register is not zero
-        while (self.get_status() & Self::STATUS_TX_FULL) != 0 {}
+        // Wait while the `tx_full` bit in the `state` register is set
+        while self.registers.read_state().tx_full() {
+            core::hint::spin_loop();
+        }
         // Write the byte to the `data` register
-        self.set_data(byte as u32);
-    }
-
-    /// Write to the data register
-    fn set_data(&mut self, data: u32) {
-        unsafe {
-            let ptr = Self::ADDR_PTR.add(Self::DATA_OFFSET);
-            ptr.write_volatile(data)
-        }
-    }
-
-    /// Read from the status register
-    fn get_status(&self) -> u32 {
-        unsafe {
-            let ptr = Self::ADDR_PTR.add(Self::STATUS_OFFSET);
-            ptr.read_volatile()
-        }
-    }
-
-    /// Write to the control register
-    fn set_control(&mut self, data: u32) {
-        unsafe {
-            let ptr = Self::ADDR_PTR.add(Self::CONTROL_OFFSET);
-            ptr.write_volatile(data)
-        }
-    }
-
-    /// Write to the baud rate divider register
-    fn set_bauddiv(&mut self, data: u32) {
-        unsafe {
-            let ptr = Self::ADDR_PTR.add(Self::BAUDDIV_OFFSET);
-            ptr.write_volatile(data)
-        }
+        self.registers.write_data(byte as u32);
     }
 }
 
-impl<const N: usize> core::fmt::Write for Uart<N> {
+impl core::fmt::Write for Uart {
     fn write_str(&mut self, s: &str) -> core::fmt::Result {
         for b in s.bytes() {
             self.write(b);
         }
         Ok(())
     }
+}
+
+unsafe impl Send for Uart {}
+
+#[bitbybit::bitfield(u32)]
+struct State {
+    /// Did RX overflow?
+    #[bits(3..=3, rw)]
+    rx_ovf: bool,
+    /// Did TX overflow?
+    #[bits(2..=2, rw)]
+    tx_ovf: bool,
+    /// Is RX buffer full?
+    #[bits(1..=1, rw)]
+    rx_full: bool,
+    /// Is TX buffer full?
+    #[bits(0..=0, rw)]
+    tx_full: bool,
+}
+
+#[bitbybit::bitfield(u32)]
+struct Control {
+    /// UART received enabled
+    #[bits(1..=1, rw)]
+    rx_en: bool,
+    /// UART transmit enabled
+    #[bits(0..=0, rw)]
+    tx_en: bool,
+}
+
+#[bitbybit::bitfield(u32)]
+struct IntStatus {
+    /// RX overflow interrupt.
+    #[bits(3..=3, rw)]
+    rx_ovf_int: bool,
+    /// TX overflow interrupt.
+    #[bits(2..=2, rw)]
+    tx_ovf_int: bool,
+    /// RX interrupt.
+    #[bits(1..=1, rw)]
+    rx_int: bool,
+    /// TX interrupt.
+    #[bits(0..=0, rw)]
+    tx_int: bool,
+}
+
+/// The registers in a CMSDK UART Peripheral
+///
+/// Running this derive-macro on some type `X` will produce a new struct called
+/// `MmioX`.
+#[derive(derive_mmio::Mmio)]
+#[repr(C)]
+struct Registers {
+    /// UART TX/RX buffer
+    #[mmio(RW)]
+    data: u32,
+    /// UART State
+    #[mmio(RW)]
+    state: State,
+    /// UART Configuration
+    #[mmio(RW)]
+    control: Control,
+    /// Interrupt Status/Clear
+    #[mmio(RW)]
+    int_status: IntStatus,
+    /// Baud Rate Divisor
+    #[mmio(RW)]
+    baud_div: u32,
 }
 
 // End of file
