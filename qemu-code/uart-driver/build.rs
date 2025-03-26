@@ -13,5 +13,6 @@ fn main() {
         .write_all(include_bytes!("memory.x"))
         .unwrap();
     println!("cargo:rustc-link-search={}", out.display());
+    // We need to link with this file, which comes from cortex-r-rt.
     println!("cargo:rustc-link-arg=-Tlink.x");
 }
