@@ -22,6 +22,21 @@ criticalup install
 cargo run
 ```
 
+To edit in VSCode using Ferrocene, run:
+
+```bash
+RUSTC=$(criticalup which rustc) code .
+```
+
+Or on Windows:
+
+```console
+C:\Project> criticalup which rustc
+C:\Users\steve\AppData\Roaming\criticalup\toolchains\xyz\bin\rustc.exe
+C:\Project> set RUSTC=C:\Users\steve\AppData\Roaming\criticalup\toolchains\xyz\bin\rustc.exe
+C:\Project> code .
+```
+
 ### Rust
 
 If you want to run it with the upstream Rust compiler, you will need to use
