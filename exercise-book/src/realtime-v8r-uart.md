@@ -53,7 +53,7 @@ Create a static variable, like `static UART: T = something()`. Work out how to i
 <details>
 <summary>Answer</summary>
 
-```rust
+```rust ignore
 static UART: Uart = unsafe { Uart::new_uart0() };
 ```
 
@@ -66,7 +66,7 @@ Use the `critical_section::Mutex` type to solve the `Sync` error that appears.
 <details>
 <summary>Answer</summary>
 
-```rust
+```rust ignore
 static UART: critical_section::Mutex<Uart> = critical_section::Mutex::new(unsafe { Uart::new_uart0() });
 
 // Now every time you touch the UART you must lock the Mutex first
@@ -84,7 +84,7 @@ That's not enough. You only have `&self` to the `Uart` and you need `&mut self`.
 <details>
 <summary>Answer</summary>
 
-```rust
+```rust ignore
 use core::cell::RefCell;
 
 static UART: critical_section::Mutex<RefCell<Uart>> = critical_section::Mutex::new(RefCell::new(unsafe { Uart::new_uart0() }));
@@ -108,7 +108,7 @@ That's a lot of locking. Make a wrapper type called `GlobalUart` which hides thi
 <details>
 <summary>Answer</summary>
 
-```rust
+```rust ignore
 struct GlobalUart {
     inner: critical_section::Mutex<RefCell<Uart>>
 }
