@@ -54,7 +54,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: mdbook_dir
-          path: book
+          path: exercise-book/book
           if-no-files-found: error
   
   test_exercise_solutions_and_examples:
@@ -179,7 +179,7 @@ jobs:
        # Move the mdbook `book` dir to where we expect it to be
        - name: Move mdbook_dir
          run: |
-          mv book exercise-book/book
+          mv mdbook_dir exercise-book/book
 
        - name: Find slug name
          run: |
