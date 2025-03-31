@@ -56,10 +56,11 @@ If you are not using VS code, you can run the program out of your console. Enter
 ```console
 $ cargo run --bin hello
    Compiling radio_app v0.0.0 (/Users/jonathan/Documents/ferrous-systems/rust-exercises/nrf52-code/radio-app)
-    Finished dev [optimized + debuginfo] target(s) in 0.28s
-     Running `probe-rs run --chip nRF52840_xxAA target/thumbv7em-none-eabihf/debug/hello`
-     Erasing sectors ✔ [00:00:00] [######################################################] 8.00 KiB/8.00 KiB @ 26.71 KiB/s (eta 0s )
- Programming pages   ✔ [00:00:00] [######################################################] 8.00 KiB/8.00 KiB @ 29.70 KiB/s (eta 0s )    Finished in 0.59s
+    Finished `dev` profile [optimized + debuginfo] target(s) in 0.36s
+     Running `probe-rs run --chip=nRF52840_xxAA --allow-erase-all --log-format=oneline target/thumbv7em-none-eabihf/debug/hello`
+      Erasing ✔ 100% [####################]  12.00 KiB @  18.70 KiB/s (took 1s)
+  Programming ✔ 100% [####################]  12.00 KiB @  14.34 KiB/s (took 1s)
+  Finished in 1.48s
 Hello, world!
 `dk::exit()` called; exiting ...
 ```

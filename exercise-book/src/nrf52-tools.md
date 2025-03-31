@@ -285,10 +285,11 @@ Bus 002 Device 015: ID 1366:1051 <- J-Link on the nRF52840 Development Kit
 
 ```console
 ❯ cargo run --bin hello
-    Finished `dev` profile [optimized + debuginfo] target(s) in 3.24s
+    Finished `dev` profile [optimized + debuginfo] target(s) in 0.09s
      Running `probe-rs run --chip=nRF52840_xxAA --allow-erase-all --log-format=oneline target/thumbv7em-none-eabihf/debug/hello`
-      Erasing ✔ 100% [####################]   8.00 KiB @  15.46 KiB/s (took 1s)
-  Programming ✔ 100% [####################]   8.00 KiB @  12.88 KiB/s (took 1s) 
+      Erasing ✔ 100% [####################]  12.00 KiB @  18.51 KiB/s (took 1s)
+  Programming ✔ 100% [####################]  12.00 KiB @  14.30 KiB/s (took 1s)
+  Finished in 1.49s
 Hello, world!
 `dk::exit()` called; exiting ...
 ```

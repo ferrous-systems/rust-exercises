@@ -10,7 +10,8 @@ $ cargo run --bin panic
     Finished `dev` profile [optimized + debuginfo] target(s) in 0.03s
      Running `probe-rs run --chip=nRF52840_xxAA --allow-erase-all --log-format=oneline target/thumbv7em-none-eabihf/debug/panic`
       Erasing ✔ 100% [####################]  12.00 KiB @  18.71 KiB/s (took 1s)
-  Programming ✔ 100% [####################]  12.00 KiB @  14.22 KiB/s (took 1s)                                                                                                                                                                                                                                   Finished in 1.49s
+  Programming ✔ 100% [####################]  12.00 KiB @  14.22 KiB/s (took 1s)
+  Finished in 1.49s
 00:00:00.000000 [ERROR] panicked at src/bin/panic.rs:30:13:
 index out of bounds: the len is 3 but the index is 3 (radio_app src/lib.rs:8)
 `dk::fail()` called; exiting ...
