@@ -7,6 +7,8 @@ use panic_probe as _;
 ///
 /// probe-run used to set a hardfault breakpoint but probe-rs doesn't, so make
 /// the HardFault handler quit out of probe-rs with a breakpoint.
+///
+/// Note that `panic-probe` will trigger a HardFault after printing the panic.
 #[exception]
 unsafe fn HardFault(_ef: &cortex_m_rt::ExceptionFrame) -> ! {
     dk::fail();
