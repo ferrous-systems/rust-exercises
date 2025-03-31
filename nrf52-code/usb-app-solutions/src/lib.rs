@@ -1,20 +1,21 @@
 #![no_std]
 
 use cortex_m_rt::exception;
-use panic_probe as _;
 
-/// The default HardFault handler just spins, so replace it.
-///
-/// probe-run used to set a hardfault breakpoint but probe-rs doesn't, so make
-/// the HardFault handler quit out of probe-rs with a breakpoint.
-///
-/// Note that `panic-probe` will trigger a HardFault after printing the panic.
-#[exception]
-unsafe fn HardFault(_ef: &cortex_m_rt::ExceptionFrame) -> ! {
+/// Our custom panic handler.
+#[panic_handler]
+fn panic(info: &core::panic::PanicInfo) -> ! {
+    defmt::error!("{}", defmt::Display2Format(info));
     dk::fail();
 }
 
-// same panicking *behavior* as `panic-probe` but doesn't print a panic message
+/// The default HardFault handler just spins, so replace it.
+#[exception]
+unsafe fn HardFault(_ef: &cortex_m_rt::ExceptionFrame) -> ! {
+    defmt::error!("HardFault!");
+    dk::fail();
+}
+
 // this prevents the panic message being printed *twice* when `defmt::panic!` is invoked
 #[defmt::panic_handler]
 fn defmt_panic() -> ! {
