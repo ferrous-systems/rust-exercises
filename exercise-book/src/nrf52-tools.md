@@ -1,6 +1,14 @@
 # nRF52 Tools
 
-Follow the entire section for the operating system that you're using, then go to [Setup check](#setup-check).
+Follow the relevant section for the operating system that you're using:
+
+* [Linux](#linux)
+* [Windows](#windows)
+* [macOS](#macos)
+
+Once complete, go to [Setup check](#setup-check).
+
+---
 
 ## Linux
 
@@ -114,6 +122,8 @@ Install `probe-rs` 0.27 pre-compiled binaries on Linux with:
 curl --proto '=https' --tlsv1.2 -LsSf https://github.com/probe-rs/probe-rs/releases/download/v0.27.0/probe-rs-tools-installer.sh | sh
 ```
 
+---
+
 ## Windows
 
 ### Install VS Code
@@ -187,6 +197,8 @@ Install `probe-rs` 0.27 pre-compiled binaries on Windows with:
 ```bash
 powershell -c "irm https://github.com/probe-rs/probe-rs/releases/download/v0.27.0/probe-rs-tools-installer.ps1 | iex"
 ```
+
+---
 
 ## macOS
 
@@ -273,12 +285,10 @@ Bus 002 Device 015: ID 1366:1051 <- J-Link on the nRF52840 Development Kit
 
 ```console
 ❯ cargo run --bin hello
-    Finished `dev` profile [optimized + debuginfo] target(s) in 0.06s
-     Running `probe-rs run --chip nRF52840_xxAA target/thumbv7em-none-eabihf/debug/hello --allow-erase-all`
-      Erasing ✔ [00:00:00] [################################################] 8.00 KiB/8.00 KiB @ 31.22 KiB/s (eta 0s )
-  Programming ✔ [00:00:00] [################################################] 8.00 KiB/8.00 KiB @ 36.25 KiB/s (eta 0s )    Finished in 0.496s
-<lvl> Hello, world!
-└─ hello::__cortex_m_rt_main @ src/bin/hello.rs:21
-<lvl> `dk::exit()` called; exiting ...
-└─ dk::exit @ /home/samuel/src/ferrous/rust-exercises/nrf52-code/boards/dk/src/lib.rs:415
+    Finished `dev` profile [optimized + debuginfo] target(s) in 3.24s
+     Running `probe-rs run --chip=nRF52840_xxAA --allow-erase-all --log-format=oneline target/thumbv7em-none-eabihf/debug/hello`
+      Erasing ✔ 100% [####################]   8.00 KiB @  15.46 KiB/s (took 1s)
+  Programming ✔ 100% [####################]   8.00 KiB @  12.88 KiB/s (took 1s) 
+Hello, world!
+`dk::exit()` called; exiting ...
 ```
