@@ -42,6 +42,10 @@ jobs:
       - name: Install targets
         run: |
           . build_fns.sh
+          echo "This should be PWD"
+          pwd
+          echo "This should be ls"
+          ls
           mdbook_test_build exercise-book
       # Uploading an artifact is how we can share data between different jobs
       - name: Upload artifacts
@@ -49,6 +53,7 @@ jobs:
         with:
           name: mdbook_dir
           path: book
+          if-no-files-found: error
   
   test_exercise_solutions_and_examples:
     runs-on: ubuntu-24.04
