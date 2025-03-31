@@ -181,7 +181,7 @@ jobs:
          run: |
           echo "DEBUG ls"
           ls
-          mv mdbook_dir exercise-book/book
+          mv book exercise-book/book
 
        - name: Find slug name
          run: |
