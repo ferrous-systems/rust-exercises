@@ -164,11 +164,15 @@ jobs:
 
      steps:
        - uses: actions/checkout@v4
+       # Download the mdbook artifact
        - name: Download mdbook_build artifact
          uses: actions/download-artifact@v4
          with:
           name: mdbook_dir
-          path: rust-exercises/exercise-book/book
+       # Move the mdbook `book` dir to where we expect it to be
+       - name: Move mdbook_dir
+         run: |
+          mv book exercise-book/book
 
        - name: Find slug name
          run: |
