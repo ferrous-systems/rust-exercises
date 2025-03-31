@@ -20,8 +20,10 @@ on:
     branches:
       - main
 
+# * All jobs defined here run independently of each other.
+# * Jobs that have a `matrix` field will setup up a job per entry in said `matrix`.
 # If you add *ANY* jobs, make sure to add them to the `needs:` field of the `deploy` job, since that
-# ensures `deploy` will run last
+# ensures `deploy` will run last.
 jobs:
   test_and_build_mdbook:
     runs-on: ubuntu-24.04
@@ -41,6 +43,12 @@ jobs:
         run: |
           . build_fns.sh
           mdbook_test_build exercise-book
+      # Uploading an artifact is how we can share data between different jobs
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: mdbook_build_dir
+          path: book
   
   test_exercise_solutions_and_examples:
     runs-on: ubuntu-24.04
@@ -156,6 +164,11 @@ jobs:
 
      steps:
        - uses: actions/checkout@v4
+       - name: Download mdbook_build artifact
+         uses: actions/download-artifact@v4
+         with:
+          name: book_dir
+          path: rust-exercises/exercise-book/book
 
        - name: Find slug name
          run: |
