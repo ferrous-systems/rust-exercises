@@ -179,6 +179,8 @@ jobs:
        # Move the mdbook `book` dir to where we expect it to be
        - name: Move mdbook_dir
          run: |
+          echo "DEBUG ls"
+          ls
           mv mdbook_dir exercise-book/book
 
        - name: Find slug name
