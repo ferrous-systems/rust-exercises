@@ -108,10 +108,10 @@ cargo install nrfdfu
 cargo install cyme
 ```
 
-Install `probe-rs` 0.24 pre-compiled binaries on Linux with:
+Install `probe-rs` 0.27 pre-compiled binaries on Linux with:
 
 ```bash
-curl --proto '=https' --tlsv1.2 -LsSf https://github.com/probe-rs/probe-rs/releases/download/v0.24.0/probe-rs-tools-installer.sh | sh
+curl --proto '=https' --tlsv1.2 -LsSf https://github.com/probe-rs/probe-rs/releases/download/v0.27.0/probe-rs-tools-installer.sh | sh
 ```
 
 ## Windows
@@ -182,10 +182,10 @@ cargo install nrfdfu
 cargo install cyme
 ```
 
-Install `probe-rs` 0.24 pre-compiled binaries on Windows with:
+Install `probe-rs` 0.27 pre-compiled binaries on Windows with:
 
 ```bash
-powershell -c "irm https://github.com/probe-rs/probe-rs/releases/download/v0.24.0/probe-rs-tools-installer.ps1 | iex"
+powershell -c "irm https://github.com/probe-rs/probe-rs/releases/download/v0.27.0/probe-rs-tools-installer.ps1 | iex"
 ```
 
 ## macOS
@@ -229,10 +229,10 @@ cargo install nrfdfu
 cargo install cyme
 ```
 
-Install `probe-rs` 0.24 pre-compiled binaries on macOS with:
+Install `probe-rs` 0.27 pre-compiled binaries on macOS with:
 
 ```bash
-curl --proto '=https' --tlsv1.2 -LsSf https://github.com/probe-rs/probe-rs/releases/download/v0.24.0/probe-rs-tools-installer.sh | sh
+curl --proto '=https' --tlsv1.2 -LsSf https://github.com/probe-rs/probe-rs/releases/download/v0.27.0/probe-rs-tools-installer.sh | sh
 ```
 
 ---
