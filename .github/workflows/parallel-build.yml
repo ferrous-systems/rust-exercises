@@ -42,12 +42,14 @@ jobs:
       - name: Install targets
         run: |
           . build_fns.sh
-          echo "This should be PWD"
-          pwd
-          echo "This should be ls"
-          ls
           mdbook_test_build exercise-book
       # Uploading an artifact is how we can share data between different jobs
+      - name: Smoke test
+        run: |
+          echo "DEBUG This should be PWD"
+          pwd
+          echo "DEBUG This should be ls"
+          ls
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
