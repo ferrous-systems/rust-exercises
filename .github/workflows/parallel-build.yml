@@ -47,7 +47,7 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: mdbook_build_dir
+          name: mdbook_dir
           path: book
   
   test_exercise_solutions_and_examples:
@@ -167,7 +167,7 @@ jobs:
        - name: Download mdbook_build artifact
          uses: actions/download-artifact@v4
          with:
-          name: book_dir
+          name: mdbook_dir
           path: rust-exercises/exercise-book/book
 
        - name: Find slug name
