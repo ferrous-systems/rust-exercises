@@ -176,13 +176,8 @@ jobs:
          uses: actions/download-artifact@v4
          with:
           name: mdbook_dir
-       # Move the mdbook `book` dir to where we expect it to be
-       - name: Move mdbook_dir
-         run: |
-          echo "DEBUG ls"
-          ls
-          mv book exercise-book/book
-
+          # Move the mdbook `book` dir to where we expect it to be
+          path: exercise-book/book
        - name: Find slug name
          run: |
            slug=$(./describe.sh "${GITHUB_REF}")
