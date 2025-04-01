@@ -15,8 +15,8 @@ consts = { path = "../consts" }
 cortex-m = "0.7.7"
 cortex-m-rt = "0.7.5"
 rtic = { version = "2", features = ["thumbv7-backend"] }
-defmt = "0.3.8"
-defmt-rtt = "0.4"
+defmt = "1"
+defmt-rtt = "1"
 dk = { path = "../boards/dk", features = ["advanced"] }
 usb = { path = "../usb-lib-solutions/complete" }
 usb2 = "0.0.1"

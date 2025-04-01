@@ -7,4 +7,4 @@ version = "0.0.0"
 description = "Library for parsing USB requests"
 
 [dependencies]
-defmt = "0.3.8"
+defmt = "1"

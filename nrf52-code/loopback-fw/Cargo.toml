@@ -7,8 +7,8 @@ version = "0.0.0"
 
 [dependencies]
 consts = { path = "../consts" }
-defmt = "0.3.10"
-defmt-rtt = "0.4.1"
+defmt = "1"
+defmt-rtt = "1"
 dongle = { path = "../boards/dongle" }
 heapless = { version = "0.8.0", features = ["defmt-03"] }
 rtic = { version = "2.1.2", features = ["thumbv7-backend"] }
