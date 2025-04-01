@@ -44,13 +44,7 @@ jobs:
           . build_fns.sh
           mdbook_test_build exercise-book
       # Uploading an artifact is how we can share data between different jobs
-      - name: Smoke test
-        run: |
-          echo "DEBUG This should be PWD"
-          pwd
-          echo "DEBUG This should be ls"
-          ls
-      - name: Upload artifacts
+      - name: Upload mdbook artifacts
         uses: actions/upload-artifact@v4
         with:
           name: mdbook_dir
@@ -124,6 +118,20 @@ jobs:
         run: |
           . build_fns.sh
           build_thumbv7em ${{matrix.crates}}
+
+      - name: Upload puzzle-fw artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: puzzle_fw
+          path: nrf52-code/puzzle-fw/target/thumbv7em-none-eabihf/release/puzzle-fw
+          if-no-files-found: error
+
+      - name: Upload loopback-fw artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: loopback_fw
+          path: nrf52-code/loopback-fw/target/thumbv7em-none-eabihf/release/loopback-fw
+          if-no-files-found: error
   
   build_and_test_nrf52_crates:
     runs-on: ubuntu-24.04
@@ -178,6 +186,20 @@ jobs:
           name: mdbook_dir
           # Move the mdbook `book` dir to where we expect it to be
           path: exercise-book/book
+
+       - uses: actions/checkout@v4
+       - name: Download puzzle-fw artifact
+         uses: actions/download-artifact@v4
+         with:
+          name: loopback_fw
+          path: nrf52-code/puzzle-fw/target/thumbv7em-none-eabihf/release/puzzle-fw
+
+       - uses: actions/checkout@v4
+       - name: Download loopback-fw artifact
+         uses: actions/download-artifact@v4
+         with:
+          name: puzzle_fw
+          path: nrf52-code/loopback-fw/target/thumbv7em-none-eabihf/release/loopback-fw
        - name: Find slug name
          run: |
            slug=$(./describe.sh "${GITHUB_REF}")
