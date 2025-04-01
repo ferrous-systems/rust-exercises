@@ -119,7 +119,7 @@ jobs:
           . build_fns.sh
           build_thumbv7em ${{matrix.crates}}
 
-        if: ${{matrix.crates == 'nrf52-code/puzzle-fw'}}
+        if: ${{matrix.crates}} == nrf52-code/puzzle-fw
       - name: Upload puzzle-fw artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -127,7 +127,7 @@ jobs:
           path: nrf52-code/puzzle-fw/target/thumbv7em-none-eabihf/release/puzzle-fw
           if-no-files-found: error
 
-        if: ${{matrix.crates == 'nrf52-code/loopback-fw'}}
+        if: ${{matrix.crates}} == nrf52-code/loopback-fw
       - name: Upload loopback-fw artifacts
         uses: actions/upload-artifact@v4
         with:
