@@ -48,7 +48,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: mdbook_dir
-          path: exercise-book/book
+          path: exercise-book/book/
           if-no-files-found: error
   
   test_exercise_solutions_and_examples:
@@ -195,16 +195,16 @@ jobs:
        - uses: actions/checkout@v4
        - name: Create folders
          run: |
-          mkdir exercise-book/book/
+          mkdir -p exercise-book/book/
           mkdir -p nrf52-code/puzzle-fw/target/thumbv7em-none-eabihf/release/
           mkdir -p nrf52-code/loopback-fw/target/thumbv7em-none-eabihf/release/
 
        # Download the mdbook artifact
-       - name: Download mdbook_build artifact
+       - name: Download mdbook_dir artifact
          uses: actions/download-artifact@v4
          with:
-          name: mdbook_dir
           # Move the mdbook `book` dir to where we expect it to be
+          name: mdbook_dir
           path: exercise-book/book/
 
        - uses: actions/checkout@v4
