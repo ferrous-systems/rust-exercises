@@ -1,9 +1,9 @@
 # This is a build file to run build and test all possible crates in rust-exercises.
 # It is cached with Swatinem/rust-cache@v2 and setup so that no jobs depend on any other jobs, 
 # EXCEPT for the last `deploy` job, which marks all other jobs in the `needs:` field as a dependency to fire.
-# The brunt of the work is defined in `build_fns.sh` where the actual testing logic is defined.
+# The brunt of the work is defined in `build_fns.sh` where the actual build/testing logic is defined.
 
-name: Parallel rust-exercises
+name: rust-exercises
 
 env:
   CARGO_TERM_COLOR: always     # We want colors in our CI output
@@ -196,8 +196,8 @@ jobs:
        - name: Create folders
          run: |
           mkdir exercise-book/book/
-          mkdir nrf52-code/puzzle-fw/target/thumbv7em-none-eabihf/release/
-          mkdir nrf52-code/loopback-fw/target/thumbv7em-none-eabihf/release/
+          mkdir -p nrf52-code/puzzle-fw/target/thumbv7em-none-eabihf/release/
+          mkdir -p nrf52-code/loopback-fw/target/thumbv7em-none-eabihf/release/
 
        # Download the mdbook artifact
        - name: Download mdbook_build artifact
