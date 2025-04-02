@@ -233,8 +233,8 @@ jobs:
            . build_fns.sh
            echo "DEBUG PWD"
            pwd
-           echo "DEBUG LS"
-           ls
+           echo "DEBUG LS - exercise-book/"
+           ls exercise-book
            zip_output "./rust-exercises-${{ env.slug }}"
 
        - name: Upload Artifacts
