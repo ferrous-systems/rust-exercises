@@ -160,7 +160,7 @@ make LLVM=1 menuconfig  # General setup / [*] Rust support
 ```
 
 In the `menuconfig` interface you will need to enter *General Support* and
-scroll down to *Rust support*. Presss `Y` to enable Rust support. Then use the
+scroll down to *Rust support*. Press `Y` to enable Rust support. Then use the
 arrow keys to select `< Exit >` and `< Exit >` again, then `< Yes >` to save.
 
 Now we can build and install our kernel.
@@ -229,27 +229,358 @@ root@localhost:~/rust-out-of-tree-module# dmesg
 root@localhost:~/rust-out-of-tree-module#
 ```
 
-## Task 8 - Make a (somewhat) useful kernel module
+## Task 8 - Create a device
 
-Your task is to write a kernel module that has a character device -
-`/dev/maths`. When we write numbers (as decimals in ASCII) to the device, the
-kernel module is going to keep a running total. When we read from the device,
-it's going to give us the total. If we send an invalid number it's going to zero
-the total.
+As of Linux 6.14, Rust for Linux has Rust APIs for:
 
-To do this, we'll need to use the character device API.
+* Block Devices
+* Miscellaneous Devices
+* Network Devices
 
-```console
-$ echo 100 > /dev/maths
-$ echo 200 > /dev/maths
-$ cat /dev/maths
-300 
-$ echo 1 > /dev/maths
-$ cat /dev/maths
-301
-$ echo foo > /dev/maths
-$ cat /dev/maths
-0
+A *Miscellaneous Device* has an entry like `/dev/foobar` and we can open it,
+close it, and send it `ioctl` requests.
+
+Looking at the documentation for the [`MiscDevice::register`] method we can see
+that we get an opaque object that implements [`PinInit`] rather than a concrete
+type. So, we're going to need to make a bunch of changes, step by step.
+
+[`MiscDevice::register`]: https://rust.docs.kernel.org/kernel/miscdevice/struct.MiscDeviceRegistration.html#method.register
+[`PinInit`]: https://rust.docs.kernel.org/kernel/init/trait.PinInit.html
+
+First, let's remove that example `Vec` and hold `MiscDeviceRegistration`
+instead. We mark the struct with `#[pin_data(PinnedDrop)]` to promise that we're
+not going to be moving things around in memory whilst the module is loaded, and
+mark the `_miscdev` field with `#[pin]`:
+
+```rust ignore
+#[pin_data(PinnedDrop)]
+struct RustOutOfTree {
+    #[pin]
+    _miscdev: kernel::miscdevice::MiscDeviceRegistration<RustOutOfTreeDevice>,
+}
 ```
 
-TODO: is this even possible?
+Now instead of implementing `kernel::Module`, let's implement `kernel::InPlaceModule`:
+
+```rust ignore
+impl kernel::InPlaceModule for RustOutOfTree {
+    fn init(_module: &'static ThisModule) -> impl PinInit<Self, Error> {
+        pr_info!("Rust out-of-tree sample (init)\n");
+
+        let options = kernel::miscdevice::MiscDeviceOptions {
+            name: kernel::c_str!("rust-misc-device"),
+        };
+
+        try_pin_init!(Self {
+            _miscdev <- kernel::miscdevice::MiscDeviceRegistration::register(options),
+        })
+    }
+}
+```
+
+Instead of a plain `Result` we're returning something that implements `PinInit`.
+The `try_pin_init!` macro will do this for us. The `name` in our
+`kernel::miscdevice::MiscDeviceOptions` sets the name of our device in `/dev`.
+Pick something else if you like!
+
+We need to adjust our `Drop` impl, to deal with our newly pinned data structure.
+
+```rust ignore
+#[pinned_drop]
+impl PinnedDrop for RustOutOfTree {
+    fn drop(self: Pin<&mut Self>) {
+        pr_info!("Rust out-of-tree sample (exit)\n");
+    }
+}
+```
+
+(We've also removed the bit that prints the `Vec` we removed).
+
+Finally, let's make the `RustOutOfTreeDevice` we referenced earlier in our
+`RustOutOfTree` structure. It's as basic as we can get away with.
+
+```rust ignore
+struct RustOutOfTreeDevice {}
+
+#[vtable]
+impl kernel::miscdevice::MiscDevice for RustOutOfTreeDevice {
+    type Ptr = Pin<KBox<Self>>;
+
+    fn open(
+        _file: &kernel::fs::File,
+        _misc: &kernel::miscdevice::MiscDeviceRegistration<Self>,
+    ) -> Result<Pin<KBox<Self>>> {
+        return Err(ENOTTY);
+    }
+}
+```
+
+<details>
+<summary>Our full file looks like this</summary>
+
+```rust ignore
+// SPDX-License-Identifier: GPL-2.0
+
+//! Rust out-of-tree sample
+
+use kernel::prelude::*;
+
+module! {
+    type: RustOutOfTree,
+    name: "rust_out_of_tree",
+    author: "Rust for Linux Contributors",
+    description: "Rust out-of-tree sample",
+    license: "GPL",
+}
+
+#[pin_data(PinnedDrop)]
+struct RustOutOfTree {
+    #[pin]
+    _miscdev: kernel::miscdevice::MiscDeviceRegistration<RustOutOfTreeDevice>,
+}
+
+impl kernel::InPlaceModule for RustOutOfTree {
+    fn init(_module: &'static ThisModule) -> impl PinInit<Self, Error> {
+        pr_info!("Rust out-of-tree sample (init)\n");
+
+        let options = kernel::miscdevice::MiscDeviceOptions {
+            name: kernel::c_str!("rust-misc-device"),
+        };
+
+        try_pin_init!(Self {
+            _miscdev <- kernel::miscdevice::MiscDeviceRegistration::register(options),
+        })
+    }
+}
+
+#[pinned_drop]
+impl PinnedDrop for RustOutOfTree {
+    fn drop(self: Pin<&mut Self>) {
+        pr_info!("Rust out-of-tree sample (exit)\n");
+    }
+}
+
+struct RustOutOfTreeDevice {}
+
+#[vtable]
+impl kernel::miscdevice::MiscDevice for RustOutOfTreeDevice {
+    type Ptr = Pin<KBox<Self>>;
+
+    fn open(
+        _file: &kernel::fs::File,
+        _misc: &kernel::miscdevice::MiscDeviceRegistration<Self>,
+    ) -> Result<Pin<KBox<Self>>> {
+        return Err(ENOTTY);
+    }
+}
+```
+
+</details>
+
+Let's load it and see if we get a device:
+
+```console
+$ make KDIR=../linux-6.14 LLVM=1
+$ insmod ./rust_out_of_tree.ko
+[ 2337.507487] rust_out_of_tree: Rust out-of-tree sample (init)
+$ ls /dev/rust*
+crw------- 1 root root 10, 124 Apr  2 16:29 /dev/rust-misc-device
+$ rmmod rust_out_of_tree
+[ 2345.938810] rust_out_of_tree: Rust out-of-tree sample (exit)
+```
+
+Nice, we got a device!
+
+## Task 9 - Implement `open`
+
+Let's implement the `open` function for our `RustOutOfTreeDevice`.
+
+Our `RustOutOfTreeDevice` will need to hold onto a reference to our open `Device`:
+
+```rust ignore
+#[pin_data]
+struct RustOutOfTreeDevice {
+    dev: kernel::types::ARef<kernel::device::Device>,
+}
+```
+
+Yes, more pinning was required. The clue was the return type of the `open` function in the `MiscDevice` trait: `Result<Pin<KBox<Self>>>`.
+
+Let's re-write that `open` function to actually open our device.
+
+```rust ignore
+#[vtable]
+impl kernel::miscdevice::MiscDevice for RustOutOfTreeDevice {
+    type Ptr = Pin<KBox<Self>>;
+
+    fn open(
+        file: &kernel::fs::File,
+        misc: &kernel::miscdevice::MiscDeviceRegistration<Self>,
+    ) -> Result<Pin<KBox<Self>>> {
+        let dev = kernel::types::ARef::from(misc.device());
+
+        dev_info!(
+            dev,
+            "Opening Rust Misc Device Sample (uid = {})\n",
+            file.cred().euid().into_uid_in_current_ns()
+        );
+
+        KBox::try_pin_init(
+            try_pin_init! {
+                RustOutOfTreeDevice {
+                    dev: dev,
+                }
+            },
+            GFP_KERNEL,
+        )
+    }
+}
+```
+
+<details>
+<summary>Our full file looks like this:</summary>
+
+```rust ignore
+// SPDX-License-Identifier: GPL-2.0
+
+//! Rust out-of-tree sample
+
+use kernel::prelude::*;
+
+module! {
+    type: RustOutOfTree,
+    name: "rust_out_of_tree",
+    author: "Rust for Linux Contributors",
+    description: "Rust out-of-tree sample",
+    license: "GPL",
+}
+
+#[pin_data(PinnedDrop)]
+struct RustOutOfTree {
+    #[pin]
+    _miscdev: kernel::miscdevice::MiscDeviceRegistration<RustOutOfTreeDevice>,
+}
+
+impl kernel::InPlaceModule for RustOutOfTree {
+    fn init(_module: &'static ThisModule) -> impl PinInit<Self, Error> {
+        pr_info!("Rust out-of-tree sample (init)\n");
+
+        let options = kernel::miscdevice::MiscDeviceOptions {
+            name: kernel::c_str!("rust-misc-device"),
+        };
+
+        try_pin_init!(Self {
+            _miscdev <- kernel::miscdevice::MiscDeviceRegistration::register(options),
+        })
+    }
+}
+
+#[pinned_drop]
+impl PinnedDrop for RustOutOfTree {
+    fn drop(self: Pin<&mut Self>) {
+        pr_info!("Rust out-of-tree sample (exit)\n");
+    }
+}
+
+#[pin_data]
+struct RustOutOfTreeDevice {
+    dev: kernel::types::ARef<kernel::device::Device>,
+}
+
+#[vtable]
+impl kernel::miscdevice::MiscDevice for RustOutOfTreeDevice {
+    type Ptr = Pin<KBox<Self>>;
+
+    fn open(
+        file: &kernel::fs::File,
+        misc: &kernel::miscdevice::MiscDeviceRegistration<Self>,
+    ) -> Result<Pin<KBox<Self>>> {
+        let dev = kernel::types::ARef::from(misc.device());
+
+        dev_info!(
+            dev,
+            "Opening Rust Misc Device Sample (uid = {})\n",
+            file.cred().euid().into_uid_in_current_ns()
+        );
+
+        KBox::try_pin_init(
+            try_pin_init! {
+                RustOutOfTreeDevice {
+                    dev: dev,
+                }
+            },
+            GFP_KERNEL,
+        )
+    }
+}
+```
+
+</details>
+
+Now we should be able to see a log when we try and open our device.
+
+```console
+$ make KDIR=../linux-6.14 LLVM=1
+$ insmod ./rust_out_of_tree.ko
+[ 3918.696311] rust_out_of_tree: Rust out-of-tree sample (init)
+$ cat /dev/rust-misc-device
+cat: /dev/rust-misc-device: Invalid argument
+[ 3990.836103] misc rust-misc-device: Opening Rust Misc Device Sample (uid = 0)
+```
+
+Great, we can see that the device has been opened by `cat`. As of Linux 6.14
+there's no support for Read operations - only `ioctl` operations - so `cat` gets
+an error from the Kernel. That's expected.
+
+## Task 10 - implement `ioctl`
+
+You've got the hang of this now, so as a bonus exercise, why not implement
+`ioctl`. See
+<https://rust.docs.kernel.org/kernel/miscdevice/trait.MiscDevice.html> for
+details.
+
+To send an ioctl to your device, you can use this C program:
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <sys/ioctl.h>
+
+#define RUST_MISC_DEV_HELLO _IO('|', 0x80)
+
+int main() {
+    int value, new_value;
+    int fd, ret;
+
+    // Open the device file
+    printf("Opening /dev/rust-misc-device for reading and writing\n");
+    fd = open("/dev/rust-misc-device", O_RDWR);
+    if (fd < 0) {
+        perror("open");
+        return errno;
+    }
+
+    // Make call into driver to say "hello"
+    printf("Calling Hello\n");
+    ret = ioctl(fd, RUST_MISC_DEV_HELLO, NULL);
+    if (ret < 0) {
+        perror("ioctl: Failed to call into Hello");
+        close(fd);
+        return errno;
+    }
+
+    // Close the device file
+    printf("Closing /dev/rust-misc-device\n");
+    ret = close(fd);
+    if (ret < 0) {
+        perror("close: failed to close device?");
+        return errno;
+    }
+
+    printf("Success\n");
+    return 0;
+}
+```
