@@ -231,6 +231,10 @@ jobs:
            HIDDEN_MESSAGE: ${{ secrets.HIDDEN_MESSAGE }}
          run: |
            . build_fns.sh
+           echo "DEBUG PWD"
+           pwd
+           echo "DEBUG LS"
+           ls
            zip_output "./rust-exercises-${{ env.slug }}"
 
        - name: Upload Artifacts
