@@ -193,13 +193,19 @@ jobs:
 
      steps:
        - uses: actions/checkout@v4
+       - name: Create folders
+         run: |
+          mkdir exercise-book/book/
+          mkdir nrf52-code/puzzle-fw/target/thumbv7em-none-eabihf/release/
+          mkdir nrf52-code/loopback-fw/target/thumbv7em-none-eabihf/release/
+
        # Download the mdbook artifact
        - name: Download mdbook_build artifact
          uses: actions/download-artifact@v4
          with:
           name: mdbook_dir
           # Move the mdbook `book` dir to where we expect it to be
-          path: exercise-book/book
+          path: exercise-book/book/
 
        - uses: actions/checkout@v4
        - name: Download puzzle-fw artifact
