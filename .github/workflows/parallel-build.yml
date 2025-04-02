@@ -122,7 +122,7 @@ jobs:
     runs-on: ubuntu-24.04
     strategy:
       matrix:
-        crates: [nrf52-code/puzzle-fw, nrf52-code/loopback-fw]
+        crates: [puzzle-fw, loopback-fw]
     steps:
       - name: Install flip-link
         uses: taiki-e/install-action@v2
@@ -136,14 +136,14 @@ jobs:
       - name: build-only nrf52 crates
         run: |
           . build_fns.sh
-          build_thumbv7em ${{matrix.crates}}
+          build_thumbv7em nrf52-code/${{matrix.crates}}
 
       # We also upload the built binaries in the puzzle-fw and loopback-fw cases
       - name: Upload ${{matrix.crates}} artifacts
         uses: actions/upload-artifact@v4
         with:
           name: ${{matrix.crates}}
-          path: ${{matrix.crates}}/target/thumbv7em-none-eabihf/release/
+          path: nrf52-code/${{matrix.crates}}/target/thumbv7em-none-eabihf/release/${{matrix.crates}}
           if-no-files-found: error
   
   build_and_test_nrf52_crates:
@@ -205,15 +205,15 @@ jobs:
        - name: Download puzzle-fw artifact
          uses: actions/download-artifact@v4
          with:
-          name: nrf52-code/puzzle-fw
-          path: nrf52-code/puzzle-fw/target/thumbv7em-none-eabihf/release/
+          name: puzzle-fw
+          path: nrf52-code/puzzle-fw/target/thumbv7em-none-eabihf/release/puzzle-fw
 
        - uses: actions/checkout@v4
        - name: Download loopback-fw artifact
          uses: actions/download-artifact@v4
          with:
-          name: nrf52-code/loopback
-          path: nrf52-code/loopback-fw/target/thumbv7em-none-eabihf/release/
+          name: loopback-fw
+          path: nrf52-code/loopback-fw/target/thumbv7em-none-eabihf/release/loopback-fw
        - name: Find slug name
          run: |
            slug=$(./describe.sh "${GITHUB_REF}")
