@@ -195,31 +195,32 @@ jobs:
        - uses: actions/checkout@v4
        - name: Create folders
          run: |
-          mkdir -p exercise-book/book
-          mkdir -p nrf52-code/puzzle-fw/target/thumbv7em-none-eabihf/release
-          mkdir -p nrf52-code/loopback-fw/target/thumbv7em-none-eabihf/release
+          mkdir -p ./exercise-book/book
+          mkdir -p ./nrf52-code/puzzle-fw/target/thumbv7em-none-eabihf/release
+          mkdir -p ./nrf52-code/loopback-fw/target/thumbv7em-none-eabihf/release
 
-       # Download the mdbook artifact
+       # Download the produced artifacts
        - name: Download mdbook_dir artifact
          uses: actions/download-artifact@v4
          with:
           # Move the mdbook `book` dir to where we expect it to be
           name: mdbook_dir
-          path: exercise-book/book
+          path: ./exercise-book/book
 
        - uses: actions/checkout@v4
        - name: Download puzzle-fw artifact
          uses: actions/download-artifact@v4
          with:
           name: puzzle-fw
-          path: nrf52-code/puzzle-fw/target/thumbv7em-none-eabihf/release/puzzle-fw
+          path: ./nrf52-code/puzzle-fw/target/thumbv7em-none-eabihf/release/puzzle-fw
 
        - uses: actions/checkout@v4
        - name: Download loopback-fw artifact
          uses: actions/download-artifact@v4
          with:
           name: loopback-fw
-          path: nrf52-code/loopback-fw/target/thumbv7em-none-eabihf/release/loopback-fw
+          path: ./nrf52-code/loopback-fw/target/thumbv7em-none-eabihf/release/loopback-fw
+
        - name: Find slug name
          run: |
            slug=$(./describe.sh "${GITHUB_REF}")
@@ -233,6 +234,8 @@ jobs:
            . build_fns.sh
            echo "DEBUG PWD"
            pwd
+           echo "DEBUG LS"
+           ls
            echo "DEBUG LS - exercise-book/"
            ls exercise-book
            zip_output "./rust-exercises-${{ env.slug }}"
