@@ -14,7 +14,7 @@ use core::{
 
 use cortex_m::peripheral::NVIC;
 use cortex_m_semihosting::debug;
-use embedded_hal::digital::{OutputPin, StatefulOutputPin};
+use embedded_hal::digital::{InputPin, OutputPin, StatefulOutputPin};
 #[cfg(feature = "advanced")]
 use grounded::uninit::GroundedArrayCell;
 #[cfg(any(feature = "radio", feature = "usbd"))]
@@ -23,10 +23,7 @@ use grounded::uninit::GroundedCell;
 pub use hal::ieee802154;
 pub use hal::pac::{interrupt, Interrupt, NVIC_PRIO_BITS, RTC0};
 use hal::{
-    clocks::{self, Clocks},
-    gpio::{p0, Level, Output, Pin, Port, PushPull},
-    rtc::{Rtc, RtcInterrupt},
-    timer::OneShot,
+    clocks::{self, Clocks}, gpio::{p0, Input, Level, Output, Pin, Port, PullUp, PushPull}, pac::UARTE0, rtc::{Rtc, RtcInterrupt}, timer::OneShot
 };
 
 #[cfg(any(feature = "radio", feature = "advanced"))]
@@ -54,6 +51,8 @@ pub type UsbDevice = hal::usbd::Usbd<hal::usbd::UsbPeripheral<'static>>;
 pub struct Board {
     /// LEDs
     pub leds: Leds,
+    /// Buttons
+    pub buttons: Buttons,
     /// Timer
     pub timer: Timer,
 
@@ -76,6 +75,32 @@ pub struct Board {
         clocks::ExternalOscillator,
         clocks::LfOscStarted,
     >,
+    /// Our UART
+    pub uarte: hal::uarte::Uarte<UARTE0>,
+}
+
+/// All Buttons on the board
+pub struct Buttons {
+    /// Button1: pin P0.11
+    pub _1: Button,
+    /// Button2: pin P0.12
+    pub _2: Button,
+    /// Button3: pin P0.24
+    pub _3: Button,
+    /// Button4: pin P0.25
+    pub _4: Button,
+}
+
+/// A single Button
+pub struct Button {
+    inner: Pin<Input<PullUp>>,
+}
+
+impl Button {
+    /// Is the button pressed right now?
+    pub fn is_pressed(&mut self) -> bool {
+        self.inner.is_low().unwrap()
+    }
 }
 
 /// All LEDs on the board
@@ -360,6 +385,10 @@ pub fn init() -> Result<Board, Error> {
     let led2pin = pins.p0_14.degrade().into_push_pull_output(Level::High);
     let led3pin = pins.p0_15.degrade().into_push_pull_output(Level::High);
     let led4pin = pins.p0_16.degrade().into_push_pull_output(Level::High);
+    let button1pin = pins.p0_11.degrade().into_pullup_input();
+    let button2pin = pins.p0_12.degrade().into_pullup_input();
+    let button3pin = pins.p0_24.degrade().into_pullup_input();
+    let button4pin = pins.p0_25.degrade().into_pullup_input();
 
     defmt::debug!("I/O pins have been configured for digital output");
 
@@ -384,12 +413,28 @@ pub fn init() -> Result<Board, Error> {
         });
     }
 
+    let uart_rx = pins.p0_08.degrade().into_floating_input();
+    let uart_tx = pins.p0_06.degrade().into_push_pull_output(Level::High);
+    let pins = hal::uarte::Pins {
+        rxd: uart_rx,
+        txd: uart_tx,
+        cts: None,
+        rts: None,
+    };
+    let uarte = hal::Uarte::new(periph.UARTE0, pins, hal::uarte::Parity::EXCLUDED, hal::uarte::Baudrate::BAUD115200);
+
     Ok(Board {
         leds: Leds {
             _1: Led { inner: led1pin },
             _2: Led { inner: led2pin },
             _3: Led { inner: led3pin },
             _4: Led { inner: led4pin },
+        },
+        buttons: Buttons {
+            _1: Button { inner: button1pin  },
+            _2: Button { inner: button2pin  },
+            _3: Button { inner: button3pin  },
+            _4: Button { inner: button4pin  },
         },
         #[cfg(feature = "radio")]
         radio,
@@ -402,6 +447,7 @@ pub fn init() -> Result<Board, Error> {
         ep0in: unsafe { usbd::Ep0In::new(&EP0IN_BUF) },
         #[cfg(any(feature = "radio", feature = "usbd"))]
         clocks,
+        uarte,
     })
 }
 
