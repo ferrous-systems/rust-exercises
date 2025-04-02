@@ -101,9 +101,28 @@ jobs:
          nrf52-code/radio-app,
          nrf52-code/usb-app,
          nrf52-code/usb-app-solutions,
-         nrf52-code/consts,
-         nrf52-code/puzzle-fw,
-         nrf52-code/loopback-fw]
+         nrf52-code/consts]
+    steps:
+      - name: Install flip-link
+        uses: taiki-e/install-action@v2
+        with:
+          tool: flip-link@0.1.10
+
+      - uses: actions/checkout@v4
+      - run: rustup toolchain install stable --profile minimal --component rustfmt --target thumbv7em-none-eabihf
+      - uses: Swatinem/rust-cache@v2
+        
+      - name: build-only nrf52 crates
+        run: |
+          . build_fns.sh
+          build_thumbv7em ${{matrix.crates}}
+
+
+  build_nrf52_usb_crates_and_upload_fw:
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        crates: [nrf52-code/puzzle-fw, nrf52-code/loopback-fw]
     steps:
       - name: Install flip-link
         uses: taiki-e/install-action@v2
@@ -120,20 +139,11 @@ jobs:
           build_thumbv7em ${{matrix.crates}}
 
       # We also upload the built binaries in the puzzle-fw and loopback-fw cases
-      - name: Upload puzzle-fw artifacts
-        if: ${{matrix.crates}} == nrf52-code/puzzle-fw
+      - name: Upload ${{matrix.crates}} artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: puzzle_fw
-          path: nrf52-code/puzzle-fw/target/thumbv7em-none-eabihf/release/puzzle-fw
-          if-no-files-found: error
-
-      - name: Upload loopback-fw artifacts
-        if: ${{matrix.crates}} == nrf52-code/loopback-fw
-        uses: actions/upload-artifact@v4
-        with:
-          name: loopback_fw
-          path: nrf52-code/loopback-fw/target/thumbv7em-none-eabihf/release/loopback-fw
+          name: ${{matrix.crates}}
+          path: ${{matrix.crates}}/target/thumbv7em-none-eabihf/release/
           if-no-files-found: error
   
   build_and_test_nrf52_crates:
@@ -177,6 +187,7 @@ jobs:
              test_exercise_solutions_standalone_crates,
              build_qemu_core,
              build_nrf52_usb_crates,
+             build_nrf52_usb_crates_and_upload_fw,
              build_and_test_nrf52_crates,
              check_templates]
 
@@ -194,15 +205,15 @@ jobs:
        - name: Download puzzle-fw artifact
          uses: actions/download-artifact@v4
          with:
-          name: loopback_fw
-          path: nrf52-code/puzzle-fw/target/thumbv7em-none-eabihf/release/puzzle-fw
+          name: nrf52-code/puzzle-fw
+          path: nrf52-code/puzzle-fw/target/thumbv7em-none-eabihf/release/
 
        - uses: actions/checkout@v4
        - name: Download loopback-fw artifact
          uses: actions/download-artifact@v4
          with:
-          name: puzzle_fw
-          path: nrf52-code/loopback-fw/target/thumbv7em-none-eabihf/release/loopback-fw
+          name: nrf52-code/loopback
+          path: nrf52-code/loopback-fw/target/thumbv7em-none-eabihf/release/
        - name: Find slug name
          run: |
            slug=$(./describe.sh "${GITHUB_REF}")
