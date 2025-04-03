@@ -539,48 +539,90 @@ You've got the hang of this now, so as a bonus exercise, why not implement
 <https://rust.docs.kernel.org/kernel/miscdevice/trait.MiscDevice.html> for
 details.
 
-To send an ioctl to your device, you can use this C program:
+You'll need some IOCTL numbers to use. Try creating a "Hello" `ioctl`, with no
+argument (no data read and no data written):
 
-```c
-#include <stdio.h>
-#include <stdlib.h>
-#include <errno.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <sys/ioctl.h>
+```rust ignore
+const RUST_MISC_DEV_HELLO: u32 = _IO('|' as u32, 0x80);
+```
 
-#define RUST_MISC_DEV_HELLO _IO('|', 0x80)
+I chose `|` as the `ioctl` type for Miscellaneous Devices, because that's what
+is in the [example code]. If you need help with this step, that's a great place
+to look.
 
-int main() {
-    int value, new_value;
-    int fd, ret;
+[example code]: https://github.com/torvalds/linux/blob/v6.14/samples/rust/rust_misc_device.rs
 
-    // Open the device file
-    printf("Opening /dev/rust-misc-device for reading and writing\n");
-    fd = open("/dev/rust-misc-device", O_RDWR);
-    if (fd < 0) {
-        perror("open");
-        return errno;
-    }
+To send an ioctl to your device, you can use this Rust program. You'll need to
+put it in a package (`cargo new --bin openfile`) and add the `nix` crate (`cargo
+add nix`).
 
-    // Make call into driver to say "hello"
-    printf("Calling Hello\n");
-    ret = ioctl(fd, RUST_MISC_DEV_HELLO, NULL);
-    if (ret < 0) {
-        perror("ioctl: Failed to call into Hello");
-        close(fd);
-        return errno;
-    }
+```rust ignore
+use std::os::fd::AsRawFd;
 
-    // Close the device file
-    printf("Closing /dev/rust-misc-device\n");
-    ret = close(fd);
-    if (ret < 0) {
-        perror("close: failed to close device?");
-        return errno;
-    }
+const HELLO: u8 = 0x80;
+nix::ioctl_none!(hello_ioctl, '|', HELLO);
 
-    printf("Success\n");
-    return 0;
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let f = std::fs::File::open("/dev/rust-misc-device")?;
+    let fd = f.as_raw_fd();
+    let result = unsafe { hello_ioctl(fd) };
+    println!("ioctl returned {:?}", result);
+    Ok(())
 }
 ```
+
+Or you could try and write the equivalent in Rust (you'll probably need the
+`nix` crate and the `libc` crate).
+
+<details>
+<summary>Here's an example `ioctl` method if you need one</summary>
+
+```rust ignore
+fn ioctl(
+    me: Pin<&RustOutOfTreeDevice>,
+    _file: &kernel::fs::File,
+    cmd: u32,
+    arg: usize,
+) -> Result<isize> {
+    dev_info!(me.dev, "IOCTLing Rust Out Of Tree Device\n");
+
+    let size = kernel::ioctl::_IOC_SIZE(cmd);
+
+    match cmd {
+        RUST_MISC_DEV_HELLO => {
+            dev_info!(me.dev, "-> hello received (size {}, arg {})\n", size, arg);
+            Ok(100)
+        }
+        _ => {
+            dev_err!(me.dev, "-> IOCTL not recognised: {}\n", cmd);
+            Err(ENOTTY)
+        }
+    }
+}
+```
+
+</details>
+
+Here's what your output might look like if we run that example:
+
+```console
+$ make KDIR=../linux-6.14 LLVM=1
+$ insmod ./rust_out_of_tree.ko
+[12147.696311] rust_out_of_tree: Rust out-of-tree sample (init)
+$ cd ../openfile
+$ cargo run
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.01s
+     Running `target/debug/openfile`
+ioctl returned Ok(100)
+$ dmesg
+[12150.540427] misc rust-misc-device: Opening Rust Misc Device Sample (uid = 0)
+[12150.541318] misc rust-misc-device: IOCTLing Rust Misc Device Sample
+[12150.541606] misc rust-misc-device: -> hello received (size 0, arg 0)
+```
+
+## Task 11 - Keep going!
+
+OK! If you still want more, try implementing 'read' and 'write' `ioctl`s, so you
+can communicate with your driver. Or look at the Kernel mailing list for the
+patches that will let you do ordinary `read` and `write` syscalls on your
+device, rather than just `ioctls`. Happy kernel hacking in Rust!
