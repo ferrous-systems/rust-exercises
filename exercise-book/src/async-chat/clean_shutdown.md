@@ -3,7 +3,7 @@
 One of the problems with the current implementation is that it doesn't handle graceful shutdown.
 If we break from the accept loop for some reason, all in-flight tasks are just dropped.
 
-Instead, let's intercept `Ctrl-C` and implment a more correct shutdown sequence:
+Instead, let's intercept `Ctrl-C` and implement a more correct shutdown sequence:
 
 1. Stop accepting new clients
 2. Notify the readers we're not accepting new messages

@@ -95,7 +95,7 @@ If the string is empty, that's an error. If the string is exactly `"RETRIEVE"`, 
 
 ### Step 4c: Looking for "PUBLISH"
 
-Now we want to see if the message starts with `"PUBLISH "`, and if so, return a `Command::Publish` containing the payload, but converted to a heap-allocted `String` so that ownership is passed back to the caller. If not, and the message is equal to `"PUBLISH"`, then that's a *MissingPayload* error.
+Now we want to see if the message starts with `"PUBLISH "`, and if so, return a `Command::Publish` containing the payload, but converted to a heap-allocated `String` so that ownership is passed back to the caller. If not, and the message is equal to `"PUBLISH"`, then that's a *MissingPayload* error.
 
 <details>
   <summary>Solution</summary>
