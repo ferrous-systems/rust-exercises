@@ -90,12 +90,6 @@ function zip_output() {
 	#    because the Markdown book source lives in the `src` subfolder and so you
 	#    have to go up one extra level. Adding an extra level in the output
 	#    is easier than re-writing all the links at build time.
-	echo "WITHIN PWD"
-	pwd
-	echo "ls WITHIN build_fns.sh"
-	ls
-	echo "ls exercise-book"
-	ls ./exercise-book
 	mv ./exercise-book/book "${OUTPUT_NAME}/exercise-book/html"
 	cp -r ./exercise-templates "${OUTPUT_NAME}/"
 	cp -r ./exercise-solutions "${OUTPUT_NAME}/"
@@ -104,8 +98,8 @@ function zip_output() {
 	cp -r ./xtask "${OUTPUT_NAME}/"
 	cp -r ./.cargo "${OUTPUT_NAME}/"
 	cp -r ./tools "${OUTPUT_NAME}/"
-	cp -r ./nrf52-code/puzzle-fw/target/thumbv7em-none-eabihf/release/puzzle-fw "${OUTPUT_NAME}/nrf52-code/boards/dongle-fw/puzzle-fw"
-	cp -r ./nrf52-code/loopback-fw/target/thumbv7em-none-eabihf/release/loopback-fw "${OUTPUT_NAME}/nrf52-code/boards/dongle-fw/loopback-fw"
+	cp ./nrf52-code/puzzle-fw/target/thumbv7em-none-eabihf/release/puzzle-fw "${OUTPUT_NAME}/nrf52-code/boards/dongle-fw/puzzle-fw"
+	cp ./nrf52-code/loopback-fw/target/thumbv7em-none-eabihf/release/loopback-fw "${OUTPUT_NAME}/nrf52-code/boards/dongle-fw/loopback-fw"
 	find "${OUTPUT_NAME}" -name target -type d -print0 | xargs -0 rm -rf
 	zip -r "${OUTPUT_NAME}.zip" "${OUTPUT_NAME}"
 }
