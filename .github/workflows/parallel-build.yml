@@ -232,10 +232,10 @@ jobs:
            . build_fns.sh
            echo "DEBUG PWD"
            pwd
-           echo "DEBUG LS"
-           ls
-           echo "DEBUG LS - exercise-book/"
-           ls exercise-book
+           echo "DEBUG LS - nrf52-code/puzzle-fw/target/thumbv7em-none-eabihf/release/puzzle-fw/"
+           ls nrf52-code/puzzle-fw/target/thumbv7em-none-eabihf/release
+           echo "DEBUG LS - nrf52-code/loopback-fw/target/thumbv7em-none-eabihf/release/loopback-fw/"
+           ls nrf52-code/loopback-fw/target/thumbv7em-none-eabihf/release
            zip_output "./rust-exercises-${{ env.slug }}"
 
        - name: Upload Artifacts
