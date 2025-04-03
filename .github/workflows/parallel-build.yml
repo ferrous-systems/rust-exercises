@@ -1,4 +1,4 @@
-# This is a build file to run build and test all possible crates in rust-exercises.
+# This is a workflow file to run, build, and test all crates used as part of `rust-exercises`.
 # It is cached with Swatinem/rust-cache@v2 and setup so that no jobs depend on any other jobs, 
 # EXCEPT for the last `deploy` job, which marks all other jobs in the `needs:` field as a dependency to fire.
 # The brunt of the work is defined in `build_fns.sh` where the actual build/testing logic is defined.
@@ -43,11 +43,12 @@ jobs:
         run: |
           . build_fns.sh
           mdbook_test_build exercise-book
+
       # Uploading an artifact is how we can share data between different jobs
       - name: Upload mdbook artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: mdbook_dir
+          name: mdbook-dir
           path: exercise-book/book/
           if-no-files-found: error
   
@@ -117,7 +118,8 @@ jobs:
           . build_fns.sh
           build_thumbv7em ${{matrix.crates}}
 
-
+  # This job is different from the one above because we cannot make individual steps conditional,
+  # but we can define a different `matrix` of files that we have to upload
   build_nrf52_usb_crates_and_upload_fw:
     runs-on: ubuntu-24.04
     strategy:
@@ -180,6 +182,8 @@ jobs:
           . build_fns.sh
           check_templates exercise-templates 
 
+  # This is the last job, and waits (`needs:`) on all the other jobs before firing.
+  # It the necessary resulting builds as artifacts, zips them, and uploads with a tag if necessary.
   deploy:
      runs-on: ubuntu-24.04
      needs: [test_and_build_mdbook,
@@ -193,18 +197,13 @@ jobs:
 
      steps:
        - uses: actions/checkout@v4
-       #- name: Create folders
-       #  run: |
-       #   mkdir -p ./exercise-book/book
-       #   mkdir -p ./nrf52-code/puzzle-fw/target/thumbv7em-none-eabihf/release
-       #   mkdir -p ./nrf52-code/loopback-fw/target/thumbv7em-none-eabihf/release
 
        # Download the produced artifacts
-       - name: Download mdbook_dir artifact
+       - name: Download mdbook-dir artifact
          uses: actions/download-artifact@v4
          with:
           # Move the mdbook `book` dir to where we expect it to be
-          name: mdbook_dir
+          name: mdbook-dir
           path: ./exercise-book/book
 
        - name: Download puzzle-fw artifact
@@ -230,12 +229,6 @@ jobs:
            HIDDEN_MESSAGE: ${{ secrets.HIDDEN_MESSAGE }}
          run: |
            . build_fns.sh
-           echo "DEBUG PWD"
-           pwd
-           echo "DEBUG LS - nrf52-code/puzzle-fw/target/thumbv7em-none-eabihf/release/puzzle-fw/"
-           ls nrf52-code/puzzle-fw/target/thumbv7em-none-eabihf/release
-           echo "DEBUG LS - nrf52-code/loopback-fw/target/thumbv7em-none-eabihf/release/loopback-fw/"
-           ls nrf52-code/loopback-fw/target/thumbv7em-none-eabihf/release
            zip_output "./rust-exercises-${{ env.slug }}"
 
        - name: Upload Artifacts
