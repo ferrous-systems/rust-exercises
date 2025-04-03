@@ -145,6 +145,7 @@ apt install build-essential libssl-dev python3 flex bison bc libncurses-dev gawk
 curl https://sh.rustup.rs | bash
 source $HOME/.cargo/env
 cargo install --locked bindgen-cli
+rustup component add rust-src
 ```
 
 ## Task 6 - Build a kernel
