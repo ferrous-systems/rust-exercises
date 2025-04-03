@@ -144,6 +144,7 @@ Now install some more tools:
 apt install build-essential libssl-dev python3 flex bison bc libncurses-dev gawk openssl libssl-dev libelf-dev libudev-dev libpci-dev libiberty-dev autoconf llvm clang lld git 
 curl https://sh.rustup.rs | bash
 source $HOME/.cargo/env
+rustup component add rust-src
 cargo install --locked bindgen-cli
 ```
 
