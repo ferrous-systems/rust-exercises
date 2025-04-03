@@ -62,8 +62,8 @@ mod app {
                 // wIndex is a generic index field whose meaning depends on the request type
                 // composed of a high register (WINDEXH) and a low register (WINDEXL)
                 let windex: u16 = 0;
-                // wValue is a generic paremeter field meaning depends on the request type (e.g. contains the device
-                // address in SET_ADRESS requests)
+                // wValue is a generic parameter field meaning depends on the request type (e.g. contains the device
+                // address in SET_ADDRESS requests)
                 // composed of a high register (WVALUEH) and a low register (WVALUEL)
                 let wvalue: u16 = 0;
 
