@@ -192,6 +192,7 @@ jobs:
              check_templates]
 
      steps:
+       - uses: actions/checkout@v4
        #- name: Create folders
        #  run: |
        #   mkdir -p ./exercise-book/book
