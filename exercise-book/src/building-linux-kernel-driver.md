@@ -1,3 +1,4 @@
+<!-- markdownlint-disable MD026 MD033 -->
 # Building a Linux Kernel Driver using Rust
 
 In this example we're going to build a very basic Linux Kernel driver in Rust,
