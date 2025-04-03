@@ -143,7 +143,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{matrix.crates}}
-          path: nrf52-code/${{matrix.crates}}/target/thumbv7em-none-eabihf/release/${{matrix.crates}}
+          path: nrf52-code/${{matrix.crates}}/target/thumbv7em-none-eabihf/release/
           if-no-files-found: error
   
   build_and_test_nrf52_crates:
@@ -211,13 +211,13 @@ jobs:
          uses: actions/download-artifact@v4
          with:
           name: puzzle-fw
-          path: ./nrf52-code/puzzle-fw/target/thumbv7em-none-eabihf/release/puzzle-fw
+          path: ./nrf52-code/puzzle-fw/target/thumbv7em-none-eabihf/release/
 
        - name: Download loopback-fw artifact
          uses: actions/download-artifact@v4
          with:
           name: loopback-fw
-          path: ./nrf52-code/loopback-fw/target/thumbv7em-none-eabihf/release/loopback-fw
+          path: ./nrf52-code/loopback-fw/target/thumbv7em-none-eabihf/release/
 
        - name: Find slug name
          run: |
