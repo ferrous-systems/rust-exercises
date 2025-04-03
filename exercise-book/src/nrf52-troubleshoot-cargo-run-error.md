@@ -8,7 +8,7 @@ You may get one of these errors:
 ```console
 $ cargo run --bin usb-4
 Running `probe-rs run --chip nRF52840_xxAA target/thumbv7em-none-eabihf/debug/usb-4`
-Error: An error specific to a probe type occurred: USB error while taking control over USB device: Access denied (insufficient permissions)
+Error: An error specific to a probe type occured: USB error while taking control over USB device: Access denied (insufficient permissions)
 
 Caused by:
     USB error while taking control over USB device: Access denied (insufficient permissions)
@@ -17,7 +17,7 @@ Caused by:
 ```console
 $ cargo run --bin usb-4
 Running `probe-rs run --chip nRF52840_xxAA target/thumbv7em-none-eabihf/debug/usb-4`
-Error: An error specific to a probe type occurred: USB error while taking control over USB device: Resource busy
+Error: An error specific to a probe type occured: USB error while taking control over USB device: Resource busy
 
 Caused by:
     USB error while taking control over USB device: Resource busy
