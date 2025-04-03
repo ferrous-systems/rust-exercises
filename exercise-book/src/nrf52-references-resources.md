@@ -2,7 +2,7 @@
 
 ## Radio Project
 
-- [nRF52840 Product Specification 1.1](https://infocenter.nordicsemi.com/pdf/nRF52840_PS_v1.1.pdf)
+- [nRF52840 Product Specification](https://docs.nordicsemi.com/bundle/ps_nrf52840/page/keyfeatures_html5.html)
 - The [Embedded Rust Book][embedded rust] is a great learning resource, especially the Concurrency chapter.
 - If you are looking to write an interrupt handler, look at the [`#[interrupt]` attribute][interrupt]. All interrupts implemented by the nrf52840 hal are listed in [`nrf52840-pac/src/lib.rs`][pac]. It is also recommended that you work through the USB workshop to learn about [RTIC][rtic].
 
@@ -13,5 +13,5 @@
 
 ## USB Project
 
-- [nRF52840 Product Specification 1.1](https://infocenter.nordicsemi.com/pdf/nRF52840_PS_v1.1.pdf)
+- [nRF52840 Product Specification](https://docs.nordicsemi.com/bundle/ps_nrf52840/page/keyfeatures_html5.html)
 - [Universal Serial Bus (USB) Specification Revision 2.0](https://www.usb.org/document-library/usb-20-specification)

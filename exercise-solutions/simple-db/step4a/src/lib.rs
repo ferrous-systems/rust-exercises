@@ -2,7 +2,7 @@
 pub enum Command {
     Publish(String),
     Retrieve,
-    Command, // introduced only temporarely
+    Command, // introduced only temporarily
 }
 
 #[derive(Eq, PartialEq, Debug)]

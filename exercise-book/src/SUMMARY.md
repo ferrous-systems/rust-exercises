@@ -117,6 +117,10 @@
 - [Bare-Metal Firmware on Cortex-R52](./realtime-v8r-preparation.md)
   - [UART Driver](./realtime-v8r-uart.md)
 
+## Rust for Linux
+
+- [Building a Linux Kernel Driver using Rust](./building-linux-kernel-driver.md)
+
 # Async Rust
 
 - [Interactive TCP Echo Server](./tcp-server.md)

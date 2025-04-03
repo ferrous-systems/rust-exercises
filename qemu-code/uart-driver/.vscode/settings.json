@@ -1,0 +1,8 @@
+{
+    // override the default setting (`cargo check --all-targets`) which produces the following error
+    // "can't find crate for `test`" when the default compilation target is a no_std target
+    "rust-analyzer.check.allTargets": false,
+    // When using Ferrocene 25.02 you have to disable proc-macro support because
+    // there's no proc-macro server
+    "rust-analyzer.procMacro.enable": false,
+}

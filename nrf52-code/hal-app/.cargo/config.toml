@@ -4,13 +4,10 @@
 runner = [
   "probe-rs",
   "run",
-  "--chip",
-  "nRF52840_xxAA",
+  "--chip=nRF52840_xxAA",
   "--allow-erase-all",
-  "--log-format",
-  "{[{L}]%bold} {s} {({c:bold} {fff}:{l:1})%dimmed}"
+  "--log-format=oneline"
 ]
-# Or use "{t} {[{L}]%bold} {s} {({c:bold} {fff}:{l:1})%dimmed}" to enable timestamps
 
 rustflags = [
   "-C", "link-arg=-Tlink.x", # use the cortex-m-rt linker script

@@ -1,6 +1,6 @@
 [package]
 authors = ["Ferrous Systems"]
-edition = "2018"
+edition = "2021"
 license = "MIT OR Apache-2.0"
 name = "usb-app"
 version = "0.0.0"
@@ -15,10 +15,9 @@ consts = { path = "../consts" }
 cortex-m = "0.7.7"
 cortex-m-rt = "0.7.5"
 rtic = { version = "2", features = ["thumbv7-backend"] }
-defmt = "0.3.8"
-defmt-rtt = "0.4"
+defmt = "1"
+defmt-rtt = "1"
 dk = { path = "../boards/dk", features = ["advanced"] }
-panic-probe = { version = "0.3.0", features = ["print-defmt"] }
 usb = { path = "../usb-lib" }
 usb2 = "0.0.1"
 
@@ -26,16 +25,11 @@ usb2 = "0.0.1"
 version = "0.7.16"
 features = ["defmt-impl"]
 
-# optimize code in both profiles
+# optimise a little bit
 [profile.dev]
-codegen-units = 1
-debug = 2
-debug-assertions = true # !
-incremental = false
-lto = "fat"
-opt-level = 'z' # !
-overflow-checks = false
+opt-level = 1
 
+# enable LTO and turn on debug
 [profile.release]
 codegen-units = 1
 debug = 2

@@ -14,7 +14,7 @@ It should now fail to compile, because the `dk` crate doesn't have support for b
 
 ✅ Add a `struct Button` which represents a single button.
 
-It should be similar to `struct Led`, except the inner type must be `Pin<Input<PullUp>>`. You will need to import those types - look where `Output` and `PushPull` types were imported from for clues! Think about where it makes sense to add this new type. At the top? At the buttom? Maybe just after to the LED related types?
+It should be similar to `struct Led`, except the inner type must be `Pin<Input<PullUp>>`. You will need to import those types - look where `Output` and `PushPull` types were imported from for clues! Think about where it makes sense to add this new type. At the top? At the bottom? Maybe just after to the LED related types?
 
 🔎 The pins must be set as pull-ups is because each button connects a GPIO pin to ground, but the pins float when the button is not pressed. Enabling the pull-ups inside the SoC ensure that the GPIO pin is weakly connected to 3.3V through a resistor, giving it a 'default' value of 'high'. Pressing the button then makes the pin go 'low.
 
@@ -26,7 +26,7 @@ Use `struct Leds` for guidance. Add a `buttons` field to `struct Board` which is
 
 ## Set up the buttons
 
-Now the `Board` struct initaliser is complaining you didn't initialise the new `buttons` field.
+Now the `Board` struct initialiser is complaining you didn't initialise the new `buttons` field.
 
 ✅ Take pins from the HAL, configure them as inputs with pull-ups, and install them into the Buttons structure.
 
@@ -37,7 +37,7 @@ The mapping is:
 * Button 3: P0.24
 * Button 4: P0.25
 
-You can verify this in the [User Guide](https://infocenter.nordicsemi.com/pdf/nRF52840_DK_User_Guide_v1.3.pdf).
+You can verify this in the [User Guide](https://docs.nordicsemi.com/bundle/ug_nrf52840_dk/page/UG/dk/intro.html).
 
 ## Run your program
 

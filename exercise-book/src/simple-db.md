@@ -59,8 +59,10 @@ With the additional properties:
 
 3. A newline other than at the end of the command is an error.
 
-4. An empty payload is allowed. The command to publish an empty payload is
-    `PUBLISH \n`.
+4. Sending a `PUBLISH` with an empty payload is allowed. In this case, the command `PUBLISH \n` 
+will publish an empty payload.
+
+*Note*: depending on the order in which the rules are implemented, you may obtain different behaviours.
 
 Issues with the format (or other properties) of the messages are
 handled with the following error codes:
