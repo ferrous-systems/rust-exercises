@@ -555,8 +555,8 @@ to look.
 [example code]: https://github.com/torvalds/linux/blob/v6.14/samples/rust/rust_misc_device.rs
 
 To send an ioctl to your device, you can use this Rust program. You'll need to
-put it in a package (`cargo new --bin openfile`) and add the `nix` crate (`cargo
-add nix`).
+put it in a package (`cargo new --bin openfile`) and add the `nix` crate with
+`ioctl` feature enabled (`cargo add -F ioctl nix`).
 
 ```rust ignore
 use std::os::fd::AsRawFd;
