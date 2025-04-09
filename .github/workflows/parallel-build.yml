@@ -62,6 +62,8 @@ jobs:
       - name: Test exercise-solutions and examples
         run: |
           . build_fns.sh
+          # We have to download this so as to keep copyright of our codebase
+          curl -o exercise-solutions/cpp-interop/src/rapidcsv.h https://raw.githubusercontent.com/d99kris/rapidcsv/a98b85e663114b8fdc9c0dc03abf22c296f38241/src/rapidcsv.h
           test_examples exercise-solutions
   
   test_exercise_solutions_standalone_crates:
@@ -175,7 +177,10 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-      - run: rustup toolchain install stable --profile minimal
+      - run: |
+          rustup toolchain install stable --profile minimal
+          # We have to download this so as to keep copyright of our codebase
+          curl -o exercise-templates/cpp-interop/src/rapidcsv.h https://raw.githubusercontent.com/d99kris/rapidcsv/a98b85e663114b8fdc9c0dc03abf22c296f38241/src/rapidcsv.h
       - uses: Swatinem/rust-cache@v2
       - name: Check exercise-templates
         run: |
