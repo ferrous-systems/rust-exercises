@@ -29,7 +29,7 @@ fn main() {
         })
         .sum();
     // June has 30 days
-    println!("{%1.2}", sum_of_june_temperatures as f64 / 30.0);
+    println!("{:.3}", sum_of_june_temperatures as f64 / 30.0);
 }
 
 trait GetStringCell {
