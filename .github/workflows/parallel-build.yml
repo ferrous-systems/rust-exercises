@@ -38,41 +38,39 @@ jobs:
       # before the plugin, as the cache uses the current rustc version as its cache key
       - run: rustup toolchain install stable --profile minimal
 
-      - name: Load functions
-        run: |
-          . build_fns.sh
-          cd exercise-book
-
-        # For the cache to be keyed properly, we need to `cd` into a directory that can invoke `cargo` commands.
-        # Thus above `cd exercise-book` *has* to happen before invoking the `Swatinem/rust-cache@v2` action.
+        # For the cache to be keyed properly, we need to declare the workspace and then `cd` into it.
       - uses: Swatinem/rust-cache@v2
-      - name: Load cache
+        with:
+          workspaces: exercise-book
+      - name: Build mdbook, Test mdbook, Load cache
         run: |
-          mdbook_test_build
+          cd exercise-book
+          mdbook test
+          mdbook build
 
       # Uploading an artifact is how we can share data between different jobs
       - name: Upload mdbook artifacts
         uses: actions/upload-artifact@v4
         with:
           name: mdbook-dir
-          path: book/
+          path: exercise-book/book/
           if-no-files-found: error
   
   test_exercise_solutions_and_examples:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-      - run: rustup toolchain install stable --profile minimal
-
-      - name: Test exercise-solutions and examples
-        run: |
-          . build_fns.sh
-          cd exercise-solutions
+      - run: |
+          rustup toolchain install stable --profile minimal
 
       - uses: Swatinem/rust-cache@v2
-      - name: Load cache
+        with:
+          workspaces: exercise-solutions
+      - name: Test exercise-solutions and examples, with cache
         run: |
-          test_examples
+          cd exercise-solutions
+          cargo test --locked
+          cargo test --examples --locked
   
   test_exercise_solutions_standalone_crates:
     runs-on: ubuntu-24.04
@@ -84,32 +82,27 @@ jobs:
       - uses: actions/checkout@v4
       - run: rustup toolchain install stable --profile minimal
     
-      - name: Test exercise-solutions standalone crates
-        run: |
-          . build_fns.sh
-          cd ${{matrix.crates}}
-
       - uses: Swatinem/rust-cache@v2
-      - name: Load cache
+        with:
+          workspaces: ${{matrix.crates}}
+      - name: Test exercise-solutions standalone crates, Load cache
         run: |
-          test
+          cd ${{matrix.crates}}
+          cargo test --locked
 
   build_qemu_core:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - run: rustup toolchain install stable --profile minimal --component rust-src
-      - uses: Swatinem/rust-cache@v2
 
-      - name: Build qemu-code/uart-driver
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: qemu-code/uart-driver
+      - name: Build-qemu-code/uart-driver, load cache
         run: |
-          . build_fns.sh
           cd qemu-code/uart-driver
-
-      - uses: Swatinem/rust-cache@v2
-      - name: Load cache
-        run: |
-          build_qemu
+          RUSTC_BOOTSTRAP=1 cargo build -Zbuild-std=core --locked
 
   build_nrf52_usb_crates:
     runs-on: ubuntu-24.04
@@ -131,16 +124,13 @@ jobs:
       - uses: actions/checkout@v4
       - run: rustup toolchain install stable --profile minimal --target thumbv7em-none-eabihf
       - uses: Swatinem/rust-cache@v2
-        
-      - name: build-only nrf52 crates
-        run: |
-          . build_fns.sh
-          cd ${{matrix.crates}}
+        with:
+          workspaces: ${{matrix.crates}}
 
-      - uses: Swatinem/rust-cache@v2
-      - name: Load cache
+      - name: build-nrf52 usb crates, Load cache
         run: |
-          build_thumbv7em
+          cd ${{matrix.crates}}
+          cargo build --target=thumbv7em-none-eabihf --locked --release
 
   # This job is different from the one above because we cannot make individual steps conditional,
   # but we can define a different `matrix` of files that we have to upload
@@ -157,23 +147,21 @@ jobs:
 
       - uses: actions/checkout@v4
       - run: rustup toolchain install stable --profile minimal --target thumbv7em-none-eabihf
-        
-      - name: build-only nrf52 crates
-        run: |
-          . build_fns.sh
-          cd nrf52-code/${{matrix.crates}}
 
       - uses: Swatinem/rust-cache@v2
-      - name: Load cache
+        with:
+          workspaces: nrf52-code/${{matrix.crates}}
+      - name: build-only-nrf52 crates, load cache
         run: |
-          build_thumbv7em
+          cd nrf52-code/${{matrix.crates}}
+          cargo build --target=thumbv7em-none-eabihf --locked --release
 
       # We also upload the built binaries in the puzzle-fw and loopback-fw cases
       - name: Upload ${{matrix.crates}} artifacts
         uses: actions/upload-artifact@v4
         with:
           name: ${{matrix.crates}}
-          path: ${{matrix.crates}}/target/thumbv7em-none-eabihf/release/
+          path: nrf52-code/${{matrix.crates}}/target/thumbv7em-none-eabihf/release/
           if-no-files-found: error
   
   build_and_test_nrf52_crates:
@@ -192,39 +180,35 @@ jobs:
 
       - uses: actions/checkout@v4
       - run: rustup toolchain install stable --profile minimal --target thumbv7em-none-eabihf
-        
-      - name: build-and-test nrf52 crates
-        run: |
-          . build_fns.sh
-          cd ${{matrix.crates}}
 
       - uses: Swatinem/rust-cache@v2
-      - name: Load cache
+        with:
+          workspaces: ${{matrix.crates}}
+      - name: build-and-test nrf52 crates, load cache
         run: |
-          build_test_thumbv7em
+          cd ${{matrix.crates}}
+          cargo build --target=thumbv7em-none-eabihf --locked --release
+          cargo test --locked
 
   check_templates:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - run: rustup toolchain install stable --profile minimal
-      - uses: Swatinem/rust-cache@v2
-      - name: Check exercise-templates
-        run: |
-          . build_fns.sh
-          cd exercise-templates
 
       - uses: Swatinem/rust-cache@v2
-      - name: Load cache
+        with:
+          workspaces: exercise-templates
+      - name: Check exercise-templates, Load cache
         run: |
-          check_templates
+          cd exercise-templates
+          cargo check --locked
 
   check_fmt:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - run: rustup toolchain install stable --profile minimal --component rustfmt
-      - uses: Swatinem/rust-cache@v2
       - name: Check fmt
         run: |
           . build_fns.sh

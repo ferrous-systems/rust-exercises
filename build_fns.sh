@@ -11,24 +11,24 @@
 
 # Build and test the solutions
 # exercise-solutions
-function test_examples() {
-	cargo test --locked
-	cargo test --examples --locked
-	return 0
-}
+#function test_examples() {
+#	cargo test --locked
+#	cargo test --examples --locked
+#	return 0
+#}
 
 # exercise-solutions/connected-mailbox
 # exercise-solutions/multi-threaded-mailbox
-function test() {
-	cargo test --locked
-	return 0
-}
+#function test() {
+#	cargo test --locked
+#	return 0
+#}
 
 # qemu-code/uart-driver
-function build_qemu() {
-	RUSTC_BOOTSTRAP=1 cargo build -Zbuild-std=core --locked
-	return 0
-}
+#function build_qemu() {
+#	RUSTC_BOOTSTRAP=1 cargo build -Zbuild-std=core --locked
+#	return 0
+#}
 
 # nrf52-code/boards/dk
 # nrf52-code/boards/dk-solution
@@ -39,32 +39,32 @@ function build_qemu() {
 # nrf52-code/consts
 # nrf52-code/puzzle-fw
 # nrf52-code/loopback-fw
-function build_thumbv7em() {
-	cargo build --target=thumbv7em-none-eabihf --locked --release
-	return 0
-}
+#function build_thumbv7em() {
+#	cargo build --target=thumbv7em-none-eabihf --locked --release
+#	return 0
+#}
 
 # nrf52-code/usb-lib-solutions/complete
 # nrf52-code/usb-lib-solutions/get-descriptor-config
 # nrf52-code/usb-lib-solutions/get-device
 # nrf52-code/usb-lib-solutions/set-config
-function build_test_thumbv7em() {
-	cargo build --target=thumbv7em-none-eabihf --locked --release
-	cargo test --locked
-	return 0
-}
+#function build_test_thumbv7em() {
+#	cargo build --target=thumbv7em-none-eabihf --locked --release
+#	cargo test --locked
+#	return 0
+#}
 
 # exercise-templates
-function check_templates() {
-	cargo check --locked
-	return 0
-}
+#function check_templates() {
+#	cargo check --locked
+#	return 0
+#}
 
-function mdbook_test_build() {
-	mdbook test
-	mdbook build
-	return 0
-}	
+#function mdbook_test_build() {
+#	mdbook test
+#	mdbook build
+#	return 0
+#}	
 
 function zip_output() {
 	OUTPUT_NAME=${1:-./output}
