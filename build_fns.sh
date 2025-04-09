@@ -12,7 +12,6 @@
 # Build and test the solutions
 # exercise-solutions
 function test_examples() {
-	cd "$1" || return 1
 	cargo test --locked
 	cargo test --examples --locked
 	return 0
@@ -21,14 +20,12 @@ function test_examples() {
 # exercise-solutions/connected-mailbox
 # exercise-solutions/multi-threaded-mailbox
 function test() {
-	cd "$1" || return 1
 	cargo test --locked
 	return 0
 }
 
 # qemu-code/uart-driver
-function build_core() {
-	cd "$1" || return 1
+function build_qemu() {
 	RUSTC_BOOTSTRAP=1 cargo build -Zbuild-std=core --locked
 	return 0
 }
@@ -43,7 +40,6 @@ function build_core() {
 # nrf52-code/puzzle-fw
 # nrf52-code/loopback-fw
 function build_thumbv7em() {
-	cd "$1" || return 1
 	cargo build --target=thumbv7em-none-eabihf --locked --release
 	return 0
 }
@@ -53,7 +49,6 @@ function build_thumbv7em() {
 # nrf52-code/usb-lib-solutions/get-device
 # nrf52-code/usb-lib-solutions/set-config
 function build_test_thumbv7em() {
-	cd "$1" || return 1
 	cargo build --target=thumbv7em-none-eabihf --locked --release
 	cargo test --locked
 	return 0
@@ -61,13 +56,11 @@ function build_test_thumbv7em() {
 
 # exercise-templates
 function check_templates() {
-	cd "$1" || return 1
 	cargo check --locked
 	return 0
 }
 
 function mdbook_test_build() {
-	cd "$1" || return 1
 	mdbook test
 	mdbook build
 	return 0
