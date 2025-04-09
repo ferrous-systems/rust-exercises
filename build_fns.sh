@@ -7,71 +7,7 @@
 #
 # This script will define functions for testing this repo.
 #
-#set -euo pipefail
-
-# Build and test the solutions
-# exercise-solutions
-function test_examples() {
-	cd "$1" || return 1
-	cargo test --locked
-	cargo test --examples --locked
-	return 0
-}
-
-# exercise-solutions/connected-mailbox
-# exercise-solutions/multi-threaded-mailbox
-function test() {
-	cd "$1" || return 1
-	cargo test --locked
-	return 0
-}
-
-# qemu-code/uart-driver
-function build_core() {
-	cd "$1" || return 1
-	RUSTC_BOOTSTRAP=1 cargo build -Zbuild-std=core --locked
-	return 0
-}
-
-# nrf52-code/boards/dk
-# nrf52-code/boards/dk-solution
-# nrf52-code/boards/dongle
-# nrf52-code/boards/radio-app
-# nrf52-code/usb-app
-# nrf52-code/usb-app-solutions
-# nrf52-code/consts
-# nrf52-code/puzzle-fw
-# nrf52-code/loopback-fw
-function build_thumbv7em() {
-	cd "$1" || return 1
-	cargo build --target=thumbv7em-none-eabihf --locked --release
-	return 0
-}
-
-# nrf52-code/usb-lib-solutions/complete
-# nrf52-code/usb-lib-solutions/get-descriptor-config
-# nrf52-code/usb-lib-solutions/get-device
-# nrf52-code/usb-lib-solutions/set-config
-function build_test_thumbv7em() {
-	cd "$1" || return 1
-	cargo build --target=thumbv7em-none-eabihf --locked --release
-	cargo test --locked
-	return 0
-}
-
-# exercise-templates
-function check_templates() {
-	cd "$1" || return 1
-	cargo check --locked
-	return 0
-}
-
-function mdbook_test_build() {
-	cd "$1" || return 1
-	mdbook test
-	mdbook build
-	return 0
-}	
+set -euo pipefail
 
 function zip_output() {
 	OUTPUT_NAME=${1:-./output}
