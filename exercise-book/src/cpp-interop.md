@@ -31,10 +31,10 @@ You should get:
 
 Because there are 5 rows of data and a header row.
 
-2. Use `autocxx` to read `weather.csv` and report average temperature in June:
+2. Use `autocxx` to read `weather.csv` and report the average temperature in June, which should be approximately
 
 ```console
-1.1999999999999995
+1.20
 ```
 
 A full solution is available at `rust-exercises/exercises-solutions/cpp-interop`.

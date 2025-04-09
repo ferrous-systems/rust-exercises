@@ -15,7 +15,7 @@ fn main() {
     let doc = ffi::my_csv::open_csv(&file_name).within_unique_ptr();
     let count = doc.GetRowCount();
 
-    let sum_of_june_temperatures: i64 = (0..count)
+    let sum_of_june_temperatures: f64 = (0..count)
         .filter_map(|row_index| {
             let date: UniquePtr<CxxString> = doc.get_string_cell(0, row_index);
             let date: &str = date.to_str().ok()?;
@@ -25,11 +25,11 @@ fn main() {
         .filter_map(|row_index| {
             let temperature: UniquePtr<CxxString> = doc.get_string_cell(1, row_index);
             let temperature: &str = temperature.to_str().ok()?;
-            temperature.parse::<i64>().ok()
+            temperature.parse::<f64>().ok()
         })
         .sum();
     // June has 30 days
-    println!("{:.3}", sum_of_june_temperatures as f64 / 30.0);
+    println!("{:.2}", sum_of_june_temperatures / 30.0);
 }
 
 trait GetStringCell {
