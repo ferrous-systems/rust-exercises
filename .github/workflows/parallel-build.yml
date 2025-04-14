@@ -1,6 +1,6 @@
 # This is a workflow file to run, build, and test all crates used as part of `rust-exercises`.
 # It is cached with Swatinem/rust-cache@v2 and setup so that no jobs depend on any other jobs, 
-# EXCEPT for the last `deploy` job, which marks all other jobs in the `needs:` field as a dependency to fire.
+# EXCEPT for the last `deploy` job, which pulls in artifacts-producing jobs in the `needs:` field.
 # The brunt of the work is defined in `build_fns.sh` where the actual build/testing logic is defined.
 
 name: rust-exercises
@@ -20,10 +20,31 @@ on:
     branches:
       - main
 
-# * All jobs defined here run independently of each other.
+# * All jobs defined here run independently of each other EXCEPT for `deploy`.
 # * Jobs that have a `matrix` field will setup up a job per entry in said `matrix`.
-# If you add *ANY* jobs, make sure to add them to the `needs:` field of the `deploy` job, since that
-# ensures `deploy` will run last.
+# If you add any jobs that produce artifacts, make sure to add them to the `needs:` field of the `deploy` job, since that
+# ensures `deploy` will run last and can pull said artifacts
+# 
+# ========== TEMPLATE ===========
+# my_cool_new_job:
+# runs-on: ubuntu-24.04
+# steps:
+# - uses: actions/checkout@v4                     # This is what downloads a fresh clone of the repo and cd's into it
+# - name: Install tools
+#  uses: taiki-e/install-action@v2                # For adding arbitrary binaries as tools
+#  with:
+#    tool: name_of_binary_tool@v1.0
+# - uses: Swatinem/rust-cache@v2
+#   with:
+#     workspaces: dir_where_I_want_results_cached # This job will look up this specific cached dir
+# - name: Build foo
+#  run: | 
+#    . ${{github.workspace}}/build_fns.sh
+#    cd interesting_directory
+#    command_defined_in_build_fns.sh
+# =========== END TEMPLATE ========
+#
+# And then you'd add `my_cool_new_job` to the `needs` field of `deploy`.
 jobs:
   test_and_build_mdbook:
     runs-on: ubuntu-24.04
@@ -37,12 +58,16 @@ jobs:
       # selecting a toolchain either by action or manual `rustup` calls should happen
       # before the plugin, as the cache uses the current rustc version as its cache key
       - run: rustup toolchain install stable --profile minimal
-      - uses: Swatinem/rust-cache@v2
 
-      - name: Install targets
+        # For the cache to be keyed properly, we need to declare the workspace and then `cd` into it.
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: exercise-book
+      - name: Build mdbook, Test mdbook, Load cache
         run: |
-          . build_fns.sh
-          mdbook_test_build exercise-book
+          . ${{github.workspace}}/build_fns.sh
+          cd exercise-book
+          mdbook_test_build
 
       # Uploading an artifact is how we can share data between different jobs
       - name: Upload mdbook artifacts
@@ -56,13 +81,17 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-      - run: rustup toolchain install stable --profile minimal
-      - uses: Swatinem/rust-cache@v2
+      - run: |
+          rustup toolchain install stable --profile minimal
 
-      - name: Test exercise-solutions and examples
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: exercise-solutions
+      - name: Test exercise-solutions and examples, with cache
         run: |
-          . build_fns.sh
-          test_examples exercise-solutions
+          . ${{github.workspace}}/build_fns.sh
+          cd exercise-solutions
+          test_examples
   
   test_exercise_solutions_standalone_crates:
     runs-on: ubuntu-24.04
@@ -73,24 +102,30 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: rustup toolchain install stable --profile minimal
-      - uses: Swatinem/rust-cache@v2
     
-      - name: Test exercise-solutions standalone crates
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: ${{matrix.crates}}
+      - name: Test exercise-solutions standalone crates, Load cache
         run: |
-          . build_fns.sh
-          test ${{matrix.crates}}
+          . ${{github.workspace}}/build_fns.sh
+          cd ${{matrix.crates}}
+          test_standalone
 
   build_qemu_core:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - run: rustup toolchain install stable --profile minimal --component rust-src
-      - uses: Swatinem/rust-cache@v2
 
-      - name: Build qemu-code/uart-driver
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: qemu-code/uart-driver
+      - name: Build-qemu-code/uart-driver, load cache
         run: |
-          . build_fns.sh
-          build_core qemu-code/uart-driver
+          cd qemu-code/uart-driver
+          . ../../build_fns.sh
+          build_qemu_core
 
   build_nrf52_usb_crates:
     runs-on: ubuntu-24.04
@@ -112,11 +147,14 @@ jobs:
       - uses: actions/checkout@v4
       - run: rustup toolchain install stable --profile minimal --target thumbv7em-none-eabihf
       - uses: Swatinem/rust-cache@v2
-        
-      - name: build-only nrf52 crates
+        with:
+          workspaces: ${{matrix.crates}}
+
+      - name: build-nrf52 usb crates, Load cache
         run: |
-          . build_fns.sh
-          build_thumbv7em ${{matrix.crates}}
+          . ${{github.workspace}}/build_fns.sh
+          cd ${{matrix.crates}}
+          build_thumbv7em
 
   # This job is different from the one above because we cannot make individual steps conditional,
   # but we can define a different `matrix` of files that we have to upload
@@ -133,19 +171,22 @@ jobs:
 
       - uses: actions/checkout@v4
       - run: rustup toolchain install stable --profile minimal --target thumbv7em-none-eabihf
+
       - uses: Swatinem/rust-cache@v2
-        
-      - name: build-only nrf52 crates
+        with:
+          workspaces: nrf52-code/${{matrix.crates}}
+      - name: build-only-nrf52 crates, load cache
         run: |
-          . build_fns.sh
-          build_thumbv7em nrf52-code/${{matrix.crates}}
+          . ${{github.workspace}}/build_fns.sh
+          cd nrf52-code/${{matrix.crates}}
+          build_thumbv7em
 
       # We also upload the built binaries in the puzzle-fw and loopback-fw cases
       - name: Upload ${{matrix.crates}} artifacts
         uses: actions/upload-artifact@v4
         with:
           name: ${{matrix.crates}}
-          path: nrf52-code/${{matrix.crates}}/target/thumbv7em-none-eabihf/release/
+          path: nrf52-code/${{matrix.crates}}/target/thumbv7em-none-eabihf/release/${{matrix.crates}}
           if-no-files-found: error
   
   build_and_test_nrf52_crates:
@@ -164,48 +205,48 @@ jobs:
 
       - uses: actions/checkout@v4
       - run: rustup toolchain install stable --profile minimal --target thumbv7em-none-eabihf
+
       - uses: Swatinem/rust-cache@v2
-        
-      - name: build-and-test nrf52 crates
+        with:
+          workspaces: ${{matrix.crates}}
+      - name: build-and-test nrf52 crates, load cache
         run: |
-          . build_fns.sh
-          build_test_thumbv7em ${{matrix.crates}}
+          . ${{github.workspace}}/build_fns.sh
+          cd ${{matrix.crates}}
+          build_test_thumbv7em
 
   check_templates:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - run: rustup toolchain install stable --profile minimal
+
       - uses: Swatinem/rust-cache@v2
-      - name: Check exercise-templates
+        with:
+          workspaces: exercise-templates
+      - name: Check exercise-templates, Load cache
         run: |
-          . build_fns.sh
-          check_templates exercise-templates 
+          . ${{github.workspace}}/build_fns.sh
+          cd exercise-templates
+          check_templates
 
   check_fmt:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - run: rustup toolchain install stable --profile minimal --component rustfmt
-      - uses: Swatinem/rust-cache@v2
       - name: Check fmt
         run: |
-          . build_fns.sh
+          . ${{github.workspace}}/build_fns.sh
           check_fmt
 
-  # This is the last job, and waits (`needs:`) on all the other jobs before firing.
+  # This is the last job, and waits (`needs:`) only on those that pass artifacts to it.
   # It the necessary resulting builds as artifacts, zips them, and uploads with a tag if necessary.
   deploy:
      runs-on: ubuntu-24.04
-     needs: [test_and_build_mdbook,
-             test_exercise_solutions_and_examples,
-             test_exercise_solutions_standalone_crates,
-             build_qemu_core,
-             build_nrf52_usb_crates,
-             build_nrf52_usb_crates_and_upload_fw,
-             build_and_test_nrf52_crates,
-             check_templates,
-             check_fmt]
+     # Notice that because our repo expects all checks to pass, we don't need to include every other job
+     # as a dependency of the `deploy` job.
+     needs: [test_and_build_mdbook, build_nrf52_usb_crates_and_upload_fw]
 
      steps:
        - uses: actions/checkout@v4
@@ -240,8 +281,8 @@ jobs:
          env: # Or as an environment variable
            HIDDEN_MESSAGE: ${{ secrets.HIDDEN_MESSAGE }}
          run: |
-           . build_fns.sh
-           zip_output "./rust-exercises-${{ env.slug }}"
+          . ${{github.workspace}}/build_fns.sh
+          zip_output "./rust-exercises-${{ env.slug }}"
 
        - name: Upload Artifacts
          uses: actions/upload-artifact@v4
