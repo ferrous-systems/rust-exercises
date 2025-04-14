@@ -7,7 +7,7 @@
 #
 # This script will define functions for testing this repo.
 #
-#set -euo pipefail
+set -euo pipefail
 
 # Build and test the solutions
 # exercise-solutions
@@ -19,13 +19,13 @@ function test_examples() {
 
 # exercise-solutions/connected-mailbox
 # exercise-solutions/multi-threaded-mailbox
-function test() {
+function test_standalone() {
 	cargo test --locked
 	return 0
 }
 
 # qemu-code/uart-driver
-function build_qemu() {
+function build_qemu_core() {
 	RUSTC_BOOTSTRAP=1 cargo build -Zbuild-std=core --locked
 	return 0
 }
@@ -64,7 +64,7 @@ function mdbook_test_build() {
 	mdbook test
 	mdbook build
 	return 0
-}	
+}
 
 function zip_output() {
 	OUTPUT_NAME=${1:-./output}
@@ -90,6 +90,7 @@ function zip_output() {
 	cp ./nrf52-code/loopback-fw/target/thumbv7em-none-eabihf/release/loopback-fw "${OUTPUT_NAME}/nrf52-code/boards/dongle-fw/loopback-fw"
 	find "${OUTPUT_NAME}" -name target -type d -print0 | xargs -0 rm -rf
 	zip -r "${OUTPUT_NAME}.zip" "${OUTPUT_NAME}"
+	return 0
 }
 
 

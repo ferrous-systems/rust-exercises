@@ -2,108 +2,82 @@
 
 set -euo pipefail
 
-OUTPUT_NAME=${1:-./output}
+
+# This file is a helper file to help build and test local builds of this repository.
+
+# Load all build functions
+# All of the build/testing logic should be defined inside build_fns.sh
+. ./build_fns.sh
+
+
+# Check the formatting
+check_fmt
 
 # Build and test the solutions
 pushd exercise-solutions
-cargo test --locked
-cargo test --examples --locked
-cargo fmt --check
+test_examples
 pushd connected-mailbox
-cargo test --locked
-cargo fmt --check
+test_standalone
 popd
 pushd multi-threaded-mailbox
-cargo test --locked
-cargo fmt --check
+test_standalone
 popd
 popd
+
+# Build from source because armv8r-none-eabihf isn't Tier 2
 pushd qemu-code
 pushd uart-driver
-# Build from source because armv8r-none-eabihf isn't Tier 2
-RUSTC_BOOTSTRAP=1 cargo build -Zbuild-std=core --locked
+build_qemu_core
 popd
 popd
+
 pushd nrf52-code
 pushd boards/dk
-cargo build --target=thumbv7em-none-eabihf --locked --release
-cargo fmt --check
+build_thumbv7em
 popd
 pushd boards/dk-solution
-cargo build --target=thumbv7em-none-eabihf --locked --release
-cargo fmt --check
+build_thumbv7em
 popd
 pushd boards/dongle
-cargo build --target=thumbv7em-none-eabihf --locked --release
-cargo fmt --check
+build_thumbv7em
 popd
 pushd radio-app
-cargo build --target=thumbv7em-none-eabihf --locked --release
-cargo fmt --check
+build_thumbv7em
 popd
 for i in usb-lib-solutions/*; do
-    pushd $i
-    cargo build --target=thumbv7em-none-eabihf --locked --release
-    cargo fmt --check
-    cargo test --locked
+    pushd "$i"
+    build_test_thumbv7em
     popd
 done
 pushd usb-lib 
-    cargo build --target=thumbv7em-none-eabihf --release --locked
-    cargo fmt --check
+build_thumbv7em
 popd
 pushd usb-app
-cargo build --target=thumbv7em-none-eabihf --release --locked
-cargo fmt --check
+build_thumbv7em
 popd
 pushd usb-app-solutions
-cargo build --target=thumbv7em-none-eabihf --release --locked
-cargo fmt --check
+build_thumbv7em
 popd
 pushd consts
-cargo build --locked
-cargo fmt --check
+build_thumbv7em
 popd
 pushd puzzle-fw
-cargo build --target=thumbv7em-none-eabihf --release --locked
-cargo fmt --check
+build_thumbv7em
 popd
 pushd loopback-fw
-cargo build --target=thumbv7em-none-eabihf --release --locked
-cargo fmt --check
+build_thumbv7em
 popd
 popd
 
 # Only check the templates (they will panic at run-time due to the use of todo!)
 pushd exercise-templates
-cargo check --locked
-cargo fmt --check
+check_templates
 popd
 
+# Build and test the mdbook build
 pushd exercise-book
-mdbook test
-mdbook build
+mdbook_test_build
 popd
 
-rm -rf "${OUTPUT_NAME}"
-mkdir -p "${OUTPUT_NAME}"
-mkdir -p "${OUTPUT_NAME}/exercise-book"
-# Note: the use of the html subdirectory here is deliberate.
-# a) it allows the book to be provided as PDF in the future
-# b) it ensures the `../../exercise-solutions` links in the markdown also work
-#    when loaded from this output folder. The `../..` comes about
-#    because the Markdown book source lives in the `src` subfolder and so you
-#    have to go up one extra level. Adding an extra level in the output
-#    is easier than re-writing all the links at build time.
-mv ./exercise-book/book "${OUTPUT_NAME}/exercise-book/html"
-cp -r ./exercise-templates "${OUTPUT_NAME}/"
-cp -r ./exercise-solutions "${OUTPUT_NAME}/"
-cp -r ./nrf52-code "${OUTPUT_NAME}/"
-cp -r ./qemu-code "${OUTPUT_NAME}/"
-cp -r ./xtask "${OUTPUT_NAME}/"
-cp -r ./.cargo "${OUTPUT_NAME}/"
-cp -r ./tools "${OUTPUT_NAME}/"
-cp ./nrf52-code/puzzle-fw/target/thumbv7em-none-eabihf/release/puzzle-fw "${OUTPUT_NAME}/nrf52-code/boards/dongle-fw/puzzle-fw"
-cp ./nrf52-code/loopback-fw/target/thumbv7em-none-eabihf/release/loopback-fw "${OUTPUT_NAME}/nrf52-code/boards/dongle-fw/loopback-fw"
-find "${OUTPUT_NAME}" -name target -type d -print0 | xargs -0 rm -rf
-zip -r "${OUTPUT_NAME}.zip" "${OUTPUT_NAME}"
+# Zip the output
+zip_output
