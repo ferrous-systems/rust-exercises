@@ -18,6 +18,12 @@ This exercise does not require writing vast amounts of Rust code, but does requi
 
 1. Use `autocxx` to develop bindings to a `rapidcsv.h` and print out the dates in `example.csv`, from within Rust as well as the `RowCount`.
 
+You can do this by
+
+* using the `autocxx::include_cpp!` macro to generate `rapidcsv::Document` bindings for you, as well as auxiliary methods
+* writing a writing a `wrapper.h` that defines a `rapidcsv::Document` constructor called `open_csv` that returns a `rapidcsv::Document`
+* accesing the corresponding cells in your `rapidcsv::Document` with a `get_string_cell` method defined in `wrapper.h` that returns a `CxxString`, then printing it.
+
 You should get:
 
 ```console
@@ -36,6 +42,14 @@ Because there are 5 rows of data and a header row.
 ```console
 1.20
 ```
+
+A possible solution could do
+
+* getting the `doc.GetRowcount();`, then iterating over the rows
+* obtaining the `UniquePtr<CxxString>` to each date with `doc.string_cell(0, row_index);
+* filtering for the dates in June, which start with `6/`
+* taking the previous collection and obtaining the temperatures with `dog.get_string_cell(1, row_index)`
+* taking the average and pretty printing it with `println!("{:.2}", sum_of_june_temperatures / 30.0)`
 
 A full solution is available at `rust-exercises/exercises-solutions/cpp-interop`.
 
