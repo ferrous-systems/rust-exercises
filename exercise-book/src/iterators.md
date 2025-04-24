@@ -257,9 +257,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
 ### Step 5: Add the odd numbers
 
-Take the odd numbers, and add them using a [.fold()](https://doc.rust-lang.org/stable/std/iter/trait.Iterator.html#method.fold).
-
-You will probably reach for a `.sum::<i32>()`, but `.fold()`s are common enough in idiomatic Rust that we wanted to showcase one here.
+Take the odd numbers and [sum()](https://doc.rust-lang.org/stable/std/iter/trait.Iterator.html#method.sum) them.
 
 <details>
   <summary>Solution</summary>
@@ -278,9 +276,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         .filter_map(|line| line.ok())
         .filter_map(|line| line.parse::<i32>().ok())
         .filter(|num| num % 2 != 0)
-        .fold(0, |acc, elem| acc + elem);
-        // Also works
-        //.sum::<i32>();
+        .sum::<i32>();
 
     println!("{:?}", result);
 
