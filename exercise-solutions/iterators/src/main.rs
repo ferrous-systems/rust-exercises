@@ -3,15 +3,18 @@ use std::fs::File;
 use std::io::{BufRead, BufReader};
 
 fn main() -> Result<(), Box<dyn Error>> {
-    let second_reader = BufReader::new(File::open("../exercise-solutions/iterators/numbers.txt")?);
-    let nicer_sum: i32 = second_reader
+    let f = File::open("numbers.txt")?;
+    let reader = BufReader::new(f);
+
+    let sum_of_odd_numbers: i32 = reader
         .lines()
         .filter_map(|line| line.ok())
         .filter_map(|s| s.parse().ok())
         .filter(|num| num % 2 != 0)
-        .sum::<i32>();
+        .sum();
 
-    assert_eq!(nicer_sum, 31);
+    println!("Sum is {}", sum_of_odd_numbers);
+    assert_eq!(sum_of_odd_numbers, 31);
 
     Ok(())
 }
