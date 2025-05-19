@@ -299,6 +299,12 @@ pub enum Error {
 ///
 /// This return an `Err`or if called more than once
 pub fn init() -> Result<Board, Error> {
+    // probe-rs puts us in blocking mode, so wait for blocking mode as a proxy
+    // for waiting for probe-rs to connect.
+    while !defmt_rtt::in_blocking_mode() {
+        core::hint::spin_loop();
+    }
+
     let Some(periph) = hal::pac::Peripherals::take() else {
         return Err(Error::DoubleInit);
     };
