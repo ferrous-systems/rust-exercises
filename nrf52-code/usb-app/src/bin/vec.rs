@@ -17,13 +17,13 @@ fn main() -> ! {
 
     // `heapless::Vec` exposes the same API surface as `std::Vec` but some of its methods return a
     // `Result` to indicate whether the operation failed due to the `heapless::Vec` being full
-    defmt::println!("start: {:?}", buffer);
+    defmt::println!("start: {:?}", &buffer[..]);
 
     buffer.push(0).expect("buffer full");
-    defmt::println!("after `push`: {:?}", buffer);
+    defmt::println!("after `push`: {:?}", &buffer[..]);
 
     buffer.extend_from_slice(&[1, 2, 3]).expect("buffer full");
-    defmt::println!("after `extend`: {:?}", &buffer);
+    defmt::println!("after `extend`: {:?}", &buffer[..]);
 
     // TODO try this operation
     // buffer.extend_from_slice(&[4, 5, 6, 7]).expect("buffer full");

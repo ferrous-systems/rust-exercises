@@ -9,8 +9,8 @@ version = "0.0.0"
 cortex-m = { version = "0.7.7", features = ["critical-section-single-core"] }
 cortex-m-rt = "0.7.5"
 cortex-m-semihosting = "0.5.0"
-defmt = "1"
-defmt-rtt = "1"
+defmt = { git = "https://github.com/knurling-rs/defmt/", rev = "177c219", version = "1.0.1" }
+defmt-rtt = { git = "https://github.com/knurling-rs/defmt/", rev = "177c219" }
 embedded-hal = "1.0"
 grounded = { version = "0.2.0", features = ["cas"] }
 hal = { package = "nrf52840-hal", version = "0.18.0" }
