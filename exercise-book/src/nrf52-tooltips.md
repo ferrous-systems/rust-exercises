@@ -1,6 +1,6 @@
 # Tooltips
 
-Besides the ones covered in this workshop, there are many more tools that make embedded development easier.
+Besides the ones covered in this training, there are many more tools that make embedded development easier.
 Here, we'd like to introduce you to some of these tools and encourage you to play around with them and adopt them if you find them helpful!
 
 ## `cargo-bloat`
@@ -13,7 +13,7 @@ $ cargo install cargo-bloat
 Installed package `cargo-bloat v0.10.0` (..)
 ```
 
-Let's inspect our radio workshop's `hello` program with it:
+Let's inspect our radio exercises's `hello` program with it:
 
 ```console
 $ cd nrf52-code/radio-app

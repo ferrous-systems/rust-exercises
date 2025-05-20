@@ -1,6 +1,6 @@
 # Dongle USB functionality is not working
 
-> NOTE: this section only applies to the Beginner workshop
+> NOTE: this section only applies to the Radio exercise
 
 If you don't get any output from `cargo xtask serial-term` it could just have been that first line got lost when re-enumerating the device from bootloader mode to the loopback application.
 

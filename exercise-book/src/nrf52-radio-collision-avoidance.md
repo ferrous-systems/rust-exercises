@@ -8,7 +8,7 @@ The first method scans the currently selected channel (see `set_channel()`), mea
 
 Under the 802.15.4 specification, before sending a data packet devices must first check if there's communication going on in the channel. This process is known as Clear Channel Assessment (CCA). The `send` method we have been used performs CCA in a loop and sends the packet only when the channel appears to be idle. The `try_send` method performs CCA *once* and returns the `Err` variant if the channel appears to be busy. In this failure scenario the device does not send any packet.
 
-The `Radio` abstraction supports 2 CCA modes: `CarrierSense` and `EnergyDetection`. `CarrierSense` is the default CCA mode and what we have been using in this workshop. `CarrierSense` will only look for ongoing 802.15.4 traffic in the channel but ignore other traffic like 2.4 GHz WiFi and Bluetooth. The `EnergyDetection` method is able to detect ongoing non-802.15.4 traffic.
+The `Radio` abstraction supports 2 CCA modes: `CarrierSense` and `EnergyDetection`. `CarrierSense` is the default CCA mode and what we have been using in this exercise. `CarrierSense` will only look for ongoing 802.15.4 traffic in the channel but ignore other traffic like 2.4 GHz WiFi and Bluetooth. The `EnergyDetection` method is able to detect ongoing non-802.15.4 traffic.
 
 Here are some things for you to try out:
 

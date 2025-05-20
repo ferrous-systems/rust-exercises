@@ -27,7 +27,7 @@
 
 - [Self-check project](./self-check.md)
 
-# Bare-Metal Firmware on the nRF52
+# Working with the nRF52
 
 - [Preparation](./nrf52-preparation.md)
   - [Code Organization](./nrf52-code-organisation.md)
@@ -44,9 +44,9 @@
   - [`no probe was found` error](./nrf52-troubleshoot-probe-not-found.md)
   - [`location info is incomplete` error](./nrf52-troubleshoot-location-info.md)
 
-## nRF52 Radio Workbook
+# Bare-Metal Rust: Getting Started
 
-- [nRF52 Radio Workbook](./nrf52-radio-workbook.md)
+- [nRF52 Radio Exercise](./nrf52-radio-exercise.md)
   - [Parts of an Embedded Program](./nrf52-radio-parts-embedded-program.md)
   - [Building an Embedded Program](./nrf52-radio-building-program.md)
   - [Binary Size](./nrf52-radio-binary-size.md)
@@ -68,14 +68,14 @@
     - [Interrupt handling](./nrf52-radio-interrupt-handling.md)
     - [Starting a Project from Scratch](./nrf52-radio-from-scratch.md)
 
-## nRF52 HAL Workbook
+# Bare-Metal Rust: Using a HAL
 
-- [nRF52 HAL Workbook](./nrf52-hal-workbook.md)
+- [nRF52 HAL Exercise](./nrf52-hal-exercise.md)
   - [Adding Buttons](./nrf52-hal-buttons.md)
 
-## nRF52 USB Workbook
+# Bare-Metal Rust: Interrupts
 
-- [nRF52 USB Workbook](./nrf52-usb-workbook.md)
+- [nRF52 USB Exercise](./nrf52-usb-exercise.md)
   - [Listing USB Devices](./nrf52-usb-listing-usb-devices.md)
   - [Hello, world!](./nrf52-usb-hello-world.md)
   - [Checking the API documentation](./nrf52-usb-api-documentation.md)

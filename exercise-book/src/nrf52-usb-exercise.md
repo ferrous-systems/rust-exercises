@@ -1,6 +1,6 @@
-# nRF52 USB Workbook
+# nRF52 USB Exercise
 
-In this workshop you'll learn to:
+In this exercise you'll learn to:
 
 - work with registers and peripherals from Rust
 - handle external events in embedded Rust applications using RTIC
@@ -17,8 +17,8 @@ The board has two USB ports: J2 and J3 and an on-board J-Link programmer / debug
 
 [id-ports]: ./nrf52-hardware.md#nrf52840-development-kit-dk
 
-## Workshop Steps
+## Exercise Steps
 
-You will need to complete the workshop steps in order. It's OK if you don't get them all finished, but you must complete one before starting the next one. You can look at the solution for each step if you get stuck.
+You will need to complete the exercise steps in order. It's OK if you don't get them all finished, but you must complete one before starting the next one. You can look at the solution for each step if you get stuck.
 
 If you are reading the book view, the steps are listed on the left in the sidebar (use the hamburger if that is hidden). If you are reading the source on Github, go back to the [SUMMARY.md](./SUMMARY.md) file to see the steps.

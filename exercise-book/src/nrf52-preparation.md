@@ -18,7 +18,7 @@ For the span of these exercises keep the nRF52840 DK connected to your PC using 
 
 ## Starter code
 
-Project templates and starter code for this workshop can be found at [in this repo](https://github.com/ferrous-systems/rust-exercises).
+Project templates and starter code for our trainings can be found at [in this repo](https://github.com/ferrous-systems/rust-exercises).
 
 ## Required tools
 

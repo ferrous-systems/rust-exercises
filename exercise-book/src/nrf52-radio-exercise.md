@@ -1,6 +1,6 @@
-# nRF52 Radio Workbook
+# nRF52 Radio Exercise
 
-In this workshop you'll get familiar with:
+In this exercise you'll get familiar with:
 
 - the structure of embedded Rust programs,
 - the existing embedded Rust tooling, and
@@ -8,7 +8,7 @@ In this workshop you'll get familiar with:
 
 To put these concepts in practice you'll write applications that use the radio functionality of the nRF52840 microcontroller.
 
-You have received two development boards for this workshop. We'll use both in the this radio workshop.
+You should have acquired two development boards for your training. We'll use both in the this radio exercise.
 
 ## The nRF52840 Development Kit
 
@@ -26,7 +26,7 @@ The board has the form factor of a USB stick and can be directly connected to on
 
 ## The nRF52840
 
-Both development boards have an nRF52840 microcontroller. Here are some details about it that are relevant to this workshop.
+Both development boards have an nRF52840 microcontroller. Here are some details that are relevant to these exercises:
 
 - single core ARM Cortex-M4 processor clocked at 64 MHz
 - 1 MB of Flash (at address `0x0000_0000`)

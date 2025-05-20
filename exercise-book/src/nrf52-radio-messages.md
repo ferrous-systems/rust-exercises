@@ -82,7 +82,7 @@ On the other hand, `"Hello"` is a string literal with type `&str`. `str` strings
 
 ## Printing strings and characters
 
-In this workshop we'll work with ASCII strings so byte string literals that contain no escaped characters are OK to use as packet payloads.
+In this exercise we'll work with ASCII strings so byte string literals that contain no escaped characters are OK to use as packet payloads.
 
 You'll note that `defmt::println!("{:?}", b"Hello")` will print `[72, 101, 108, 108, 111]` rather than `"Hello"` and that the `{}` format specifier (`Display`) does not work. This is because the type of the literal is `&[u8; N]` and in Rust this type means "bytes"; those bytes could be ASCII data, UTF-8 data or something else.
 

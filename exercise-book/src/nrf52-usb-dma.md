@@ -1,6 +1,6 @@
 # Direct Memory Access
 
-🔎 this section covers the implementation of the `Ep0In` abstraction; it's not necessary to fully understand this section to continue working on the workshop.
+🔎 this section covers the implementation of the `Ep0In` abstraction; it's not necessary to fully understand this section to continue working on the exercise.
 
 Let's zoom into the `Ep0In` abstraction we used in `usb-3.rs`.
 

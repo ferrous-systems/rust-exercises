@@ -16,7 +16,7 @@ Each OS may perform the enumeration process slightly differently but the process
 * A `GET_DESCRIPTOR` request, to get the device descriptor.
 * A `SET_ADDRESS` request, to assign an address to the device.
 
-These host actions will be perceived as *events* by the nRF52840 and these *events* will cause some bits to be set in the relevant register, and then an *interrupt* to be fired. During this workshop, we will gradually parse and handle these events and learn more about Embedded Rust along the way.
+These host actions will be perceived as *events* by the nRF52840 and these *events* will cause some bits to be set in the relevant register, and then an *interrupt* to be fired. During this exercise, we will gradually parse and handle these events and learn more about Embedded Rust along the way.
 
 There are more USB concepts involved that we'll need to cover, like descriptors, configurations, interfaces and endpoints but for now let's see how to handle USB events.
 
