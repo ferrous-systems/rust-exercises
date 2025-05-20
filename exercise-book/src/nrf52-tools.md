@@ -21,13 +21,13 @@ Follow the instructions for your distribution on [https://code.visualstudio.com/
 
 ### Install dependencies
 
-Some of our tools depend on `pkg-config` and `libudev.pc`.
+Some of our tools require a C compiler.
 
 Ensure you have the proper packages installed.
 On Debian based distributions you can use:
 
 ```console
-sudo apt-get install libudev-dev libusb-1.0-0-dev
+sudo apt-get install gcc
 ```
 
 ### Configure USB Device access for non-root users
