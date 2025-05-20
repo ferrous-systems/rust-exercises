@@ -1,15 +1,17 @@
 #![no_main]
 #![no_std]
 
+use dk::{
+    peripheral::USBD,
+    usbd::{self, Event},
+};
+
 // this imports `src/lib.rs`to retrieve our global logger + panicking-behavior
 use usb_app as _;
 
 #[rtic::app(device = dk, peripherals = false)]
 mod app {
-    use dk::{
-        peripheral::USBD,
-        usbd::{self, Event},
-    };
+    use super::*;
 
     #[local]
     struct MyLocalResources {
@@ -34,20 +36,19 @@ mod app {
 
     #[task(binds = USBD, local = [usbd])]
     fn handle_usb_interrupt(cx: handle_usb_interrupt::Context) {
-        let usbd = cx.local.usbd;
-
-        while let Some(event) = usbd::next_event(usbd) {
-            on_event(usbd, event)
+        while let Some(event) = usbd::next_event(cx.local.usbd) {
+            on_event(cx.local.usbd, event)
         }
     }
+}
 
-    fn on_event(_usbd: &USBD, event: Event) {
-        defmt::debug!("USB: {} @ {=u64:tus}", event, dk::uptime_us());
+/// Handle a USB event (in interrupt context)
+fn on_event(_usbd: &USBD, event: Event) {
+    defmt::debug!("USB: {} @ {=u64:tus}", event, dk::uptime_us());
 
-        match event {
-            Event::UsbReset => todo!(),
-            Event::UsbEp0Setup => todo!(),
-            Event::UsbEp0DataDone => todo!(),
-        }
+    match event {
+        Event::UsbReset => todo!(),
+        Event::UsbEp0Setup => todo!(),
+        Event::UsbEp0DataDone => todo!(),
     }
 }

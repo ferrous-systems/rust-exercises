@@ -44,10 +44,7 @@ mod app {
     fn on_power_event(cx: on_power_event::Context) {
         defmt::println!("POWER event occurred");
 
-        // resources available to this task
-        let resources = cx.local;
-
         // clear the interrupt flag; otherwise this task will run again after it returns
-        resources.power.events_usbdetected.reset();
+        cx.local.power.events_usbdetected.reset();
     }
 }

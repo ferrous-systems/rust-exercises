@@ -12,7 +12,7 @@ In this starter code the `USBD` peripheral is initialized in `init` and a task, 
 
 This code will panic because `Event::UsbReset` is not handled yet - it has a `todo!()` on the relevant `match` arm.
 
-✅ Go to `fn on_event(...)`, line 48. You'll need to handle the `Event::UsbReset` case - for now, just print the log message _returning to the Default state_.
+✅ Go to `fn on_event(...)`. You'll need to handle the `Event::UsbReset` case - for now, just print the log message _returning to the Default state_.
 
 ✅ Now handle the `Event::UsbEp0Setup` case - for now, just print the log message _usb-1 exercise complete_ and then execute `dk::exit()` to shut down the microcontroller.
 
