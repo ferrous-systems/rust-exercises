@@ -8,6 +8,6 @@ version = "0.0.0"
 color-eyre = "0.6"
 ctrlc = "3.4"
 hidapi = "2.4"
-rusb = "0.9"
 consts = { path = "../nrf52-code/consts" }
 serialport = "4.2"
+nusb = "0.1.14"

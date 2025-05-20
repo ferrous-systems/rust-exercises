@@ -66,7 +66,7 @@ pub fn serial_term() -> color_eyre::Result<()> {
             Ok(n) => {
                 let mut stdout = stdout.lock();
                 stdout.write_all(&read_buf[..n])?;
-                stdout.flush()?;        
+                stdout.flush()?;
             }
             Err(e) if e.kind() == std::io::ErrorKind::TimedOut => {
                 // Go around
@@ -82,46 +82,49 @@ pub fn serial_term() -> color_eyre::Result<()> {
     Ok(())
 }
 
+/// List all the USB VIDs and PIDs, and highlight any we know about
 pub fn usb_list() -> color_eyre::Result<()> {
-    for dev in rusb::devices()?.iter() {
-        let desc = dev.device_descriptor()?;
-        let suffix = match (desc.vendor_id(), desc.product_id()) {
-            (0x1366, pid) if (pid >> 8) == 0x10 || (pid >> 8) == 0x01 => " <- J-Link on the nRF52840 Development Kit",
+    for dev in nusb::list_devices()? {
+        let suffix = match (dev.vendor_id(), dev.product_id()) {
+            (0x1366, pid) if (pid >> 8) == 0x10 || (pid >> 8) == 0x01 => {
+                " <- J-Link on the nRF52840 Development Kit"
+            }
             (0x1915, 0x521f) => " <- nRF52840 Dongle (in bootloader mode)",
-            (consts::USB_VID_DEMO, consts::USB_PID_DONGLE_LOOPBACK) => " <- nRF52840 Dongle (loopback-fw)",
-            (consts::USB_VID_DEMO, consts::USB_PID_DONGLE_PUZZLE) => " <- nRF52840 Dongle (puzzle-fw)",
-            (consts::USB_VID_DEMO, consts::USB_PID_RTIC_DEMO) => " <- nRF52840 on the nRF52840 Development Kit",
+            (consts::USB_VID_DEMO, consts::USB_PID_DONGLE_LOOPBACK) => {
+                " <- nRF52840 Dongle (loopback-fw)"
+            }
+            (consts::USB_VID_DEMO, consts::USB_PID_DONGLE_PUZZLE) => {
+                " <- nRF52840 Dongle (puzzle-fw)"
+            }
+            (consts::USB_VID_DEMO, consts::USB_PID_RTIC_DEMO) => {
+                " <- nRF52840 on the nRF52840 Development Kit"
+            }
             _ => "",
         };
 
-        println!("{:?}{}", dev, suffix);
+        println!(
+            "Bus {:03} Device {:03}: ID {:04x}:{:04x}{}",
+            dev.bus_number(),
+            dev.device_address(),
+            dev.vendor_id(),
+            dev.product_id(),
+            suffix
+        );
     }
 
     Ok(())
 }
 
 pub fn usb_descriptors() -> color_eyre::Result<()> {
-    for dev in rusb::devices()?.iter() {
-        let dev_desc = dev.device_descriptor()?;
-        if dev_desc.vendor_id() == consts::USB_VID_DEMO && dev_desc.product_id() == consts::USB_PID_RTIC_DEMO {
-            println!("{:#?}", dev_desc);
-            println!("address: {}", dev.address());
-            for i in 0..dev_desc.num_configurations() {
-                let conf_desc = dev.config_descriptor(i)?;
-                println!("config{}: {:#?}", i, conf_desc);
-
-                for iface in conf_desc.interfaces() {
-                    println!(
-                        "iface{}: {:#?}",
-                        iface.number(),
-                        iface.descriptors().collect::<Vec<_>>()
-                    );
+    for dev in nusb::list_devices()? {
+        if dev.vendor_id() == consts::USB_VID_DEMO && dev.product_id() == consts::USB_PID_RTIC_DEMO {
+            println!("Found RTIC demo on Address {}", dev.device_address());
+            println!("{:#?}", dev);
+            if let Ok(device) = dev.open() {
+                for (cfgno, config) in device.configurations().enumerate() {
+                    println!("config{}: {:#?}", cfgno, config);
                 }
             }
-
-            // TODO open the device; this will force the OS to configure it
-            // let mut handle = dev.open()?;
-
             return Ok(());
         }
     }
