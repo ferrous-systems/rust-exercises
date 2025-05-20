@@ -10,4 +10,4 @@ During the SETUP stage the host sends 8 bytes of data that identify the control 
 
 For detailed information about control transfers see [Chapter 4 of USB In a Nutshell](https://www.beyondlogic.org/usbnutshell/usb4.shtml).
 
-In this workshop, we expect the host to perform a control transfer to find out what kind of device we are.
+In this exercise, we expect the host to perform a control transfer to find out what kind of device we are.

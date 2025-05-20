@@ -2,7 +2,7 @@
 
 ## String descriptors
 
-If you'd like to continue working on your workshop project, we recommend adding String Descriptors support to the USB firmware. To do this, follow these steps:
+If you'd like to continue working on your project, we recommend adding String Descriptors support to the USB firmware. To do this, follow these steps:
 
 ✅ Read through section 9.6.7 of the USB spec, which covers string descriptors.
 

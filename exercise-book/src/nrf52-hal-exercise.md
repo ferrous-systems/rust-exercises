@@ -1,6 +1,6 @@
-# nRF52 HAL Workbook
+# nRF52 HAL Exercise
 
-In this workshop you'll learn to:
+In this exercise you'll learn to:
 
 - use a HAL to provide features in a BSP
 - configure GPIO pins using the nRF52 HAL
@@ -9,7 +9,7 @@ To test your BSP changes, you will modify a small example: `hal-app/src/bin/blin
 
 You will need an nRF52840 Development Kit for this exercise, but not the nRF USB dongle.
 
-If you haven't completed the Radio Workbook, you should start there, and go at least as far as completing the "Timers and Time" section.
+If you haven't completed the Radio Exercise, you should start there, and go at least as far as completing the "Timers and Time" section.
 
 ## The nRF52840 Development Kit
 

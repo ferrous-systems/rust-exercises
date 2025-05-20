@@ -10,7 +10,7 @@ let board = dk::init().unwrap();
 
 This grants you access to the board's peripherals, like its LEDs.
 
-The `dk` crate / library is a Board Support Package (BSP) tailored to this workshop to make accessing the peripherals used in this workshop extra seamless. You can find its source code at [`nrf52-code/boards/dk/src/`](../../nrf52-code/boards/dk/src/).
+The `dk` crate / library is a Board Support Package (BSP) tailored to this training to make accessing the peripherals used in this exercise as seamless as possible. You can find its source code at [`nrf52-code/boards/dk/src/`](../../nrf52-code/boards/dk/src/).
 
 `dk` is based on the [`nrf52840-hal`] crate, which is a Hardware Abstraction Layer (HAL) over the nRF52840 System on Chip. The purpose of a HAL is to abstract away the device-specific details of the hardware, for example registers, and instead expose a higher level API more suitable for application development.
 

@@ -8,7 +8,7 @@ In this starter code the `USBD` peripheral is initialized in `init` and a task, 
 
 ✅ Connect the USB cable to the port J3 then run the starter code.
 
-❗️ Keep the cable connected to the J3 port for the rest of the workshop
+❗️ Keep the cable connected to the J3 port for the rest of the exercise.
 
 This code will panic because `Event::UsbReset` is not handled yet - it has a `todo!()` on the relevant `match` arm.
 

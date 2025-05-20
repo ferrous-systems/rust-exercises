@@ -1,8 +1,8 @@
 # nRF52 Code Organization
 
-## Workshop Materials
+## Training Materials
 
-You will need a local copy of the workshop materials. We recommend the Github release as it contains pre-compiled HTML docs and pre-compiled dongle firmware, but you can clone the repo with `git` and check out the appropriate tag as well if you prefer.
+You will need a local copy of the training materials. We recommend the Github release as it contains pre-compiled HTML docs and pre-compiled dongle firmware, but you can clone the repo with `git` and check out the appropriate tag as well if you prefer.
 
 Ask your trainer which release/tag you should be using.
 
@@ -19,7 +19,7 @@ git clone https://github.com/ferrous-systems/rust-exercises.git
 cd rust-exercises
 ```
 
-The git repository contains all workshop materials, i.e. code snippets, custom tools and the source for this handbook, but not the pre-compiled dongle firmware.
+The git repository contains all training materials, i.e. code snippets, custom tools and the source for this handbook, but not the pre-compiled dongle firmware.
 
 ## Firmware
 
