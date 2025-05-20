@@ -12,7 +12,7 @@ mod app {
         usbd::{self, Ep0In, Event},
     };
     use usb2::State;
-    // HEADS UP to use *your* USB packet parser uncomment line 12 and remove line 13
+    // HEADS UP to use *your* USB packet parser swap the two lines below
     // use usb::{Request, Descriptor};
     use usb2::{GetDescriptor as Descriptor, StandardRequest as Request};
 
