@@ -117,7 +117,8 @@ pub fn usb_list() -> color_eyre::Result<()> {
 
 pub fn usb_descriptors() -> color_eyre::Result<()> {
     for dev in nusb::list_devices()? {
-        if dev.vendor_id() == consts::USB_VID_DEMO && dev.product_id() == consts::USB_PID_RTIC_DEMO {
+        if dev.vendor_id() == consts::USB_VID_DEMO && dev.product_id() == consts::USB_PID_RTIC_DEMO
+        {
             println!("Found RTIC demo on Address {}", dev.device_address());
             println!("{:#?}", dev);
             if let Ok(device) = dev.open() {

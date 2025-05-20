@@ -31,7 +31,8 @@ COMMANDS:
     usb-list                 list all connected USB devices; highlights workshop devices
     
 ",
-vid = consts::USB_VID_DEMO, pid = consts::USB_PID_RTIC_DEMO,
+                vid = consts::USB_VID_DEMO,
+                pid = consts::USB_PID_RTIC_DEMO,
             );
 
             Ok(())
