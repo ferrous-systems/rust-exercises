@@ -73,7 +73,7 @@ impl Ep0In {
     /// the hardware
     pub fn end(&mut self, usbd: &USBD) {
         if usbd.events_ep0datadone.read().bits() == 0 {
-            panic!("Ep0In.end called before the EP0DATADONE event was raised");
+            panic!("Ep0In::end called before the EP0DATADONE event was raised");
         } else {
             // DMA transfer complete
             dma_end();
@@ -190,7 +190,7 @@ pub fn next_event(usbd: &USBD) -> Option<Event> {
     }
 
     if usbd.events_ep0datadone.read().bits() != 0 {
-        // this will be cleared by the `Ep0In.end` method
+        // this will be cleared by the `Ep0In::end` method
         // usbd.events_ep0datadone.reset();
 
         return Some(Event::UsbEp0DataDone);

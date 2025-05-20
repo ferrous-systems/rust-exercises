@@ -4,7 +4,7 @@
 
 Let's zoom into the `Ep0In` abstraction we used in `usb-3.rs`.
 
-✅ Open the file. Use VSCode's "Go to Definition" to see the implementation of the `Ep0In.start()` method.
+✅ Open the file. Use VSCode's "Go to Definition" to see the implementation of the `Ep0In::start()` method.
 
 This is how data transfers over USB work on the nRF52840: for each endpoint there's a buffer in the USBD peripheral. Data sent by the host over USB to a particular endpoint will be stored in the corresponding endpoint buffer. Likewise, data stored in one of these endpoint buffers can be send to the host over USB from that particular endpoint. These buffers are not directly accessible by the CPU but data stored in RAM can be copied into these buffers; likewise, the contents of an endpoint buffer can be copied into RAM. A second peripheral, the Direct Memory Access (DMA) peripheral, can copy data between these endpoint buffers and RAM. The process of copying data in either direction is referred to as "a DMA transfer".
 
