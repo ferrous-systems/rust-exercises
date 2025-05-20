@@ -51,18 +51,15 @@ mod app {
     fn on_power_event(cx: on_power_event::Context) {
         defmt::println!("POWER event occurred");
 
-        // resources available to this task
-        let resources = cx.local;
+        *cx.local.counter += 1;
 
-        *resources.counter += 1;
-        let n = *resources.counter;
         defmt::println!(
             "on_power_event: cable connected {} time{}",
-            n,
-            if n != 1 { "s" } else { "" }
+            *cx.local.counter,
+            if *cx.local.counter != 1 { "s" } else { "" }
         );
 
         // clear the interrupt flag; otherwise this task will run again after it returns
-        resources.power.events_usbdetected.reset();
+        cx.local.power.events_usbdetected.reset();
     }
 }
