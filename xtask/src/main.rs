@@ -25,7 +25,7 @@ USAGE:
     cargo xtask [COMMAND]
 
 COMMANDS:
-    change-channel [NUMBER]  instructs the nRF Dongle to listen to a different radio channel
+    change-channel [NUMBER]  change the nRF Dongle to a different radio channel (NUMBER is 11..=26)
     serial-term              displays the log output of the Dongle
     usb-descriptors          print the USB descriptors for VID {vid:04x} PID {pid:04x}
     usb-list                 list all connected USB devices; highlights workshop devices
