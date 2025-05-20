@@ -54,6 +54,9 @@ pub fn serial_term() -> color_eyre::Result<()> {
     let mut port = serialport::new(&dongle.port_name, 115200).open()?;
     port.set_timeout(Duration::from_millis(10))?;
 
+    // get dongle to print sign-on banner
+    port.write_all(b"?")?;
+
     static CONTINUE: AtomicBool = AtomicBool::new(true);
 
     // properly close the serial device on Ctrl-C
