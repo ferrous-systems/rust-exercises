@@ -7,4 +7,5 @@ version = "0.0.0"
 description = "Library for parsing USB requests"
 
 [dependencies]
-defmt = "1"
+defmt = { git = "https://github.com/knurling-rs/defmt/", rev = "177c219", version = "1.0.1" }
+defmt-rtt = { git = "https://github.com/knurling-rs/defmt/", rev = "177c219" }

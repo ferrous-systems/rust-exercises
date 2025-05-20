@@ -62,8 +62,8 @@ mod app {
                 // composed of a high register (WINDEXH) and a low register (WINDEXL)
                 let windex = (u16::from(usbd.windexh.read().windexh().bits()) << 8)
                     | u16::from(usbd.windexl.read().windexl().bits());
-                // wValue is a generic paremeter field meaning depends on the request type (e.g. contains the device
-                // address in SET_ADRESS requests)
+                // wValue is a generic parameter field meaning depends on the request type (e.g. contains the device
+                // address in SET_ADDRESS requests)
                 // composed of a high register (WVALUEH) and a low register (WVALUEL)
                 let wvalue = (u16::from(usbd.wvalueh.read().wvalueh().bits()) << 8)
                     | u16::from(usbd.wvaluel.read().wvaluel().bits());

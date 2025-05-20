@@ -29,18 +29,15 @@ wget https://cdimage.debian.org/images/cloud/bookworm/20250316-2053/debian-12-no
 
 ## Task 1a - Fetch the BIOS (AArch64 only)
 
-If you are going to use AArch64, you'll need a UEFI boot-loader because QEMU
-doesn't come with one (or at least, the QEMU in homebrew that I used didn't come
-with one).
+If you are going to use AArch64, you'll need a UEFI boot-loader. On macOS,
+homebrew installs a copy of [EDK2](https://github.com/tianocore/edk2), which is
+fine for our use-case. On my machine it was installed into
+`/opt/homebrew/Cellar/qemu/9.2.2/share/qemu/edk2-aarch64-code.fd`. You'll need
+to have a look in your QEMU installation directory to find where your copy is.
+Once you have found it, copy it to `./QEMU_EFI.fd`, which is what the following
+`qemu-system-aarch64` command lines expect.
 
-Download it from <https://gist.githubusercontent.com/theboreddev/5f79f86a0f163e4a1f9df919da5eea20/raw/f546faea68f4149c06cca88fa67ace07a3758268/QEMU_EFI-a096471-edk2-stable202011.tar.gz> and unpack it.
-
-```bash
-wget https://gist.githubusercontent.com/theboreddev/5f79f86a0f163e4a1f9df919da5eea20/raw/f546faea68f4149c06cca88fa67ace07a3758268/QEMU_EFI-a096471-edk2-stable202011.tar.gz
-tar xvf QEMU_EFI-a096471-edk2-stable202011.tar.gz
-```
-
-(Windows users, use your favourite tools for this)
+When emulating x86-64, QEMU uses a copy of SeaBIOS automatically.
 
 ## Task 2 - Resize the disk image
 
@@ -146,6 +143,7 @@ curl https://sh.rustup.rs | bash
 source $HOME/.cargo/env
 rustup component add rust-src
 cargo install --locked bindgen-cli
+rustup component add rust-src
 ```
 
 ## Task 6 - Build a kernel
@@ -555,8 +553,8 @@ to look.
 [example code]: https://github.com/torvalds/linux/blob/v6.14/samples/rust/rust_misc_device.rs
 
 To send an ioctl to your device, you can use this Rust program. You'll need to
-put it in a package (`cargo new --bin openfile`) and add the `nix` crate (`cargo
-add nix`).
+put it in a package (`cargo new --bin openfile`) and add the `nix` crate with
+`ioctl` feature enabled (`cargo add -F ioctl nix`).
 
 ```rust ignore
 use std::os::fd::AsRawFd;

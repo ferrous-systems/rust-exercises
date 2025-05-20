@@ -9,10 +9,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "bef38d45163c2f1dde094a7dfd33ccf595c92905c8f8f4fdc18d06fb1037718a"
 
 [[package]]
-name = "defmt"
-version = "1.0.0"
+name = "critical-section"
+version = "1.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b834fbddebd69852b7742f3b1fdd9df277c8f36a028c03b7002f7f513bac65fe"
+checksum = "790eea4361631c5e7d22598ecd5723ff611904e3344ce8720784c93e3d83d40b"
+
+[[package]]
+name = "defmt"
+version = "1.0.1"
+source = "git+https://github.com/knurling-rs/defmt/?rev=177c219#177c2195072caa1759ebe92221f4a50204cce46c"
 dependencies = [
  "bitflags",
  "defmt-macros",
@@ -20,9 +25,8 @@ dependencies = [
 
 [[package]]
 name = "defmt-macros"
-version = "1.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d6e0f20557738ff14dad3e698b57da89f04d708433024c6f931dde286051b94a"
+version = "1.0.1"
+source = "git+https://github.com/knurling-rs/defmt/?rev=177c219#177c2195072caa1759ebe92221f4a50204cce46c"
 dependencies = [
  "defmt-parser",
  "proc-macro-error2",
@@ -34,10 +38,18 @@ dependencies = [
 [[package]]
 name = "defmt-parser"
 version = "1.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "10d60334b3b2e7c9d91ef8150abfb6fa4c1c39ebbcf4a81c2e346aad939fee3e"
+source = "git+https://github.com/knurling-rs/defmt/?rev=177c219#177c2195072caa1759ebe92221f4a50204cce46c"
 dependencies = [
  "thiserror",
+]
+
+[[package]]
+name = "defmt-rtt"
+version = "1.0.0"
+source = "git+https://github.com/knurling-rs/defmt/?rev=177c219#177c2195072caa1759ebe92221f4a50204cce46c"
+dependencies = [
+ "critical-section",
+ "defmt",
 ]
 
 [[package]]
@@ -122,4 +134,5 @@ name = "usb"
 version = "0.0.0"
 dependencies = [
  "defmt",
+ "defmt-rtt",
 ]
