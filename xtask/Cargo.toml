@@ -7,7 +7,7 @@ version = "0.0.0"
 [dependencies]
 color-eyre = "0.6"
 ctrlc = "3.4"
-hidapi = "2.4"
+hidapi = { git = "https://github.com/ruabmbua/hidapi-rs/", rev = "1a1d1a7", default-features = false, features = ["linux-native-basic-udev"] }
 consts = { path = "../nrf52-code/consts" }
-serialport = "4.2"
+serialport = { version = "4.7", default-features = false }
 nusb = "0.1.14"
