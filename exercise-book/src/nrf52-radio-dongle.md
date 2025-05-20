@@ -64,7 +64,7 @@ After the device has been programmed it will automatically reset and start runni
 ```console
 $ cyme
 (..)
-  2  16  0x1209 0x0309 Dongle Loopback          -                 12.0 Mb/s
+  2  16  0x1209 0x0002 Dongle Loopback          -                 12.0 Mb/s
 ```
 
 The `loopback` app will log messages over the USB interface. To display these messages on the host we have provided a cross-platform tool: `cargo xtask serial-term`.
