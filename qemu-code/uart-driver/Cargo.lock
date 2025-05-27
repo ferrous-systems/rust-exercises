@@ -15,6 +15,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ec10a97112c787a1bc27abd5072daf873bb9f7aa9a6792ee7489e86763f4b762"
 
 [[package]]
+name = "arm-targets"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "49743b294a925497a72abb5d7f3b0c9a1b390a65a92d72e38e915df767438664"
+
+[[package]]
 name = "bitbybit"
 version = "1.3.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -33,19 +39,43 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a4c9f02b96d447bb082830944a2aa4c13b6bdcfb3edb2100ee6357e47b6560c3"
 dependencies = [
  "arbitrary-int",
- "arm-targets",
+ "arm-targets 0.1.0",
  "bitbybit",
  "critical-section",
 ]
 
 [[package]]
-name = "cortex-r-rt"
+name = "cortex-ar"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "13f5d76ad942231363ff04266e7ce867db0450f520f30579fe3007b639902367"
+dependencies = [
+ "arbitrary-int",
+ "arm-targets 0.2.0",
+ "bitbybit",
+ "num_enum",
+]
+
+[[package]]
+name = "cortex-ar-rt-macros"
 version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "868084f338c6d38a9fe64175d70d83c5ae421d600f39999e6e4f85d0fcab3066"
+checksum = "d8f9e342ee3ad1cfa79ab8746e26e0173241ef10d992f6c1d915d93052690c27"
 dependencies = [
- "arm-targets",
- "cortex-ar",
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
+name = "cortex-r-rt"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "12a98c416d305cb86ccf835fefe3476ec148578376a3aded3da10a2e61fcb2de"
+dependencies = [
+ "arm-targets 0.2.0",
+ "cortex-ar 0.2.0",
+ "cortex-ar-rt-macros",
  "semihosting",
 ]
 
@@ -71,6 +101,26 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0500c475a83c5a51a53163be2e18137ce9de3a71dc9be1f23eff451e69463951"
 dependencies = [
  "proc-macro-error2",
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
+name = "num_enum"
+version = "0.7.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4e613fc340b2220f734a8595782c551f1250e969d87d3be1ae0579e8d4065179"
+dependencies = [
+ "num_enum_derive",
+]
+
+[[package]]
+name = "num_enum_derive"
+version = "0.7.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "af1844ef2428cc3e1cb900be36181049ef3d3193c63e43026cfe202983b27a56"
+dependencies = [
  "proc-macro2",
  "quote",
  "syn",
@@ -138,7 +188,7 @@ name = "uart-exercise"
 version = "0.1.0"
 dependencies = [
  "bitbybit",
- "cortex-ar",
+ "cortex-ar 0.1.0",
  "cortex-r-rt",
  "critical-section",
  "derive-mmio",
