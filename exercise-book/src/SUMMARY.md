@@ -22,6 +22,7 @@
 - [Shapes](shapes.md)
 - [Connected Mailbox](./connected-mailbox.md)
 - [Multithreaded mailbox](./multi-threaded-mailbox.md)
+- [Cpp Interop](./cpp-interop.md)
 
 # Self-check Project
 

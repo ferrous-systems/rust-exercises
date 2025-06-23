@@ -6,4 +6,5 @@ members = [
   "tcp-echo-server",
   "async-chat/*",
   "iterators",
+  "cpp-interop",
 ]
