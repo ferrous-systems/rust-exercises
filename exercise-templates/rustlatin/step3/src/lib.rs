@@ -14,10 +14,11 @@ fn rustlatin(sentence: &str) -> Vec<()> {
     collection_of_chars
 }
 
-#[test]
-fn return_the_char() {
-    assert_eq!(
-        vec!['n', 't', 'd', 'b', 'i', 'a', 'r', 'v'],
-        rustlatin("note the difference between iterator and return values")
-    )
-}
+// Uncomment this:
+// #[test]
+// fn return_the_char() {
+//     assert_eq!(
+//         vec!['n', 't', 'd', 'b', 'i', 'a', 'r', 'v'],
+//         rustlatin("note the difference between iterator and return values")
+//     )
+// }

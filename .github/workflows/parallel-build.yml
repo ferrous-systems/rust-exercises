@@ -1,5 +1,5 @@
 # This is a workflow file to run, build, and test all crates used as part of `rust-exercises`.
-# It is cached with Swatinem/rust-cache@v2 and setup so that no jobs depend on any other jobs, 
+# It is cached with Swatinem/rust-cache@v2 and setup so that no jobs depend on any other jobs,
 # EXCEPT for the last `deploy` job, which pulls in artifacts-producing jobs in the `needs:` field.
 # The brunt of the work is defined in `build_fns.sh` where the actual build/testing logic is defined.
 
@@ -21,224 +21,170 @@ on:
       - main
 
 # * All jobs defined here run independently of each other EXCEPT for `deploy`.
-# * Jobs that have a `matrix` field will setup up a job per entry in said `matrix`.
-# If you add any jobs that produce artifacts, make sure to add them to the `needs:` field of the `deploy` job, since that
-# ensures `deploy` will run last and can pull said artifacts
-# 
+# * Jobs that have a `matrix` field will setup up a job per entry in said
+#   `matrix`.
+#
+# If you add any jobs that produce artifacts, make sure to add them to the
+# `needs:` field of the `deploy` job, since that ensures `deploy` will run
+# last and can pull said artifacts
+#
 # ========== TEMPLATE ===========
 # my_cool_new_job:
-# runs-on: ubuntu-24.04
-# steps:
-# - uses: actions/checkout@v4                     # This is what downloads a fresh clone of the repo and cd's into it
-# - name: Install tools
-#  uses: taiki-e/install-action@v2                # For adding arbitrary binaries as tools
-#  with:
-#    tool: name_of_binary_tool@v1.0
-# - uses: Swatinem/rust-cache@v2
-#   with:
-#     workspaces: dir_where_I_want_results_cached # This job will look up this specific cached dir
-# - name: Build foo
-#  run: | 
-#    . ${{github.workspace}}/build_fns.sh
-#    cd interesting_directory
-#    command_defined_in_build_fns.sh
+#   runs-on: ubuntu-24.04
+#   steps:
+#   - uses: actions/checkout@v4                     # This is what downloads a fresh clone of the repo and cd's into it
+#   - uses: ./.github/actions/setup
+#     with:
+#       cache: dir_where_I_want_results_cached
+#   - uses: taiki-e/install-action@v2                # For adding arbitrary binaries as tools
+#     with:
+#       tool: name_of_binary_tool@v1.0
+#   - run: just do-thing
 # =========== END TEMPLATE ========
 #
 # And then you'd add `my_cool_new_job` to the `needs` field of `deploy`.
 jobs:
-  test_and_build_mdbook:
+  test-build-mdbook:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-      - name: Install mdbook, mdbook-mermaid
-        uses: taiki-e/install-action@v2
+      - uses: ./.github/actions/setup
+        with:
+          cache: exercise-book
+      - uses: taiki-e/install-action@v2
         with:
           tool: mdbook@0.4,mdbook-mermaid@0.12
-      # From Rust Cache Action:
-      # selecting a toolchain either by action or manual `rustup` calls should happen
-      # before the plugin, as the cache uses the current rustc version as its cache key
-      - run: rustup toolchain install stable --profile minimal
-
-        # For the cache to be keyed properly, we need to declare the workspace and then `cd` into it.
-      - uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: exercise-book
-      - name: Build mdbook, Test mdbook, Load cache
-        run: |
-          . ${{github.workspace}}/build_fns.sh
-          cd exercise-book
-          mdbook_test_build
-
-      # Uploading an artifact is how we can share data between different jobs
-      - name: Upload mdbook artifacts
-        uses: actions/upload-artifact@v4
+      - run: just test-mdbook
+      - run: just build-mdbook
+      - uses: actions/upload-artifact@v4
         with:
           name: mdbook-dir
           path: exercise-book/book/
           if-no-files-found: error
-  
-  test_exercise_solutions_and_examples:
+
+  test-exercise-templates:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-      - run: |
-          rustup toolchain install stable --profile minimal
-
-      - uses: Swatinem/rust-cache@v2
+      - uses: ./.github/actions/setup
         with:
-          workspaces: exercise-solutions
-      - name: Test exercise-solutions and examples, with cache
-        run: |
-          . ${{github.workspace}}/build_fns.sh
-          cd exercise-solutions
-          test_examples
-  
-  test_exercise_solutions_standalone_crates:
-    runs-on: ubuntu-24.04
-    strategy:
-      matrix:
-        crates: [exercise-solutions/connected-mailbox,
-          exercise-solutions/multi-threaded-mailbox]
-    steps:
-      - uses: actions/checkout@v4
-      - run: rustup toolchain install stable --profile minimal
-    
-      - uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: ${{matrix.crates}}
-      - name: Test exercise-solutions standalone crates, Load cache
-        run: |
-          . ${{github.workspace}}/build_fns.sh
-          cd ${{matrix.crates}}
-          test_standalone
+          cache: exercise-templates
+      - run: just test-exercise-templates
 
-  build_qemu_core:
+  test-exercise-solutions:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-      - run: rustup toolchain install stable --profile minimal --component rust-src
-
-      - uses: Swatinem/rust-cache@v2
+      - uses: ./.github/actions/setup
         with:
-          workspaces: qemu-code/uart-driver
-      - name: Build-qemu-code/uart-driver, load cache
-        run: |
-          cd qemu-code/uart-driver
-          . ../../build_fns.sh
-          build_qemu_core
+          cache: exercise-solutions
+      - run: just test-exercise-solutions
 
-  build_nrf52_usb_crates:
+  test-connected-mailbox:
     runs-on: ubuntu-24.04
-    strategy:
-      matrix:
-        crates: [nrf52-code/boards/dk,
-         nrf52-code/boards/dk-solution,
-         nrf52-code/boards/dongle,
-         nrf52-code/radio-app,
-         nrf52-code/usb-app,
-         nrf52-code/usb-app-solutions,
-         nrf52-code/consts]
     steps:
-      - name: Install flip-link
-        uses: taiki-e/install-action@v2
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - run: just test-connected-mailbox
+
+  test-multi-threaded-mailbox:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - run: just test-multi-threaded-mailbox
+
+  build-qemu-uart-driver:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+        with:
+          cache: qemu-code/uart-driver
+          target: thumbv7em-none-eabihf
+      - run: rustup component add rust-src
+      - run: just build-qemu-uart-driver
+
+  build-radio-app:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+        with:
+          cache: nrf52-code/radio-app
+          target: thumbv7em-none-eabihf
+      - uses: taiki-e/install-action@v2
         with:
           tool: flip-link@0.1.10
+      - run: just build-radio-app
 
-      - uses: actions/checkout@v4
-      - run: rustup toolchain install stable --profile minimal --target thumbv7em-none-eabihf
-      - uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: ${{matrix.crates}}
-
-      - name: build-nrf52 usb crates, Load cache
-        run: |
-          . ${{github.workspace}}/build_fns.sh
-          cd ${{matrix.crates}}
-          build_thumbv7em
-
-  # This job is different from the one above because we cannot make individual steps conditional,
-  # but we can define a different `matrix` of files that we have to upload
-  build_nrf52_usb_crates_and_upload_fw:
+  build-usb-app:
     runs-on: ubuntu-24.04
-    strategy:
-      matrix:
-        crates: [puzzle-fw, loopback-fw]
     steps:
-      - name: Install flip-link
-        uses: taiki-e/install-action@v2
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+        with:
+          cache: nrf52-code/usb-app
+          target: thumbv7em-none-eabihf
+      - uses: taiki-e/install-action@v2
         with:
           tool: flip-link@0.1.10
+      - run: just build-usb-app
 
+  test-usb-lib:
+    runs-on: ubuntu-24.04
+    steps:
       - uses: actions/checkout@v4
-      - run: rustup toolchain install stable --profile minimal --target thumbv7em-none-eabihf
-
-      - uses: Swatinem/rust-cache@v2
+      - uses: ./.github/actions/setup
         with:
-          workspaces: nrf52-code/${{matrix.crates}}
-      - name: build-only-nrf52 crates, load cache
-        run: |
-          . ${{github.workspace}}/build_fns.sh
-          cd nrf52-code/${{matrix.crates}}
-          build_thumbv7em
+          cache: nrf52-code/usb-lib
+          target: thumbv7em-none-eabihf
+      - run: just test-usb-lib
 
-      # We also upload the built binaries in the puzzle-fw and loopback-fw cases
-      - name: Upload ${{matrix.crates}} artifacts
-        uses: actions/upload-artifact@v4
+  build-puzzle-fw:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
         with:
-          name: ${{matrix.crates}}
-          path: nrf52-code/${{matrix.crates}}/target/thumbv7em-none-eabihf/release/${{matrix.crates}}
+          cache: nrf52-code/puzzle-fw
+          target: thumbv7em-none-eabihf
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: flip-link@0.1.10
+      - run: just build-puzzle-fw
+        env:
+          HIDDEN_MESSAGE: ${{ secrets.HIDDEN_MESSAGE }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: puzzle-fw
+          path: nrf52-code/puzzle-fw/target/thumbv7em-none-eabihf/release/puzzle-fw
           if-no-files-found: error
-  
-  build_and_test_nrf52_crates:
+
+  build-loopback-fw:
     runs-on: ubuntu-24.04
-    strategy:
-      matrix:
-        crates: [nrf52-code/usb-lib-solutions/complete,
-          nrf52-code/usb-lib-solutions/get-descriptor-config,
-          nrf52-code/usb-lib-solutions/get-device,
-          nrf52-code/usb-lib-solutions/set-config]
     steps:
-      - name: Install flip-link
-        uses: taiki-e/install-action@v2
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+        with:
+          cache: nrf52-code/loopback-fw
+          target: thumbv7em-none-eabihf
+      - uses: taiki-e/install-action@v2
         with:
           tool: flip-link@0.1.10
-
-      - uses: actions/checkout@v4
-      - run: rustup toolchain install stable --profile minimal --target thumbv7em-none-eabihf
-
-      - uses: Swatinem/rust-cache@v2
+      - run: just build-loopback-fw
+      - uses: actions/upload-artifact@v4
         with:
-          workspaces: ${{matrix.crates}}
-      - name: build-and-test nrf52 crates, load cache
-        run: |
-          . ${{github.workspace}}/build_fns.sh
-          cd ${{matrix.crates}}
-          build_test_thumbv7em
+          name: loopback-fw
+          path: nrf52-code/loopback-fw/target/thumbv7em-none-eabihf/release/loopback-fw
+          if-no-files-found: error
 
-  check_templates:
+  format-check:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-      - run: rustup toolchain install stable --profile minimal
-
-      - uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: exercise-templates
-      - name: Check exercise-templates, Load cache
-        run: |
-          . ${{github.workspace}}/build_fns.sh
-          cd exercise-templates
-          check_templates
-
-  check_fmt:
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@v4
-      - run: rustup toolchain install stable --profile minimal --component rustfmt
-      - name: Check fmt
-        run: |
-          . ${{github.workspace}}/build_fns.sh
-          check_fmt
+      - uses: ./.github/actions/setup
+      - run: just format-check
 
   # This is the last job, and waits (`needs:`) only on those that pass artifacts to it.
   # It the necessary resulting builds as artifacts, zips them, and uploads with a tag if necessary.
@@ -246,55 +192,37 @@ jobs:
      runs-on: ubuntu-24.04
      # Notice that because our repo expects all checks to pass, we don't need to include every other job
      # as a dependency of the `deploy` job.
-     needs: [test_and_build_mdbook, build_nrf52_usb_crates_and_upload_fw]
-
+     needs: [test-build-mdbook, build-puzzle-fw, build-loopback-fw]
      steps:
        - uses: actions/checkout@v4
-
+       - uses: ./.github/actions/setup
        # Download the produced artifacts
-       - name: Download mdbook-dir artifact
-         uses: actions/download-artifact@v4
+       - uses: actions/download-artifact@v4
          with:
           # Move the mdbook `book` dir to where we expect it to be
           name: mdbook-dir
           path: ./exercise-book/book
-
-       - name: Download puzzle-fw artifact
-         uses: actions/download-artifact@v4
+       - uses: actions/download-artifact@v4
          with:
           name: puzzle-fw
           path: ./nrf52-code/puzzle-fw/target/thumbv7em-none-eabihf/release/
-
-       - name: Download loopback-fw artifact
-         uses: actions/download-artifact@v4
+       - uses: actions/download-artifact@v4
          with:
           name: loopback-fw
           path: ./nrf52-code/loopback-fw/target/thumbv7em-none-eabihf/release/
-
-       - name: Find slug name
-         run: |
+       - run: |
            slug=$(./describe.sh "${GITHUB_REF}")
            echo "Building with slug '${slug}'"
            echo "slug=${slug}" >> "${GITHUB_ENV}"
-
-       - name: Build and test
-         env: # Or as an environment variable
-           HIDDEN_MESSAGE: ${{ secrets.HIDDEN_MESSAGE }}
-         run: |
-          . ${{github.workspace}}/build_fns.sh
-          zip_output "./rust-exercises-${{ env.slug }}"
-
-       - name: Upload Artifacts
-         uses: actions/upload-artifact@v4
+       - run: just assemble ${{ env.slug }}
+       - uses: actions/upload-artifact@v4
          if: ${{success()}}
          with:
            name: Artifacts
            if-no-files-found: error
            path: |
              ./rust-exercises-*
-
-       - name: Create and Upload Release
-         if: github.event_name == 'push' && startswith(github.ref, 'refs/tags/')
+       - if: github.event_name == 'push' && startswith(github.ref, 'refs/tags/')
          id: create_release
          uses: ncipollo/release-action@v1
          with:

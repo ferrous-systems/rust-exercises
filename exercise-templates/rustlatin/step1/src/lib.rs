@@ -19,10 +19,11 @@ fn rustlatin(sentence: &str) -> Vec<()> {
     collection_of_words
 }
 
-#[test]
-fn correct_splitting() {
-    assert_eq!(
-        vec!["This", "sentence", "needs", "to", "be", "split"],
-        rustlatin("This sentence needs to be split")
-    )
-}
+// Uncomment this:
+// #[test]
+// fn correct_splitting() {
+//     assert_eq!(
+//         vec!["This", "sentence", "needs", "to", "be", "split"],
+//         rustlatin("This sentence needs to be split")
+//     )
+// }

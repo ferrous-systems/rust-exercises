@@ -18,30 +18,34 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-
-      - name: Install tools
+      - uses: ./.github/actions/setup
+        with:
+          cache: exercise-book
+          channel: ${{ matrix.rust-channel }}
+      - name: Install mdbook, mdbook-mermaid
         uses: taiki-e/install-action@v2
         with:
-          tool: mdslides@0.3,mdbook@0.4,mdbook-mermaid@0.12,flip-link@0.1.10
+          tool: mdbook@0.4,mdbook-mermaid@0.12
+      - run: just test-mdbook
+      - run: just build-mdbook
+      - name: Upload mdbook artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: mdbook-dir
+          path: exercise-book/book/
+          if-no-files-found: error
 
-        # `minimal` profile avoids downloading `rustdocs`, `clippy`, etc.
-      - name: Install targets, update, set default Rust
-        run: |
-          rustup set profile minimal
-          rustup update ${{ matrix.rust-channel }}
-          rustup default ${{ matrix.rust-channel }}
-          rustup component add rust-src
-          rustup component add rustfmt
-          rustup target add thumbv7em-none-eabihf
-
-      - name: Find slug name
-        run: |
-          slug=$(./describe.sh "${GITHUB_REF}")
-          echo "Building with slug '${slug}'"
-          echo "slug=${slug}" >> "${GITHUB_ENV}"
-
-      - name: Build and test
-        env: # Or as an environment variable
-          HIDDEN_MESSAGE: ${{ secrets.HIDDEN_MESSAGE }}
-        run: |
-          ./build.sh "./rust-exercises-${{ env.slug }}"
+  build-nrf52-code:
+    strategy:
+        fail-fast: false
+        matrix:
+            rust-channel: [stable, beta, nightly]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+        with:
+          channel: ${{ matrix.rust-channel }}
+          cache: nrf52-code
+          target: thumbv7em-none-eabihf
+      - run: just build-nrf52-code
