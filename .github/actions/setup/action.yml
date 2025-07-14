@@ -1,0 +1,56 @@
+# Common steps we do in most of our jobs
+
+name: Setup a Job
+
+inputs:
+  criticalup:
+    description: 'Install Criticalup'
+    required: false
+    default: ""
+  channel:
+    description: 'Rust channel'
+    required: false
+    default: "stable"
+  cache:
+    description: "Workspace to cache with Swatinem/rust-cache@v2"
+    required: false
+    default: ""
+  target:
+    description: "Extra target for rustup to install"
+    required: false
+    default: ""
+
+runs:
+  using: "composite"
+  steps:
+    - name: Install CriticalUp (optional)
+      if: ${{ inputs.criticalup != '' }}
+      shell: bash
+      env:
+        CRITICALUP_VERSION: ${{ inputs.criticalup }}
+      run: |
+        curl --proto '=https' --tlsv1.2 -LsSf https://github.com/ferrocene/criticalup/releases/download/${CRITICALUP_VERSION}/criticalup-installer.sh | sh
+    - name: Install Just 1.42
+      uses: extractions/setup-just@v3
+      with:
+        just-version: 1.42
+    - name: Update Rust
+      shell: bash
+      run: |
+        rustup set profile minimal
+        rustup update ${RUSTUP_CHANNEL} --no-self-update
+        rustup default ${RUSTUP_CHANNEL}
+      env:
+        RUSTUP_CHANNEL: ${{ inputs.channel }}
+    - name: Install Target
+      if: ${{ inputs.target != '' }}
+      shell: bash
+      env:
+        RUSTUP_TARGET: ${{ inputs.target }}
+      run: |
+        rustup target add ${RUSTUP_TARGET}
+    - name: Setup Rust Cache
+      if: ${{ inputs.cache != '' }}
+      uses: Swatinem/rust-cache@v2
+      with:
+        workspaces: ${{ inputs.cache }}

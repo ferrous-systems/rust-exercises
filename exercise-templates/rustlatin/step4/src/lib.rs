@@ -38,8 +38,10 @@ fn test_latinizer() {
 fn correct_translation() {
     // Why can we compare `&str` and `String` here?
     // https://doc.rust-lang.org/stable/std/string/struct.String.html#impl-PartialEq%3C%26%27a%20str%3E
-    assert_eq!(
-        "rustrs helpsrs yours sravoid sra lotrs srof srirritating bugsrs",
-        rustlatin("rust helps you avoid a lot of irritating bugs")
-    )
+
+    // Uncomment this:
+    // assert_eq!(
+    //     "rustrs helpsrs yours sravoid sra lotrs srof srirritating bugsrs",
+    //     rustlatin("rust helps you avoid a lot of irritating bugs")
+    // )
 }
