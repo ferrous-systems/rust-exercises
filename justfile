@@ -87,7 +87,7 @@ build-puzzle-fw:
 build-loopback-fw:
 	cd nrf52-code/loopback-fw && cargo build --release
 
-build-nrf52-code: build-qemu-uart-driver build-radio-app build-usb-app test-usb-lib build-puzzle-fw build-loopback-fw
+build-nrf52-code: build-radio-app build-usb-app test-usb-lib build-puzzle-fw build-loopback-fw
 
 assemble version:
 	echo "Making ./rust-exercises-{{ version }}..."
