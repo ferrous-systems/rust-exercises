@@ -31,7 +31,7 @@ jobs:
       - name: Upload mdbook artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: mdbook-dir
+          name: mdbook-dir-${{ matrix.rust-channel }}
           path: exercise-book/book/
           if-no-files-found: error
 
