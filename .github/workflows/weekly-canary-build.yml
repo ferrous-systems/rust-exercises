@@ -48,4 +48,7 @@ jobs:
           channel: ${{ matrix.rust-channel }}
           cache: nrf52-code
           target: thumbv7em-none-eabihf
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: flip-link@0.1.10
       - run: just build-nrf52-code
