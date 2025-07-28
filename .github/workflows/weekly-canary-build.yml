@@ -6,8 +6,17 @@ env:
   CARGO_PROFILE_TEST_DEBUG: 0  # These are thrown away anyways, don't produce them
 
 on:
-    schedule:
-        - cron: '0 0 * * Mon'
+  schedule:
+    - cron: '0 0 * * Mon'
+  # Uncomment this temporarily if you are changing this workflow
+  # push:
+  #   branches:
+  #     - main
+  #   tags:
+  #     - "**"
+  # pull_request:
+  #   branches:
+  #     - main
 
 jobs:
   weekly-canary-build:
