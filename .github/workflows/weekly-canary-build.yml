@@ -6,8 +6,17 @@ env:
   CARGO_PROFILE_TEST_DEBUG: 0  # These are thrown away anyways, don't produce them
 
 on:
-    schedule:
-        - cron: '0 0 * * Mon'
+  schedule:
+    - cron: '45 1 * * Mon'
+  # Uncomment this temporarily if you are changing this workflow
+  # push:
+  #   branches:
+  #     - main
+  #   tags:
+  #     - "**"
+  # pull_request:
+  #   branches:
+  #     - main
 
 jobs:
   weekly-canary-build:
@@ -31,7 +40,7 @@ jobs:
       - name: Upload mdbook artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: mdbook-dir
+          name: mdbook-dir-${{ matrix.rust-channel }}
           path: exercise-book/book/
           if-no-files-found: error
 
@@ -48,4 +57,7 @@ jobs:
           channel: ${{ matrix.rust-channel }}
           cache: nrf52-code
           target: thumbv7em-none-eabihf
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: flip-link@0.1.10
       - run: just build-nrf52-code
