@@ -7,7 +7,7 @@ env:
 
 on:
   schedule:
-    - cron: '0 0 * * Mon'
+    - cron: '45 1 * * Mon'
   # Uncomment this temporarily if you are changing this workflow
   # push:
   #   branches:
