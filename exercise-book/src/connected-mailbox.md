@@ -109,17 +109,7 @@ fn handle_client(mut stream: TcpStream) -> Result<(), std::io::Error> {
 
 ### Writing a TCP Server
 
-If you need a working example of a basic TCP Echo server, you can start with [our template](../../exercise-templates/tcp-echo-server).
-
-<details>
-  <summary>Solution</summary>
-
-```rust no_run
-{{#include ../../exercise-templates/tcp-echo-server/src/main.rs}}
-```
-
-</details>
-
+If you need a working example of a basic TCP Echo server, you can start with [this exercise](tcp-server.md).
 
 ### Making a Workspace
 

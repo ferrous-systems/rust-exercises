@@ -1,5 +1,5 @@
 <!-- markdownlint-disable MD033 -->
-# Interactive TCP Echo Server
+# TCP Echo Server
 
 In this exercise, we will make a simple TCP "echo" server using APIs in Rust's Standard Library.
 
@@ -96,3 +96,7 @@ Windows doesn't come with a TCP client out of the box. You have a number of opti
    `ssh -L 7878:<remote_host>:8888 <user>@<remote_host> -p <ssh_port>` will let you run `nc 0.0.0.0 8888` on your Linux box and talk to a locally run TCP Echo server example.
 5. If you have friends that can run `nc` you can let them connect to your developer machine and play a role of your client.
    It's often possible if you share the same local network with them, but you can always rely on [`ngrok`](https://ngrok.com/docs/tcp/) or [`cloudflared`](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/configure-tunnels/local-management/configuration-file/#supported-protocols) to expose a specific TCP port to anyone on the internet.
+
+### Solution
+
+If you need it, we have provided several [complete solution](../../exercise-solutions/tcp-server-exercises) for this exercise.

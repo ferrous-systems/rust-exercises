@@ -20,7 +20,7 @@
 # Applied Rust
 
 - [Shapes](shapes.md)
-- [Blocking TCP Echo Server](./tcp-server.md)
+- [TCP Echo Server](./tcp-server.md)
   - [Share data between connections](./tcp-server-log.md)
 - [Connected Mailbox](./connected-mailbox.md)
 - [Multithreaded mailbox](./multi-threaded-mailbox.md)
