@@ -1,0 +1,18 @@
+{
+	"folders": [
+		{
+			"path": ".",
+		}
+	],
+	"settings": {
+		"LSP": {
+			"rust-analyzer": {
+				"settings": {
+					"rust-analyzer.cargo.allTargets": false,
+					"rust-analyzer.check.allTargets": false
+				}
+			}
+		},
+		"rust_syntax_checking_include_tests": false
+	}
+}
