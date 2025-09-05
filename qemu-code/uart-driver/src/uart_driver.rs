@@ -24,6 +24,7 @@ impl Uart {
 
     /// Turn on TX and RX
     pub fn enable(&mut self, baudrate: u32, system_clock: u32) {
+        semihosting::println!("NOTE! This is the drive you wrote :)");
         let _divider = system_clock / baudrate;
         // Set the `bauddiv` register to the value `divider`
 

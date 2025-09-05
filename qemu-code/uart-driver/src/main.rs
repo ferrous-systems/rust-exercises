@@ -12,8 +12,8 @@ use core::fmt::Write;
 use uart_exercise::PERIPHERAL_CLOCK;
 
 // 👇 change over which driver is imported, so you can test your solution!
-use uart_exercise::uart_driver::Uart;
-// use uart_exercise::uart_driver_solution::Uart;
+// use uart_exercise::uart_driver::Uart;
+use uart_exercise::uart_driver_solution::Uart;
 
 /// The entry-point to the Rust application.
 ///
