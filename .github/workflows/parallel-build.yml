@@ -10,15 +10,13 @@ env:
   CARGO_INCREMENTAL: 0         # Don't waste time writing out incremental build files
   CARGO_PROFILE_TEST_DEBUG: 0  # These are thrown away anyways, don't produce them
 
+# Runs CI on pushing tags and pulls, but not both. Since we have branch protection on, these are our only cases to handle.
 on:
   push:
-    branches:
-      - main
     tags:
-      - "**"
+      - "*"
   pull_request:
-    branches:
-      - main
+  merge_group:
 
 # * All jobs defined here run independently of each other EXCEPT for `deploy`.
 # * Jobs that have a `matrix` field will setup up a job per entry in said
