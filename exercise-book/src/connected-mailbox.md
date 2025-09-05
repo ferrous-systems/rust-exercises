@@ -46,6 +46,12 @@ In this exercise, we will take our "SimpleDB" protocol parser and turn it into a
 
 At every step, try out your program using a command-line TCP Client: you can either use `nc`, or `netcat`, or our supplied `tools/tcp-client` program.
 
+```bash
+echo "PUBLISH 1234" | nc 127.0.0.1 7878
+```
+
+The `echo` command adds a new-line character automatically. Use `echo -n` if you don't want it to add a new-line character.
+
 ## Optional Tasks:
 
 - Run `cargo clippy` on your codebase.
@@ -54,19 +60,20 @@ At every step, try out your program using a command-line TCP Client: you can eit
 
 ## Help
 
-### Connecting over TCP/IP
+### Running `nc` on Windows
 
-#### Using `nc`, `netcat` or `ncat`
+Windows doesn't come with a TCP client out of the box. You have a number of options:
 
-The `nc`, `netcat`, or `ncat` tools may be available on your macOS or Linux machine. They all work in a similar fashion.
+1. Git-for-Windows comes with `Git-Bash` - a minimal Unix emulation layer. It has Windows ports of many popular UNIX command-line utilities, including `nc`.
+2. If you have WSL set up then your Linux environment has `nc` (or it is available as a package).
+   You may either run the exercise in your Linux environment, too, or connect from Linux guest to your host.
+3. There's a Windows-native version of [`ncat` from Nmap project that is available as a separate portable download](https://nmap.org/ncat/)
+4. If you have access to a remote Linux server you can use SSH tunnelling to connect remote `nc` to a TCP server running on your local machine.
+   `ssh -L 7878:<remote_host>:8888 <user>@<remote_host> -p <ssh_port>` will let you run `nc 0.0.0.0 8888` on your Linux box and talk to a locally run TCP Echo server example.
+5. If you have friends that can run `nc` you can let them connect to your developer machine and play a role of your client.
+   It's often possible if you share the same local network with them, but you can always rely on [`ngrok`](https://ngrok.com/docs/tcp/) or [`cloudflared`](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/configure-tunnels/local-management/configuration-file/#supported-protocols) to expose a specific TCP port to anyone on the internet.
 
-```console
-$ echo "PUBLISH 1234" | nc 127.0.0.1 7878
-```
-
-The `echo` command adds a new-line character automatically. Use `echo -n` if you don't want it to add a new-line character.
-
-#### Using our TCP Client
+### Using our TCP Client
 
 We have written a basic TCP Client which should work on any platform.
 
