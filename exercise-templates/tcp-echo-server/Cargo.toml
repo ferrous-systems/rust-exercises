@@ -1,7 +1,0 @@
-[package]
-authors = ["Ferrous Systems"]
-edition = "2021"
-name = "tcp-echo-server"
-version = "0.1.0"
-
-[dependencies]

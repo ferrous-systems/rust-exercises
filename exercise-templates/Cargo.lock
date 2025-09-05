@@ -460,10 +460,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "tcp-echo-server"
-version = "0.1.0"
-
-[[package]]
 name = "tinystr"
 version = "0.7.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"

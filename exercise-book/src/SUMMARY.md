@@ -20,6 +20,8 @@
 # Applied Rust
 
 - [Shapes](shapes.md)
+- [TCP Echo Server](./tcp-server.md)
+  - [Share data between connections](./tcp-server-log.md)
 - [Connected Mailbox](./connected-mailbox.md)
 - [Multithreaded mailbox](./multi-threaded-mailbox.md)
 
@@ -27,7 +29,23 @@
 
 - [Self-check project](./self-check.md)
 
-# Working with the nRF52
+# Advanced Rust
+
+- [Async TCP Chat Server](./async-chat/index.md)
+  - [Specification and Getting started](./async-chat/specification.md)
+  - [Writing an Accept Loop](./async-chat/accept_loop.md)
+  - [Receiving Messages](./async-chat/receiving_messages.md)
+  - [Sending Messages](./async-chat/sending_messages.md)
+  - [A broker as a connection point](./async-chat/connecting_readers_and_writers.md)
+  - [Glueing all together](./async-chat/all_together.md)
+  - [Clean Shutdown](./async-chat/clean_shutdown.md)
+  - [Handling Disconnection](./async-chat/handling_disconnection.md)
+  - [Final Server Code](./async-chat/final_server_code.md)
+  - [Implementing a Client](./async-chat/implementing_a_client.md)
+- [Verifying Data Structures with Kani](./kani-linked-list.md)
+- [Building a Linux Kernel Driver using Rust](./building-linux-kernel-driver.md)
+
+# Rust for Microcontrollers
 
 - [Preparation](./nrf52-preparation.md)
   - [Code Organization](./nrf52-code-organisation.md)
@@ -43,9 +61,6 @@
   - [`cargo run` errors](./nrf52-troubleshoot-cargo-run-error.md)
   - [`no probe was found` error](./nrf52-troubleshoot-probe-not-found.md)
   - [`location info is incomplete` error](./nrf52-troubleshoot-location-info.md)
-
-# Bare-Metal Rust: Getting Started
-
 - [nRF52 Radio Exercise](./nrf52-radio-exercise.md)
   - [Parts of an Embedded Program](./nrf52-radio-parts-embedded-program.md)
   - [Building an Embedded Program](./nrf52-radio-building-program.md)
@@ -67,14 +82,8 @@
     - [Collision avoidance](./nrf52-radio-collision-avoidance.md)
     - [Interrupt handling](./nrf52-radio-interrupt-handling.md)
     - [Starting a Project from Scratch](./nrf52-radio-from-scratch.md)
-
-# Bare-Metal Rust: Using a HAL
-
 - [nRF52 HAL Exercise](./nrf52-hal-exercise.md)
   - [Adding Buttons](./nrf52-hal-buttons.md)
-
-# Bare-Metal Rust: Interrupts
-
 - [nRF52 USB Exercise](./nrf52-usb-exercise.md)
   - [Listing USB Devices](./nrf52-usb-listing-usb-devices.md)
   - [Hello, world!](./nrf52-usb-hello-world.md)
@@ -107,41 +116,7 @@
 
 # Rust for Real-Time Systems
 
-## Working without std
-
 - [Working without std](./realtime-withoutstd.md)
   - [Replacing println!](./realtime-withoutstd-println.md)
-
-## Bare-Metal Firmware on Cortex-R52
-
 - [Bare-Metal Firmware on Cortex-R52](./realtime-v8r-preparation.md)
   - [UART Driver](./realtime-v8r-uart.md)
-
-## Rust for Linux
-
-- [Building a Linux Kernel Driver using Rust](./building-linux-kernel-driver.md)
-
-# Async Rust
-
-- [Interactive TCP Echo Server](./tcp-server.md)
-  - [Share data between connections](./tcp-server-log.md)
-
-# Async chat
-
-- [Implementing a chat](./async-chat/index.md)
-  - [Specification and Getting started](./async-chat/specification.md)
-  - [Writing an Accept Loop](./async-chat/accept_loop.md)
-  - [Receiving Messages](./async-chat/receiving_messages.md)
-  - [Sending Messages](./async-chat/sending_messages.md)
-  - [A broker as a connection point](./async-chat/connecting_readers_and_writers.md)
-  - [Glueing all together](./async-chat/all_together.md)
-  - [Clean Shutdown](./async-chat/clean_shutdown.md)
-  - [Handling Disconnection](./async-chat/handling_disconnection.md)
-  - [Final Server Code](./async-chat/final_server_code.md)
-  - [Implementing a Client](./async-chat/implementing_a_client.md)
-
-# Kani Rust Verifier
-
-- [Verifying Data Structures with Kani](./kani-linked-list.md)
-
-# Other Topics

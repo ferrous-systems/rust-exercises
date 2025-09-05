@@ -3,7 +3,6 @@ resolver= "2"
 members = [
   "urls-match-result",
   "rustlatin/*",
-  "tcp-echo-server",
   "async-chat/*",
   "iterators",
 ]
