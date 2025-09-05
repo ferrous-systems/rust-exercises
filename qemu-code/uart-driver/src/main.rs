@@ -11,7 +11,7 @@ use core::fmt::Write;
 
 use uart_exercise::PERIPHERAL_CLOCK;
 
-// 👇 change over which driver is imported, so you can test your solution!
+// 👇 change over which driver is imported, so you can test your solution!
 use uart_exercise::uart_driver::Uart;
 // use uart_exercise::uart_driver_solution::Uart;
 
@@ -30,6 +30,7 @@ pub extern "C" fn kmain() {
 ///
 /// Called by [`kmain`].
 fn main() -> Result<(), core::fmt::Error> {
+    semihosting::println!("Starting main...");
     let mut uart0 = unsafe { Uart::new_uart0() };
     uart0.enable(115200, PERIPHERAL_CLOCK);
     writeln!(uart0, "Hello, this is Rust!")?;
@@ -41,8 +42,8 @@ fn main() -> Result<(), core::fmt::Error> {
         }
         writeln!(uart0)?;
     }
-    // Now crash the program
-    panic!("I am a panic");
+    // Now exit the program
+    semihosting::process::exit(0);
 }
 
 // End of file

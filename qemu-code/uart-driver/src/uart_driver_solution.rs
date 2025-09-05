@@ -6,7 +6,7 @@
 
 /// A CMSDK UART Driver
 pub struct Uart {
-    registers: MmioRegisters,
+    registers: MmioRegisters<'static>,
 }
 
 impl Uart {
@@ -106,19 +106,19 @@ struct IntStatus {
 #[repr(C)]
 struct Registers {
     /// UART TX/RX buffer
-    #[mmio(RW)]
+    #[mmio(Read, Write)]
     data: u32,
     /// UART State
-    #[mmio(RW)]
+    #[mmio(Read, Write, Modify)]
     state: State,
     /// UART Configuration
-    #[mmio(RW)]
+    #[mmio(Read, Write, Modify)]
     control: Control,
     /// Interrupt Status/Clear
-    #[mmio(RW)]
+    #[mmio(Read, Write)]
     int_status: IntStatus,
     /// Baud Rate Divisor
-    #[mmio(RW)]
+    #[mmio(Read, Write, Modify)]
     baud_div: u32,
 }
 
