@@ -30,7 +30,7 @@ package_list := " \
 default:
   @just --choose
 
-everything: test-mdbook build-mdbook test-exercise-templates test-exercise-solutions test-connected-mailbox test-multi-threaded-mailbox build-qemu-uart-driver build-radio-app build-usb-app test-usb-lib build-puzzle-fw build-loopback-fw format
+everything: test-mdbook build-mdbook test-exercise-templates test-exercise-solutions test-connected-mailbox test-multi-threaded-mailbox build-qemu-uart-driver build-qemu-uart-driver-ferrocene build-radio-app build-usb-app test-usb-lib build-puzzle-fw build-loopback-fw format
 
 format-check: format-check-rust
 
@@ -65,7 +65,10 @@ test-multi-threaded-mailbox:
 		cd exercise-solutions/multi-threaded-mailbox && cargo test
 
 build-qemu-uart-driver:
-	cd qemu-code/uart-driver && RUSTC_BOOTSTRAP=1 cargo build --release -Zbuild-std=core
+	cd qemu-code/uart-driver && RUSTC_BOOTSTRAP=1 cargo +stable build --release -Zbuild-std=core
+
+build-qemu-uart-driver-ferrocene:
+	cd qemu-code/uart-driver && cargo build --release
 
 build-radio-app:
 	cd nrf52-code/radio-app && cargo build --release

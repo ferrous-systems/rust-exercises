@@ -6,7 +6,7 @@
 
 /// A CMSDK UART Driver
 pub struct Uart {
-    registers: MmioRegisters,
+    registers: MmioRegisters<'static>,
 }
 
 impl Uart {
@@ -24,6 +24,7 @@ impl Uart {
 
     /// Turn on TX and RX
     pub fn enable(&mut self, baudrate: u32, system_clock: u32) {
+        semihosting::println!("NOTE! This is the drive you wrote :)");
         let _divider = system_clock / baudrate;
         // Set the `bauddiv` register to the value `divider`
 
@@ -107,19 +108,19 @@ struct IntStatus {
 #[repr(C)]
 struct Registers {
     /// UART TX/RX buffer
-    #[mmio(RW)]
+    #[mmio(Read, Write)]
     data: u32,
     /// UART State
-    #[mmio(RW)]
+    #[mmio(Read, Write, Modify)]
     state: State,
     /// UART Configuration
-    #[mmio(RW)]
+    #[mmio(Read, Write, Modify)]
     control: Control,
     /// Interrupt Status/Clear
-    #[mmio(RW)]
+    #[mmio(Read, Write)]
     int_status: IntStatus,
     /// Baud Rate Divisor
-    #[mmio(RW)]
+    #[mmio(Read, Write, Modify)]
     baud_div: u32,
 }
 

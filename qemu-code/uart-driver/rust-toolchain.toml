@@ -1,0 +1,7 @@
+# This file sets a rustup toolchain named 'ferrocene' to be the default
+#
+# For this to work, you should have criticalup version 1.5.1 or higher, 
+# and have run `criticalup link create`
+
+[toolchain]
+channel = "ferrocene"
