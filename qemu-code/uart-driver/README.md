@@ -1,8 +1,8 @@
 # Rust UART Driver exercise
 
 This folder contains a small Rust no-std application, which is designed to run
-inside a QEMU emulation of an Armv8-R Cortex-R52 system. We build the code using
-the `armv8r-none-eabihf` target.
+inside a QEMU emulation of an Armv8-R Cortex-R52 system. We build the code
+using the `armv8r-none-eabihf` target.
 
 The application talks to the outside world through a UART driver. We have
 provided two - a working one, and a template one that doesn't work which you
@@ -19,23 +19,11 @@ Run:
 
 ```bash
 criticalup install
+criticalup link create
 cargo run
 ```
 
-To edit in VSCode using Ferrocene, run:
-
-```bash
-RUSTC=$(criticalup which rustc) code .
-```
-
-Or on Windows:
-
-```console
-C:\Project> criticalup which rustc
-C:\Users\steve\AppData\Roaming\criticalup\toolchains\xyz\bin\rustc.exe
-C:\Project> set RUSTC=C:\Users\steve\AppData\Roaming\criticalup\toolchains\xyz\bin\rustc.exe
-C:\Project> code .
-```
+We use `criticalup link create` to teach `rustup` that `+ferrocene` means 'use criticalup'. We then have `rust-toolchain.toml` file that tells `rustup` that we want to use `+ferrocene` by default.
 
 ### Rust
 
