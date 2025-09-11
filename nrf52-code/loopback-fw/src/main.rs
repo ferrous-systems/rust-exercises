@@ -48,9 +48,9 @@ mod app {
         /// How many packets have been received with errors?
         err_count: u32,
         /// A place to read the message queue
-        msg_queue_out: heapless::spsc::Consumer<'static, Message, QUEUE_LEN>,
+        msg_queue_out: heapless::spsc::Consumer<'static, Message>,
         /// A place to write to the message queue
-        msg_queue_in: heapless::spsc::Producer<'static, Message, QUEUE_LEN>,
+        msg_queue_in: heapless::spsc::Producer<'static, Message>,
         /// The status LEDs
         leds: dongle::Leds,
         /// Handles the lower-level USB Device interface

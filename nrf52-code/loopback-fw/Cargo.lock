@@ -141,14 +141,14 @@ version = "0.3.100"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f0963443817029b2024136fc4dd07a5107eb8f977eaf18fcd1fdeb11306b64ad"
 dependencies = [
- "defmt 1.0.0",
+ "defmt 1.0.1",
 ]
 
 [[package]]
 name = "defmt"
-version = "1.0.0"
+version = "1.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b834fbddebd69852b7742f3b1fdd9df277c8f36a028c03b7002f7f513bac65fe"
+checksum = "548d977b6da32fa1d1fda2876453da1e7df63ad0304c8b3dae4dbe7b96f39b78"
 dependencies = [
  "bitflags",
  "defmt-macros",
@@ -156,9 +156,9 @@ dependencies = [
 
 [[package]]
 name = "defmt-macros"
-version = "1.0.0"
+version = "1.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d6e0f20557738ff14dad3e698b57da89f04d708433024c6f931dde286051b94a"
+checksum = "3d4fc12a85bcf441cfe44344c4b72d58493178ce635338a3f3b78943aceb258e"
 dependencies = [
  "defmt-parser",
  "proc-macro-error2",
@@ -183,7 +183,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b2cac3b8a5644a9e02b75085ebad3b6deafdbdbdec04bb25086523828aa4dfd1"
 dependencies = [
  "critical-section",
- "defmt 1.0.0",
+ "defmt 1.0.1",
 ]
 
 [[package]]
@@ -194,11 +194,11 @@ dependencies = [
  "cortex-m-rt",
  "cortex-m-semihosting",
  "critical-section",
- "defmt 1.0.0",
+ "defmt 1.0.1",
  "defmt-rtt",
  "embedded-hal 1.0.0",
  "grounded",
- "heapless",
+ "heapless 0.9.1",
  "nrf52840-hal",
  "panic-probe",
 ]
@@ -361,7 +361,17 @@ version = "0.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0bfb9eb618601c89945a70e254898da93b13be0388091d42117462b265bb3fad"
 dependencies = [
- "defmt 0.3.100",
+ "hash32",
+ "stable_deref_trait",
+]
+
+[[package]]
+name = "heapless"
+version = "0.9.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b1edcd5a338e64688fbdcb7531a846cfd3476a54784dcb918a0844682bc7ada5"
+dependencies = [
+ "defmt 1.0.1",
  "hash32",
  "stable_deref_trait",
 ]
@@ -387,10 +397,10 @@ name = "loopback-fw"
 version = "0.0.0"
 dependencies = [
  "consts",
- "defmt 1.0.0",
+ "defmt 1.0.1",
  "defmt-rtt",
  "dongle",
- "heapless",
+ "heapless 0.9.1",
  "rtic",
  "rtic-monotonics",
  "usb-device",
@@ -476,12 +486,12 @@ checksum = "42f5e15c9953c5e4ccceeb2e7382a716482c34515315f7b03532b8b4e8393d2d"
 
 [[package]]
 name = "panic-probe"
-version = "0.3.2"
+version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4047d9235d1423d66cc97da7d07eddb54d4f154d6c13805c6d0793956f4f25b0"
+checksum = "fd402d00b0fb94c5aee000029204a46884b1262e0c443f166d86d2c0747e1a1a"
 dependencies = [
  "cortex-m",
- "defmt 0.3.100",
+ "defmt 1.0.1",
 ]
 
 [[package]]
@@ -738,7 +748,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "98816b1accafbb09085168b90f27e93d790b4bfa19d883466b5e53315b5f06a6"
 dependencies = [
  "defmt 0.3.100",
- "heapless",
+ "heapless 0.8.0",
  "portable-atomic",
 ]
 
