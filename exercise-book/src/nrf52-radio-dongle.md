@@ -78,7 +78,9 @@ $ cargo xtask serial-term
     Finished dev [unoptimized + debuginfo] target(s) in 0.02s
      Running `xtask/target/debug/xtask serial-term`
 (waiting for the Dongle to be connected)
-deviceid=588c06af0877c8f2 channel=20 TxPower=+8dBm app=loopback-fw
+(..)
+rx=0, err=0, ch=20, app=loopback-fw
+(..)
 ```
 
 This line is printed by the `loopback` app on boot. It contains the device ID of the dongle, a 64-bit unique identifier (so everyone will see a different number); the radio channel that the device will use to communicate; and the transmission power of the radio in dBm.
@@ -95,7 +97,8 @@ At this point you should *not* get more output from `cargo xtask serial-term`.
 
 ```console
 $ cargo xtask serial-term
-deviceid=588c06af0877c8f2 channel=20 TxPower=+8dBm app=loopback-fw
+rx=0, err=0, ch=20, app=loopback-fw
+(..)
 received 7 bytes (CRC=Ok(0x2459), LQI=0)
 received 5 bytes (CRC=Ok(0xdad9), LQI=0)
 received 6 bytes (CRC=Ok(0x72bb), LQI=0)
@@ -111,7 +114,7 @@ requested channel change to channel 11
 Then you should see new output from `cargo xtask serial-term`:
 
 ```console
-deviceid=588c06af0877c8f2 channel=20 TxPower=+8dBm app=loopback-fw
+rx=0, err=0, ch=20, app=loopback-fw
 (..)
 now listening on channel 11
 ```
