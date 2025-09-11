@@ -5,7 +5,7 @@ use std::{
 };
 
 use color_eyre::eyre::{anyhow, bail};
-use hidapi::HidApi;
+use hidapi::{HidApi, HidError};
 use serialport::SerialPortType;
 
 pub fn change_channel(channel: &str) -> color_eyre::Result<()> {
@@ -14,15 +14,29 @@ pub fn change_channel(channel: &str) -> color_eyre::Result<()> {
     }
 
     let api = HidApi::new()?;
+
+    let permission_error =
+        anyhow!("permission denied, check the nRF52 Tools chapter for dongle setup instructions");
     let dev = api
         .device_list()
-        .filter(|dev| dev.vendor_id() == consts::USB_VID_DEMO && check_pid(dev.product_id()))
-        .next()
+        .find(|d| d.vendor_id() == consts::USB_VID_DEMO && check_pid(d.product_id()))
         .ok_or_else(|| anyhow!("device not found"))?
-        .open_device(&api)?;
+        .open_device(&api)
+        .map_err(|e| match e {
+            HidError::HidApiError { ref message } => {
+                if message.to_lowercase().contains("permission denied") {
+                    return permission_error;
+                }
+                e.into()
+            }
+            HidError::IoError { error } if error.kind() == io::ErrorKind::PermissionDenied => {
+                permission_error
+            }
+            other => other.into(),
+        })?;
 
     let chan = channel.parse::<u8>()?;
-    if chan < 11 || chan > 26 {
+    if !(11..=26).contains(&chan) {
         bail!("channel is out of range (`11..=26`)")
     }
     const REPORT_ID: u8 = 0;
@@ -35,13 +49,13 @@ pub fn change_channel(channel: &str) -> color_eyre::Result<()> {
 pub fn serial_term() -> color_eyre::Result<()> {
     let mut once = true;
     let dongle = loop {
-        if let Some(dongle) = serialport::available_ports()?
-            .into_iter()
-            .filter(|info| match &info.port_type {
-                SerialPortType::UsbPort(usb) => usb.vid == consts::USB_VID_DEMO,
-                _ => false,
-            })
-            .next()
+        if let Some(dongle) =
+            serialport::available_ports()?
+                .into_iter()
+                .find(|info| match &info.port_type {
+                    SerialPortType::UsbPort(usb) => usb.vid == consts::USB_VID_DEMO,
+                    _ => false,
+                })
         {
             break dongle;
         } else if once {
