@@ -129,7 +129,7 @@ mod app {
         defmt::debug!("Building USB Strings...");
         let strings = usb_device::device::StringDescriptors::new(usb_device::LangID::EN)
             .manufacturer("Ferrous Systems")
-            .product("Test Device");
+            .product("Dongle Loopback");
 
         defmt::debug!("Building VID and PID...");
         let vid_pid =
