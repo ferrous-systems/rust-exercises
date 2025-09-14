@@ -199,14 +199,14 @@ impl ops::DerefMut for Timer {
 ///
 /// Stores 128 bytes, maximum.
 pub struct Ringbuffer {
-    buffer: heapless::mpmc::MpMcQueue<u8, 128>,
+    buffer: heapless::mpmc::Queue<u8, 128>,
 }
 
 impl Ringbuffer {
     /// Construct a new Ringbuffer
     pub const fn new() -> Ringbuffer {
         Ringbuffer {
-            buffer: heapless::mpmc::MpMcQueue::new(),
+            buffer: heapless::mpmc::Queue::new(),
         }
     }
 
@@ -218,6 +218,12 @@ impl Ringbuffer {
     /// Add an item to the queue
     pub fn write(&self, value: u8) -> Result<(), u8> {
         self.buffer.enqueue(value)
+    }
+}
+
+impl Default for Ringbuffer {
+    fn default() -> Self {
+        Self::new()
     }
 }
 

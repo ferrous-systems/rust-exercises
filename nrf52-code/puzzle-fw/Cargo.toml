@@ -10,7 +10,7 @@ consts = { path = "../consts" }
 defmt = "1"
 defmt-rtt = "1"
 dongle = { path = "../boards/dongle" }
-heapless = { version = "0.8.0", features = ["defmt-03"] }
+heapless = { version = "0.9", features = ["defmt"] }
 rtic = { version = "2.1.2", features = ["thumbv7-backend"] }
 rtic-monotonics = { version = "2.0.3", features = ["cortex-m-systick"] }
 usb-device = { version = "0.3.2", features = ["defmt"] }
