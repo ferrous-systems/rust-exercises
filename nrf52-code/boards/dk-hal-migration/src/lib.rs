@@ -7,22 +7,18 @@
 #![no_std]
 
 use core::{
-    ops,
     sync::atomic::{self, AtomicU32, Ordering},
     time::Duration,
 };
 
 use cortex_m::peripheral::NVIC;
 use cortex_m_semihosting::debug;
-use embedded_hal::{
-    delay::DelayNs,
-    digital::{OutputPin, StatefulOutputPin},
-};
+use embedded_hal::delay::DelayNs;
 #[cfg(feature = "advanced")]
 use grounded::uninit::GroundedArrayCell;
-#[cfg(any(feature = "radio", feature = "usbd"))]
-use grounded::uninit::GroundedCell;
-use hal::gpio::{Output, Port};
+//#[cfg(any(feature = "radio", feature = "usbd"))]
+//use grounded::uninit::GroundedCell;
+use hal::gpio::{Level, Output, OutputDrive, Port};
 pub use hal::pac::{interrupt, Interrupt, NVIC_PRIO_BITS, RTC0};
 #[cfg(feature = "radio")]
 pub use hal::radio::ieee802154;
@@ -35,18 +31,6 @@ mod errata;
 pub mod peripheral;
 #[cfg(feature = "advanced")]
 pub mod usbd;
-
-//#[cfg(any(feature = "radio", feature = "usbd"))]
-//struct ClockSyncWrapper<H, L, LSTAT> {
-//clocks: Clocks<H, L, LSTAT>,
-//}
-
-//#[cfg(any(feature = "radio", feature = "usbd"))]
-//unsafe impl<H, L, LSTAT> Sync for ClockSyncWrapper<H, L, LSTAT> {}
-
-// Our USB Device
-//#[cfg(feature = "usbd")]
-//pub type UsbDevice = hal::usbd::Usbd<hal::usbd::UsbPeripheral<'static>>;
 
 /// Components on the board
 pub struct Board {
@@ -143,45 +127,39 @@ impl Led {
 }
 
 /// A timer for creating blocking delays
-pub struct Timer;
+pub struct Timer {
+    inner: hal::timer::Timer<'static, hal::peripherals::TIMER0>,
+}
 
+impl DelayNs for Timer {
+    fn delay_ns(&mut self, ns: u32) {
+        self.inner.cc(0).write(ns / 1000);
+        self.inner.clear();
+        self.inner.start();
+        while !self.inner.cc(0).event_compare().is_triggered() {}
+    }
+}
 impl Timer {
-    /// Blocks program execution for at least the specified `duration`
     pub fn wait(&mut self, duration: Duration) {
         defmt::trace!("blocking for {:?} ...", duration);
-        let mut delay = embassy_time::Delay;
 
         // 1 cycle = 1 microsecond
         let subsec_micros = duration.subsec_micros();
         if subsec_micros != 0 {
-            delay.delay_us(subsec_micros);
+            self.delay_us(subsec_micros);
         }
 
         let mut secs = duration.as_secs();
         while secs != 0 {
             if secs > u32::MAX as u64 {
-                delay.delay_ms(u32::MAX);
+                self.delay_ms(u32::MAX);
                 secs -= u32::MAX as u64;
             } else {
-                delay.delay_ms(secs as u32);
+                self.delay_ms(secs as u32);
             };
         }
 
         defmt::trace!("... DONE");
-    }
-}
-
-impl ops::Deref for Timer {
-    type Target = hal::timer::Timer<'static, hal::pac::timer::Timer>;
-
-    fn deref(&self) -> &Self::Target {
-        &self.inner
-    }
-}
-
-impl ops::DerefMut for Timer {
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.inner
     }
 }
 
@@ -293,12 +271,17 @@ pub fn init() -> Result<Board, Error> {
         core::hint::spin_loop();
     }
 
-    let Some(periph) = hal::Peripherals::take() else {
-        return Err(Error::DoubleInit);
-    };
+    let periph = hal::init(hal::config::Config::default());
+    //let periph = unsafe { hal::Peripherals::steal() }
+    //else {
+    /*
+            return Err(Error::DoubleInit);
+        };
+    */
     // NOTE: this branch runs at most once
     #[cfg(feature = "advanced")]
     static EP0IN_BUF: GroundedArrayCell<u8, 64> = GroundedArrayCell::const_init();
+    /*
     #[cfg(any(feature = "radio", feature = "usbd"))]
     // We need the wrapper to make this type Sync, as it contains raw pointers
     static CLOCKS: GroundedCell<
@@ -327,10 +310,14 @@ pub fn init() -> Result<Board, Error> {
     };
 
     defmt::debug!("Clocks configured");
+    */
 
+    let mut rtc = Rtc::new(periph.RTC0);
+    /*
     let mut rtc = Rtc::new(periph.RTC0, 0).unwrap();
     rtc.enable_interrupt(RtcInterrupt::Overflow, None);
     rtc.enable_counter();
+    */
     // NOTE(unsafe) because this crate defines the `#[interrupt] fn RTC0` interrupt handler,
     // RTIC cannot manage that interrupt (trying to do so results in a linker error). Thus it
     // is the task of this crate to mask/unmask the interrupt in a safe manner.
@@ -347,72 +334,96 @@ pub fn init() -> Result<Board, Error> {
 
     defmt::debug!("RTC started");
 
-    let pins = p0::Parts::new(periph.P0);
-
-    // NOTE LEDs turn on when the pin output level is low
-    let led1pin = pins.p0_13.degrade().into_push_pull_output(Level::High);
-    let led2pin = pins.p0_14.degrade().into_push_pull_output(Level::High);
-    let led3pin = pins.p0_15.degrade().into_push_pull_output(Level::High);
-    let led4pin = pins.p0_16.degrade().into_push_pull_output(Level::High);
+    let led1pin = Led {
+        port: Port::Port0,
+        pin: 13,
+        inner: Output::new(periph.P0_13, Level::High, OutputDrive::Standard),
+    };
+    let led2pin = Led {
+        port: Port::Port0,
+        pin: 14,
+        inner: Output::new(periph.P0_14, Level::High, OutputDrive::Standard),
+    };
+    let led3pin = Led {
+        port: Port::Port0,
+        pin: 15,
+        inner: Output::new(periph.P0_15, Level::High, OutputDrive::Standard),
+    };
+    let led4pin = Led {
+        port: Port::Port0,
+        pin: 16,
+        inner: Output::new(periph.P0_16, Level::High, OutputDrive::Standard),
+    };
 
     defmt::debug!("I/O pins have been configured for digital output");
 
-    let timer = hal::Timer::new(periph.TIMER0);
+    let timer = hal::timer::Timer::new(periph.TIMER0);
 
-    #[cfg(feature = "radio")]
-    let radio = {
-        let mut radio = ieee802154::Radio::init(periph.RADIO, clocks);
+    /*
+        #[cfg(feature = "radio")]
+        let radio = {
+            let mut radio = ieee802154::Radio::init(periph.RADIO, clocks);
 
-        // set TX power to its maximum value
-        radio.set_txpower(ieee802154::TxPower::Pos8dBm);
-        defmt::debug!("Radio initialized and configured with TX power set to the maximum value");
-        radio
-    };
+            // set TX power to its maximum value
+            radio.set_txpower(ieee802154::TxPower::Pos8dBm);
+            defmt::debug!("Radio initialized and configured with TX power set to the maximum value");
+            radio
+        };
 
-    #[cfg(feature = "usbd")]
-    {
-        defmt::debug!("Enabling SOF interrupts...");
-        periph.USBD.inten.modify(|_r, w| {
-            w.sof().set_bit();
-            w
-        });
-    }
+        #[cfg(feature = "usbd")]
+        {
+            defmt::debug!("Enabling SOF interrupts...");
+            periph.USBD.inten.modify(|_r, w| {
+                w.sof().set_bit();
+                w
+            });
+        }
+    */
 
     Ok(Board {
         leds: Leds {
-            _1: Led { inner: led1pin },
-            _2: Led { inner: led2pin },
-            _3: Led { inner: led3pin },
-            _4: Led { inner: led4pin },
+            _1: led1pin,
+            _2: led2pin,
+            _3: led3pin,
+            _4: led4pin,
         },
-        #[cfg(feature = "radio")]
-        radio,
+        //#[cfg(feature = "radio")]
+        //radio,
         timer: Timer { inner: timer },
-        #[cfg(any(feature = "advanced", feature = "usbd"))]
-        usbd: periph.USBD,
-        #[cfg(feature = "advanced")]
-        power: periph.POWER,
+        //#[cfg(any(feature = "advanced", feature = "usbd"))]
+        //usbd: periph.USBD,
+        usbd: hal::pac::USBD,
+        //#[cfg(feature = "advanced")]
+        //power: periph.POWER,
+        power: hal::pac::POWER,
         #[cfg(feature = "advanced")]
         ep0in: unsafe { usbd::Ep0In::new(&EP0IN_BUF) },
-        #[cfg(any(feature = "radio", feature = "usbd"))]
-        clocks,
+        //#[cfg(any(feature = "radio", feature = "usbd"))]
+        //clocks,
     })
 }
 
 // Counter of OVERFLOW events -- an OVERFLOW occurs every (1<<24) ticks
 static OVERFLOWS: AtomicU32 = AtomicU32::new(0);
 
+pub struct Rtc(hal::peripherals::RTC0);
+
+impl Rtc {
+    pub fn new(rtc: hal::peripherals::RTC0) {
+        Self(rtc)
+    }
+    pub fn enable_counter(&mut self) {
+    }
+}
+
+
 // NOTE this will run at the highest priority, higher priority than RTIC tasks
 #[interrupt]
 fn RTC0() {
     OVERFLOWS.fetch_add(1, Ordering::Release);
-    // # Safety
-    // Concurrent access to this field within the RTC is acceptable.
-    unsafe {
-        let rtc = hal::pac::Peripherals::steal().RTC0;
-        // clear the EVENT register
-        rtc.events_ovrflw.reset();
-    }
+    let rtc = hal::pac::RTC0;
+    // clear the EVENT register
+    rtc.events_ovrflw().write(|w| *w = 0);
 }
 
 /// Exits the application successfully when the program is executed through the
@@ -468,12 +479,12 @@ pub fn uptime_ticks() -> u64 {
 
     // # Safety
     // Concurrent access to this field within the RTC is acceptable.
-    let rtc_counter = unsafe { &hal::pac::Peripherals::steal().RTC0.counter };
+    let rtc_counter = hal::pac::RTC0.counter();
 
     loop {
         // NOTE volatile is used to order these load operations among themselves
         let hi1 = OVERFLOWS.load(Ordering::Acquire);
-        let low = rtc_counter.read().counter().bits();
+        let low = rtc_counter.read().counter();
         let hi2 = OVERFLOWS.load(Ordering::Relaxed);
 
         if hi1 == hi2 {
@@ -525,14 +536,10 @@ pub fn uptime_us() -> u64 {
 
 /// Returns the least-significant bits of the device identifier
 pub fn deviceid0() -> u32 {
-    // NOTE(unsafe) read-only registers, and no other use of the block
-    let ficr = unsafe { &*hal::pac::FICR::ptr() };
-    ficr.deviceid[0].read().deviceid().bits()
+    hal::pac::FICR.deviceid(0).read()
 }
 
 /// Returns the most-significant bits of the device identifier
 pub fn deviceid1() -> u32 {
-    // NOTE(unsafe) read-only registers, and no other use of the block
-    let ficr = unsafe { &*hal::pac::FICR::ptr() };
-    ficr.deviceid[1].read().deviceid().bits()
+    hal::pac::FICR.deviceid(1).read()
 }
