@@ -11,11 +11,14 @@ cortex-m-rt = "0.7.5"
 cortex-m-semihosting = "0.5.0"
 defmt = "1"
 defmt-rtt = "1.1"
+embassy-time = "0.5"
 embedded-hal = "1.0"
+nb = "1"
 grounded = { version = "0.2.0", features = ["cas"] }
-hal = { package = "nrf52840-hal", version = "0.18.0" }
+hal = { package = "embassy-nrf", version = "0.8", features = ["nrf52840", "unstable-pac"] }
 
 [features]
+default = []
 advanced = []
 radio = []
 usbd = []

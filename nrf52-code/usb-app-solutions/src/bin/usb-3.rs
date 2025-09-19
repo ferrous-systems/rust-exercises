@@ -1,10 +1,8 @@
 #![no_main]
 #![no_std]
 
-use dk::{
-    peripheral::USBD,
-    usbd::{self, Ep0In, Event},
-};
+use dk::hal::pac::usbd::Usbd;
+use dk::usbd::{self, Ep0In, Event};
 
 use usb::{Descriptor, Request};
 
@@ -13,11 +11,12 @@ use usb_app as _;
 
 #[rtic::app(device = dk, peripherals = false)]
 mod app {
+
     use super::*;
 
     #[local]
     struct MyLocalResources {
-        usbd: USBD,
+        usbd: Usbd,
         ep0in: Ep0In,
     }
 
@@ -48,7 +47,7 @@ mod app {
 }
 
 /// Handle a USB event (in interrupt context)
-fn on_event(usbd: &USBD, ep0in: &mut Ep0In, event: Event) {
+fn on_event(usbd: &Usbd, ep0in: &mut Ep0In, event: Event) {
     defmt::debug!("USB: {} @ {=u64:tus}", event, dk::uptime_us());
 
     match event {
@@ -59,8 +58,8 @@ fn on_event(usbd: &USBD, ep0in: &mut Ep0In, event: Event) {
         Event::UsbEp0DataDone => ep0in.end(usbd),
 
         Event::UsbEp0Setup => {
-            let bmrequesttype = usbd.bmrequesttype.read().bits() as u8;
-            let brequest = usbd.brequest.read().brequest().bits();
+            let bmrequesttype = usbd.bmrequesttype().read().0 as u8;
+            let brequest = usbd.brequest().read().brequest().to_bits();
             let wlength = usbd::wlength(usbd);
             let windex = usbd::windex(usbd);
             let wvalue = usbd::wvalue(usbd);
@@ -78,9 +77,10 @@ fn on_event(usbd: &USBD, ep0in: &mut Ep0In, event: Event) {
                 "Error parsing request (goal achieved if GET_DESCRIPTOR Device was handled before)",
             );
             match request {
-                Request::GetDescriptor { descriptor, length }
-                    if descriptor == Descriptor::Device =>
-                {
+                Request::GetDescriptor {
+                    descriptor: Descriptor::Device,
+                    length,
+                } => {
                     defmt::info!("GET_DESCRIPTOR Device [length={}]", length);
 
                     let desc = usb2::device::Descriptor {

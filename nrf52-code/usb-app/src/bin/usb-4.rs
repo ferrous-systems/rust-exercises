@@ -1,10 +1,8 @@
 #![no_main]
 #![no_std]
 
-use dk::{
-    peripheral::USBD,
-    usbd::{self, Ep0In, Event},
-};
+use dk::hal::pac::usbd::Usbd;
+use dk::usbd::{self, Ep0In, Event};
 
 use usb2::State;
 
@@ -17,11 +15,12 @@ use usb_app as _;
 
 #[rtic::app(device = dk, peripherals = false)]
 mod app {
+
     use super::*;
 
     #[local]
     struct MyLocalResources {
-        usbd: USBD,
+        usbd: Usbd,
         ep0in: Ep0In,
         state: State,
     }
@@ -54,7 +53,7 @@ mod app {
 }
 
 /// Handle a USB event (in interrupt context)
-fn on_event(usbd: &USBD, ep0in: &mut Ep0In, state: &mut State, event: Event) {
+fn on_event(usbd: &Usbd, ep0in: &mut Ep0In, state: &mut State, event: Event) {
     defmt::debug!("USB: {} @ {=u64:tus}", event, dk::uptime_us());
 
     match event {
@@ -80,9 +79,9 @@ fn on_event(usbd: &USBD, ep0in: &mut Ep0In, state: &mut State, event: Event) {
 }
 
 /// Handle a SETUP request on EP0
-fn ep0setup(usbd: &USBD, ep0in: &mut Ep0In, _state: &mut State) -> Result<(), ()> {
-    let bmrequesttype = usbd.bmrequesttype.read().bits() as u8;
-    let brequest = usbd.brequest.read().brequest().bits();
+fn ep0setup(usbd: &Usbd, ep0in: &mut Ep0In, _state: &mut State) -> Result<(), ()> {
+    let bmrequesttype = usbd.bmrequesttype().read().0 as u8;
+    let brequest = usbd.brequest().read().brequest() as u8;
     let wlength = usbd::wlength(usbd);
     let windex = usbd::windex(usbd);
     let wvalue = usbd::wvalue(usbd);

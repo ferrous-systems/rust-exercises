@@ -1,10 +1,8 @@
 #![no_main]
 #![no_std]
 
-use dk::{
-    peripheral::USBD,
-    usbd::{self, Event},
-};
+use dk::hal::pac::usbd::Usbd;
+use dk::usbd::{self, Event};
 
 use usb::{Descriptor, Request};
 
@@ -13,11 +11,12 @@ use usb_app as _;
 
 #[rtic::app(device = dk, peripherals = false)]
 mod app {
+
     use super::*;
 
     #[local]
     struct MyLocalResources {
-        usbd: USBD,
+        usbd: Usbd,
     }
 
     #[shared]
@@ -41,7 +40,7 @@ mod app {
 }
 
 /// Handle a USB event (in interrupt context)
-fn on_event(_usbd: &USBD, event: Event) {
+fn on_event(_usbd: &Usbd, event: Event) {
     defmt::debug!("USB: {} @ {=u64:tus}", event, dk::uptime_us());
 
     match event {
@@ -81,8 +80,10 @@ fn on_event(_usbd: &USBD, event: Event) {
             let request = Request::parse(bmrequesttype, brequest, wvalue, windex, wlength)
                 .expect("Error parsing request");
             match request {
-                Request::GetDescriptor { descriptor: Descriptor::Device, length } =>
-                {
+                Request::GetDescriptor {
+                    descriptor: Descriptor::Device,
+                    length,
+                } => {
                     // TODO modify `Request::parse()` in `nrf52-code/usb-lib/src/lib.rs`
                     // so that this branch is reached
 
@@ -96,6 +97,7 @@ fn on_event(_usbd: &USBD, event: Event) {
                     // need to catch it here. We'll properly handle this request later
                     // but for now it's OK to do nothing.
                 }
+                #[allow(unreachable_patterns)]
                 _ => unreachable!(), // we don't handle any other Requests
             }
         }
