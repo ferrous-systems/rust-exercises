@@ -32,7 +32,7 @@ fn main() -> ! {
 
     defmt::println!(
         "ciphertext: {}",
-        str::from_utf8(&secret).expect("packet was not valid UTF-8")
+        str::from_utf8(secret).expect("packet was not valid UTF-8")
     );
 
     /* # Decrypt the string */
