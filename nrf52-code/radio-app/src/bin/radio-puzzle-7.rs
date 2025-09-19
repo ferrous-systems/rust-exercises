@@ -51,7 +51,7 @@ fn main() -> ! {
 
     defmt::println!(
         "ciphertext: {}",
-        str::from_utf8(&secret).expect("packet was not valid UTF-8")
+        str::from_utf8(secret).expect("packet was not valid UTF-8")
     );
 
     /* # Decrypt the string */
@@ -78,7 +78,7 @@ fn main() -> ! {
 
     defmt::println!(
         "Dongle response: {}",
-        str::from_utf8(&response).expect("response was not UTF-8")
+        str::from_utf8(response).expect("response was not UTF-8")
     );
 
     dk::exit()
