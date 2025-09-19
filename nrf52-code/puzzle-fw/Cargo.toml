@@ -18,4 +18,4 @@ usbd-hid = { version = "0.8.2", features = ["defmt"] }
 usbd-serial = "0.2.2"
 
 [build-dependencies]
-rand = "0.8.5"
+rand = "0.9"

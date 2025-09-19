@@ -152,6 +152,7 @@ jobs:
           tool: flip-link@0.1.10
       - run: just build-puzzle-fw
         env:
+          CI_BUILD: "1"
           HIDDEN_MESSAGE: ${{ secrets.HIDDEN_MESSAGE }}
       - uses: actions/upload-artifact@v4
         with:

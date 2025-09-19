@@ -7,9 +7,17 @@ fn main() {
     const PLAIN_LETTERS: &str = r##"0123456789 abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~"##;
 
     let maybe_msg = std::env::var("HIDDEN_MESSAGE");
+    if std::env::var("CI_BUILD").is_ok_and(|val| val == "1") {
+        if maybe_msg.is_err() {
+            panic!("HIDDEN_MESSAGE is not set for CI build");
+        } else if maybe_msg.as_deref().unwrap().is_empty() {
+            panic!("HIDDEN_MESSAGE is empty for CI build");
+        }
+    }
+
     let plaintext = maybe_msg.as_deref().unwrap_or("This is an example message");
 
-    let mut rng = rand::thread_rng();
+    let mut rng = rand::rng();
     let mut cipher_letters: Vec<u8> = PLAIN_LETTERS.bytes().collect();
     cipher_letters.shuffle(&mut rng);
     let cipher_letters_str = std::str::from_utf8(&cipher_letters).unwrap();
