@@ -48,46 +48,19 @@ It has:
 - 1 MB of Flash that spans the address range: `0x0000_0000` - `0x0010_0000`.
 - 256 KB of RAM that spans the address range: `0x2000_0000` - `0x2004_0000`.
 
-## The `cortex-m-quickstart` project template
+Most modern Rust HALs take care of importing the correct memory layout for your chip automatically.
+If this is not done by your HAL or BSP library, you have to supply this information to the linker
+yourself, usually through a `memory.x` file.
 
-With all this information you'll be able to build programs for the target device. The [`cortex-m-quickstart`] project template provides the most frictionless way to start a new project for the ARM Cortex-M architecture -- for other architectures check out other project templates by the [rust-embedded] organization.
+## The `app-template` project template
 
-[`cortex-m-quickstart`]: https://github.com/rust-embedded/cortex-m-quickstart
+With all this information you'll be able to build programs for the target device. The [`app-template`] project template provides the most frictionless way to start a new project for the ARM Cortex-M architecture -- for other architectures check out other project templates by the [rust-embedded] organization. It uses
+the [`cargo-generate`] tool to set up a lot of the scafolding and boilerplate necessary
+for embedded Rust projects.
+
 [rust-embedded]: https://github.com/rust-embedded/
-
-The recommended way to use the quickstart template is through the [`cargo-generate`] tool:
-
+[`app-template`]: https://github.com/knurling-rs/app-template
 [`cargo-generate`]: https://crates.io/crates/cargo-generate
-
-```console
-cargo generate --git https://github.com/rust-embedded/cortex-m-quickstart
-```
-
-But it may be difficult to install the `cargo-generate` tool on Windows due to its `libgit2` (C library) dependency. Another option is to download a snapshot of the quickstart template from GitHub and then fill in the placeholders in `Cargo.toml` of the snapshot.
-
-Once you have instantiated a project using the template you'll need to fill in the device-specific information you collected in the two previous steps:
-
-### 1. Change the default compilation target in `.cargo/config`
-
-```toml
-[build]
-target = "thumbv7em-none-eabi"
-```
-
-For the nRF52840 you can choose either `thumbv7em-none-eabi` or `thumbv7em-none-eabihf`. If you are going to use the FPU then select the `hf` variant.
-
-### 2. Enter the memory layout of the chip in `memory.x`
-
-```text
-MEMORY
-{
-  /* NOTE 1 K = 1 KiBi = 1024 bytes */
-  FLASH : ORIGIN = 0x00000000, LENGTH = 1M
-  RAM : ORIGIN = 0x20000000, LENGTH = 256K
-}
-```
-
-### 3. `cargo build` now will cross compile programs for your target device
 
 If there's no template or signs of support for a particular architecture under the rust-embedded organization then you can follow the [embedonomicon] to bootstrap support for the new architecture by yourself.
 
@@ -107,9 +80,12 @@ If the board does not expose a JTAG, SWD or similar interface then the microcont
 
 ## Getting output
 
-If you are using one of the probes supported by `probe-rs` then you can use the [`rtt-target`] library to get text output on `cargo-embed`. The logging functionality we used in the examples is implemented using the `rtt-target` crate.
+If you are using one of the probes supported by `probe-rs` then you can use the [`defmt-rtt`] library to get
+text output on `probe-rs` which is efficiently formatted using the [`defmt`] library. The logging
+functionality we used in the examples is implemented using the [`defmt-rtt`] crate.
 
-[`rtt-target`]: https://crates.io/crates/rtt-target
+[`defmt-rtt`]: https://docs.rs/crate/defmt-rtt/latest
+[`defmt`]: https://github.com/knurling-rs/defmt
 
 If that's not the case or there's no debugger on board then you'll need to add a HAL before you can get text output from the board.
 
@@ -123,15 +99,19 @@ Now you can hopefully run programs and get output from them. To use the hardware
 
 After you find a HAL you'll want to get familiar with its API through its [API docs] and [examples]. HAL do not always expose the exact same API, specially when it comes to initialization and configuration of peripherals. However, most HAL will implement the [`embedded-hal`] traits. These traits allow inter-operation between the HAL and [*driver* crates][drivers]. These driver crates provide functionality to interface external devices like sensors, actuators and radios over interfaces like I2C and SPI.
 
-[API docs]: https://docs.rs/nrf52840-hal/0.10.0/nrf52840_hal/
+[API docs]: https://docs.rs/nrf52840-hal/0.18.0/nrf52840_hal/
 [examples]: https://github.com/nrf-rs/nrf-hal/tree/master/examples
 [`embedded-hal`]: https://crates.io/crates/embedded-hal
 [drivers]: https://github.com/rust-embedded/awesome-embedded-rust#driver-crates
 
 If no HAL is available for your device then you'll need to build one yourself. This is usually done by first generating a Peripheral Access Crate (PAC) from a [System View Description][SVD] (SVD) file using the [`svd2rust`] tool. The PAC exposes a low level, but type safe, API to modify the registers on the device. Once you have a PAC you can use of the many HALs on crates.io as a reference; most of them are implemented on top of `svd2rust`-generated PACs.
 
+If no SVD files are available or if the capability of the generated PACs is insufficient, you
+can write your own PAC blocks in a declarative way using [`derive-mmio`].
+
 [SVD]: http://www.keil.com/pack/doc/CMSIS/SVD/html/index.html
 [`svd2rust`]: https://crates.io/crates/svd2rust
+[`derive-mmio`]: https://github.com/knurling-rs/derive-mmio
 
 ## Hello, 💡
 
@@ -139,4 +119,4 @@ Now that you've set up your own project from scratch, you could start playing ar
 
 - The [Nordic Infocenter][infocenter] tells you which LED is connected to which pin.
 
-[infocenter]: https://infocenter.nordicsemi.com/index.jsp?topic=%2Fug_nrf52840_dk%2FUG%2Fnrf52840_DK%2Fhw_buttons_leds.html
+[infocenter]: https://docs.nordicsemi.com/bundle/ug_nrf52840_dk/page/UG/dk/hw_buttons_leds.html
