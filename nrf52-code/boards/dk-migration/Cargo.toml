@@ -1,0 +1,30 @@
+[package]
+authors = ["Ferrous Systems"]
+edition = "2021"
+license = "MIT OR Apache-2.0"
+name = "dk-migration"
+version = "0.0.0"
+
+[dependencies]
+cortex-m = { version = "0.7.7", features = ["critical-section-single-core"] }
+cortex-m-rt = "0.7.5"
+cortex-m-semihosting = "0.5.0"
+defmt = { git = "https://github.com/knurling-rs/defmt/", rev = "177c219", version = "1.0.1" }
+defmt-rtt = { git = "https://github.com/knurling-rs/defmt/", rev = "177c219" }
+embassy-time = "0.5"
+embedded-hal = "1.0"
+nb = "1"
+grounded = { version = "0.2.0", features = ["cas"] }
+
+[dependencies.hal]
+package = "embassy-nrf"
+version = "0.7"
+git = "https://github.com/ferrous-systems/embassy.git"
+rev = "56019ba197443e16b4f0b3a0fe3ff85985f6e45c"
+features = ["nrf52840", "unstable-pac"]
+
+[features]
+default = ["radio"]
+advanced = []
+radio = []
+usbd = []
