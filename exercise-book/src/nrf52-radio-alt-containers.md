@@ -2,7 +2,10 @@
 
 ## Modify-in-place
 
-If you solved the puzzle using a `Vec` buffer you can try solving it without the buffer as a stretch goal. You may find the [slice methods][slice] that let you mutate a `Packet`'s data useful, but remember that the first six bytes of your `Packet` will be the random device address - you can't decrypt those! A solution that does not use a `heapless:Vec` buffer can be found in the `src/bin/radio-puzzle-solution-2.rs` file.
+If you solved the puzzle using a `Vec` buffer you can try solving it without the buffer as a
+stretch goal. You may find the [slice methods][slice] that let you mutate a `Packet`'s data useful,
+but remember that the first six bytes of your `Packet` will be the random device address - you
+can't decrypt those!
 
 ## Using `heapless::FnvIndexMap`
 
