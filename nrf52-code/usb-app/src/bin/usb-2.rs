@@ -69,7 +69,7 @@ fn on_event(_usbd: &USBD, event: Event) {
             // composed of a high register (WVALUEH) and a low register (WVALUEL)
             let wvalue: u16 = 0;
 
-            defmt::debug!(
+            defmt::info!(
                     "SETUP: bmrequesttype: 0b{=u8:08b}, brequest: {=u8}, wlength: {=u16}, windex: 0x{=u16:04x}, wvalue: 0x{=u16:04x}",
                     bmrequesttype,
                     brequest,
@@ -81,8 +81,7 @@ fn on_event(_usbd: &USBD, event: Event) {
             let request = Request::parse(bmrequesttype, brequest, wvalue, windex, wlength)
                 .expect("Error parsing request");
             match request {
-                Request::GetDescriptor { descriptor, length }
-                    if descriptor == Descriptor::Device =>
+                Request::GetDescriptor { descriptor: Descriptor::Device, length } =>
                 {
                     // TODO modify `Request::parse()` in `nrf52-code/usb-lib/src/lib.rs`
                     // so that this branch is reached

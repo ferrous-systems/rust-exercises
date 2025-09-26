@@ -100,12 +100,8 @@ Modify [`nrf52-code/usb-app/src/bin/usb-2.rs`][usb_2] to read the appropriate `U
 When you have successfully received a `GET_DESCRIPTOR` request for a Device descriptor you are done. You should see an output like this:
 
 ```console
-USB: UsbReset @ Duration { secs: 0, nanos: 361145018 }
-USB: UsbEp0Setup @ Duration { secs: 0, nanos: 402465820 }
-SETUP: bmrequesttype: 0, brequest: 5, wlength: 0, windex: 0, wvalue: 10
-USB: UsbEp0Setup @ Duration { secs: 0, nanos: 404754637 }
-SETUP: bmrequesttype: 128, brequest: 6, wlength: 8, windex: 0, wvalue: 256
-GET_DESCRIPTOR Device [length=8]
+00:00:00.215576 [INFO ] SETUP: bmrequesttype: 0b10000000, brequest: 6, wlength: 64, windex: 0x0000, wvalue: 0x0100 (usb_2 src/bin/usb-2.rs:72)
+00:00:00.215637 [INFO ] GET_DESCRIPTOR Device [length=64] (usb_2 src/bin/usb-2.rs:91)
 Goal reached; move to the next section
 `dk::exit()` called; exiting ...
 ```

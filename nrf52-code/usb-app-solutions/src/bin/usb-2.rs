@@ -77,7 +77,7 @@ fn on_event(usbd: &USBD, event: Event) {
             // let windex = usbd::windex(usbd);
             // let wvalue = usbd::wvalue(usbd);
 
-            defmt::debug!(
+            defmt::info!(
                     "SETUP: bmrequesttype: 0b{=u8:08b}, brequest: {=u8}, wlength: {=u16}, windex: 0x{=u16:04x}, wvalue: 0x{=u16:04x}",
                     bmrequesttype,
                     brequest,
