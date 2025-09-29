@@ -37,10 +37,10 @@ format-check: format-check-rust
 format: format-rust
 
 clean: clean-rust
-	rm -rf ./training-book/book
+	rm -rf ./exercise-book/book
 
 serve:
-	cd training-book && mdbook serve
+	cd exercise-book && mdbook serve
 
 build-mdbook:
 	cd exercise-book && RUST_LOG=info mdbook build

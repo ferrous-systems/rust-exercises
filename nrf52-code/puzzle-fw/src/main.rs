@@ -148,7 +148,7 @@ mod app {
 
         defmt::debug!("Building VID and PID...");
         let vid_pid =
-            usb_device::device::UsbVidPid(consts::USB_VID_DEMO, consts::USB_PID_DONGLE_LOOPBACK);
+            usb_device::device::UsbVidPid(consts::USB_VID_DEMO, consts::USB_PID_DONGLE_PUZZLE);
 
         defmt::debug!("Building USB Device...");
         let usb_device = usb_device::device::UsbDeviceBuilder::new(usb_alloc, vid_pid)
