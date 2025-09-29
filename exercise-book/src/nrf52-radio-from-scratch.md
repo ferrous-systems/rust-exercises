@@ -50,7 +50,8 @@ It has:
 
 Most modern Rust HALs take care of importing the correct memory layout for your chip automatically.
 If this is not done by your HAL or BSP library, you have to supply this information to the linker
-yourself, usually through a `memory.x` file.
+yourself, usually through a `memory.x` file (which is imported by the `link.x`
+script supplied by the `cortex-m-rt` crate).
 
 ## The `app-template` project template
 
