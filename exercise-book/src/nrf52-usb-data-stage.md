@@ -28,8 +28,8 @@ The raw values you need to pack into the descriptor are as follows. Note, we won
 - `bDescriptorType = 1`, device descriptor type (must always be this value)
 - `bDeviceClass = bDeviceSubClass = bDeviceProtocol = 0`, these are unimportant for enumeration
 - `bMaxPacketSize0 = 64`, this is the most performant option (minimizes exchanges between the device and the host) and it's assumed by the `Ep0In` abstraction
-- `idVendor = consts::VID`, our example's USB Vendor ID (\*)
-- `idProduct = consts::PID`, our example's USB Product ID (\*)
+- `idVendor = consts::USB_VID_DEMO`, our example's USB Vendor ID (\*)
+- `idProduct = consts::USB_PID_RTIC_DEMO`, our example's USB Product ID (\*)
 - `bcdDevice = 0x0100`, this means version 1.0 but any value should do
 - `iManufacturer = iProduct = iSerialNumber = None`, string descriptors not supported
 - `bNumConfigurations = 1`, must be at least `1` so this is the minimum value
@@ -51,25 +51,10 @@ The device descriptor is 18 bytes long but the host may ask for fewer bytes (see
 Once you have successfully responded to the GET_DESCRIPTOR Device request you should get logs like these (if you are logging like our solution does):
 
 ```text
-USB: UsbReset @ Duration { secs: 0, nanos: 211334227 }
-USB: UsbEp0Setup @ Duration { secs: 0, nanos: 252380370 }
-SETUP: bmrequesttype: 0, brequest: 5, wlength: 0, windex: 0, wvalue: 52
-USB: UsbEp0Setup @ Duration { secs: 0, nanos: 254577635 }
-SETUP: bmrequesttype: 128, brequest: 6, wlength: 8, windex: 0, wvalue: 256
-GET_DESCRIPTOR Device [length=8]
-EP0IN: start 8B transfer
-USB: UsbEp0DataDone @ Duration { secs: 0, nanos: 254852293 }
-EP0IN: transfer done
-USB: UsbEp0Setup @ Duration { secs: 0, nanos: 257568358 }
-SETUP: bmrequesttype: 128, brequest: 6, wlength: 18, windex: 0, wvalue: 256
-GET_DESCRIPTOR Device [length=18]
-EP0IN: start 18B transfer
-USB: UsbEp0DataDone @ Duration { secs: 0, nanos: 257843016 }
-EP0IN: transfer done
-USB: UsbEp0Setup @ Duration { secs: 0, nanos: 259674071 }
-SETUP: bmrequesttype: 128, brequest: 6, wlength: 9, windex: 0, wvalue: 512
-ERROR unknown request (goal achieved if GET_DESCRIPTOR Device was handled before)
-`dk::exit()` called; exiting ...
+00:00:00.367980 [INFO ] GET_DESCRIPTOR Device [length=64] (usb_3 src/bin/usb-3.rs:86)
+00:00:00.368835 [ERROR] panicked at src/bin/usb-3.rs:60:34:
+not yet implemented (usb_app src/lib.rs:8)
+`dk::fail()` called; exiting ...
 ```
 
 A solution to this exercise can be found in [`nrf52-code/usb-app-solutions/src/bin/usb-3.rs`](../../nrf52-code/usb-app-solutions/src/bin/usb-3.rs).

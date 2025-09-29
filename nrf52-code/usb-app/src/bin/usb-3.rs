@@ -78,8 +78,7 @@ fn on_event(usbd: &USBD, ep0in: &mut Ep0In, event: Event) {
                 "Error parsing request (goal achieved if GET_DESCRIPTOR Device was handled before)",
             );
             match request {
-                Request::GetDescriptor { descriptor, length }
-                    if descriptor == Descriptor::Device =>
+                Request::GetDescriptor { descriptor: Descriptor::Device, length } =>
                 {
                     defmt::info!("GET_DESCRIPTOR Device [length={}]", length);
 

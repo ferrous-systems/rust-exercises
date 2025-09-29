@@ -18,3 +18,6 @@ rustflags = [
 [build]
 # cross-compile to this target
 target = "thumbv7em-none-eabihf" # = ARM Cortex-M4 with FPU
+
+[env]
+DEFMT_LOG = "info"
