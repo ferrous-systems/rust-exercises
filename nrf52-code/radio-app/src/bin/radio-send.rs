@@ -5,7 +5,7 @@
 use core::str;
 
 use cortex_m_rt::entry;
-use dk::ieee802154::{Channel, Packet, TxPower};
+use dk::radio::{Channel, Packet, TxPower};
 // this imports `src/lib.rs`to retrieve our global logger + panicking-behavior
 use radio_app as _;
 
@@ -17,7 +17,7 @@ fn main() -> ! {
     // these are the default settings of the DK's radio
     // NOTE if you ran `change-channel` then you may need to update the channel here
     radio.set_channel(Channel::_20); // <- must match the Dongle's listening channel
-    radio.set_txpower(TxPower::Pos8dBm);
+    radio.set_transmission_power(TxPower::POS8_DBM);
 
     let mut packet = Packet::new();
 
