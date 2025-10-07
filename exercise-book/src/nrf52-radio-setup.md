@@ -12,5 +12,3 @@ Received 5 bytes (CRC=0xdad9, LQI=61)
 ```
 
 The program broadcasts a radio packet that contains the 5-byte string `Hello` over channel 20 (which has a center frequency of 2450 MHz). The `loopback` program running on the Dongle is listening to all packets sent over channel 20; every time it receives a new packet it reports its length and the Link Quality Indicator (LQI) metric of the transmission over the USB/serial interface. As the name implies the LQI metric indicates how good the connection between the sender and the receiver is (a higher number means better quality).
-
-Because of how our firmware generates a *semihosting exception* to tell our flashing tool (`probe-run`) when the firmware has finished running, if you load the `radio-send` firmware and then power-cycle the nRF52840-DK, the firmware will enter a reboot loop and repeatedly send a packet. This is because nothing catches the *semihosting exception* and so the CPU reboots, sends a packet, and then tries another *semihosting exception*.
