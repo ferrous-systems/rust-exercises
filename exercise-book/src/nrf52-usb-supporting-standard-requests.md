@@ -149,8 +149,6 @@ The configuration descriptor and one interface descriptor will be concatenated i
 
 The configuration descriptor in the response should contain these fields:
 
-- `bLength = 9`, the size of this descriptor (must always be this value)
-- `bDescriptorType = 2`, configuration descriptor type (must always be this value)
 - `wTotalLength = 18` = one configuration descriptor (9 bytes) and one interface descriptor (9 bytes)
 - `bNumInterfaces = 1`, a single interface (the minimum value)
 - `bConfigurationValue = 42`, any non-zero value will do
@@ -160,8 +158,6 @@ The configuration descriptor in the response should contain these fields:
 
 The interface descriptor in the response should contain these fields:
 
-- `bLength = 9`, the size of this descriptor (must always be this value)
-- `bDescriptorType = 4`, interface descriptor type (must always be this value)
 - `bInterfaceNumber = 0`, this is the first, and only, interface
 - `bAlternateSetting = 0`, alternate settings are not supported
 - `bNumEndpoints = 0`, no endpoint associated to this interface (other than the control endpoint)
