@@ -1,5 +1,3 @@
-use num;
-
 /// A geometric 2D shape that has an area.
 pub trait HasArea<T> {
     fn area(&self) -> T;
@@ -64,7 +62,7 @@ impl<T> Circle<T> {
     where
         T: num::Num + Copy + From<f32>,
     {
-        self.radius * self.radius * std::f32::consts::PI.into()
+        T::from(std::f32::consts::PI) * self.radius * self.radius
     }
 
     /// Multiplies the radius by a factor to increase/decrease the size of the given [`Circle`]
