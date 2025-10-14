@@ -17,7 +17,7 @@ Let's inspect our radio exercises's `hello` program with it:
 
 ```console
 $ cd nrf52-code/radio-app
-$ cargo bloat --bin hello
+$ cargo bloat --bin hello --release
 File  .text   Size      Crate Name
 0.7%  13.5% 1.3KiB        std <char as core::fmt::Debug>::fmt
 0.5%   9.6%   928B      hello hello::__cortex_m_rt_main
@@ -28,7 +28,10 @@ File  .text   Size      Crate Name
 5.1% 100.0% 9.4KiB            .text section size, the file size is 184.5KiB
 ```
 
-This breaks down the size of the `.text` section by function. This breakdown can be used to identify the largest functions in the program; those could then be modified to make them smaller.
+This breaks down the size of the `.text` section by function. This breakdown can be used to
+identify the largest functions in the program; those could then be modified to make them smaller.
+Please note that the output might change between compiler and dependency versions and you might
+not get the exact output shown above.
 
 ## Using `probe-rs` VS Code plugin
 
