@@ -11,8 +11,8 @@ cortex-m = {version = "0.7.7", features = ["critical-section-single-core"]}
 cortex-m-rt = "0.7.5"
 dk = { path = "../boards/dk", features = ["radio"] }
 heapless = "0.9"
-defmt = { git = "https://github.com/knurling-rs/defmt/", rev = "177c219", version = "1.0.1" }
-defmt-rtt = { git = "https://github.com/knurling-rs/defmt/", rev = "177c219" }
+defmt = "1"
+defmt-rtt = "1.1"
 
 # optimise a little bit
 [profile.dev]
