@@ -28,10 +28,11 @@ We use `criticalup link create` to teach `rustup` that `+ferrocene` means 'use c
 ### Rust
 
 If you want to run it with the upstream Rust compiler, you will need to use
-`nightly`, and tell `cargo` to build the standard library from source:
+`nightly` (or it should be available in stable from Rust 1.92 onwards).
 
 ```bash
-cargo +nightly run -Zbuild-std=core
+rustup target add armv8r-none-eabihf --toolchain=nightly
+cargo +nightly run
 ```
 
 ## License

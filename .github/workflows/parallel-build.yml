@@ -99,8 +99,8 @@ jobs:
       - uses: ./.github/actions/setup
         with:
           cache: qemu-code/uart-driver
-          target: thumbv7em-none-eabihf
-      - run: rustup component add rust-src
+          target: armv8r-none-eabihf
+          channel: nightly
       - run: just build-qemu-uart-driver
 
   build-radio-app:
