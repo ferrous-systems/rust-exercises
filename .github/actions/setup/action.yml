@@ -47,8 +47,9 @@ runs:
       shell: bash
       env:
         RUSTUP_TARGET: ${{ inputs.target }}
+        RUSTUP_CHANNEL: ${{ inputs.channel }}
       run: |
-        rustup target add ${RUSTUP_TARGET}
+        rustup target add ${RUSTUP_TARGET} --toolchain=${RUSTUP_CHANNEL}
     - name: Setup Rust Cache
       if: ${{ inputs.cache != '' }}
       uses: Swatinem/rust-cache@v2
