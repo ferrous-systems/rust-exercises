@@ -65,10 +65,10 @@ test-multi-threaded-mailbox:
 		cd exercise-solutions/multi-threaded-mailbox && cargo test
 
 build-qemu-uart-driver:
-	cd qemu-code/uart-driver && RUSTC_BOOTSTRAP=1 cargo +stable build --release -Zbuild-std=core
+	cd qemu-code/uart-driver && cargo +nightly build --release
 
 build-qemu-uart-driver-ferrocene:
-	cd qemu-code/uart-driver && cargo build --release
+	cd qemu-code/uart-driver && criticalup install && criticalup run cargo build --release
 
 build-radio-app:
 	cd nrf52-code/radio-app && cargo build --release
