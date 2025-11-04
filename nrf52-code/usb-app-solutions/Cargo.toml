@@ -22,8 +22,8 @@ usb = { path = "../usb-lib-solutions/complete" }
 usb2 = "0.0.1"
 
 [dependencies.heapless]
-version = "0.7.16"
-features = ["defmt-impl"]
+version = "0.9"
+features = ["defmt"]
 
 # optimise a little bit
 [profile.dev]
