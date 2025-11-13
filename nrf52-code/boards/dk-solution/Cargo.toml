@@ -18,7 +18,6 @@ grounded = { version = "0.2.0", features = ["cas"] }
 hal = { package = "embassy-nrf", version = "0.8", features = ["nrf52840", "unstable-pac"] }
 
 [features]
-default = []
 advanced = []
 radio = []
 usbd = []
