@@ -6,43 +6,36 @@
 #![deny(warnings)]
 #![no_std]
 
-use core::{
-    ops,
-    sync::atomic::{self, AtomicU32, Ordering},
-    time::Duration,
-};
-
-use cortex_m::peripheral::NVIC;
-use cortex_m_semihosting::debug;
-use embedded_hal::digital::{OutputPin, StatefulOutputPin};
-use grounded::uninit::GroundedCell;
-
-use hal::{
-    clocks::{self, Clocks},
-    gpio::{p0, p1, Level, Output, Pin, Port, PushPull},
-    pac::USBD,
-    rtc::{Rtc, RtcInterrupt},
-    timer::OneShot,
-};
+use core::{hint::spin_loop, sync::atomic::{AtomicBool, AtomicU32, Ordering, compiler_fence}, time::Duration};
 
 use defmt_rtt as _; // global logger
 
+use embedded_hal::delay::DelayNs as _;
+//pub use bsp_shared::*;
+pub use hal;
+use hal::gpio;
 pub use hal::pac::{interrupt, Interrupt, NVIC_PRIO_BITS, RTC0};
-pub use hal::{self, ieee802154};
 
 /// Exports PAC peripherals
 pub mod peripheral {
     pub use hal::pac::{interrupt, Interrupt, POWER, USBD};
 }
 
-/// A short-hand for the nRF52 USB types
-pub type UsbBus = hal::usbd::Usbd<hal::usbd::UsbPeripheral<'static>>;
+hal::bind_interrupts!(
+    struct Irqs {
+        RADIO => hal::radio::InterruptHandler<hal::peripherals::RADIO>;
+    }
+);
 
-struct ClockSyncWrapper<H, L, LSTAT> {
-    clocks: Clocks<H, L, LSTAT>,
+/// The ways that initialisation can fail
+#[derive(Debug, Copy, Clone, defmt::Format)]
+pub enum Error {
+    /// You tried to initialise the board twice
+    DoubleInit = 1,
 }
 
-unsafe impl<H, L, LSTAT> Sync for ClockSyncWrapper<H, L, LSTAT> {}
+// Atomic flag to detect double initialization of the HAL.
+static HAL_INIT: AtomicBool = AtomicBool::new(false);
 
 /// Components on the board
 pub struct Board {
@@ -52,15 +45,89 @@ pub struct Board {
     pub timer: Timer,
 
     /// Radio interface
-    pub radio: ieee802154::Radio<'static>,
-    /// USBD (Universal Serial Bus Device) peripheral
-    pub usbd: USBD,
-    /// Clocks
-    pub clocks: &'static Clocks<
-        clocks::ExternalOscillator,
-        clocks::ExternalOscillator,
-        clocks::LfOscStarted,
-    >,
+    pub radio: hal::radio::ieee802154::Radio<'static>,
+    /// UBBD peripheral instance from the embassy peripheral singleton.
+    pub usbd: hal::Peri<'static, hal::peripherals::USBD>,
+    /// UBBD peripheral register block.
+    pub usbd_regs: hal::pac::usbd::Usbd,
+}
+
+/// RGB LED (LD2)
+pub struct RgbLed {
+    /// LD2 Red: pin P0.08
+    pub red: Led,
+    /// LD2 Green: pin P1.09
+    pub green: Led,
+    /// LD2 Blue: pin P0.12
+    pub blue: Led,
+}
+
+impl RgbLed {
+    /// Steal the RGB LED pins.
+    ///
+    /// # Safety
+    ///
+    /// Circumvents the ownership checks provided by the HAL/BSP.
+    pub unsafe fn steal() -> Self {
+        let periph = hal::Peripherals::steal();
+        Self {
+            red: Led {
+                inner: gpio::Output::new(
+                    unsafe { hal::Peripherals::steal() }.P0_08,
+                    gpio::Level::High,
+                    gpio::OutputDrive::Standard,
+                ),
+                port: gpio::Port::Port0,
+                pin: 8,
+            },
+            green: Led {
+                inner: gpio::Output::new(
+                    periph.P1_09,
+                    gpio::Level::High,
+                    gpio::OutputDrive::Standard,
+                ),
+                port: gpio::Port::Port1,
+                pin: 9,
+            },
+            blue: Led {
+                inner: gpio::Output::new(
+                    periph.P0_12,
+                    gpio::Level::High,
+                    gpio::OutputDrive::Standard,
+                ),
+                port: gpio::Port::Port0,
+                pin: 12,
+            },
+        }
+    }
+
+    /// Turn off all colors
+    pub fn off(&mut self) {
+        self.red.off();
+        self.green.off();
+        self.blue.off();
+    }
+
+    /// Switch on the red color only.
+    pub fn red_only(&mut self) {
+        self.red.on();
+        self.green.off();
+        self.blue.off();
+    }
+
+    /// Switch on the green color only.
+    pub fn green_only(&mut self) {
+        self.green.on();
+        self.red.off();
+        self.blue.off();
+    }
+
+    /// Switch on the blue color only.
+    pub fn blue_only(&mut self) {
+        self.blue.on();
+        self.red.off();
+        self.green.off();
+    }
 }
 
 /// All LEDs on the board
@@ -68,128 +135,9 @@ pub struct Board {
 /// See User Manual Table 1
 pub struct Leds {
     /// LD1: pin P0.06
-    pub ld1: Led,
-    /// LD2 Red: pin P0.08
-    pub ld2_red: Led,
-    /// LD2 Green: pin P1.09
-    pub ld2_green: Led,
-    /// LD2 Blue: pin P0.12
-    pub ld2_blue: Led,
-}
-
-/// A single LED
-pub struct Led {
-    inner: Pin<Output<PushPull>>,
-}
-
-impl Led {
-    /// Turns on the LED
-    pub fn on(&mut self) {
-        defmt::trace!(
-            "setting P{}.{} low (LED on)",
-            if self.inner.port() == Port::Port1 {
-                '1'
-            } else {
-                '0'
-            },
-            self.inner.pin()
-        );
-
-        // NOTE this operations returns a `Result` but never returns the `Err` variant
-        let _ = self.inner.set_low();
-    }
-
-    /// Turns off the LED
-    pub fn off(&mut self) {
-        defmt::trace!(
-            "setting P{}.{} high (LED off)",
-            if self.inner.port() == Port::Port1 {
-                '1'
-            } else {
-                '0'
-            },
-            self.inner.pin()
-        );
-
-        // NOTE this operations returns a `Result` but never returns the `Err` variant
-        let _ = self.inner.set_high();
-    }
-
-    /// Returns `true` if the LED is in the OFF state
-    pub fn is_off(&mut self) -> bool {
-        self.inner.is_set_high() == Ok(true)
-    }
-
-    /// Returns `true` if the LED is in the ON state
-    pub fn is_on(&mut self) -> bool {
-        !self.is_off()
-    }
-
-    /// Toggles the state (on/off) of the LED
-    pub fn toggle(&mut self) {
-        if self.is_off() {
-            self.on();
-        } else {
-            self.off()
-        }
-    }
-}
-
-/// A timer for creating blocking delays
-pub struct Timer {
-    inner: hal::Timer<hal::pac::TIMER0, OneShot>,
-}
-
-impl Timer {
-    /// Blocks program execution for at least the specified `duration`
-    pub fn wait(&mut self, duration: Duration) {
-        defmt::trace!("blocking for {:?} ...", duration);
-
-        // 1 cycle = 1 microsecond
-        let subsec_micros = duration.subsec_micros();
-        if subsec_micros != 0 {
-            self.inner.delay(subsec_micros);
-        }
-
-        const MICROS_IN_ONE_SEC: u32 = 1_000_000;
-        // maximum number of seconds that fit in a single `delay` call without overflowing the `u32`
-        // argument
-        const MAX_SECS: u32 = u32::MAX / MICROS_IN_ONE_SEC;
-        let mut secs = duration.as_secs();
-        while secs != 0 {
-            let cycles = if secs > MAX_SECS as u64 {
-                secs -= MAX_SECS as u64;
-                MAX_SECS * MICROS_IN_ONE_SEC
-            } else {
-                let cycles = secs as u32 * MICROS_IN_ONE_SEC;
-                secs = 0;
-                cycles
-            };
-
-            self.inner.delay(cycles)
-        }
-
-        defmt::trace!("... DONE");
-    }
-
-    /// Start a timer running for `timeout_us` microseconds
-    pub fn start(&mut self, timeout_us: u32) {
-        self.inner.start(timeout_us)
-    }
-}
-
-impl ops::Deref for Timer {
-    type Target = hal::Timer<hal::pac::TIMER0, OneShot>;
-
-    fn deref(&self) -> &Self::Target {
-        &self.inner
-    }
-}
-
-impl ops::DerefMut for Timer {
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.inner
-    }
+    pub ld1_green: Led,
+    /// LD2 RGB: pins P0.08 (red), P1.09 (green), P0.12 (blue)
+    pub ld2_rgb: RgbLed,
 }
 
 /// A byte-based ring-buffer that you can writeln! into, and drain under
@@ -236,53 +184,25 @@ impl core::fmt::Write for &Ringbuffer {
     }
 }
 
-/// The ways that initialisation can fail
-#[derive(Debug, Copy, Clone, defmt::Format)]
-pub enum Error {
-    /// You tried to initialise the board twice
-    DoubleInit = 1,
-}
-
 /// Initializes the board
 ///
 /// This return an `Err`or if called more than once
 pub fn init() -> Result<Board, Error> {
-    let Some(periph) = hal::pac::Peripherals::take() else {
+    if HAL_INIT.swap(true, Ordering::Relaxed) {
         return Err(Error::DoubleInit);
-    };
-    // NOTE: this branch runs at most once
-    // We need the wrapper to make this type Sync, as it contains raw pointers
-    static CLOCKS: GroundedCell<
-        ClockSyncWrapper<
-            clocks::ExternalOscillator,
-            clocks::ExternalOscillator,
-            clocks::LfOscStarted,
-        >,
-    > = GroundedCell::uninit();
+    }
+
     defmt::debug!("Initializing the board");
+    let mut config = hal::config::Config::default();
+    config.hfclk_source = hal::config::HfclkSource::ExternalXtal;
+    config.lfclk_source = hal::config::LfclkSource::ExternalXtal;
+    let periph = hal::init(config);
+    defmt::debug!("board peripherals have been initialized");
 
-    let clocks = Clocks::new(periph.CLOCK);
-    let clocks = clocks.enable_ext_hfosc();
-    let clocks = clocks.set_lfclk_src_external(clocks::LfOscConfiguration::NoExternalNoBypass);
-    let clocks = clocks.start_lfclk();
-    let clocks = clocks.enable_ext_hfosc();
-    // extend lifetime to `'static`
-    let clocks = unsafe {
-        let clocks_ptr = CLOCKS.get();
-        clocks_ptr.write(ClockSyncWrapper { clocks });
-        // Now it's initialised, we can take a static reference to the clocks
-        // object it contains.
-        let clock_wrapper: &'static ClockSyncWrapper<_, _, _> = &*clocks_ptr;
-        &clock_wrapper.clocks
-    };
-    defmt::debug!("Clocks configured");
-
-    let mut rtc = Rtc::new(periph.RTC0, 0).unwrap();
-    rtc.enable_interrupt(RtcInterrupt::Overflow, None);
-    rtc.enable_counter();
-    // NOTE(unsafe) because this crate defines the `#[interrupt] fn RTC0` interrupt handler,
-    // RTIC cannot manage that interrupt (trying to do so results in a linker error). Thus it
-    // is the task of this crate to mask/unmask the interrupt in a safe manner.
+    let mut rtc = hal::rtc::Rtc::new(periph.RTC0, 0).unwrap();
+    // NOTE on unmasking the NVIC interrupt: Because this crate defines the `#[interrupt] fn RTC0`
+    // interrupt handler, RTIC cannot manage that interrupt (trying to do so results in a linker
+    // error). Thus it is the task of this crate to mask/unmask the interrupt in a safe manner.
     //
     // Because the RTC0 interrupt handler does *not* access static variables through a critical
     // section (that disables interrupts) this `unmask` operation cannot break critical sections
@@ -292,22 +212,18 @@ pub fn init() -> Result<Board, Error> {
     // of the RTC0 peripheral from this function (which can only be called at most once) to the
     // interrupt handler (where the peripheral is accessed without any synchronization
     // mechanism)
-    unsafe { NVIC::unmask(hal::pac::Interrupt::RTC0) };
+    rtc.enable_interrupt(hal::rtc::Interrupt::Overflow, true);
+    rtc.enable();
 
     defmt::debug!("RTC started");
 
-    let p0_pins = p0::Parts::new(periph.P0);
-    let p1_pins = p1::Parts::new(periph.P1);
-
-    defmt::debug!("I/O pins have been configured for digital output");
-
-    let timer = hal::Timer::new(periph.TIMER0);
+    let timer = Timer::new(periph.TIMER0);
 
     let radio = {
-        let mut radio = ieee802154::Radio::init(periph.RADIO, clocks);
+        let mut radio = hal::radio::ieee802154::Radio::new(periph.RADIO, Irqs);
 
         // set TX power to its maximum value
-        radio.set_txpower(ieee802154::TxPower::Pos8dBm);
+        radio.set_transmission_power(8);
         defmt::debug!("Radio initialized and configured with TX power set to the maximum value");
         radio
     };
@@ -315,23 +231,22 @@ pub fn init() -> Result<Board, Error> {
     Ok(Board {
         // NOTE LEDs turn on when the pin output level is low
         leds: Leds {
-            ld1: Led {
-                inner: p0_pins.p0_06.degrade().into_push_pull_output(Level::High),
+            ld1_green: Led {
+                inner: gpio::Output::new(
+                    periph.P0_06,
+                    gpio::Level::High,
+                    gpio::OutputDrive::Standard,
+                ),
+                port: gpio::Port::Port0,
+                pin: 6,
             },
-            ld2_red: Led {
-                inner: p0_pins.p0_08.degrade().into_push_pull_output(Level::High),
-            },
-            ld2_green: Led {
-                inner: p1_pins.p1_09.degrade().into_push_pull_output(Level::High),
-            },
-            ld2_blue: Led {
-                inner: p0_pins.p0_12.degrade().into_push_pull_output(Level::High),
-            },
+            // Safety: This function is called only once during board initialization.
+            ld2_rgb: unsafe { RgbLed::steal() },
         },
         radio,
-        timer: Timer { inner: timer },
+        timer,
         usbd: periph.USBD,
-        clocks,
+        usbd_regs: hal::pac::USBD,
     })
 }
 
@@ -342,16 +257,155 @@ static OVERFLOWS: AtomicU32 = AtomicU32::new(0);
 #[interrupt]
 fn RTC0() {
     OVERFLOWS.fetch_add(1, Ordering::Release);
-    // # Safety
-    // Concurrent access to this field within the RTC is acceptable.
-    unsafe {
-        let rtc = hal::pac::Peripherals::steal().RTC0;
-        // clear the EVENT register
-        rtc.events_ovrflw.reset();
+    let rtc = hal::pac::RTC0;
+    // clear the EVENT register
+    rtc.events_ovrflw().write_value(0);
+}
+
+/// A single LED
+pub struct Led {
+    /// Actual GPIO output pin controlling the LED.
+    pub inner: gpio::Output<'static>,
+    /// Port of the LED pin.
+    pub port: gpio::Port,
+    /// Pin index of the LED pin on the port.
+    pub pin: u8,
+}
+
+impl Led {
+    /// Turns on the LED
+    pub fn on(&mut self) {
+        defmt::trace!(
+            "setting P{}.{} low (LED on)",
+            if self.port == gpio::Port::Port1 {
+                '1'
+            } else {
+                '0'
+            },
+            self.pin
+        );
+
+        self.inner.set_low()
+    }
+
+    /// Turns off the LED
+    pub fn off(&mut self) {
+        defmt::trace!(
+            "setting P{}.{} high (LED off)",
+            if self.port == gpio::Port::Port1 {
+                '1'
+            } else {
+                '0'
+            },
+            self.pin
+        );
+
+        self.inner.set_high()
+    }
+
+    /// Set the LED to the specified state.
+    pub fn set(&mut self, on: bool) {
+        if on { self.on() } else { self.off() }
+    }
+
+    /// Returns `true` if the LED is in the OFF state
+    pub fn is_off(&mut self) -> bool {
+        self.inner.is_set_high()
+    }
+
+    /// Returns `true` if the LED is in the ON state
+    pub fn is_on(&mut self) -> bool {
+        !self.is_off()
+    }
+
+    /// Toggles the state (on/off) of the LED
+    pub fn toggle(&mut self) {
+        if self.is_off() {
+            self.on();
+        } else {
+            self.off()
+        }
     }
 }
 
-/// Exits the application when the program is executed through the `probe-rs` Cargo runner
+/// A timer for creating blocking delays
+pub struct Timer(hal::timer::Timer<'static>);
+
+impl embedded_hal::delay::DelayNs for Timer {
+    fn delay_ns(&mut self, ns: u32) {
+        if ns == 0 {
+            return;
+        }
+        self.0.stop();
+        self.0.clear();
+        // Write cycle count in microseconds for 1 MHz timer.
+        self.0.cc(0).write(ns / 1_000);
+        self.0.start();
+        while !self.reset_if_finished() {
+            spin_loop();
+        }
+    }
+}
+
+impl Timer {
+    /// Create a new timer instance which can be used for blocking delays.
+    pub fn new<T: hal::timer::Instance>(peri: hal::Peri<'static, T>) -> Self {
+        let timer = hal::timer::Timer::new(peri);
+        timer.set_frequency(hal::timer::Frequency::F1MHz);
+        timer.cc(0).short_compare_clear();
+        timer.cc(0).short_compare_stop();
+        Self(timer)
+    }
+
+    /// Start the timer with the given microsecond duration.
+    pub fn start(&mut self, microseconds: u32) {
+        self.0.stop();
+        self.0.clear();
+        self.0.cc(0).write(microseconds);
+        self.0.start();
+    }
+
+    /// If the timer has finished, resets it and returns true.
+    ///
+    /// Returns false if the timer is still running.
+    pub fn reset_if_finished(&mut self) -> bool {
+        if !self.0.cc(0).event_compare().is_triggered() {
+            // EVENTS_COMPARE has not been triggered yet
+            return false;
+        }
+
+        self.0.cc(0).clear_events();
+
+        true
+    }
+
+    /// Wait for the specified duration.
+    pub fn wait(&mut self, duration: Duration) {
+        defmt::trace!("blocking for {:?} ...", duration);
+
+        // 1 cycle = 1 microsecond
+        let subsec_micros = duration.subsec_micros();
+        if subsec_micros != 0 {
+            self.delay_us(subsec_micros);
+        }
+
+        let mut millis = duration.as_secs() * 1000;
+        if millis == 0 {
+            return;
+        }
+
+        while millis > u32::MAX as u64 {
+            self.delay_ms(u32::MAX);
+            millis -= u32::MAX as u64;
+        }
+        self.delay_ms(millis as u32);
+
+        defmt::trace!("... DONE");
+    }
+}
+
+/// Exits the application successfully when the program is executed through the
+/// `probe-rs` Cargo runner
 pub fn exit() -> ! {
     unsafe {
         // turn off the USB D+ pull-up before pausing the device with a breakpoint
@@ -362,9 +416,27 @@ pub fn exit() -> ! {
     }
     defmt::println!("`dk::exit()` called; exiting ...");
     // force any pending memory operation to complete before the instruction that follows
-    atomic::compiler_fence(Ordering::SeqCst);
+    compiler_fence(Ordering::SeqCst);
     loop {
-        debug::exit(debug::ExitStatus::Ok(()))
+        cortex_m_semihosting::debug::exit(cortex_m_semihosting::debug::ExitStatus::Ok(()))
+    }
+}
+
+/// Exits the application with a failure when the program is executed through
+/// the `probe-rs` Cargo runner
+pub fn fail() -> ! {
+    unsafe {
+        // turn off the USB D+ pull-up before pausing the device with a breakpoint
+        // this disconnects the nRF device from the USB host so the USB host won't attempt further
+        // USB communication (and see an unresponsive device).
+        const USBD_USBPULLUP: *mut u32 = 0x4002_7504 as *mut u32;
+        USBD_USBPULLUP.write_volatile(0)
+    }
+    defmt::println!("`dk::fail()` called; exiting ...");
+    // force any pending memory operation to complete before the instruction that follows
+    compiler_fence(Ordering::SeqCst);
+    loop {
+        cortex_m_semihosting::debug::exit(cortex_m_semihosting::debug::ExitStatus::Err(()))
     }
 }
 
@@ -385,12 +457,12 @@ pub fn uptime_ticks() -> u64 {
 
     // # Safety
     // Concurrent access to this field within the RTC is acceptable.
-    let rtc_counter = unsafe { &hal::pac::Peripherals::steal().RTC0.counter };
+    let rtc_counter = hal::pac::RTC0.counter();
 
     loop {
         // NOTE volatile is used to order these load operations among themselves
         let hi1 = OVERFLOWS.load(Ordering::Acquire);
-        let low = rtc_counter.read().counter().bits();
+        let low = rtc_counter.read().counter();
         let hi2 = OVERFLOWS.load(Ordering::Relaxed);
 
         if hi1 == hi2 {
@@ -442,14 +514,10 @@ pub fn uptime_us() -> u64 {
 
 /// Returns the least-significant bits of the device identifier
 pub fn deviceid0() -> u32 {
-    // NOTE(unsafe) read-only registers, and no other use of the block
-    let ficr = unsafe { &*hal::pac::FICR::ptr() };
-    ficr.deviceid[0].read().deviceid().bits()
+    hal::pac::FICR.deviceid(0).read()
 }
 
 /// Returns the most-significant bits of the device identifier
 pub fn deviceid1() -> u32 {
-    // NOTE(unsafe) read-only registers, and no other use of the block
-    let ficr = unsafe { &*hal::pac::FICR::ptr() };
-    ficr.deviceid[1].read().deviceid().bits()
+    hal::pac::FICR.deviceid(1).read()
 }

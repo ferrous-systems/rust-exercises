@@ -9,11 +9,12 @@ version = "0.0.0"
 cortex-m = { version = "0.7.7", features = ["critical-section-single-core"] }
 cortex-m-rt = "0.7.5"
 cortex-m-semihosting = "0.5.0"
+hal = { package = "embassy-nrf", version = "0.9", features = ["nrf52840", "unstable-pac"] }
+embedded-io = "0.7"
 critical-section = "1.2.0"
 defmt = "1"
 defmt-rtt = "1"
 embedded-hal = "1.0"
 grounded = { version = "0.2.0", features = ["cas"] }
-hal = { package = "nrf52840-hal", version = "0.18.0" }
 heapless = "0.9"
 panic-probe = { version = "1", features = ["print-defmt"] }
