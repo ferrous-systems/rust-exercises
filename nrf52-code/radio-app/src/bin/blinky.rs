@@ -11,7 +11,7 @@ use radio_app as _;
 fn main() -> ! {
     // to enable more verbose logs, set the `DEFMT_LOG` environment variable.
 
-    let board = dk::init().unwrap();
+    let board = dk::init();
 
     let mut led = board.leds._1;
     let mut timer = board.timer;

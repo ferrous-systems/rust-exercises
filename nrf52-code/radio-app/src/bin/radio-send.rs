@@ -11,7 +11,7 @@ use radio_app as _;
 
 #[entry]
 fn main() -> ! {
-    let board = dk::init().unwrap();
+    let board = dk::init();
     let mut radio = board.radio;
 
     // these are the default settings of the DK's radio

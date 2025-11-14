@@ -9,7 +9,7 @@ use hal_app as _;
 #[entry]
 fn main() -> ! {
     // board initialization
-    dk::init().unwrap();
+    dk::init();
 
     fib(100);
 
