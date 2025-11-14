@@ -73,6 +73,9 @@ build-qemu-uart-driver-ferrocene:
 build-radio-app:
 	cd nrf52-code/radio-app && cargo build --release
 
+build-hal-app:
+	cd nrf52-code/hal-app && cargo build --release
+
 build-usb-app:
 	cd nrf52-code/usb-app && cargo build --release
 	cd nrf52-code/usb-app-solutions && cargo build --release
@@ -90,7 +93,7 @@ build-puzzle-fw:
 build-loopback-fw:
 	cd nrf52-code/loopback-fw && cargo build --release
 
-build-nrf52-code: build-radio-app build-usb-app test-usb-lib build-puzzle-fw build-loopback-fw
+build-nrf52-code: build-radio-app build-usb-app test-usb-lib build-puzzle-fw build-loopback-fw build-hal-app
 
 assemble version:
 	echo "Making ./rust-exercises-{{ version }}..."
