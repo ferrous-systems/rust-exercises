@@ -9,7 +9,7 @@ use usb_app as _;
 
 #[entry]
 fn main() -> ! {
-    dk::init().unwrap();
+    dk::init();
 
     // a stack-allocated `Vec` with capacity for 6 bytes
     let mut buffer = Vec::<u8, 6>::new();

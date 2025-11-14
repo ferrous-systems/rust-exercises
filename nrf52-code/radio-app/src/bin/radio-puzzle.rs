@@ -13,7 +13,7 @@ const TEN_MS: u32 = 10_000;
 
 #[entry]
 fn main() -> ! {
-    let board = dk::init().unwrap();
+    let board = dk::init();
     let mut radio = board.radio;
     let mut timer = board.timer;
 

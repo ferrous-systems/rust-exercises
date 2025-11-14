@@ -14,7 +14,7 @@ mod app {
 
     #[init]
     fn init(_cx: init::Context) -> (MySharedResources, MyLocalResources) {
-        dk::init().unwrap();
+        dk::init();
 
         defmt::println!("Hello");
         (MySharedResources {}, MyLocalResources {})

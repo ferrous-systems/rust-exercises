@@ -12,7 +12,7 @@ use radio_app as _;
 
 #[entry]
 fn main() -> ! {
-    dk::init().unwrap();
+    dk::init();
 
     // a dictionary with capacity for 2 elements
     let mut dict = LinearMap::<_, _, 2>::new();

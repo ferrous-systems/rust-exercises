@@ -31,14 +31,14 @@ mod app {
 
     #[init]
     fn init(_cx: init::Context) -> (MySharedResources, MyLocalResources) {
-        let board = dk::init().unwrap();
+        let board = dk::init();
 
-        usbd::init(board.power, &board.usbd);
+        usbd::init(board.power, &board.usbd_regs);
 
         (
             MySharedResources {},
             MyLocalResources {
-                usbd: board.usbd,
+                usbd: board.usbd_regs,
                 ep0in: board.ep0in,
                 state: State::Default,
             },
