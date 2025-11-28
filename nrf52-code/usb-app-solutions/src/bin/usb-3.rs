@@ -58,8 +58,8 @@ fn on_event(usbd: &Usbd, ep0in: &mut Ep0In, event: Event) {
         Event::UsbEp0DataDone => ep0in.end(usbd),
 
         Event::UsbEp0Setup => {
-            let bmrequesttype = usbd.bmrequesttype().read().0 as u8;
-            let brequest = usbd.brequest().read().brequest().to_bits();
+            let bmrequesttype = usbd::bmrequesttype(usbd);
+            let brequest = usbd::brequest(usbd);
             let wlength = usbd::wlength(usbd);
             let windex = usbd::windex(usbd);
             let wvalue = usbd::wvalue(usbd);

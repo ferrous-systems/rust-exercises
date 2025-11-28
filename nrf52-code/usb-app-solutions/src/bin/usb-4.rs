@@ -79,8 +79,8 @@ fn on_event(usbd: &Usbd, ep0in: &mut Ep0In, state: &mut State, event: Event) {
 
 /// Handle a SETUP request on EP0
 fn ep0setup(usbd: &Usbd, ep0in: &mut Ep0In, state: &mut State) -> Result<(), ()> {
-    let bmrequesttype = usbd.bmrequesttype().read().0 as u8;
-    let brequest = usbd.brequest().read().brequest().to_bits();
+    let bmrequesttype = usbd::bmrequesttype(usbd);
+    let brequest = usbd::brequest(usbd);
     let wlength = usbd::wlength(usbd);
     let windex = usbd::windex(usbd);
     let wvalue = usbd::wvalue(usbd);
