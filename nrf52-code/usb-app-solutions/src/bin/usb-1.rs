@@ -22,15 +22,15 @@ mod app {
 
     #[init]
     fn init(_cx: init::Context) -> (MySharedResources, MyLocalResources) {
-        let board = dk::init().unwrap();
+        let board = dk::init();
 
         // initialize the USBD peripheral
         // NOTE this will block if the USB cable is not connected to port J3
-        usbd::init(board.power, &board.usbd);
+        usbd::init(board.power, &board.usbd_regs);
 
         defmt::println!("USBD initialized");
 
-        (MySharedResources {}, MyLocalResources { usbd: board.usbd })
+        (MySharedResources {}, MyLocalResources { usbd: board.usbd_regs })
     }
 
     #[task(binds = USBD, local = [usbd])]

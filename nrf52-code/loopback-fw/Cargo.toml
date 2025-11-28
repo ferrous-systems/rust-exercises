@@ -9,10 +9,34 @@ version = "0.0.0"
 consts = { path = "../consts" }
 defmt = "1"
 defmt-rtt = "1"
-dongle = { path = "../boards/dongle" }
+cortex-m = "0.7"
+bsp = { package = "dongle", path = "../boards/dongle" }
+# For easier debugging, the firmware can also be run on a DK board.
+# bsp = { package = "dk", path = "../boards/dk", features = ["usbd", "radio"] }
 heapless = { version = "0.9", features = ["defmt"] }
 rtic = { version = "2.1.2", features = ["thumbv7-backend"] }
 rtic-monotonics = { version = "2.0.3", features = ["cortex-m-systick"] }
 usb-device = { version = "0.3.2", features = ["defmt"] }
-usbd-hid = { version = "0.8.2", features = ["defmt"] }
+usbd-hid = { version = "0.9", features = ["defmt"] }
 usbd-serial = "0.2.2"
+static_cell = "2"
+embedded-io-async = "0.7"
+embassy-usb = "0.5"
+embassy-sync = "0.7"
+
+[features]
+dk = []
+
+# optimise a little bit
+[profile.dev]
+opt-level = 1
+
+# enable LTO and turn on debug
+[profile.release]
+codegen-units = 1
+debug = 2
+debug-assertions = false
+incremental = false
+lto = "fat"
+opt-level = 3
+overflow-checks = false

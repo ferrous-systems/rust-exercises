@@ -1,0 +1,10 @@
+[package]
+name = "bsp-shared"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+embedded-hal = "1"
+defmt = "1"
+cortex-m-semihosting = "0.5.0"
+hal = { package = "embassy-nrf", version = "0.8", features = ["nrf52840", "unstable-pac"] }

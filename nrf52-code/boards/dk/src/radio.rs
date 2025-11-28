@@ -30,7 +30,7 @@
 
 use core::sync::atomic::{compiler_fence, Ordering};
 
-use crate::Peri;
+use hal::Peri;
 use hal::pac::radio::regs::Shorts;
 use hal::pac::radio::vals::{self, Crcstatus, State as RadioState};
 pub use hal::radio::TxPower;

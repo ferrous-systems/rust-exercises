@@ -91,12 +91,12 @@ mod app {
         queue: heapless::spsc::Queue<Message, QUEUE_LEN> = heapless::spsc::Queue::new(),
     ])]
     fn init(ctx: init::Context) -> (MySharedResources, MyLocalResources) {
-        let mut board = dongle::init().unwrap();
+        let mut board = dongle::init();
         Mono::start(ctx.core.SYST, 64_000_000);
 
         defmt::debug!("Enabling interrupts...");
-        board.usbd.inten.modify(|_r, w| {
-            w.sof().set_bit();
+        board.usbd_regs.inten().modify(|w| {
+            w.set_sof(true);
             w
         });
 
@@ -204,8 +204,8 @@ mod app {
             ctx.local.current_channel
         );
 
-        ctx.local.leds.ld1.on();
-        ctx.local.leds.ld2_green.on();
+        ctx.local.leds.ld1_green.on();
+        ctx.local.leds.ld2_rgb.green_only();
 
         let mut dict: heapless::LinearMap<u8, u8, 128> = heapless::LinearMap::new();
         for (&plain, &cipher) in PLAIN_LETTERS.iter().zip(CIPHER_LETTERS.iter()) {
