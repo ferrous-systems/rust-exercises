@@ -73,14 +73,12 @@ fn on_event(usbd: &Usbd, ep0in: &mut Ep0In, event: Event) {
                     wvalue
                 );
 
-            let request = Request::parse(bmrequesttype, brequest, wvalue, windex, wlength).expect(
-                "Error parsing request (goal achieved if GET_DESCRIPTOR Device was handled before)",
-            );
+            let request = Request::parse(bmrequesttype, brequest, wvalue, windex, wlength);
             match request {
-                Request::GetDescriptor {
+                Ok(Request::GetDescriptor {
                     descriptor: Descriptor::Device,
                     length,
-                } => {
+                }) => {
                     defmt::info!("GET_DESCRIPTOR Device [length={}]", length);
 
                     // TODO send back a valid device descriptor, truncated to `length` bytes
@@ -88,16 +86,15 @@ fn on_event(usbd: &Usbd, ep0in: &mut Ep0In, event: Event) {
                     let resp = [];
                     ep0in.start(&resp, usbd);
                 }
-                Request::SetAddress { .. } => {
+                Ok(Request::SetAddress { .. }) => {
                     // On macOS you'll get this request before the GET_DESCRIPTOR request so we
                     // need to catch it here. We'll properly handle this request later
                     // but for now it's OK to do nothing.
                 }
-                #[allow(unreachable_patterns)]
                 _ => {
                     defmt::error!(
-                            "unknown request (goal achieved if GET_DESCRIPTOR Device was handled before)"
-                        );
+                        "unknown request (goal achieved if GET_DESCRIPTOR Device was handled before)"
+                    );
                     dk::exit()
                 }
             }

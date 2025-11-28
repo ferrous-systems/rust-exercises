@@ -77,13 +77,12 @@ fn on_event(_usbd: &Usbd, event: Event) {
                     wvalue
                 );
 
-            let request = Request::parse(bmrequesttype, brequest, wvalue, windex, wlength)
-                .expect("Error parsing request");
+            let request = Request::parse(bmrequesttype, brequest, wvalue, windex, wlength);
             match request {
-                Request::GetDescriptor {
+                Ok(Request::GetDescriptor {
                     descriptor: Descriptor::Device,
                     length,
-                } => {
+                }) => {
                     // TODO modify `Request::parse()` in `nrf52-code/usb-lib/src/lib.rs`
                     // so that this branch is reached
 
@@ -92,12 +91,11 @@ fn on_event(_usbd: &Usbd, event: Event) {
                     defmt::println!("Goal reached; move to the next section");
                     dk::exit()
                 }
-                Request::SetAddress { .. } => {
+                Ok(Request::SetAddress { .. }) => {
                     // On macOS you'll get this request before the GET_DESCRIPTOR request so we
                     // need to catch it here. We'll properly handle this request later
                     // but for now it's OK to do nothing.
                 }
-                #[allow(unreachable_patterns)]
                 _ => unreachable!(), // we don't handle any other Requests
             }
         }

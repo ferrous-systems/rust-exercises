@@ -85,19 +85,18 @@ fn on_event(usbd: &Usbd, event: Event) {
                     wvalue
                 );
 
-            let request = Request::parse(bmrequesttype, brequest, wvalue, windex, wlength)
-                .expect("Error parsing request");
+            let request = Request::parse(bmrequesttype, brequest, wvalue, windex, wlength);
             match request {
-                Request::GetDescriptor {
+                Ok(Request::GetDescriptor {
                     descriptor: Descriptor::Device,
                     length,
-                } => {
+                }) => {
                     defmt::info!("GET_DESCRIPTOR Device [length={}]", length);
 
                     defmt::println!("Goal reached; move to the next section");
                     dk::exit()
                 }
-                Request::SetAddress { .. } => {
+                Ok(Request::SetAddress { .. }) => {
                     // On macOS you'll get this request before the GET_DESCRIPTOR request so we
                     // need to catch it here. We'll properly handle this request later
                     // but for now it's OK to do nothing.
