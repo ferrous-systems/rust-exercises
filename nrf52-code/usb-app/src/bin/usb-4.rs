@@ -80,8 +80,8 @@ fn on_event(usbd: &Usbd, ep0in: &mut Ep0In, state: &mut State, event: Event) {
 
 /// Handle a SETUP request on EP0
 fn ep0setup(usbd: &Usbd, ep0in: &mut Ep0In, _state: &mut State) -> Result<(), ()> {
-    let bmrequesttype = usbd.bmrequesttype().read().0 as u8;
-    let brequest = usbd.brequest().read().brequest() as u8;
+    let bmrequesttype = usbd::bmrequesttype(usbd);
+    let brequest = usbd::brequest(usbd);
     let wlength = usbd::wlength(usbd);
     let windex = usbd::windex(usbd);
     let wvalue = usbd::wvalue(usbd);
@@ -95,17 +95,15 @@ fn ep0setup(usbd: &Usbd, ep0in: &mut Ep0In, _state: &mut State) -> Result<(), ()
             wvalue
         );
 
-    let request = Request::parse(bmrequesttype, brequest, wvalue, windex, wlength)
-        .expect("Error parsing request");
+    let request = Request::parse(bmrequesttype, brequest, wvalue, windex, wlength);
     defmt::info!("EP0: {}", defmt::Debug2Format(&request));
-    //                        ^^^^^^^^^^^^^^^^^^^ this adapter is currently needed to log
-    //                                            `StandardRequest` with `defmt`
-
+    //                      ^^^^^^^^^^^^^^^^^^^ this adapter is currently needed to log
+    //                                          `Request` with `defmt`
     match request {
-        Request::GetDescriptor {
+        Ok(Request::GetDescriptor {
             descriptor: Descriptor::Device,
             length,
-        } => {
+        }) => {
             let desc = usb2::device::Descriptor {
                 bDeviceClass: 0,
                 bDeviceProtocol: 0,
@@ -120,25 +118,25 @@ fn ep0setup(usbd: &Usbd, ep0in: &mut Ep0In, _state: &mut State) -> Result<(), ()
                 idVendor: consts::USB_VID_DEMO,
             };
             let length = usize::from(length);
-            let bytes = desc.bytes();
-            let subslice = if length >= bytes.len() {
+            let desc_bytes = desc.bytes();
+            let subslice = if length >= desc_bytes.len() {
                 // they want all of it
-                &bytes[0..]
+                &desc_bytes[0..]
             } else {
                 // they don't want all of it
-                &bytes[0..length]
+                &desc_bytes[0..length]
             };
             ep0in.start(subslice, usbd);
         }
         // TODO implement Configuration descriptor
-        Request::GetDescriptor {
+        Ok(Request::GetDescriptor {
             // descriptor: Descriptor::Configuration { index },
             descriptor: _,
             length: _,
-        } => {
+        }) => {
             return Err(());
         }
-        Request::SetAddress { .. } => {
+        Ok(Request::SetAddress { .. }) => {
             // On macOS you'll get this request before the GET_DESCRIPTOR request so we
             // need to catch it here.
 
@@ -146,8 +144,21 @@ fn ep0setup(usbd: &Usbd, ep0in: &mut Ep0In, _state: &mut State) -> Result<(), ()
             todo!()
         }
 
-        // stall any other request
-        _ => return Err(()),
+        Ok(_) => {
+            // stall anything else
+            return Err(());
+        }
+        Err(_) => {
+            defmt::error!(
+                "Failed to parse: bmrequesttype: 0b{=u8:08b}, brequest: {=u8}, wlength: {=u16}, windex: 0x{=u16:04x}, wvalue: 0x{=u16:04x}",
+                bmrequesttype,
+                brequest,
+                wlength,
+                windex,
+                wvalue
+            );
+            return Err(());
+        }
     }
 
     Ok(())

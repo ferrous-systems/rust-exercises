@@ -79,8 +79,8 @@ fn on_event(usbd: &Usbd, ep0in: &mut Ep0In, state: &mut State, event: Event) {
 
 /// Handle a SETUP request on EP0
 fn ep0setup(usbd: &Usbd, ep0in: &mut Ep0In, state: &mut State) -> Result<(), ()> {
-    let bmrequesttype = usbd.bmrequesttype().read().0 as u8;
-    let brequest = usbd.brequest().read().brequest().to_bits();
+    let bmrequesttype = usbd::bmrequesttype(usbd);
+    let brequest = usbd::brequest(usbd);
     let wlength = usbd::wlength(usbd);
     let windex = usbd::windex(usbd);
     let wvalue = usbd::wvalue(usbd);
@@ -94,18 +94,17 @@ fn ep0setup(usbd: &Usbd, ep0in: &mut Ep0In, state: &mut State) -> Result<(), ()>
             wvalue
         );
 
-    let request = Request::parse(bmrequesttype, brequest, wvalue, windex, wlength)
-        .expect("Error parsing request");
+    let request = Request::parse(bmrequesttype, brequest, wvalue, windex, wlength);
     defmt::info!("EP0: {}", defmt::Debug2Format(&request));
-    //                         ^^^^^^^^^^^^^^^^^^^ this adapter is currently needed to log
-    //                                            `Request` with `defmt`
+    //                      ^^^^^^^^^^^^^^^^^^^ this adapter is currently needed to log
+    //                                          `Request` with `defmt`
     match request {
         // section 9.4.3
         // this request is valid in any state
-        Request::GetDescriptor {
+        Ok(Request::GetDescriptor {
             descriptor: Descriptor::Device,
             length,
-        } => {
+        }) => {
             let desc = usb2::device::Descriptor {
                 bDeviceClass: 0,
                 bDeviceProtocol: 0,
@@ -130,10 +129,10 @@ fn ep0setup(usbd: &Usbd, ep0in: &mut Ep0In, state: &mut State) -> Result<(), ()>
             };
             ep0in.start(subslice, usbd);
         }
-        Request::GetDescriptor {
+        Ok(Request::GetDescriptor {
             descriptor: Descriptor::Configuration { index },
             length,
-        } => {
+        }) => {
             if index == 0 {
                 let mut resp = heapless::Vec::<u8, 64>::new();
 
@@ -169,7 +168,9 @@ fn ep0setup(usbd: &Usbd, ep0in: &mut Ep0In, state: &mut State) -> Result<(), ()>
                 return Err(());
             }
         }
-        Request::SetAddress { address } => {
+        Ok(Request::SetAddress { address }) => {
+            // On macOS you'll get this request before the GET_DESCRIPTOR request so we
+            // need to catch it here.
             match state {
                 State::Default => {
                     if let Some(address) = address {
@@ -194,9 +195,21 @@ fn ep0setup(usbd: &Usbd, ep0in: &mut Ep0In, state: &mut State) -> Result<(), ()>
 
             // the response to this request is handled in hardware
         }
-
-        // stall any other request
-        _ => return Err(()),
+        Ok(_) => {
+            // stall anything else
+            return Err(());
+        }
+        Err(_) => {
+            defmt::error!(
+                "Failed to parse: bmrequesttype: 0b{=u8:08b}, brequest: {=u8}, wlength: {=u16}, windex: 0x{=u16:04x}, wvalue: 0x{=u16:04x}",
+                bmrequesttype,
+                brequest,
+                wlength,
+                windex,
+                wvalue
+            );
+            return Err(());
+        }
     }
 
     Ok(())
