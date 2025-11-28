@@ -5,7 +5,7 @@
 use core::str;
 
 use cortex_m_rt::entry;
-use dk::ieee802154::{Channel, Packet};
+use dk::radio::{Channel, Packet};
 use heapless::Vec;
 // this imports `src/lib.rs`to retrieve our global logger + panicking-behavior
 use radio_app as _;

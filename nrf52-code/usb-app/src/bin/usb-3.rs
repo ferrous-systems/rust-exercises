@@ -1,10 +1,8 @@
 #![no_main]
 #![no_std]
 
-use dk::{
-    peripheral::USBD,
-    usbd::{self, Ep0In, Event},
-};
+use dk::hal::pac::usbd::Usbd;
+use dk::usbd::{self, Ep0In, Event};
 
 use usb::{Descriptor, Request};
 
@@ -13,11 +11,12 @@ use usb_app as _;
 
 #[rtic::app(device = dk, peripherals = false)]
 mod app {
+
     use super::*;
 
     #[local]
     struct MyLocalResources {
-        usbd: USBD,
+        usbd: Usbd,
         ep0in: Ep0In,
     }
 
@@ -48,7 +47,7 @@ mod app {
 }
 
 /// Handle a USB event (in interrupt context)
-fn on_event(usbd: &USBD, ep0in: &mut Ep0In, event: Event) {
+fn on_event(usbd: &Usbd, ep0in: &mut Ep0In, event: Event) {
     defmt::debug!("USB: {} @ {=u64:tus}", event, dk::uptime_us());
 
     match event {
@@ -78,8 +77,10 @@ fn on_event(usbd: &USBD, ep0in: &mut Ep0In, event: Event) {
                 "Error parsing request (goal achieved if GET_DESCRIPTOR Device was handled before)",
             );
             match request {
-                Request::GetDescriptor { descriptor: Descriptor::Device, length } =>
-                {
+                Request::GetDescriptor {
+                    descriptor: Descriptor::Device,
+                    length,
+                } => {
                     defmt::info!("GET_DESCRIPTOR Device [length={}]", length);
 
                     // TODO send back a valid device descriptor, truncated to `length` bytes
@@ -92,6 +93,7 @@ fn on_event(usbd: &USBD, ep0in: &mut Ep0In, event: Event) {
                     // need to catch it here. We'll properly handle this request later
                     // but for now it's OK to do nothing.
                 }
+                #[allow(unreachable_patterns)]
                 _ => {
                     defmt::error!(
                             "unknown request (goal achieved if GET_DESCRIPTOR Device was handled before)"
