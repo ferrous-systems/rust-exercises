@@ -119,7 +119,7 @@ cargo install cyme
 Install `probe-rs` 0.29.1 pre-compiled binaries on Linux with:
 
 ```bash
-curl --proto '=https' --tlsv1.2 -LsSf https://github.com/probe-rs/probe-rs/releases/download/v0.29.1/probe-rs-tools-installer.sh | sh
+curl --proto '=https' --tlsv1.2 -LsSf https://github.com/probe-rs/probe-rs/releases/download/v0.30.0/probe-rs-tools-installer.sh | sh
 ```
 
 ---
@@ -195,7 +195,7 @@ cargo install cyme
 Install `probe-rs` 0.29.1 pre-compiled binaries on Windows with:
 
 ```bash
-powershell -c "irm https://github.com/probe-rs/probe-rs/releases/download/v0.29.1/probe-rs-tools-installer.ps1 | iex"
+powershell -c "irm https://github.com/probe-rs/probe-rs/releases/download/v0.30.0/probe-rs-tools-installer.ps1 | iex"
 ```
 
 ---
@@ -244,7 +244,7 @@ cargo install cyme
 Install `probe-rs` 0.29.1 pre-compiled binaries on macOS with:
 
 ```bash
-curl --proto '=https' --tlsv1.2 -LsSf https://github.com/probe-rs/probe-rs/releases/download/v0.29.1/probe-rs-tools-installer.sh | sh
+curl --proto '=https' --tlsv1.2 -LsSf https://github.com/probe-rs/probe-rs/releases/download/v0.30.0/probe-rs-tools-installer.sh | sh
 ```
 
 ---
