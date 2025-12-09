@@ -295,11 +295,6 @@ pub enum Error {
 ///
 /// This return an `Err`or if called more than once
 pub fn init() -> Result<Board, Error> {
-    // probe-rs puts us in blocking mode, so wait for blocking mode as a proxy
-    // for waiting for probe-rs to connect.
-    while !defmt_rtt::in_blocking_mode() {
-        core::hint::spin_loop();
-    }
     // NOTE: this branch runs at most once
     #[cfg(feature = "advanced")]
     static EP0IN_BUF: GroundedArrayCell<u8, 64> = GroundedArrayCell::const_init();
@@ -308,6 +303,14 @@ pub fn init() -> Result<Board, Error> {
     config.hfclk_source = hal::config::HfclkSource::ExternalXtal;
     config.lfclk_source = hal::config::LfclkSource::ExternalXtal;
     let periph = hal::init(config);
+
+    // probe-rs puts us in blocking mode, so wait for blocking mode as a proxy
+    // for waiting for probe-rs to connect.
+    //
+    // do this *after* clock set-up to avoid start-up issues
+    while !defmt_rtt::in_blocking_mode() {
+        core::hint::spin_loop();
+    }
 
     // NOTE: this branch runs at most once
 
