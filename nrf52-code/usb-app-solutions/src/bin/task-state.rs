@@ -7,11 +7,11 @@ use usb_app as _;
 #[rtic::app(device = dk, peripherals = false)]
 mod app {
     use cortex_m::asm;
-    use dk::hal::pac::power::Power;
+    use dk::peripheral::POWER;
 
     #[local]
     struct MyLocalResources {
-        power: Power,
+        power: POWER,
         counter: usize,
     }
 
@@ -24,7 +24,7 @@ mod app {
 
         let power = board.power;
 
-        power.intenset().write(|w| w.set_usbdetected(true));
+        power.intenset.write(|w| w.usbdetected().set_bit());
 
         defmt::println!("USBDETECTED interrupt enabled");
 
@@ -46,7 +46,7 @@ mod app {
         }
     }
 
-    #[task(binds = CLOCK_POWER, local = [power, counter])]
+    #[task(binds = POWER_CLOCK, local = [power, counter])]
     //                                          ^^^^^^^ we want to access the resource from here
     fn on_power_event(cx: on_power_event::Context) {
         defmt::println!("POWER event occurred");
@@ -60,6 +60,6 @@ mod app {
         );
 
         // clear the interrupt flag; otherwise this task will run again after it returns
-        cx.local.power.events_usbdetected().write_value(0);
+        cx.local.power.events_usbdetected.reset();
     }
 }

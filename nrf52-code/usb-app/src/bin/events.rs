@@ -23,11 +23,11 @@ mod app {
 
         // INTENSET is one of POWER's registers
         // the `write()` method writes a (32-bit) value into the register
-        power.intenset().write(|w| {
+        power.intenset.write(|w| {
             // `w` is a "constructor" with methods to clear/set the bitfields of INTENSET
             // `w` starts with all bitfields set to their reset value
             // USBDETECTED is one of INTENSET's 1-bit fields
-            w.set_usbdetected(true)
+            w.usbdetected().set_bit()
         });
 
         defmt::println!("USBDETECTED interrupt enabled");
@@ -36,14 +36,15 @@ mod app {
         // the `read()` method returns a reader which can then be used to access the register content
         // in full or only specific bitfields (see below)
         // (the layout of the USBREGSTATUS register can be found in section 5.3.7.13 of the PS)
-        let regstatus: u32 = power.usbregstatus().read().0;
-        //                                               ^^ complete register content
+        let regstatus: u32 = power.usbregstatus.read().bits();
+        //                                             ^^^^ complete register content
         defmt::println!("USBREGSTATUS: {:b}", regstatus);
 
         // read the 1-bit VBUSDETECT field that is part of the USBREGSTATUS register content
         // to show that its contents reflect our usb connection status
         // (the USBDETECTED event that will trigger `on_power_event()` is derived from this information)
-        let vbusdetect: bool = power.usbregstatus().read().vbusdetect();
+        let vbusdetect: bool = power.usbregstatus.read().vbusdetect().is_vbus_present();
+        //                                               ^^^^^^^^^^ bitfield name
         defmt::println!("USBREGSTATUS.VBUSDETECT: {}", vbusdetect);
 
         (MySharedResources {}, MyLocalResources {})
@@ -59,7 +60,7 @@ mod app {
         }
     }
 
-    #[task(binds = CLOCK_POWER)]
+    #[task(binds = POWER_CLOCK)]
     fn on_power_event(_cx: on_power_event::Context) {
         defmt::println!("POWER event occurred");
         asm::bkpt();

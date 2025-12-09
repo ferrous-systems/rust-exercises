@@ -3,7 +3,7 @@
 #![no_std]
 
 use cortex_m_rt::entry;
-use dk::radio::{Channel, Packet};
+use dk::ieee802154::{Channel, Packet};
 use heapless::LinearMap;
 // this imports `src/lib.rs`to retrieve our global logger + panicking-behavior
 use radio_app as _;

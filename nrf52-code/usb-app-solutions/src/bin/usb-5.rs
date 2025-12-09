@@ -3,8 +3,10 @@
 
 use core::num::NonZeroU8;
 
-use dk::hal::pac::usbd::Usbd;
-use dk::usbd::{self, Ep0In, Event};
+use dk::{
+    peripheral::USBD,
+    usbd::{self, Ep0In, Event},
+};
 
 use usb2::{GetDescriptor as Descriptor, StandardRequest as Request, State};
 
@@ -16,12 +18,11 @@ const CONFIG_VAL: u8 = 42;
 
 #[rtic::app(device = dk, peripherals = false)]
 mod app {
-
     use super::*;
 
     #[local]
     struct MyLocalResources {
-        usbd: Usbd,
+        usbd: USBD,
         ep0in: Ep0In,
         state: State,
     }
@@ -54,7 +55,7 @@ mod app {
 }
 
 /// Handle a USB event (in interrupt context)
-fn on_event(usbd: &Usbd, ep0in: &mut Ep0In, state: &mut State, event: Event) {
+fn on_event(usbd: &USBD, ep0in: &mut Ep0In, state: &mut State, event: Event) {
     defmt::debug!("USB: {} @ {=u64:tus}", event, dk::uptime_us());
 
     match event {
@@ -78,7 +79,7 @@ fn on_event(usbd: &Usbd, ep0in: &mut Ep0In, state: &mut State, event: Event) {
 }
 
 /// Handle a SETUP request on EP0
-fn ep0setup(usbd: &Usbd, ep0in: &mut Ep0In, state: &mut State) -> Result<(), ()> {
+fn ep0setup(usbd: &USBD, ep0in: &mut Ep0In, state: &mut State) -> Result<(), ()> {
     let bmrequesttype = usbd::bmrequesttype(usbd);
     let brequest = usbd::brequest(usbd);
     let wlength = usbd::wlength(usbd);
@@ -237,7 +238,8 @@ fn ep0setup(usbd: &Usbd, ep0in: &mut Ep0In, state: &mut State) -> Result<(), ()>
                 }
             }
 
-            usbd.tasks_ep0status().write_value(1);
+            usbd.tasks_ep0status
+                .write(|w| w.tasks_ep0status().set_bit());
         }
         Ok(_) => {
             // stall anything else

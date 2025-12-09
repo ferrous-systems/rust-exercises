@@ -1,8 +1,10 @@
 #![no_main]
 #![no_std]
 
-use dk::hal::pac::usbd::Usbd;
-use dk::usbd::{self, Event};
+use dk::{
+    peripheral::USBD,
+    usbd::{self, Event},
+};
 
 use usb::{Descriptor, Request};
 
@@ -11,12 +13,11 @@ use usb_app as _;
 
 #[rtic::app(device = dk, peripherals = false)]
 mod app {
-
     use super::*;
 
     #[local]
     struct MyLocalResources {
-        usbd: Usbd,
+        usbd: USBD,
     }
 
     #[shared]
@@ -40,7 +41,7 @@ mod app {
 }
 
 /// Handle a USB event (in interrupt context)
-fn on_event(usbd: &Usbd, event: Event) {
+fn on_event(usbd: &USBD, event: Event) {
     defmt::debug!("USB: {} @ {=u64:tus}", event, dk::uptime_us());
 
     match event {
@@ -52,22 +53,22 @@ fn on_event(usbd: &Usbd, event: Event) {
 
         Event::UsbEp0Setup => {
             // the BMREQUESTTYPE register contains information about data recipient, transfer type and direction
-            let bmrequesttype = usbd.bmrequesttype().read().0 as u8;
+            let bmrequesttype = usbd.bmrequesttype.read().bits() as u8;
             // the BREQUEST register stores the type of the current request (e.g. SET_ADDRESS, GET_DESCRIPTOR, ...)
-            let brequest = usbd.brequest().read().brequest() as u8;
+            let brequest = usbd.brequest.read().brequest().bits();
             // wLength denotes the number of bytes to transfer (if any)
             // composed of a high register (WLENGTHH) and a low register (WLENGTHL)
-            let wlength = (u16::from(usbd.wlengthh().read().wlengthh()) << 8)
-                | u16::from(usbd.wlengthl().read().wlengthl());
+            let wlength = (u16::from(usbd.wlengthh.read().wlengthh().bits()) << 8)
+                | u16::from(usbd.wlengthl.read().wlengthl().bits());
             // wIndex is a generic index field whose meaning depends on the request type
             // composed of a high register (WINDEXH) and a low register (WINDEXL)
-            let windex = (u16::from(usbd.windexh().read().windexh()) << 8)
-                | u16::from(usbd.windexl().read().windexl());
+            let windex = (u16::from(usbd.windexh.read().windexh().bits()) << 8)
+                | u16::from(usbd.windexl.read().windexl().bits());
             // wValue is a generic parameter field meaning depends on the request type (e.g. contains the device
             // address in SET_ADDRESS requests)
             // composed of a high register (WVALUEH) and a low register (WVALUEL)
-            let wvalue = (u16::from(usbd.wvalueh().read().wvalueh()) << 8)
-                | u16::from(usbd.wvaluel().read().wvaluel());
+            let wvalue = (u16::from(usbd.wvalueh.read().wvalueh().bits()) << 8)
+                | u16::from(usbd.wvaluel.read().wvaluel().bits());
 
             // NOTE the `dk` crate contains helper functions for the above operations
             // let bmrequesttype = usbd::bmrequesttype(usbd);

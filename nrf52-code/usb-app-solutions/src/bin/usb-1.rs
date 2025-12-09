@@ -1,20 +1,21 @@
 #![no_main]
 #![no_std]
 
-use dk::hal::pac::usbd::Usbd;
-use dk::usbd::{self, Event};
+use dk::{
+    peripheral::USBD,
+    usbd::{self, Event},
+};
 
 // this imports `src/lib.rs`to retrieve our global logger + panicking-behavior
 use usb_app as _;
 
 #[rtic::app(device = dk, peripherals = false)]
 mod app {
-
     use super::*;
 
     #[local]
     struct MyLocalResources {
-        usbd: Usbd,
+        usbd: USBD,
     }
 
     #[shared]
@@ -42,7 +43,7 @@ mod app {
 }
 
 /// Handle a USB event (in interrupt context)
-fn on_event(_usbd: &Usbd, event: Event) {
+fn on_event(_usbd: &USBD, event: Event) {
     defmt::debug!("USB: {} @ {=u64:tus}", event, dk::uptime_us());
 
     match event {

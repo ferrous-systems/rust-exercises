@@ -1,8 +1,10 @@
 #![no_main]
 #![no_std]
 
-use dk::hal::pac::usbd::Usbd;
-use dk::usbd::{self, Ep0In, Event};
+use dk::{
+    peripheral::USBD,
+    usbd::{self, Ep0In, Event},
+};
 
 use usb::{Descriptor, Request};
 
@@ -11,12 +13,11 @@ use usb_app as _;
 
 #[rtic::app(device = dk, peripherals = false)]
 mod app {
-
     use super::*;
 
     #[local]
     struct MyLocalResources {
-        usbd: Usbd,
+        usbd: USBD,
         ep0in: Ep0In,
     }
 
@@ -47,7 +48,7 @@ mod app {
 }
 
 /// Handle a USB event (in interrupt context)
-fn on_event(usbd: &Usbd, ep0in: &mut Ep0In, event: Event) {
+fn on_event(usbd: &USBD, ep0in: &mut Ep0In, event: Event) {
     defmt::debug!("USB: {} @ {=u64:tus}", event, dk::uptime_us());
 
     match event {
