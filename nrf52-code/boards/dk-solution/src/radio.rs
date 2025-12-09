@@ -454,11 +454,15 @@ impl<'d> Radio<'d> {
             // Check if either receive is done or timeout occured
             loop {
                 match recv.is_done() {
-                    Ok(crc) => break Ok(crc),
-                    Err(err) => match err {
-                        nb::Error::Other(crc) => break Err(Error::Crc(crc)),
-                        nb::Error::WouldBlock => (),
-                    },
+                    Ok(crc) => {
+                        break Ok(crc);
+                    }
+                    Err(nb::Error::Other(crc)) => {
+                        break Err(Error::Crc(crc));
+                    }
+                    Err(nb::Error::WouldBlock) => {
+                        // do nothing
+                    }
                 }
 
                 if timer.reset_if_finished() {
