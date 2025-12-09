@@ -29,7 +29,7 @@ runs:
       env:
         CRITICALUP_VERSION: ${{ inputs.criticalup }}
       run: |
-        curl --proto '=https' --tlsv1.2 -LsSf https://github.com/ferrocene/criticalup/releases/download/${CRITICALUP_VERSION}/criticalup-installer.sh | sh
+        curl -fsSL https://github.com/ferrocene/criticalup/releases/download/${CRITICALUP_VERSION}/criticalup-installer.sh | sh
     - name: Install Just 1.42
       uses: extractions/setup-just@v3
       with:
