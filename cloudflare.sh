@@ -11,11 +11,11 @@ set -euo pipefail
 
 # We only support macOS (the x86 binaries work OK on Apple Silicon), or x86-64 Linux
 if [ $(uname) == "Darwin" ]; then
-    ./mdbook --version || curl -sSL https://github.com/rust-lang/mdBook/releases/download/v0.4.40/mdbook-v0.4.40-x86_64-apple-darwin.tar.gz | tar -xvzf -
-    ./mdbook-mermaid --version || curl -sSL https://github.com/badboy/mdbook-mermaid/releases/download/v0.13.0/mdbook-mermaid-v0.13.0-x86_64-apple-darwin.tar.gz | tar -xvzf -
+    ./mdbook --version || curl -fsSL https://github.com/rust-lang/mdBook/releases/download/v0.4.40/mdbook-v0.4.40-x86_64-apple-darwin.tar.gz | tar -xvzf -
+    ./mdbook-mermaid --version || curl -fsSL https://github.com/badboy/mdbook-mermaid/releases/download/v0.13.0/mdbook-mermaid-v0.13.0-x86_64-apple-darwin.tar.gz | tar -xvzf -
 else
-    ./mdbook --version || curl -sSL https://github.com/rust-lang/mdBook/releases/download/v0.4.40/mdbook-v0.4.40-x86_64-unknown-linux-gnu.tar.gz | tar -xvzf -
-    ./mdbook-mermaid --version || curl -sSL https://github.com/badboy/mdbook-mermaid/releases/download/v0.13.0/mdbook-mermaid-v0.13.0-x86_64-unknown-linux-gnu.tar.gz | tar -xvzf -
+    ./mdbook --version || curl -fsSL https://github.com/rust-lang/mdBook/releases/download/v0.4.40/mdbook-v0.4.40-x86_64-unknown-linux-gnu.tar.gz | tar -xvzf -
+    ./mdbook-mermaid --version || curl -fsSL https://github.com/badboy/mdbook-mermaid/releases/download/v0.13.0/mdbook-mermaid-v0.13.0-x86_64-unknown-linux-gnu.tar.gz | tar -xvzf -
 fi
 
 # Must be an absolute path, otherwise mdbook puts the output in the wrong place
