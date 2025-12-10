@@ -22,8 +22,7 @@ use grounded::uninit::GroundedArrayCell;
 pub use hal;
 pub use hal::pac::{interrupt, Interrupt, NVIC_PRIO_BITS, RTC0};
 use hal::{
-    gpio::{Level, Output, OutputDrive, Port},
-    Peri,
+    Peri, gpio::{Level, Output, OutputDrive, Port}, pac::UICR
 };
 
 #[cfg(any(feature = "radio", feature = "advanced"))]
@@ -295,15 +294,6 @@ pub enum Error {
 ///
 /// This return an `Err`or if called more than once
 pub fn init() -> Result<Board, Error> {
-    // NOTE: this branch runs at most once
-    #[cfg(feature = "advanced")]
-    static EP0IN_BUF: GroundedArrayCell<u8, 64> = GroundedArrayCell::const_init();
-
-    let mut config = hal::config::Config::default();
-    config.hfclk_source = hal::config::HfclkSource::ExternalXtal;
-    config.lfclk_source = hal::config::LfclkSource::ExternalXtal;
-    let periph = hal::init(config);
-
     // probe-rs puts us in blocking mode, so wait for blocking mode as a proxy
     // for waiting for probe-rs to connect.
     //
@@ -311,6 +301,26 @@ pub fn init() -> Result<Board, Error> {
     while !defmt_rtt::in_blocking_mode() {
         core::hint::spin_loop();
     }
+
+    // NOTE: this branch runs at most once
+    #[cfg(feature = "advanced")]
+    static EP0IN_BUF: GroundedArrayCell<u8, 64> = GroundedArrayCell::const_init();
+
+    let mut config = hal::config::Config::default();
+    config.hfclk_source = hal::config::HfclkSource::ExternalXtal;
+    config.lfclk_source = hal::config::LfclkSource::ExternalXtal;
+    // config.debug = hal::config::Debug::NotConfigured;
+    // config.reset_pin = hal::config::ResetPinConfig::NotConfigured;
+    let periph = hal::init(config);
+
+    let uicr = UICR;
+    let pselreset_0 = uicr.pselreset(0).read().0;
+    let pselreset_1 = uicr.pselreset(1).read().0;
+    defmt::info!("pselreset0: {}, pselreset1: {}", pselreset_0, pselreset_1);
+
+    let ap_protect = uicr.approtect().read().0;
+    defmt::info!("ap protect : {}", ap_protect);
+    
 
     // NOTE: this branch runs at most once
 
