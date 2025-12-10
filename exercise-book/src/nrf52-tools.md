@@ -116,7 +116,7 @@ cargo install nrfdfu
 cargo install cyme
 ```
 
-Install `probe-rs` 0.30.0 pre-compiled binaries on Linux with:
+Install `probe-rs` v0.30.0 pre-compiled binaries on Linux with:
 
 ```bash
 curl -fsSL https://github.com/probe-rs/probe-rs/releases/download/v0.30.0/probe-rs-tools-installer.sh | sh
@@ -192,7 +192,7 @@ cargo install nrfdfu
 cargo install cyme
 ```
 
-Install `probe-rs` 0.30.0 pre-compiled binaries on Windows with:
+Install `probe-rs` v0.30.0 pre-compiled binaries on Windows with:
 
 ```bash
 powershell -c "irm https://github.com/probe-rs/probe-rs/releases/download/v0.30.0/probe-rs-tools-installer.ps1 | iex"
@@ -241,7 +241,7 @@ cargo install nrfdfu
 cargo install cyme
 ```
 
-Install `probe-rs` 0.30.0 pre-compiled binaries on macOS with:
+Install `probe-rs` v0.30.0 pre-compiled binaries on macOS with:
 
 ```bash
 curl -fsSL https://github.com/probe-rs/probe-rs/releases/download/v0.30.0/probe-rs-tools-installer.sh | sh
