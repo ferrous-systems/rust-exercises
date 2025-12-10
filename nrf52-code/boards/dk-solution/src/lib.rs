@@ -179,10 +179,10 @@ impl Timer {
 
     /// Start the timer with the given microsecond duration.
     pub fn start(&mut self, microseconds: u32) {
-        self.0.cc(0).clear_events();
+        self.0.stop();
+        self.0.clear();
         self.0.cc(0).write(microseconds);
-        self.0.task_clear();
-        self.0.task_start();
+        self.0.start();
     }
 
     /// If the timer has finished, resets it and returns true.
