@@ -143,7 +143,7 @@ pub struct Button {
 
 impl Button {
     /// Is the button pressed
-    pub fn is_pressed(&mut self) -> bool {
+    pub fn is_pressed(&self) -> bool {
         self.inner.is_low()
     }
 }

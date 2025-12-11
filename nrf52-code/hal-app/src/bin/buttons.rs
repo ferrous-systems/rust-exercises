@@ -15,7 +15,7 @@ fn main() -> ! {
     let mut timer = board.timer;
     // Uncomment the line below
     // 👇
-    // let mut button = board.buttons._1;
+    // let button = board.buttons._1;
 
     defmt::println!("Polling button every 100ms");
     loop {
