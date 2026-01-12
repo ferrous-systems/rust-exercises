@@ -216,9 +216,9 @@ dependencies = [
 
 [[package]]
 name = "embassy-nrf"
-version = "0.8.0"
+version = "0.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a8d63429d74ab5786cde7c9dc9a0338ea162a4da95e204ac5345c5ae36831fdb"
+checksum = "de748eaafda21aab46925973e593f377ed4482e9f4de63a729c79a7b0e4a327a"
 dependencies = [
  "bitflags 2.9.4",
  "cfg-if",
@@ -453,9 +453,9 @@ checksum = "8d5439c4ad607c3c23abf66de8c8bf57ba8adcd1f129e699851a6e43935d339d"
 
 [[package]]
 name = "nrf-pac"
-version = "0.1.0"
+version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d334027d6703534f2a80de0794ae435c0e029358d28278533d3935e69b221b01"
+checksum = "ae76c372d1838abeccf1d397688cd4bd90fe3213410c51cb74c6769fdf075067"
 dependencies = [
  "cortex-m",
  "cortex-m-rt",
