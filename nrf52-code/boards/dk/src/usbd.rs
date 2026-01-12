@@ -207,7 +207,7 @@ pub fn bmrequesttype(usbd: &Usbd) -> u8 {
 
 /// Reads the BREQUEST register and returns the 8-bit BREQUEST component of a setup packet
 pub fn brequest(usbd: &Usbd) -> u8 {
-    usbd.brequest().read().brequest() as u8
+    usbd.brequest().read().brequest().to_bits()
 }
 
 /// Reads the WLENGTHL and WLENGTHH registers and returns the 16-bit WLENGTH component of a setup packet

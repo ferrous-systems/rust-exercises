@@ -54,7 +54,7 @@ fn on_event(usbd: &Usbd, event: Event) {
             // the BMREQUESTTYPE register contains information about data recipient, transfer type and direction
             let bmrequesttype = usbd.bmrequesttype().read().0 as u8;
             // the BREQUEST register stores the type of the current request (e.g. SET_ADDRESS, GET_DESCRIPTOR, ...)
-            let brequest = usbd.brequest().read().brequest() as u8;
+            let brequest = usbd.brequest().read().brequest().to_bits();
             // wLength denotes the number of bytes to transfer (if any)
             // composed of a high register (WLENGTHH) and a low register (WLENGTHL)
             let wlength = (u16::from(usbd.wlengthh().read().wlengthh()) << 8)
