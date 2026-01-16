@@ -8,7 +8,7 @@ use hal_app as _;
 
 #[entry]
 fn main() -> ! {
-    dk::init().unwrap();
+    dk::init();
 
     foo();
 

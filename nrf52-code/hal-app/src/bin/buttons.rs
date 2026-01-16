@@ -9,7 +9,7 @@ use hal_app as _;
 
 #[entry]
 fn main() -> ! {
-    let board = dk::init().unwrap();
+    let board = dk::init();
 
     let mut led = board.leds._1;
     let mut timer = board.timer;

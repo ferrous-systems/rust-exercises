@@ -9,22 +9,12 @@
 #![deny(warnings)]
 #![no_std]
 
-use core::{
-    hint::spin_loop,
-    sync::atomic::{self, AtomicU32, Ordering},
-    time::Duration,
-};
-
-use cortex_m_semihosting::debug;
-use embedded_hal::delay::DelayNs;
+pub use bsp_shared::*;
 #[cfg(feature = "advanced")]
 use grounded::uninit::GroundedArrayCell;
 pub use hal;
+use hal::gpio::{Level, Output, OutputDrive, Port};
 pub use hal::pac::{interrupt, Interrupt, NVIC_PRIO_BITS, RTC0};
-use hal::{
-    gpio::{Level, Output, OutputDrive, Port},
-    Peri,
-};
 
 #[cfg(any(feature = "radio", feature = "advanced"))]
 use defmt_rtt as _; // global logger
@@ -49,7 +39,10 @@ pub struct Board {
     pub radio: crate::radio::Radio<'static>,
     /// USBD (Universal Serial Bus Device) peripheral
     #[cfg(any(feature = "advanced", feature = "usbd"))]
-    pub usbd: hal::pac::usbd::Usbd,
+    pub usbd: hal::Peri<'static, hal::peripherals::USBD>,
+    /// Raw register block for the USBD peripheral.
+    #[cfg(any(feature = "advanced", feature = "usbd"))]
+    pub usbd_regs: hal::pac::usbd::Usbd,
     /// POWER (Power Supply) peripheral
     #[cfg(feature = "advanced")]
     pub power: hal::pac::power::Power,
@@ -68,132 +61,6 @@ pub struct Leds {
     pub _3: Led,
     /// LED4: pin P0.16, green LED
     pub _4: Led,
-}
-
-/// A single LED
-pub struct Led {
-    port: Port,
-    pin: u8,
-    inner: Output<'static>,
-}
-
-impl Led {
-    /// Turns on the LED
-    pub fn on(&mut self) {
-        defmt::trace!(
-            "setting P{}.{} low (LED on)",
-            if self.port == Port::Port1 { '1' } else { '0' },
-            self.pin
-        );
-
-        self.inner.set_low()
-    }
-
-    /// Turns off the LED
-    pub fn off(&mut self) {
-        defmt::trace!(
-            "setting P{}.{} high (LED off)",
-            if self.port == Port::Port1 { '1' } else { '0' },
-            self.pin
-        );
-
-        self.inner.set_high()
-    }
-
-    /// Returns `true` if the LED is in the OFF state
-    pub fn is_off(&mut self) -> bool {
-        self.inner.is_set_high()
-    }
-
-    /// Returns `true` if the LED is in the ON state
-    pub fn is_on(&mut self) -> bool {
-        !self.is_off()
-    }
-
-    /// Toggles the state (on/off) of the LED
-    pub fn toggle(&mut self) {
-        if self.is_off() {
-            self.on();
-        } else {
-            self.off()
-        }
-    }
-}
-
-/// A timer for creating blocking delays
-pub struct Timer(hal::timer::Timer<'static>);
-
-impl DelayNs for Timer {
-    fn delay_ns(&mut self, ns: u32) {
-        if ns == 0 {
-            return;
-        }
-        self.0.stop();
-        self.0.clear();
-        // Write cycle count in microseconds for 1 MHz timer.
-        self.0.cc(0).write(ns / 1_000);
-        self.0.start();
-        while !self.reset_if_finished() {
-            spin_loop();
-        }
-    }
-}
-
-impl Timer {
-    /// Create a new timer instance which can be used for blocking delays.
-    pub fn new<T: hal::timer::Instance>(peri: Peri<'static, T>) -> Self {
-        let timer = hal::timer::Timer::new(peri);
-        timer.set_frequency(hal::timer::Frequency::F1MHz);
-        timer.cc(0).short_compare_clear();
-        timer.cc(0).short_compare_stop();
-        Self(timer)
-    }
-
-    /// Start the timer with the given microsecond duration.
-    pub fn start(&mut self, microseconds: u32) {
-        self.0.stop();
-        self.0.clear();
-        self.0.cc(0).write(microseconds);
-        self.0.start();
-    }
-
-    /// If the timer has finished, resets it and returns true.
-    ///
-    /// Returns false if the timer is still running.
-    pub fn reset_if_finished(&mut self) -> bool {
-        if !self.0.cc(0).event_compare().is_triggered() {
-            // EVENTS_COMPARE has not been triggered yet
-            return false;
-        }
-
-        self.0.cc(0).clear_events();
-
-        true
-    }
-
-    /// Wait for the specified duration.
-    pub fn wait(&mut self, duration: Duration) {
-        defmt::trace!("blocking for {:?} ...", duration);
-
-        // 1 cycle = 1 microsecond
-        let subsec_micros = duration.subsec_micros();
-        if subsec_micros != 0 {
-            self.delay_us(subsec_micros);
-        }
-
-        let mut millis = duration.as_secs() * 1000;
-        if millis == 0 {
-            return;
-        }
-
-        while millis > u32::MAX as u64 {
-            self.delay_ms(u32::MAX);
-            millis -= u32::MAX as u64;
-        }
-        self.delay_ms(millis as u32);
-
-        defmt::trace!("... DONE");
-    }
 }
 
 #[cfg(feature = "radio")]
@@ -284,17 +151,10 @@ mod radio_retry {
 #[cfg(feature = "radio")]
 pub use radio_retry::send_recv;
 
-/// The ways that initialisation can fail
-#[derive(Debug, Copy, Clone, defmt::Format)]
-pub enum Error {
-    /// You tried to initialise the board twice
-    DoubleInit = 1,
-}
-
 /// Initializes the board
 ///
 /// This return an `Err`or if called more than once
-pub fn init() -> Result<Board, Error> {
+pub fn init() -> Board {
     // NOTE: this branch runs at most once
     #[cfg(feature = "advanced")]
     static EP0IN_BUF: GroundedArrayCell<u8, 64> = GroundedArrayCell::const_init();
@@ -369,7 +229,7 @@ pub fn init() -> Result<Board, Error> {
         radio
     };
 
-    Ok(Board {
+    Board {
         leds: Leds {
             _1: led1pin,
             _2: led2pin,
@@ -382,138 +242,10 @@ pub fn init() -> Result<Board, Error> {
         #[cfg(feature = "advanced")]
         ep0in: unsafe { usbd::Ep0In::new(&EP0IN_BUF) },
         #[cfg(any(feature = "advanced", feature = "usbd"))]
-        usbd: hal::pac::USBD,
+        usbd: periph.USBD,
+        #[cfg(any(feature = "advanced", feature = "usbd"))]
+        usbd_regs: hal::pac::USBD,
         #[cfg(feature = "advanced")]
         power: hal::pac::POWER,
-    })
-}
-
-// Counter of OVERFLOW events -- an OVERFLOW occurs every (1<<24) ticks
-static OVERFLOWS: AtomicU32 = AtomicU32::new(0);
-
-// NOTE this will run at the highest priority, higher priority than RTIC tasks
-#[interrupt]
-fn RTC0() {
-    OVERFLOWS.fetch_add(1, Ordering::Release);
-    let rtc = hal::pac::RTC0;
-    // clear the EVENT register
-    rtc.events_ovrflw().write_value(0);
-}
-
-/// Exits the application successfully when the program is executed through the
-/// `probe-rs` Cargo runner
-pub fn exit() -> ! {
-    unsafe {
-        // turn off the USB D+ pull-up before pausing the device with a breakpoint
-        // this disconnects the nRF device from the USB host so the USB host won't attempt further
-        // USB communication (and see an unresponsive device).
-        const USBD_USBPULLUP: *mut u32 = 0x4002_7504 as *mut u32;
-        USBD_USBPULLUP.write_volatile(0)
     }
-    defmt::println!("`dk::exit()` called; exiting ...");
-    // force any pending memory operation to complete before the instruction that follows
-    atomic::compiler_fence(Ordering::SeqCst);
-    loop {
-        debug::exit(debug::ExitStatus::Ok(()))
-    }
-}
-
-/// Exits the application with a failure when the program is executed through
-/// the `probe-rs` Cargo runner
-pub fn fail() -> ! {
-    unsafe {
-        // turn off the USB D+ pull-up before pausing the device with a breakpoint
-        // this disconnects the nRF device from the USB host so the USB host won't attempt further
-        // USB communication (and see an unresponsive device).
-        const USBD_USBPULLUP: *mut u32 = 0x4002_7504 as *mut u32;
-        USBD_USBPULLUP.write_volatile(0)
-    }
-    defmt::println!("`dk::fail()` called; exiting ...");
-    // force any pending memory operation to complete before the instruction that follows
-    atomic::compiler_fence(Ordering::SeqCst);
-    loop {
-        debug::exit(debug::ExitStatus::Err(()))
-    }
-}
-
-/// Returns the time elapsed since the call to the `dk::init` function
-///
-/// The time is in 32,768 Hz units (i.e. 32768 = 1 second)
-///
-/// Calling this function before calling `dk::init` will return a value of `0` nanoseconds.
-pub fn uptime_ticks() -> u64 {
-    // here we are going to perform a 64-bit read of the number of ticks elapsed
-    //
-    // a 64-bit load operation cannot performed in a single instruction so the operation can be
-    // preempted by the RTC0 interrupt handler (which increases the OVERFLOWS counter)
-    //
-    // the loop below will load both the lower and upper parts of the 64-bit value while preventing
-    // the issue of mixing a low value with an "old" high value -- note that, due to interrupts, an
-    // arbitrary amount of time may elapse between the `hi1` load and the `low` load
-
-    // # Safety
-    // Concurrent access to this field within the RTC is acceptable.
-    let rtc_counter = hal::pac::RTC0.counter();
-
-    loop {
-        // NOTE volatile is used to order these load operations among themselves
-        let hi1 = OVERFLOWS.load(Ordering::Acquire);
-        let low = rtc_counter.read().counter();
-        let hi2 = OVERFLOWS.load(Ordering::Relaxed);
-
-        if hi1 == hi2 {
-            break u64::from(low) | (u64::from(hi1) << 24);
-        }
-    }
-}
-
-/// Returns the time elapsed since the call to the `dk::init` function
-///
-/// The clock that is read to compute this value has a resolution of 30 microseconds.
-///
-/// Calling this function before calling `dk::init` will return a value of `0` nanoseconds.
-pub fn uptime() -> Duration {
-    // We have a time in 32,768 Hz units.
-    let mut ticks = uptime_ticks();
-
-    // turn it into 32_768_000_000 units
-    ticks = ticks.wrapping_mul(1_000_000);
-    // turn it into microsecond units
-    ticks >>= 15;
-    // turn it into nanosecond units
-    ticks = ticks.wrapping_mul(1_000);
-
-    // NB: 64-bit nanoseconds handles around 584 years.
-
-    let secs = ticks / 1_000_000_000;
-    let nanos = ticks % 1_000_000_000;
-
-    Duration::new(secs, nanos as u32)
-}
-
-/// Returns the time elapsed since the call to the `dk::init` function, in microseconds.
-///
-/// The clock that is read to compute this value has a resolution of 30 microseconds.
-///
-/// Calling this function before calling `dk::init` will return a value of `0` nanoseconds.
-pub fn uptime_us() -> u64 {
-    // We have a time in 32,768 Hz units.
-    let mut ticks = uptime_ticks();
-
-    // turn it into 32_768_000_000 units
-    ticks = ticks.wrapping_mul(1_000_000);
-    // turn it into microsecond units
-    ticks >>= 15;
-
-    ticks
-}
-
-/// Returns the least-significant bits of the device identifier
-pub fn deviceid0() -> u32 {
-    hal::pac::FICR.deviceid(0).read()
-}
-
-/// Returns the most-significant bits of the device identifier
-pub fn deviceid1() -> u32 {
-    hal::pac::FICR.deviceid(1).read()
 }

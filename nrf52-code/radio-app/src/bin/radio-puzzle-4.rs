@@ -11,7 +11,7 @@ use radio_app as _;
 
 #[entry]
 fn main() -> ! {
-    dk::init().unwrap();
+    dk::init();
 
     // a buffer with capacity for 2 bytes
     let mut buffer = Vec::<u8, 2>::new();

@@ -16,7 +16,7 @@ mod app {
 
     #[init]
     fn init(_cx: init::Context) -> (MySharedResources, MyLocalResources) {
-        let board = dk::init().unwrap();
+        let board = dk::init();
 
         // `POWER` is a peripheral, or register block
         let power = board.power;
