@@ -10,6 +10,7 @@ use defmt_rtt as _;
 #[rtic::app(device = dongle, peripherals = false)]
 mod app {
     use core::mem::MaybeUninit;
+    use dongle::hal;
     use rtic_monotonics::systick::prelude::*;
     const QUEUE_LEN: usize = 8;
 
@@ -51,11 +52,11 @@ mod app {
     #[local]
     struct MyLocalResources {
         /// The radio subsystem
-        radio: dongle::ieee802154::Radio<'static>,
+        radio: hal::radio::ieee802154::Radio<'static>,
         /// Which channel are we on
         current_channel: u8,
-        /// Holds one package, for receive or transmit
-        packet: dongle::ieee802154::Packet,
+        // Holds one package, for receive or transmit
+        //packet: dongle::ieee802154::Packet,
         /// Used to measure elapsed time
         timer: dongle::Timer,
         /// How many packets have been received OK?
@@ -159,9 +160,27 @@ mod app {
             .expect("set_packet_size")
             .build();
 
+        let mut current_channel = 25;
         defmt::debug!("Configuring radio...");
-        board.radio.set_channel(dongle::ieee802154::Channel::_25);
-        let current_channel = 25;
+        #[cfg(feature = "dk")]
+        let radio = {
+            let mut radio = hal::radio::ieee802154::Radio::new(
+                unsafe { hal::Peripherals::steal() }.RADIO,
+                Irqs,
+            );
+
+            // set TX power to its maximum value
+            radio.set_transmission_power(8);
+            radio.set_channel(current_channel);
+            defmt::debug!(
+                "Radio initialized and configured with TX power set to the maximum value"
+            );
+            radio
+        };
+        #[cfg(not(feature = "dk"))]
+        let mut radio = board.radio;
+        #[cfg(not(feature = "dk"))]
+        radio.set_channel(current_channel);
 
         let (msg_queue_in, msg_queue_out) = ctx.local.queue.split();
 
@@ -173,7 +192,7 @@ mod app {
         let local = MyLocalResources {
             radio: board.radio,
             current_channel,
-            packet: dongle::ieee802154::Packet::new(),
+            //packet: dongle::ieee802154::Packet::new(),
             timer: board.timer,
             rx_count: 0,
             err_count: 0,
@@ -188,7 +207,7 @@ mod app {
         (shared, local)
     }
 
-    #[idle(local = [radio, current_channel, packet, timer, rx_count, err_count, msg_queue_out, leds], shared = [usb_serial])]
+    #[idle(local = [radio, current_channel, timer, rx_count, err_count, msg_queue_out, leds], shared = [usb_serial])]
     fn idle(mut ctx: idle::Context) -> ! {
         use core::fmt::Write as _;
         let mut writer = Writer(|b: &[u8]| {

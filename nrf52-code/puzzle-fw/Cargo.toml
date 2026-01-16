@@ -19,3 +19,6 @@ usbd-serial = "0.2.2"
 
 [build-dependencies]
 rand = "0.9"
+
+[features]
+dk = []
