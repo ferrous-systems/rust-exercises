@@ -10,7 +10,6 @@ use defmt_rtt as _;
 #[rtic::app(device = dongle, peripherals = false)]
 mod app {
     use core::mem::MaybeUninit;
-    use dongle::hal;
     use rtic_monotonics::systick::prelude::*;
     const QUEUE_LEN: usize = 8;
 
@@ -52,11 +51,11 @@ mod app {
     #[local]
     struct MyLocalResources {
         /// The radio subsystem
-        radio: hal::radio::ieee802154::Radio<'static>,
+        radio: dongle::ieee802154::Radio<'static>,
         /// Which channel are we on
         current_channel: u8,
-        // Holds one package, for receive or transmit
-        //packet: dongle::ieee802154::Packet,
+        /// Holds one package, for receive or transmit
+        packet: dongle::ieee802154::Packet,
         /// Used to measure elapsed time
         timer: dongle::Timer,
         /// How many packets have been received OK?
@@ -92,12 +91,12 @@ mod app {
         queue: heapless::spsc::Queue<Message, QUEUE_LEN> = heapless::spsc::Queue::new(),
     ])]
     fn init(ctx: init::Context) -> (MySharedResources, MyLocalResources) {
-        let mut board = dongle::init();
+        let mut board = dongle::init().unwrap();
         Mono::start(ctx.core.SYST, 64_000_000);
 
         defmt::debug!("Enabling interrupts...");
-        board.usbd_regs.inten().modify(|w| {
-            w.set_sof(true);
+        board.usbd.inten.modify(|_r, w| {
+            w.sof().set_bit();
             w
         });
 
@@ -160,27 +159,9 @@ mod app {
             .expect("set_packet_size")
             .build();
 
-        let mut current_channel = 25;
         defmt::debug!("Configuring radio...");
-        #[cfg(feature = "dk")]
-        let radio = {
-            let mut radio = hal::radio::ieee802154::Radio::new(
-                unsafe { hal::Peripherals::steal() }.RADIO,
-                Irqs,
-            );
-
-            // set TX power to its maximum value
-            radio.set_transmission_power(8);
-            radio.set_channel(current_channel);
-            defmt::debug!(
-                "Radio initialized and configured with TX power set to the maximum value"
-            );
-            radio
-        };
-        #[cfg(not(feature = "dk"))]
-        let mut radio = board.radio;
-        #[cfg(not(feature = "dk"))]
-        radio.set_channel(current_channel);
+        board.radio.set_channel(dongle::ieee802154::Channel::_25);
+        let current_channel = 25;
 
         let (msg_queue_in, msg_queue_out) = ctx.local.queue.split();
 
@@ -192,7 +173,7 @@ mod app {
         let local = MyLocalResources {
             radio: board.radio,
             current_channel,
-            //packet: dongle::ieee802154::Packet::new(),
+            packet: dongle::ieee802154::Packet::new(),
             timer: board.timer,
             rx_count: 0,
             err_count: 0,
@@ -207,7 +188,7 @@ mod app {
         (shared, local)
     }
 
-    #[idle(local = [radio, current_channel, timer, rx_count, err_count, msg_queue_out, leds], shared = [usb_serial])]
+    #[idle(local = [radio, current_channel, packet, timer, rx_count, err_count, msg_queue_out, leds], shared = [usb_serial])]
     fn idle(mut ctx: idle::Context) -> ! {
         use core::fmt::Write as _;
         let mut writer = Writer(|b: &[u8]| {
@@ -223,8 +204,8 @@ mod app {
             ctx.local.current_channel
         );
 
-        ctx.local.leds.ld1_green.on();
-        ctx.local.leds.ld2_rgb.green_only();
+        ctx.local.leds.ld1.on();
+        ctx.local.leds.ld2_green.on();
 
         let mut dict: heapless::LinearMap<u8, u8, 128> = heapless::LinearMap::new();
         for (&plain, &cipher) in PLAIN_LETTERS.iter().zip(CIPHER_LETTERS.iter()) {
