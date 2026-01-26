@@ -5,56 +5,58 @@
 #![no_main]
 #![no_std]
 
-use defmt_rtt as _;
+#[cfg(not(feature = "dk"))]
+use bsp::RgbLed;
 
-#[rtic::app(device = dongle, peripherals = false)]
+#[rtic::app(device = bsp, peripherals = false, dispatchers = [QSPI, CRYPTOCELL])]
 mod app {
-    use core::mem::MaybeUninit;
+    use bsp::hal::{self, usb::vbus_detect::HardwareVbusDetect};
+    use core::fmt::Write as _;
+    use defmt_rtt as _;
+    use embassy_sync::blocking_mutex::raw::CriticalSectionRawMutex;
+    use embassy_usb::class::cdc_acm;
+    use embassy_usb::class::hid;
+    use rtic_monotonics::fugit::ExtU32;
+
     use rtic_monotonics::systick::prelude::*;
-    const QUEUE_LEN: usize = 8;
+    use static_cell::StaticCell;
 
-    systick_monotonic!(Mono, 100);
+    const MSG_QUEUE_LEN: usize = 8;
+    const ACM_QUEUE_LEN: usize = 128;
+    const MAX_ACM_PACKET_SIZE: usize = 64;
 
-    /// An adapter that lets us writeln! into any closure that takes a byte.
+    hal::bind_interrupts!(struct Irqs {
+        USBD => hal::usb::InterruptHandler<hal::peripherals::USBD>;
+        CLOCK_POWER => hal::usb::vbus_detect::InterruptHandler;
+        #[cfg(feature = "dk")]
+        RADIO => hal::radio::InterruptHandler<hal::peripherals::RADIO>;
+    });
+
+    systick_monotonic!(Mono);
+
+    /// An adapter that simplifies asynchronously writing to the USB ACM by buffering writes.
     ///
-    /// This is useful if writing a byte requires taking a lock, and you don't
-    /// want to hold the lock for the duration of the write.
-    struct Writer<F>(F)
-    where
-        F: FnMut(&[u8]);
+    /// All writes are buffered until `flush` is called, which performs the async write.
+    struct WriteAsyncPipeAdapter {
+        // Intermediate buffer which is required because we can not used async code
+        // in the [core::fmt::Write] implementation.
+        buffer: heapless::String<256>,
+        usb_acm_writer: embassy_sync::pipe::Writer<'static, CriticalSectionRawMutex, ACM_QUEUE_LEN>,
+    }
 
-    impl<F> core::fmt::Write for Writer<F>
-    where
-        F: FnMut(&[u8]),
-    {
+    impl core::fmt::Write for WriteAsyncPipeAdapter {
         fn write_str(&mut self, s: &str) -> core::fmt::Result {
-            (self.0)(s.as_bytes());
+            write!(self.buffer, "{}", s).unwrap();
             Ok(())
         }
     }
 
-    #[local]
-    struct MyLocalResources {
-        /// The radio subsystem
-        radio: dongle::ieee802154::Radio<'static>,
-        /// Which channel are we on
-        current_channel: u8,
-        /// Holds one package, for receive or transmit
-        packet: dongle::ieee802154::Packet,
-        /// Used to measure elapsed time
-        timer: dongle::Timer,
-        /// How many packets have been received OK?
-        rx_count: u32,
-        /// How many packets have been received with errors?
-        err_count: u32,
-        /// A place to read the message queue
-        msg_queue_out: heapless::spsc::Consumer<'static, Message>,
-        /// A place to write to the message queue
-        msg_queue_in: heapless::spsc::Producer<'static, Message>,
-        /// The status LEDs
-        leds: dongle::Leds,
-        /// Handles the lower-level USB Device interface
-        usb_device: usb_device::device::UsbDevice<'static, dongle::UsbBus>,
+    impl WriteAsyncPipeAdapter {
+        /// Flush the buffer to the underlying writer.
+        async fn flush(&mut self) {
+            self.usb_acm_writer.write(self.buffer.as_bytes()).await;
+            self.buffer.clear();
+        }
     }
 
     #[derive(Debug, defmt::Format, Copy, Clone, PartialEq, Eq)]
@@ -63,42 +65,99 @@ mod app {
         WantInfo,
     }
 
-    #[shared]
-    struct MySharedResources {
-        /// Handles the USB Serial interface, including a ring buffer
-        usb_serial: usbd_serial::SerialPort<'static, dongle::UsbBus>,
-        /// Handles the USB HID interface
-        usb_hid: usbd_hid::hid_class::HIDClass<'static, dongle::UsbBus>,
+    struct HidTransferHandler(
+        embassy_sync::channel::Sender<'static, CriticalSectionRawMutex, Message, MSG_QUEUE_LEN>,
+    );
+
+    impl hid::RequestHandler for HidTransferHandler {
+        // HID requests are used to switch the channel.
+        fn set_report(
+            &mut self,
+            _report_id: hid::ReportId,
+            data: &[u8],
+        ) -> embassy_usb::control::OutResponse {
+            // Linux sends 1 byte, Windows sends 64 (with 63 zero bytes)
+            if data.len() == 1 || data.len() == 64 {
+                let _ = self.0.try_send(Message::ChangeChannel(data[0]));
+            }
+            embassy_usb::control::OutResponse::Accepted
+        }
     }
 
-    #[init(local = [
-        usb_alloc: MaybeUninit<usb_device::bus::UsbBusAllocator<dongle::UsbBus>> = MaybeUninit::uninit(),
-        queue: heapless::spsc::Queue<Message, QUEUE_LEN> = heapless::spsc::Queue::new(),
-    ])]
+    #[local]
+    struct MyLocalResources {
+        /// The radio subsystem
+        radio: bsp::hal::radio::ieee802154::Radio<'static>,
+        /// Which channel are we on
+        current_channel: u8,
+        /// Holds one package, for receive or transmit
+        packet: bsp::hal::radio::ieee802154::Packet,
+        /// Used to measure elapsed time
+        timer: bsp::Timer,
+        /// How many packets have been received OK?
+        rx_count: u32,
+        /// How many packets have been received with errors?
+        err_count: u32,
+        /// A place to read the message queue
+        msg_queue_rx: embassy_sync::channel::Receiver<
+            'static,
+            CriticalSectionRawMutex,
+            Message,
+            MSG_QUEUE_LEN,
+        >,
+        /// A place to write to the message queue
+        msg_queue_tx_acm:
+            embassy_sync::channel::Sender<'static, CriticalSectionRawMutex, Message, MSG_QUEUE_LEN>,
+        leds: bsp::Leds,
+        usb_dev: embassy_usb::UsbDevice<'static, hal::usb::Driver<'static, HardwareVbusDetect>>,
+        usb_acm_write_adapter: WriteAsyncPipeAdapter,
+        usb_acm_reader: embassy_sync::pipe::Reader<'static, CriticalSectionRawMutex, ACM_QUEUE_LEN>,
+        usb_acm: embassy_usb::class::cdc_acm::CdcAcmClass<
+            'static,
+            hal::usb::Driver<'static, HardwareVbusDetect>,
+        >,
+    }
+
+    #[shared]
+    struct MySharedResources {}
+
+    #[init]
     fn init(ctx: init::Context) -> (MySharedResources, MyLocalResources) {
-        let mut board = dongle::init().unwrap();
+        let board = bsp::init().unwrap();
         Mono::start(ctx.core.SYST, 64_000_000);
 
-        defmt::debug!("Enabling interrupts...");
-        board.usbd.inten.modify(|_r, w| {
-            w.sof().set_bit();
-            w
-        });
+        // Create the driver, from the HAL.
+        let driver = hal::usb::Driver::new(board.usbd, Irqs, HardwareVbusDetect::new(Irqs));
 
-        defmt::debug!("Building USB allocator...");
-        let usbd = dongle::UsbBus::new(dongle::hal::usbd::UsbPeripheral::new(
-            board.usbd,
-            board.clocks,
-        ));
-        let usb_alloc = ctx
-            .local
-            .usb_alloc
-            .write(usb_device::bus::UsbBusAllocator::new(usbd));
+        // Create embassy-usb Config
+        let mut config =
+            embassy_usb::Config::new(consts::USB_VID_DEMO, consts::USB_PID_DONGLE_LOOPBACK);
+        config.manufacturer = Some("Ferrous Systems");
+        config.product = Some("Dongle Loopback");
+        config.max_packet_size_0 = MAX_ACM_PACKET_SIZE as u8;
 
-        defmt::debug!("Creating usb_serial...");
-        let usb_serial = usbd_serial::SerialPort::new(usb_alloc);
+        static STATE: StaticCell<embassy_usb::class::cdc_acm::State> = StaticCell::new();
+        let state = STATE.init(embassy_usb::class::cdc_acm::State::new());
 
-        defmt::debug!("Creating usb_hid...");
+        // Create embassy-usb DeviceBuilder using the driver and config.
+        // It needs some buffers for building the descriptors.
+        static CONFIG_DESC: StaticCell<[u8; 256]> = StaticCell::new();
+        static BOS_DESC: StaticCell<[u8; 256]> = StaticCell::new();
+        static MSOS_DESC: StaticCell<[u8; 128]> = StaticCell::new();
+        static CONTROL_BUF: StaticCell<[u8; 128]> = StaticCell::new();
+
+        let mut builder = embassy_usb::Builder::new(
+            driver,
+            config,
+            &mut CONFIG_DESC.init([0; 256])[..],
+            &mut BOS_DESC.init([0; 256])[..],
+            &mut MSOS_DESC.init([0; 128])[..],
+            &mut CONTROL_BUF.init([0; 128])[..],
+        );
+
+        // Create classes on the builder.
+        let usb_acm = cdc_acm::CdcAcmClass::new(&mut builder, state, MAX_ACM_PACKET_SIZE as u16);
+
         let desc = &[
             0x06, 0x00, 0xFF, // Item(Global): Usage Page, data= [ 0x00 0xff ] 65280
             0x09, 0x01, // Item(Local ): Usage, data= [ 0x01 ] 1
@@ -124,76 +183,218 @@ mod app {
             //               Preferred_State No_Null_Position Non_Volatile Bitfield
             0xC0, // Item(Main  ): End Collection, data=none
         ];
-        let usb_hid = usbd_hid::hid_class::HIDClass::new(usb_alloc, desc, 100);
 
-        defmt::debug!("Building USB Strings...");
-        let strings = usb_device::device::StringDescriptors::new(usb_device::LangID::EN)
-            .manufacturer("Ferrous Systems")
-            .product("Dongle Loopback");
+        static STATE_HID: StaticCell<embassy_usb::class::hid::State> = StaticCell::new();
+        let state_hid = STATE_HID.init(embassy_usb::class::hid::State::new());
+        // Create classes on the builder.
+        let config = embassy_usb::class::hid::Config {
+            report_descriptor: desc,
+            request_handler: None,
+            poll_ms: 200,
+            max_packet_size: 64,
+        };
 
-        defmt::debug!("Building VID and PID...");
-        let vid_pid =
-            usb_device::device::UsbVidPid(consts::USB_VID_DEMO, consts::USB_PID_DONGLE_LOOPBACK);
+        let hid_rw = hid::HidReaderWriter::<_, 3, 3>::new(&mut builder, state_hid, config);
+        // We are only interested in reading from the HID interface.
+        let (hid_reader, _) = hid_rw.split();
 
-        defmt::debug!("Building USB Device...");
-        let usb_device = usb_device::device::UsbDeviceBuilder::new(usb_alloc, vid_pid)
-            .composite_with_iads()
-            .strings(&[strings])
-            .expect("Adding strings")
-            .max_packet_size_0(64)
-            .expect("set_packet_size")
-            .build();
+        // Build the builder.
+        let usb_dev = builder.build();
 
+        let current_channel: u8 = 20;
         defmt::debug!("Configuring radio...");
-        board.radio.set_channel(dongle::ieee802154::Channel::_20);
-        let current_channel = 20;
+        #[cfg(feature = "dk")]
+        let radio = {
+            let mut radio = hal::radio::ieee802154::Radio::new(
+                unsafe { hal::Peripherals::steal() }.RADIO,
+                Irqs,
+            );
 
-        let (msg_queue_in, msg_queue_out) = ctx.local.queue.split();
+            // set TX power to its maximum value
+            radio.set_transmission_power(8);
+            radio.set_channel(current_channel);
+            defmt::debug!(
+                "Radio initialized and configured with TX power set to the maximum value"
+            );
+            radio
+        };
+        #[cfg(not(feature = "dk"))]
+        let mut radio = board.radio;
+        #[cfg(not(feature = "dk"))]
+        radio.set_channel(current_channel);
+
+        static MSG_QUEUE: static_cell::ConstStaticCell<
+            embassy_sync::channel::Channel<CriticalSectionRawMutex, Message, MSG_QUEUE_LEN>,
+        > = static_cell::ConstStaticCell::new(embassy_sync::channel::Channel::new());
+        static ACM_QUEUE: static_cell::ConstStaticCell<
+            embassy_sync::pipe::Pipe<CriticalSectionRawMutex, ACM_QUEUE_LEN>,
+        > = static_cell::ConstStaticCell::new(embassy_sync::pipe::Pipe::new());
+
+        let msg_queue = MSG_QUEUE.take();
+        let (acm_reader, acm_writer) = ACM_QUEUE.take().split();
+
+        let acm_adapter = WriteAsyncPipeAdapter {
+            buffer: heapless::String::<256>::new(),
+            usb_acm_writer: acm_writer,
+        };
 
         defmt::debug!("Building structures...");
-        let shared = MySharedResources {
-            usb_serial,
-            usb_hid,
-        };
+        let shared = MySharedResources {};
         let local = MyLocalResources {
-            radio: board.radio,
+            radio,
             current_channel,
-            packet: dongle::ieee802154::Packet::new(),
+            packet: bsp::hal::radio::ieee802154::Packet::new(),
             timer: board.timer,
             rx_count: 0,
             err_count: 0,
-            msg_queue_out,
-            msg_queue_in,
+            msg_queue_rx: msg_queue.receiver(),
+            msg_queue_tx_acm: msg_queue.sender(),
             leds: board.leds,
-            usb_device,
+            usb_dev,
+            usb_acm,
+            usb_acm_write_adapter: acm_adapter,
+            usb_acm_reader: acm_reader,
         };
 
+        usb_dev::spawn().unwrap();
+        usb_acm::spawn().unwrap();
+        let _ = usb_hid::spawn(hid_reader, msg_queue.sender());
+        radio::spawn().unwrap();
+
         defmt::debug!("Init Complete!");
+
+        // Set the ARM SLEEPONEXIT bit to go to sleep after handling interrupts
+        // See https://developer.arm.com/docs/100737/0100/power-management/sleep-mode/sleep-on-exit-bit
+        // TODO: Unfortunately, this does not work yet. Radio packets are not
+        // arriving properly.
+        //ctx.core.SCB.set_sleepdeep();
 
         (shared, local)
     }
 
-    #[idle(local = [radio, current_channel, packet, timer, rx_count, err_count, msg_queue_out, leds], shared = [usb_serial])]
-    fn idle(mut ctx: idle::Context) -> ! {
-        use core::fmt::Write as _;
-        let mut writer = Writer(|b: &[u8]| {
-            ctx.shared.usb_serial.lock(|usb_serial| {
-                let _ = usb_serial.write(b);
-            })
-        });
+    #[idle]
+    fn idle(_cx: idle::Context) -> ! {
+        loop {
+            // Now Wait For Interrupt is used instead of a busy-wait loop
+            // to allow MCU to sleep between interrupts
+            // https://developer.arm.com/documentation/ddi0406/c/Application-Level-Architecture/Instruction-Details/Alphabetical-list-of-instructions/WFI
+            //
+            // TODO: Unfortunately, this does not work yet. Radio packets are not
+            // arriving properly.
+            // rtic::export::wfi()
+            cortex_m::asm::nop();
+        }
+    }
 
+    #[task(local = [usb_dev], priority = 1)]
+    async fn usb_dev(ctx: usb_dev::Context) {
+        ctx.local.usb_dev.run().await;
+    }
+
+    #[task(priority = 1)]
+    async fn usb_hid(
+        _ctx: usb_hid::Context,
+        // Need to send this by value, because it is consumed by the run method.
+        usb_hid_reader: hid::HidReader<'static, hal::usb::Driver<'static, HardwareVbusDetect>, 3>,
+        msg_queue_tx_hid: embassy_sync::channel::Sender<
+            'static,
+            CriticalSectionRawMutex,
+            Message,
+            MSG_QUEUE_LEN,
+        >,
+    ) {
+        let mut req_handler = HidTransferHandler(msg_queue_tx_hid);
+        usb_hid_reader.run(false, &mut req_handler).await;
+    }
+
+    #[task(local = [usb_acm, msg_queue_tx_acm, usb_acm_reader], priority = 1)]
+    async fn usb_acm(mut ctx: usb_acm::Context) {
+        loop {
+            // Wait for up to 200 ms for a connection, discard ACM data otherwise.
+            match Mono::timeout_after(200.millis(), ctx.local.usb_acm.wait_connection()).await {
+                Ok(_) => {
+                    defmt::info!("ACM Connected");
+                    connected_usb_acm(&mut ctx).await;
+                    defmt::info!("ACM disconnected");
+                }
+                Err(_) => {
+                    let mut dummy_buf: [u8; 32] = [0; 32];
+                    // Timeout. Empty the message queue.
+                    while let Ok(bytes_read) = ctx.local.usb_acm_reader.try_read(&mut dummy_buf) {
+                        if bytes_read < dummy_buf.len() {
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    async fn connected_usb_acm(ctx: &mut usb_acm::Context<'_>) {
+        let mut buffer = [0u8; 64];
+        loop {
+            // Poll for a frame for up to 100 milliseconds.
+            if let Ok(result) =
+                Mono::timeout_after(100.millis(), ctx.local.usb_acm.read_packet(&mut buffer)).await
+            {
+                match result {
+                    Ok(n) => {
+                        if n > 0 {
+                            for b in &buffer[0..n] {
+                                if *b == b'?' {
+                                    // User pressed "?" in the terminal
+                                    _ = ctx.local.msg_queue_tx_acm.send(Message::WantInfo).await;
+                                }
+                            }
+                        }
+                    }
+                    Err(e) => match e {
+                        embassy_usb::driver::EndpointError::BufferOverflow => {
+                            panic!("unexpected buffer overflow")
+                        }
+                        embassy_usb::driver::EndpointError::Disabled => break,
+                    },
+                }
+            }
+            if let Ok(bytes_read) = ctx.local.usb_acm_reader.try_read(&mut buffer) {
+                if let Err(e) = ctx.local.usb_acm.write_packet(&buffer[0..bytes_read]).await {
+                    match e {
+                        embassy_usb::driver::EndpointError::BufferOverflow => {
+                            panic!("unexpected buffer overflow")
+                        }
+                        embassy_usb::driver::EndpointError::Disabled => break,
+                    }
+                }
+            }
+        }
+    }
+
+    #[task(local = [
+        radio,
+        current_channel,
+        packet,
+        timer,
+        rx_count,
+        err_count,
+        msg_queue_rx,
+        leds,
+        usb_acm_write_adapter,
+    ], priority = 1)]
+    async fn radio(mut ctx: radio::Context) {
         defmt::info!(
             "deviceid={=u32:08x}{=u32:08x} channel={=u8} TxPower=+8dBm app=loopback-fw",
-            dongle::deviceid1(),
-            dongle::deviceid0(),
+            bsp::deviceid1(),
+            bsp::deviceid0(),
             ctx.local.current_channel
         );
 
-        ctx.local.leds.ld1.on();
-        ctx.local.leds.ld2_blue.on();
+        #[cfg(not(feature = "dk"))]
+        ctx.local.leds.ld1_green.on();
+        #[cfg(not(feature = "dk"))]
+        ctx.local.leds.ld2_rgb.blue_only();
 
         loop {
-            while let Some(msg) = ctx.local.msg_queue_out.dequeue() {
+            while let Ok(msg) = ctx.local.msg_queue_rx.try_receive() {
                 match msg {
                     Message::WantInfo => {
                         defmt::info!(
@@ -203,190 +404,95 @@ mod app {
                             ctx.local.current_channel
                         );
                         let _ = writeln!(
-                            writer,
+                            &mut ctx.local.usb_acm_write_adapter,
                             "\nrx={}, err={}, ch={}, app=loopback-fw",
                             ctx.local.rx_count, ctx.local.err_count, ctx.local.current_channel
                         );
+                        ctx.local.usb_acm_write_adapter.flush().await;
                     }
                     Message::ChangeChannel(n) => {
                         defmt::info!("Changing Channel to {}", n);
-                        let _ = writeln!(writer, "\nChanging Channel to {}", n);
-                        match n {
-                            11 => {
-                                ctx.local
-                                    .radio
-                                    .set_channel(dongle::ieee802154::Channel::_11);
-                            }
-                            12 => {
-                                ctx.local
-                                    .radio
-                                    .set_channel(dongle::ieee802154::Channel::_12);
-                            }
-                            13 => {
-                                ctx.local
-                                    .radio
-                                    .set_channel(dongle::ieee802154::Channel::_13);
-                            }
-                            14 => {
-                                ctx.local
-                                    .radio
-                                    .set_channel(dongle::ieee802154::Channel::_14);
-                            }
-                            15 => {
-                                ctx.local
-                                    .radio
-                                    .set_channel(dongle::ieee802154::Channel::_15);
-                            }
-                            16 => {
-                                ctx.local
-                                    .radio
-                                    .set_channel(dongle::ieee802154::Channel::_16);
-                            }
-                            17 => {
-                                ctx.local
-                                    .radio
-                                    .set_channel(dongle::ieee802154::Channel::_17);
-                            }
-                            18 => {
-                                ctx.local
-                                    .radio
-                                    .set_channel(dongle::ieee802154::Channel::_18);
-                            }
-                            19 => {
-                                ctx.local
-                                    .radio
-                                    .set_channel(dongle::ieee802154::Channel::_19);
-                            }
-                            20 => {
-                                ctx.local
-                                    .radio
-                                    .set_channel(dongle::ieee802154::Channel::_20);
-                            }
-                            21 => {
-                                ctx.local
-                                    .radio
-                                    .set_channel(dongle::ieee802154::Channel::_21);
-                            }
-                            22 => {
-                                ctx.local
-                                    .radio
-                                    .set_channel(dongle::ieee802154::Channel::_22);
-                            }
-                            23 => {
-                                ctx.local
-                                    .radio
-                                    .set_channel(dongle::ieee802154::Channel::_23);
-                            }
-                            24 => {
-                                ctx.local
-                                    .radio
-                                    .set_channel(dongle::ieee802154::Channel::_24);
-                            }
-                            25 => {
-                                ctx.local
-                                    .radio
-                                    .set_channel(dongle::ieee802154::Channel::_25);
-                            }
-                            26 => {
-                                ctx.local
-                                    .radio
-                                    .set_channel(dongle::ieee802154::Channel::_26);
-                            }
-                            _ => {
-                                defmt::info!("Bad Channel {}!", n);
-                            }
+                        let _ = writeln!(
+                            &mut ctx.local.usb_acm_write_adapter,
+                            "\nChanging Channel to {}",
+                            n
+                        );
+                        ctx.local.usb_acm_write_adapter.flush().await;
+
+                        if !(11..=26).contains(&n) {
+                            defmt::info!("Bad Channel {}!", n);
+                        } else {
+                            ctx.local.radio.set_channel(n);
                         }
                     }
                 }
             }
 
             defmt::debug!("Waiting for packet..");
-            match ctx
-                .local
-                .radio
-                .recv_timeout(ctx.local.packet, ctx.local.timer, 1_000_000)
+
+            // Poll for a frame for up to 200 milliseconds.
+            if let Ok(result) =
+                Mono::timeout_after(200.millis(), ctx.local.radio.receive(ctx.local.packet)).await
             {
-                Ok(crc) => {
-                    ctx.local.leds.ld1.toggle();
-                    defmt::info!(
-                        "Received {=u8} bytes (CRC=0x{=u16:04x}, LQI={})",
-                        ctx.local.packet.len(),
-                        crc,
-                        ctx.local.packet.lqi(),
-                    );
-                    let _ = writeln!(
-                        writer,
-                        "\nReceived {} bytes (CRC=0x{:04x}, LQI={})",
-                        ctx.local.packet.len(),
-                        crc,
-                        ctx.local.packet.lqi(),
-                    );
-                    *ctx.local.rx_count += 1;
-                    // reverse the bytes, so olleh -> hello
-                    ctx.local.packet.reverse();
-                    // send packet after 5ms (we know the client waits for 10ms and
-                    // we want to ensure they are definitely in receive mode by the
-                    // time we send this reply)
-                    ctx.local.timer.delay(5000);
-                    ctx.local.radio.send(ctx.local.packet);
-                }
-                Err(dongle::ieee802154::Error::Crc(_)) => {
-                    defmt::debug!("RX fail!");
-                    let _ = write!(writer, "!");
-                    *ctx.local.err_count += 1;
-                }
-                Err(dongle::ieee802154::Error::Timeout) => {
-                    defmt::debug!("RX timeout...");
-                    let _ = write!(writer, ".");
+                match result {
+                    Ok(_) => {
+                        #[cfg(not(feature = "dk"))]
+                        ctx.local.leds.ld1_green.toggle();
+                        defmt::info!(
+                            "Received {=u8} bytes (LQI={})",
+                            ctx.local.packet.len(),
+                            ctx.local.packet.lqi(),
+                        );
+                        *ctx.local.rx_count += 1;
+                        // reverse the bytes, so olleh -> hello
+                        ctx.local.packet.reverse();
+                        // send packet after 5ms (we know the client waits for 10ms and
+                        // we want to ensure they are definitely in receive mode by the
+                        // time we send this reply)
+                        Mono::delay(5.millis()).await;
+                        if let Err(e) = ctx.local.radio.try_send(ctx.local.packet).await {
+                            let _ = writeln!(
+                                &mut ctx.local.usb_acm_write_adapter,
+                                "\nWriting reply packet failed with error {:?}",
+                                e
+                            );
+                        }
+
+                        let _ = writeln!(
+                            &mut ctx.local.usb_acm_write_adapter,
+                            "\nReceived {} bytes (LQI={})",
+                            ctx.local.packet.len(),
+                            ctx.local.packet.lqi(),
+                        );
+                        ctx.local.usb_acm_write_adapter.flush().await;
+                    }
+                    Err(_e) => {
+                        defmt::debug!("RX fail!");
+                        let _ = ctx
+                            .local
+                            .usb_acm_write_adapter
+                            .usb_acm_writer
+                            .write("!".as_bytes())
+                            .await;
+                        *ctx.local.err_count += 1;
+                    }
                 }
             }
         }
-    }
-
-    /// USB Interrupt Handler
-    ///
-    /// USB Device is set to fire this whenever there's a Start of Frame from
-    /// the USB Host.
-    #[task(binds = USBD, local = [msg_queue_in, usb_device], shared = [usb_serial, usb_hid])]
-    fn usb_isr(ctx: usb_isr::Context) {
-        let mut all = (ctx.shared.usb_serial, ctx.shared.usb_hid);
-        all.lock(|usb_serial, usb_hid| {
-            if ctx.local.usb_device.poll(&mut [usb_serial, usb_hid]) {
-                let mut buffer = [0u8; 64];
-                if let Ok(n) = usb_serial.read(&mut buffer) {
-                    if n > 0 {
-                        for b in &buffer[0..n] {
-                            if *b == b'?' {
-                                // User pressed "?" in the terminal
-                                _ = ctx.local.msg_queue_in.enqueue(Message::WantInfo);
-                            }
-                        }
-                    }
-                }
-                if let Ok(n) = usb_hid.pull_raw_output(&mut buffer) {
-                    // Linux sends 1 byte, Windows sends 64 (with 63 zero bytes)
-                    if n == 1 || n == 64 {
-                        _ = ctx
-                            .local
-                            .msg_queue_in
-                            .enqueue(Message::ChangeChannel(buffer[0]));
-                    }
-                }
-            }
-        });
     }
 }
 
 #[panic_handler]
 fn panic(info: &core::panic::PanicInfo) -> ! {
-    if let Some(location) = info.location() {
-        defmt::error!("Panic at {}:{}", location.file(), location.line());
-    } else {
-        defmt::error!("Panic at unknown location");
-    }
+    // Safety: We never exit from this function and we are single core.
+    #[cfg(not(feature = "dk"))]
+    let mut red_led = unsafe { RgbLed::steal() };
+    #[cfg(not(feature = "dk"))]
+    red_led.red_only();
+    defmt::error!("{}", info);
     loop {
         core::hint::spin_loop();
     }
 }
 
-defmt::timestamp!("{=u64:tus}", dongle::uptime_us());
+defmt::timestamp!("{=u64:tus}", bsp::uptime_us());
