@@ -44,7 +44,7 @@ You will learn how to
 
 - If the word does not begin with a vowel add suffix “`rs`” to the word.
 
-For example, the sentence `Implement a function that splits a sentence into its words` becomes `srImplement sra functionrs thatrs splitsrs sra sentencers srinto srits wordsre`. 
+For example, the sentence `Implement a function that splits a sentence into its words` becomes `srImplement sra functionrs thatrs splitsrs sra sentencers srinto srits wordsrs`.
 
 The function returns a `String` containing the modified words.
 

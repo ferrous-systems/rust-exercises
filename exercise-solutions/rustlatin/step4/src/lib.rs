@@ -19,7 +19,7 @@ fn rustlatin(sentence: &str) -> String {
 
 /// adds prefix "sr" and suffix "rs" according to the rules
 fn latinize(word: &str) -> String {
-    let first_char = word.chars().next().unwrap();
+    let first_char = word.to_lowercase().chars().next().unwrap();
     if VOWELS.contains(&first_char) {
         let mut result = "sr".to_string();
         result.push_str(word);
@@ -47,4 +47,11 @@ fn correct_translation() {
         "rustrs helpsrs yours sravoid sra lotrs srof srirritating bugsrs",
         rustlatin("rust helps you avoid a lot of irritating bugs")
     )
+}
+
+#[test]
+fn task() {
+    let sentence = "Implement a function that splits a sentence into its words";
+    let setence_latinized = rustlatin(sentence);
+    assert_eq!(setence_latinized, "srImplement sra functionrs thatrs splitsrs sra sentencers srinto srits wordsrs");
 }
