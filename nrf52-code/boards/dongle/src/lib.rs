@@ -147,24 +147,24 @@ pub struct Leds {
 ///
 /// Stores 128 bytes, maximum.
 pub struct Ringbuffer {
-    buffer: heapless::mpmc::Queue<u8, 128>,
+    buffer: heapless::spsc::Queue<u8, 128>,
 }
 
 impl Ringbuffer {
     /// Construct a new Ringbuffer
     pub const fn new() -> Ringbuffer {
         Ringbuffer {
-            buffer: heapless::mpmc::Queue::new(),
+            buffer: heapless::spsc::Queue::new(),
         }
     }
 
     /// Take an item from the buffer
-    pub fn read(&self) -> Option<u8> {
+    pub fn read(&mut self) -> Option<u8> {
         self.buffer.dequeue()
     }
 
     /// Add an item to the queue
-    pub fn write(&self, value: u8) -> Result<(), u8> {
+    pub fn write(&mut self, value: u8) -> Result<(), u8> {
         self.buffer.enqueue(value)
     }
 }
@@ -175,7 +175,7 @@ impl Default for Ringbuffer {
     }
 }
 
-impl core::fmt::Write for &Ringbuffer {
+impl core::fmt::Write for Ringbuffer {
     fn write_str(&mut self, s: &str) -> core::fmt::Result {
         for b in s.bytes() {
             let _ = self.buffer.enqueue(b);

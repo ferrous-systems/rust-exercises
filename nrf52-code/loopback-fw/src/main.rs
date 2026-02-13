@@ -122,7 +122,7 @@ mod app {
     struct MySharedResources {}
 
     #[init]
-    fn init(ctx: init::Context) -> (MySharedResources, MyLocalResources) {
+    fn init(mut ctx: init::Context) -> (MySharedResources, MyLocalResources) {
         let board = bsp::init().unwrap();
         Mono::start(ctx.core.SYST, 64_000_000);
         defmt::println!("-- Radio Loopback firmware --");
@@ -202,7 +202,7 @@ mod app {
         let config = embassy_usb::class::hid::Config {
             report_descriptor: desc,
             request_handler: None,
-            poll_ms: 200,
+            poll_ms: 100,
             max_packet_size: 64,
         };
 
@@ -279,7 +279,7 @@ mod app {
         // See https://developer.arm.com/docs/100737/0100/power-management/sleep-mode/sleep-on-exit-bit
         // TODO: Unfortunately, this does not work yet. Radio packets are not
         // arriving properly.
-        //ctx.core.SCB.set_sleepdeep();
+        ctx.core.SCB.set_sleepdeep();
 
         (shared, local)
     }
@@ -293,8 +293,8 @@ mod app {
             //
             // TODO: Unfortunately, this does not work yet. Radio packets are not
             // arriving properly.
-            // rtic::export::wfi()
-            cortex_m::asm::nop();
+            //rtic::export::wfe()
+            cortex_m::asm::wfe();
         }
     }
 

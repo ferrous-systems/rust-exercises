@@ -1,9 +1,9 @@
 [target.thumbv7em-none-eabihf]
 # set custom cargo runner to flash & run on embedded target when we call `cargo run`
 # for more information, check out https://github.com/probe-rs
-# runner = "nrfdfu"
+runner = "nrfdfu"
 # Alternative runner for running on the DK board.
-runner = ["probe-rs", "run", "--chip=nRF52840_xxAA", "--allow-erase-all", "--log-format=oneline"]
+# runner = ["probe-rs", "run", "--chip=nRF52840_xxAA", "--allow-erase-all", "--log-format=oneline"]
 
 linker = "flip-link" # adds stack overflow protection
 rustflags = [

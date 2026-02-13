@@ -1,0 +1,27 @@
+[package]
+name = "radio-embassy"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+consts = { path = "../consts" }
+defmt = "1"
+defmt-rtt = "1"
+cortex-m = { version = "0.7" }
+cortex-m-rt = { version = "0.7"}
+panic-probe = { version = "1", features = ["print-defmt"] }
+bsp = { package = "dongle", path = "../boards/dongle" }
+# For easier debugging, the firmware can also be run on a DK board.
+# bsp = { package = "dk", path = "../boards/dk", features = ["usbd", "radio"] }
+heapless = { version = "0.9", features = ["defmt"] }
+embassy-executor = { version = "0.9", features = ["arch-cortex-m", "executor-thread"] }
+embassy-nrf = { version = "0.9.0", features = ["nrf52840", "time-driver-rtc1"] }
+embassy-time = "0.5"
+
+usb-device = { version = "0.3.2", features = ["defmt"] }
+usbd-hid = { version = "0.9", features = ["defmt"] }
+usbd-serial = "0.2.2"
+static_cell = "2"
+embedded-io-async = "0.7"
+embassy-usb = "0.5"
+embassy-sync = "0.7"
