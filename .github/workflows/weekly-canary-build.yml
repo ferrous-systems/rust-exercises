@@ -31,10 +31,10 @@ jobs:
         with:
           cache: exercise-book
           channel: ${{ matrix.rust-channel }}
-      - name: Install mdbook, mdbook-mermaid
+      - name: Install mdbook, mdbook-graphviz
         uses: taiki-e/install-action@v2
         with:
-          tool: mdbook@0.4,mdbook-mermaid@0.12
+          tool: mdbook@0.5.2,mdbook-graphviz@0.3.1
       - run: just test-mdbook
       - run: just build-mdbook
       - name: Upload mdbook artifacts

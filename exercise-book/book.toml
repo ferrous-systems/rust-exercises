@@ -4,8 +4,8 @@ language = "en"
 src = "src"
 title = "Rust Exercises"
 
-[preprocessor.mermaid]
-command = "mdbook-mermaid"
+[preprocessor.graphviz]
+command = "mdbook-graphviz"
 
 [rust]
 edition = "2021"
