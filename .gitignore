@@ -10,5 +10,6 @@ html/
 mdbook
 mdbook-mermaid
 mdbook-graphviz
+dot
 *.backup
 *.zip
