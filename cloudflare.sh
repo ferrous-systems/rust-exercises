@@ -49,7 +49,7 @@ function build_and_store {
     done
     # Build the book first, because mdbook will create any empty sections
     # The PATH override lets it find our local copy of mdbook-graphviz
-    PATH=$PATH:. ./mdbook build -d "${OUTPUT_DIR}/$1/book" ./exercise-book
+    PATH=$PATH:$(pwd) ./mdbook build -d "${OUTPUT_DIR}/$1/book" ./exercise-book
 }
 
 # What branch are we building first?
