@@ -13,7 +13,7 @@ set -euo pipefail
 if [ "$(uname)" == "Darwin" ]; then
     ./mdbook --version || curl -sSL https://github.com/rust-lang/mdBook/releases/download/v0.5.2/mdbook-v0.5.2-x86_64-apple-darwin.tar.gz | tar -xvzf -
     dot -V || brew install graphviz
-    mdbook-graphviz --version || cargo install mdbook-graphviz --locked
+    mdbook-graphviz --version || cargo install mdbook-graphviz@0.3.1 --locked
 else
     ./mdbook --version || curl -sSL https://github.com/rust-lang/mdBook/releases/download/v0.5.2/mdbook-v0.5.2-x86_64-unknown-linux-gnu.tar.gz | tar -xvzf -
     dot -V || ( curl -ssL https://github.com/restruct/dot-static/raw/refs/heads/master/x64/dot_static -o ./dot && chmod a+x ./dot )
