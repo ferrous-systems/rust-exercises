@@ -10,26 +10,16 @@ use radio_app as _;
 fn main() -> ! {
     dk::init().unwrap();
 
-    foo();
+    // We purposely cause a panic here. Index has to be retrieved from a function, otherwise
+    // Rust will actually catch the out-of-bounds error at compile time.
+    let i = index();
+    let array = [0, 1, 2];
+    let x = array[i]; // out of bounds access
+    defmt::println!("{}", x);
 
     loop {
         asm::bkpt();
     }
-}
-
-#[inline(never)]
-fn foo() {
-    asm::nop();
-    bar();
-}
-
-#[inline(never)]
-fn bar() {
-    let i = index();
-    let array = [0, 1, 2];
-    let x = array[i]; // out of bounds access
-
-    defmt::println!("{}", x);
 }
 
 fn index() -> usize {
