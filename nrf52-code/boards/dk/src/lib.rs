@@ -295,7 +295,7 @@ pub enum Error {
 static HAL_INIT: AtomicBool = AtomicBool::new(false);
 
 /// Initializes the board
-pub fn init() -> Result<Board, Error>{
+pub fn init(wait_for_probe_rs_connect: bool) -> Result<Board, Error> {
     if HAL_INIT.swap(true, Ordering::Relaxed) {
         return Err(Error::DoubleInit);
     }
@@ -309,12 +309,19 @@ pub fn init() -> Result<Board, Error>{
     config.lfclk_source = hal::config::LfclkSource::ExternalXtal;
     let periph = hal::init(config);
 
+    //hal::pac::CLOCK.tasks_hfclkstart().write_value(1);
+    //while hal::pac::CLOCK.events_hfclkstarted().read() != 1 {}
+
+    hal::pac::POWER.tasks_constlat().write_value(1);
+
     // probe-rs puts us in blocking mode, so wait for blocking mode as a proxy
     // for waiting for probe-rs to connect.
     //
     // do this *after* clock set-up to avoid start-up issues
-    while !defmt_rtt::in_blocking_mode() {
-        core::hint::spin_loop();
+    if wait_for_probe_rs_connect {
+        while !defmt_rtt::in_blocking_mode() {
+            core::hint::spin_loop();
+        }
     }
 
     // NOTE: this branch runs at most once

@@ -25,6 +25,7 @@ embassy-usb = "0.5"
 embassy-sync = "0.7"
 
 [features]
+default = ["dk"]
 dk = []
 
 # optimise a little bit

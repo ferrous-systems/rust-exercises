@@ -109,6 +109,7 @@ mod app {
         msg_queue_tx_acm:
             embassy_sync::channel::Sender<'static, CriticalSectionRawMutex, Message, MSG_QUEUE_LEN>,
         leds: bsp::Leds,
+        /*
         usb_dev: embassy_usb::UsbDevice<'static, hal::usb::Driver<'static, HardwareVbusDetect>>,
         usb_acm_write_adapter: WriteAsyncPipeAdapter,
         usb_acm_reader: embassy_sync::pipe::Reader<'static, CriticalSectionRawMutex, ACM_QUEUE_LEN>,
@@ -116,14 +117,15 @@ mod app {
             'static,
             hal::usb::Driver<'static, HardwareVbusDetect>,
         >,
+        */
     }
 
     #[shared]
     struct MySharedResources {}
 
     #[init]
-    fn init(mut ctx: init::Context) -> (MySharedResources, MyLocalResources) {
-        let board = bsp::init().unwrap();
+    fn init(ctx: init::Context) -> (MySharedResources, MyLocalResources) {
+        let board = bsp::init(false).unwrap();
         Mono::start(ctx.core.SYST, 64_000_000);
         defmt::println!("-- Radio Loopback firmware --");
 
@@ -133,6 +135,8 @@ mod app {
             Irqs,
             HardwareVbusDetect::new(Irqs),
         );
+
+        /*
         // Create the driver, from the HAL.
         #[cfg(not(feature = "dk"))]
         let driver = hal::usb::Driver::new(board.usbd, Irqs, HardwareVbusDetect::new(Irqs));
@@ -212,6 +216,7 @@ mod app {
 
         // Build the builder.
         let usb_dev = builder.build();
+        */
 
         let current_channel: u8 = 20;
         defmt::debug!("Configuring radio...");
@@ -262,15 +267,17 @@ mod app {
             msg_queue_rx: msg_queue.receiver(),
             msg_queue_tx_acm: msg_queue.sender(),
             leds: board.leds,
+            /*
             usb_dev,
             usb_acm,
             usb_acm_write_adapter: acm_adapter,
             usb_acm_reader: acm_reader,
+            */
         };
 
-        usb_dev::spawn().unwrap();
-        usb_acm::spawn().unwrap();
-        let _ = usb_hid::spawn(hid_reader, msg_queue.sender());
+        //usb_dev::spawn().unwrap();
+        //usb_acm::spawn().unwrap();
+        //let _ = usb_hid::spawn(hid_reader, msg_queue.sender());
         radio::spawn().unwrap();
 
         defmt::debug!("Init Complete!");
@@ -279,7 +286,7 @@ mod app {
         // See https://developer.arm.com/docs/100737/0100/power-management/sleep-mode/sleep-on-exit-bit
         // TODO: Unfortunately, this does not work yet. Radio packets are not
         // arriving properly.
-        ctx.core.SCB.set_sleepdeep();
+        //ctx.core.SCB.set_sleepdeep();
 
         (shared, local)
     }
@@ -293,11 +300,13 @@ mod app {
             //
             // TODO: Unfortunately, this does not work yet. Radio packets are not
             // arriving properly.
-            //rtic::export::wfe()
-            cortex_m::asm::wfe();
+            cortex_m::asm::wfi();
+            //rtic::pend(interrupt);
+            //core::hint::spin_loop();
         }
     }
 
+    /*
     #[task(local = [usb_dev], priority = 1)]
     async fn usb_dev(ctx: usb_dev::Context) {
         ctx.local.usb_dev.run().await;
@@ -397,6 +406,7 @@ mod app {
             }
         }
     }
+    */
 
     #[task(local = [
         radio,
@@ -407,9 +417,9 @@ mod app {
         err_count,
         msg_queue_rx,
         leds,
-        usb_acm_write_adapter,
+        //usb_acm_write_adapter,
     ], priority = 1)]
-    async fn radio(mut ctx: radio::Context) {
+    async fn radio(ctx: radio::Context) {
         defmt::info!(
             "deviceid={=u32:08x}{=u32:08x} channel={=u8} TxPower=+8dBm app=loopback-fw",
             bsp::deviceid1(),
@@ -423,6 +433,9 @@ mod app {
         ctx.local.leds.ld2_rgb.blue_only();
 
         loop {
+            ctx.local.leds._1.toggle();
+            Mono::delay(500.millis()).await;
+            /*
             while let Ok(msg) = ctx.local.msg_queue_rx.try_receive() {
                 match msg {
                     Message::WantInfo => {
@@ -467,6 +480,9 @@ mod app {
                     Ok(_) => {
                         #[cfg(not(feature = "dk"))]
                         ctx.local.leds.ld1_green.toggle();
+                        #[cfg(feature = "dk")]
+                        ctx.local.leds._1.toggle();
+
                         defmt::info!(
                             "Received {=u8} bytes (LQI={})",
                             ctx.local.packet.len(),
@@ -507,6 +523,7 @@ mod app {
                     }
                 }
             }
+            */
         }
     }
 }

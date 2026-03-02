@@ -484,6 +484,9 @@ mod app {
                     Ok(_) => {
                         #[cfg(not(feature = "dk"))]
                         ctx.local.leds.ld1_green.toggle();
+                        #[cfg(feature = "dk")]
+                        ctx.local.leds._1.toggle();
+
                         defmt::info!(
                             "Received {=u8} bytes (LQI={})",
                             ctx.local.packet.len(),
