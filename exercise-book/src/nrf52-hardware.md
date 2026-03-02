@@ -24,7 +24,8 @@ When the nRF52-DK is connected to your PC it shows up as a removable USB Flash D
 
 ### Linux
 
-When the nRF52-DK is connected to your PC it shows up as a USB device under `lsusb`. The device will have a VID of `1366` and a PID of `10xx` or `01xx`, where `x` can vary:
+When the nRF52-DK is connected to your PC it shows up as a USB device under `lsusb` or `cyme`. The
+device will have a VID of `1366` and a PID of `10xx` or `01xx`, where `x` can vary:
 
 ```console
 $ lsusb
@@ -32,11 +33,18 @@ $ lsusb
 Bus 001 Device 014: ID 1366:1051 SEGGER 4-Port USB 2.0 Hub
 ```
 
+```console
+$ cyme
+(..)
+  3  20  0x1366 0x1061 J-Link                      001050238928 -       12.0 Mb/s
+```
+
 The device will also show up in the `/dev` directory as a `ttyACM` device:
 
 ```console
-$ ls /dev/ttyACM*
-/dev/ttyACM0
+$ ls -l /dev/serial/by-id/*
+lrwxrwxrwx - root  2 Mar 14:31 /dev/serial/by-id/usb-SEGGER_J-Link_001050238928-if00 -> ../../ttyACM0
+lrwxrwxrwx - root  2 Mar 14:31 /dev/serial/by-id/usb-SEGGER_J-Link_001050238928-if02 -> ../../ttyACM1
 ```
 
 ### macOS
@@ -87,11 +95,19 @@ $ lsusb
 Bus 001 Device 023: ID 1915:521f Nordic Semiconductor ASA 4-Port USB 2.0 Hub
 ```
 
+
+```console
+$ cyme
+(..)
+  1   8  0x1915 0x521f Open DFU Bootloader         F6D330A50560 -       12.0 Mb/s
+```
+
 The device will also show up in the `/dev` directory as a `ttyACM` device:
 
 ```console
-$ ls /dev/ttyACM*
-/dev/ttyACM0
+$ ls -l /dev/serial/by-id/*
+(..)
+lrwxrwxrwx - root  2 Mar 14:37 /dev/serial/by-id/usb-Nordic_Semiconductor_Open_DFU_Bootloader_F6D330A50560-if00 -> ../../ttyACM2
 ```
 
 ### macOS
