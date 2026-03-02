@@ -36,7 +36,7 @@ To build the exercise book, run `mdbook` in the usual fashion:
 
 ```console
 $ cargo install mdbook
-$ cargo install mdbook-mermaid
+$ cargo install mdbook-graphviz
 $ cd ./exercise-book
 $ mdbook build
 2024-07-01 11:51:21 [INFO] (mdbook::book): Book building has started

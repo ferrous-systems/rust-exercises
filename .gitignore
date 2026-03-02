@@ -1,5 +1,4 @@
 output
-output.zip
 exercise-book/book
 exercise-templates/target
 exercise-solutions/*/target
@@ -10,4 +9,7 @@ tools/*/target
 html/
 mdbook
 mdbook-mermaid
+mdbook-graphviz
+dot
 *.backup
+*.zip

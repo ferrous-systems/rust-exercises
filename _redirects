@@ -1,2 +1,5 @@
 / /latest/book
-/:version /:version/book
+/stable /stable/book
+/latest /latest/book
+/v:version/ /v:version/book
+/v:version /v:version/book
