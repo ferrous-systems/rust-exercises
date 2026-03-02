@@ -38,4 +38,6 @@ fn panic(info: &core::panic::PanicInfo) -> ! {
 }
 ```
 
-Now run the program again. Try again, but without printing the `info` variable. Can you print `info` without `defmt::Debug2Format(..)` wrapped around it? Why not?
+Now run the program again. Try again, but without printing the `info` variable.
+We purposely used the `Display` and `Debug` implementation of `PanicInfo`. What happens when you
+print `info` without `defmt::Display2Format(..)` or `defmt::Debug2Format(..)` wrapped around it?
