@@ -20,4 +20,4 @@ rustflags = [
 target = "thumbv7em-none-eabihf" # = ARM Cortex-M4 with FPU
 
 [env]
-# DEFMT_LOG = "debug"
+DEFMT_LOG = "info"

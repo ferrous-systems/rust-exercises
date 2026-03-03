@@ -19,15 +19,16 @@ fn main() -> ! {
     let mut timer = board.timer;
 
     // NOTE if you ran `change-channel` then you may need to update the channel here
-    radio.set_channel(Channel::_20); // <- must match the Dongle's listening channel
+    radio.set_channel(Channel::_25); // <- must match the Dongle's listening channel
 
     let mut packet = Packet::new();
+
     let msg = b"olleh";
     packet.copy_from_slice(msg);
 
     defmt::println!(
         "sending: {}",
-        str::from_utf8(msg).expect("message is not valid UTF-8")
+        str::from_utf8(&packet).expect("message is not valid UTF-8")
     );
     radio.send(&mut packet);
 

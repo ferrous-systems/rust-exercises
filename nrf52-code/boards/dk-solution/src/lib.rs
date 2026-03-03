@@ -13,7 +13,7 @@
 
 use core::{
     hint::spin_loop,
-    sync::atomic::{self, AtomicU32, Ordering},
+    sync::atomic::{self, AtomicBool, AtomicU32, Ordering},
     time::Duration,
 };
 
@@ -51,7 +51,7 @@ pub struct Board {
     /// Radio interface
     #[cfg(feature = "radio")]
     pub radio: crate::radio::Radio<'static>,
-    /// USBD (Universal Serial Bus Device) peripheral
+    /// Raw register block for the USBD peripheral.
     #[cfg(any(feature = "advanced", feature = "usbd"))]
     pub usbd: hal::pac::usbd::Usbd,
     /// POWER (Power Supply) peripheral
@@ -319,10 +319,15 @@ pub enum Error {
     DoubleInit = 1,
 }
 
+// Atomic flag to detect double initialization of the HAL.
+static HAL_INIT: AtomicBool = AtomicBool::new(false);
+
 /// Initializes the board
-///
-/// This return an `Err`or if called more than once
 pub fn init() -> Result<Board, Error> {
+    if HAL_INIT.swap(true, Ordering::Relaxed) {
+        return Err(Error::DoubleInit);
+    }
+
     // NOTE: this branch runs at most once
     #[cfg(feature = "advanced")]
     static EP0IN_BUF: GroundedArrayCell<u8, 64> = GroundedArrayCell::const_init();
