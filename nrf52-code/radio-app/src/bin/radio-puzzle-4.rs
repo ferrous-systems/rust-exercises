@@ -22,9 +22,7 @@ fn main() -> ! {
     buffer.push(b'i').expect("buffer full");
 
     // look into the contents so far
-    defmt::println!("{}", defmt::Debug2Format(&buffer));
-    //                         ^^^^^^^^^^^^^^^^^^^ this adapter is currently needed to log
-    //                                            `StandardRequest` with `defmt`
+    defmt::println!("{:02x}", &buffer);
 
     // or more readable
     // NOTE utf-8 conversion works as long as you only push bytes in the ASCII range (0..=127)

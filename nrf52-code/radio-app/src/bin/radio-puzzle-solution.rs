@@ -26,13 +26,16 @@ fn main() -> ! {
     let mut dict = LinearMap::<u8, u8, 128>::new();
 
     let mut packet = Packet::new();
-    for input in 0..=127 {
+    // the printable ASCII range
+    for input in b' '..=b'~' {
         // send the plaintext
+        defmt::info!("> Send plain 0x{:02x} ('{:?}')", input, input as char);
         if let Ok(data) = dk::send_recv(&mut packet, &[input], &mut radio, &mut timer, TEN_MS) {
             // response should be one byte large
             if data.len() == 1 {
                 // get back the ciphertext, which we use as the key in our map
                 let output = data[0];
+                defmt::info!("< Rec cipher 0x{:02x} ('{:?}')", output, output as char);
                 dict.insert(output, input).expect("dictionary full");
             } else {
                 defmt::error!("response packet was not a single byte");

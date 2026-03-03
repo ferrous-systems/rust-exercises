@@ -24,7 +24,7 @@ fn main() -> ! {
     let dict = LinearMap::<u8, u8, 128>::new();
 
     let mut packet = Packet::new();
-    // TODO do the whole ASCII range [0, 127]
+    // TODO do the whole printable ASCII range from ' ' (0x20) to '~' (0x7E)
     for input in b'A'..=b'B' {
         if let Ok(data) = dk::send_recv(&mut packet, &[input], &mut radio, &mut timer, TEN_MS) {
             // response should be one byte large
@@ -42,7 +42,7 @@ fn main() -> ! {
         }
     }
 
-    defmt::println!("{:?}", defmt::Debug2Format(&dict));
+    defmt::println!("{}", defmt::Debug2Format(&dict));
     //                   ^^^^^^^^^^^^^^^^^^^ this adapter is currently needed to log `heapless`
     //                                       data structures (like `LinearMap` here) with `defmt`
 
