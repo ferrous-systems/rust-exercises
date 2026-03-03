@@ -1,9 +1,16 @@
 //! Firmware for the nRF52840 Dongle, for playing the puzzle game
 //!
 //! Sets up a USB Serial port and listens for radio packets.
+//!
+//! This application has two queues:
+//!
+//! * USB HID from host computer -> `usb_hid` task -> `HidTransferHandler` -> `MSG_CHANNEL` -> `radio` task
+//! * USB ACM from host computer -> `usb_acm` task -> `MSG_CHANNEL` -> `radio` task
+//! * various tasks -> `ACM_PIPE` - `usb_acm` task -> USB ACM to host computer
 
 #![no_main]
 #![no_std]
+#![deny(missing_docs)]
 
 #[cfg(not(feature = "dk"))]
 use bsp::RgbLed;
@@ -22,9 +29,26 @@ mod app {
     use rtic_monotonics::systick::prelude::*;
     use static_cell::StaticCell;
 
-    const MSG_QUEUE_LEN: usize = 8;
-    const ACM_QUEUE_LEN: usize = 256;
+    const MSG_CHANNEL_LEN: usize = 8;
+    const ACM_PIPE_LEN: usize = 256;
     const MAX_ACM_PACKET_SIZE: usize = 64;
+
+    /// Handles commands from host, to application
+    type MessageChannel =
+        embassy_sync::channel::Channel<CriticalSectionRawMutex, Message, MSG_CHANNEL_LEN>;
+    /// The receiving end of a [`MessageChannel`]
+    type MessageChannelReceiver =
+        embassy_sync::channel::Receiver<'static, CriticalSectionRawMutex, Message, MSG_CHANNEL_LEN>;
+    /// The sending end of a [`MessageChannel`]
+    type MessageChannelSender =
+        embassy_sync::channel::Sender<'static, CriticalSectionRawMutex, Message, MSG_CHANNEL_LEN>;
+
+    /// Handles text output from application, to host       
+    type AcmPipe = embassy_sync::pipe::Pipe<CriticalSectionRawMutex, ACM_PIPE_LEN>;
+    /// The reading end of an [`AcmPipe`]
+    type AcmPipeReader = embassy_sync::pipe::Reader<'static, CriticalSectionRawMutex, ACM_PIPE_LEN>;
+    /// The writing end of an [`AcmPipe`]
+    type AcmPipeWriter = embassy_sync::pipe::Writer<'static, CriticalSectionRawMutex, ACM_PIPE_LEN>;
 
     /// The secret message, but encoded.
     ///
@@ -57,33 +81,32 @@ mod app {
         // Intermediate buffer which is required because we can not used async code
         // in the [core::fmt::Write] implementation.
         buffer: heapless::String<256>,
-        usb_acm_writer: embassy_sync::pipe::Writer<'static, CriticalSectionRawMutex, ACM_QUEUE_LEN>,
+        acm_pipe_writer: AcmPipeWriter,
     }
 
     impl core::fmt::Write for WriteAsyncPipeAdapter {
         fn write_str(&mut self, s: &str) -> core::fmt::Result {
-            write!(self.buffer, "{}", s).unwrap();
-            Ok(())
+            write!(self.buffer, "{}", s)
         }
     }
 
     impl WriteAsyncPipeAdapter {
         /// Flush the buffer to the underlying writer.
         async fn flush(&mut self) {
-            self.usb_acm_writer.write_all(self.buffer.as_bytes()).await;
+            self.acm_pipe_writer.write_all(self.buffer.as_bytes()).await;
             self.buffer.clear();
         }
     }
 
+    /// Messages we can get over USB HID which the radio task needs to handle
     #[derive(Debug, defmt::Format, Copy, Clone, PartialEq, Eq)]
     enum Message {
         ChangeChannel(u8),
         WantInfo,
     }
 
-    struct HidTransferHandler(
-        embassy_sync::channel::Sender<'static, CriticalSectionRawMutex, Message, MSG_QUEUE_LEN>,
-    );
+    /// A helper for dealing with incoming USB HID events
+    struct HidTransferHandler(MessageChannelSender);
 
     impl hid::RequestHandler for HidTransferHandler {
         // HID requests are used to switch the channel.
@@ -115,20 +138,19 @@ mod app {
         rx_count: u32,
         /// How many packets have been received with errors?
         err_count: u32,
-        /// A place to read the message queue
-        msg_queue_rx: embassy_sync::channel::Receiver<
-            'static,
-            CriticalSectionRawMutex,
-            Message,
-            MSG_QUEUE_LEN,
-        >,
-        /// A place to write to the message queue
-        msg_queue_tx_acm:
-            embassy_sync::channel::Sender<'static, CriticalSectionRawMutex, Message, MSG_QUEUE_LEN>,
+        /// A place to read from the message channel
+        msg_channel_receiver: MessageChannelReceiver,
+        /// A place to write to the message channel
+        msg_channel_sender_acm: MessageChannelSender,
+        /// The LED on the board
         leds: bsp::Leds,
+        /// Our raw USB device
         usb_dev: embassy_usb::UsbDevice<'static, hal::usb::Driver<'static, HardwareVbusDetect>>,
-        usb_acm_write_adapter: WriteAsyncPipeAdapter,
-        usb_acm_reader: embassy_sync::pipe::Reader<'static, CriticalSectionRawMutex, ACM_QUEUE_LEN>,
+        /// Handles doing async writeln! to the USB ACM interface
+        usb_acm_pipe_adapter: WriteAsyncPipeAdapter,
+        /// Provides queued data to be written to USB ACM
+        acm_pipe_reader: AcmPipeReader,
+        /// The ACM part of our USB device interface
         usb_acm: embassy_usb::class::cdc_acm::CdcAcmClass<
             'static,
             hal::usb::Driver<'static, HardwareVbusDetect>,
@@ -249,19 +271,20 @@ mod app {
         #[cfg(not(feature = "dk"))]
         radio.set_channel(current_channel);
 
-        static MSG_QUEUE: static_cell::ConstStaticCell<
-            embassy_sync::channel::Channel<CriticalSectionRawMutex, Message, MSG_QUEUE_LEN>,
-        > = static_cell::ConstStaticCell::new(embassy_sync::channel::Channel::new());
-        static ACM_QUEUE: static_cell::ConstStaticCell<
-            embassy_sync::pipe::Pipe<CriticalSectionRawMutex, ACM_QUEUE_LEN>,
-        > = static_cell::ConstStaticCell::new(embassy_sync::pipe::Pipe::new());
+        static MSG_CHANNEL: static_cell::ConstStaticCell<MessageChannel> =
+            static_cell::ConstStaticCell::new(embassy_sync::channel::Channel::new());
+        static ACM_PIPE: static_cell::ConstStaticCell<AcmPipe> =
+            static_cell::ConstStaticCell::new(embassy_sync::pipe::Pipe::new());
 
-        let msg_queue = MSG_QUEUE.take();
-        let (acm_reader, acm_writer) = ACM_QUEUE.take().split();
+        let msg_channel = MSG_CHANNEL.take();
+        let msg_channel_receiver = msg_channel.receiver();
+        let msg_channel_sender_acm = msg_channel.sender();
+        let msg_channel_sender_hid = msg_channel.sender();
+        let (acm_pipe_reader, acm_pipe_writer) = ACM_PIPE.take().split();
 
-        let acm_adapter = WriteAsyncPipeAdapter {
+        let usb_acm_pipe_adapter = WriteAsyncPipeAdapter {
             buffer: heapless::String::new(),
-            usb_acm_writer: acm_writer,
+            acm_pipe_writer,
         };
 
         defmt::debug!("Building structures...");
@@ -273,18 +296,18 @@ mod app {
             timer: board.timer,
             rx_count: 0,
             err_count: 0,
-            msg_queue_rx: msg_queue.receiver(),
-            msg_queue_tx_acm: msg_queue.sender(),
+            msg_channel_receiver,
+            msg_channel_sender_acm,
             leds: board.leds,
             usb_dev,
             usb_acm,
-            usb_acm_write_adapter: acm_adapter,
-            usb_acm_reader: acm_reader,
+            usb_acm_pipe_adapter,
+            acm_pipe_reader,
         };
 
         usb_dev::spawn().unwrap();
         usb_acm::spawn().unwrap();
-        let _ = usb_hid::spawn(hid_reader, msg_queue.sender());
+        let _ = usb_hid::spawn(hid_reader, msg_channel_sender_hid);
         radio::spawn().unwrap();
 
         defmt::debug!("Init Complete!");
@@ -312,28 +335,34 @@ mod app {
         }
     }
 
+    /// Run the USB Device
     #[task(local = [usb_dev], priority = 1)]
     async fn usb_dev(ctx: usb_dev::Context) {
         ctx.local.usb_dev.run().await;
     }
 
+    /// Handles USB HID data
     #[task(priority = 1)]
     async fn usb_hid(
         _ctx: usb_hid::Context,
         // Need to send this by value, because it is consumed by the run method.
         usb_hid_reader: hid::HidReader<'static, hal::usb::Driver<'static, HardwareVbusDetect>, 64>,
-        msg_queue_tx_hid: embassy_sync::channel::Sender<
-            'static,
-            CriticalSectionRawMutex,
-            Message,
-            MSG_QUEUE_LEN,
-        >,
+        msg_channel_tx_hid: MessageChannelSender,
     ) {
-        let mut req_handler = HidTransferHandler(msg_queue_tx_hid);
+        let mut req_handler = HidTransferHandler(msg_channel_tx_hid);
         usb_hid_reader.run(false, &mut req_handler).await;
     }
 
-    #[task(local = [usb_acm, msg_queue_tx_acm, usb_acm_reader], priority = 1)]
+    /// This task handles the USB ACM interface
+    ///
+    /// * Puts messages into the MSG_CHANNEL (via `msg_channel_sender_acm`) when
+    ///   text received from the USB ACM interface
+    /// * Transfers text into the USB ACM interface, from the ACM_PIPE (via
+    ///   `acm_pipe_reader`)
+    /// * Deals with being disconnected from the host
+    ///
+    /// Defers to [`connected_usb_acm`] for most of the work
+    #[task(local = [usb_acm, msg_channel_sender_acm, acm_pipe_reader], priority = 1)]
     async fn usb_acm(mut ctx: usb_acm::Context) {
         loop {
             // Wait for up to 200 ms for a connection, discard ACM data otherwise.
@@ -344,12 +373,21 @@ mod app {
                 Err(_) => {
                     let mut dummy_buf: [u8; 32] = [0; 32];
                     // Timeout. Consume the message queue.
-                    while let Ok(_bytes_read) = ctx.local.usb_acm_reader.try_read(&mut dummy_buf) {}
+                    while let Ok(_bytes_read) = ctx.local.acm_pipe_reader.try_read(&mut dummy_buf) {
+                    }
                 }
             }
         }
     }
 
+    /// This task handles the USB ACM interface
+    ///
+    /// * Puts messages into the MSG_CHANNEL (via `msg_channel_sender_acm`) when
+    ///   text received from the USB ACM interface
+    /// * Transfers text into the USB ACM interface, from the ACM_PIPE (via
+    ///   `acm_pipe_reader`)
+    ///
+    /// Called by [`usb_acm`] when we are actually connected
     async fn connected_usb_acm(ctx: &mut usb_acm::Context<'_>) {
         let mut buffer = [0u8; MAX_ACM_PACKET_SIZE];
         loop {
@@ -363,7 +401,11 @@ mod app {
                             for b in &buffer[0..n] {
                                 if *b == b'?' {
                                     // User pressed "?" in the terminal
-                                    _ = ctx.local.msg_queue_tx_acm.send(Message::WantInfo).await;
+                                    _ = ctx
+                                        .local
+                                        .msg_channel_sender_acm
+                                        .send(Message::WantInfo)
+                                        .await;
                                 }
                             }
                         }
@@ -378,7 +420,7 @@ mod app {
             }
             while let Ok(bytes_read) = ctx
                 .local
-                .usb_acm_reader
+                .acm_pipe_reader
                 .try_read(&mut buffer[0..MAX_ACM_PACKET_SIZE - 1])
             {
                 match Mono::timeout_after(
@@ -405,6 +447,7 @@ mod app {
         }
     }
 
+    /// Commands we can receive over the radio
     enum Command {
         SendSecret,
         MapChar(u8, u8),
@@ -412,6 +455,13 @@ mod app {
         Wrong,
     }
 
+    /// Handles the radio interface
+    ///
+    /// * Listens for incoming data
+    /// * Works out what command it is
+    /// * Sends the appropriate response
+    /// * Handles messages on the MSG_CHANNEL (via `msg_channel_receiver`)
+    /// * Sends logs to the ACM_PIPE (via `usb_acm_pipe_adapter`)
     #[task(local = [
         radio,
         current_channel,
@@ -419,9 +469,9 @@ mod app {
         timer,
         rx_count,
         err_count,
-        msg_queue_rx,
+        msg_channel_receiver,
         leds,
-        usb_acm_write_adapter,
+        usb_acm_pipe_adapter,
     ], priority = 2)]
     async fn radio(mut ctx: radio::Context) {
         defmt::info!(
@@ -442,7 +492,7 @@ mod app {
         }
 
         loop {
-            while let Ok(msg) = ctx.local.msg_queue_rx.try_receive() {
+            while let Ok(msg) = ctx.local.msg_channel_receiver.try_receive() {
                 match msg {
                     Message::WantInfo => {
                         defmt::info!(
@@ -452,20 +502,20 @@ mod app {
                             ctx.local.current_channel
                         );
                         let _ = writeln!(
-                            &mut ctx.local.usb_acm_write_adapter,
+                            &mut ctx.local.usb_acm_pipe_adapter,
                             "\nrx={}, err={}, ch={}, app=puzzle-fw",
                             ctx.local.rx_count, ctx.local.err_count, ctx.local.current_channel
                         );
-                        ctx.local.usb_acm_write_adapter.flush().await;
+                        ctx.local.usb_acm_pipe_adapter.flush().await;
                     }
                     Message::ChangeChannel(n) => {
                         defmt::info!("Changing Channel to {}", n);
                         let _ = writeln!(
-                            &mut ctx.local.usb_acm_write_adapter,
+                            &mut ctx.local.usb_acm_pipe_adapter,
                             "\nChanging Channel to {}",
                             n
                         );
-                        ctx.local.usb_acm_write_adapter.flush().await;
+                        ctx.local.usb_acm_pipe_adapter.flush().await;
 
                         if !(11..=26).contains(&n) {
                             defmt::info!("Bad Channel {}!", n);
@@ -510,7 +560,7 @@ mod app {
                                     *dest = *src;
                                 }
 
-                                let _ = writeln!(&mut ctx.local.usb_acm_write_adapter, "TX Secret");
+                                let _ = writeln!(&mut ctx.local.usb_acm_pipe_adapter, "TX Secret");
                                 #[cfg(not(feature = "dk"))]
                                 {
                                     ctx.local.leds.ld2_rgb.blue.on();
@@ -522,7 +572,7 @@ mod app {
                                 ctx.local.packet.set_len(1 + ADDR_BYTES as u8);
                                 ctx.local.packet[ADDR_BYTES] = cipher;
                                 let _ = writeln!(
-                                    &mut ctx.local.usb_acm_write_adapter,
+                                    &mut ctx.local.usb_acm_pipe_adapter,
                                     "TX Map({plain}) => {cipher}"
                                 );
                                 #[cfg(not(feature = "dk"))]
@@ -542,8 +592,7 @@ mod app {
                                 {
                                     *dest = *src;
                                 }
-                                let _ =
-                                    writeln!(&mut ctx.local.usb_acm_write_adapter, "TX Correct");
+                                let _ = writeln!(&mut ctx.local.usb_acm_pipe_adapter, "TX Correct");
                                 #[cfg(not(feature = "dk"))]
                                 {
                                     ctx.local.leds.ld2_rgb.blue.on();
@@ -562,7 +611,7 @@ mod app {
                                     *dest = *src;
                                 }
                                 let _ =
-                                    writeln!(&mut ctx.local.usb_acm_write_adapter, "TX Incorrect");
+                                    writeln!(&mut ctx.local.usb_acm_pipe_adapter, "TX Incorrect");
                                 #[cfg(not(feature = "dk"))]
                                 {
                                     ctx.local.leds.ld2_rgb.blue.off();
@@ -579,20 +628,20 @@ mod app {
                             Mono::delay(500.micros()).await;
                             if let Err(e) = ctx.local.radio.try_send(ctx.local.packet).await {
                                 let _ = writeln!(
-                                    &mut ctx.local.usb_acm_write_adapter,
+                                    &mut ctx.local.usb_acm_pipe_adapter,
                                     "\nWriting reply packet failed with error {:?}",
                                     e
                                 );
                             }
                         }
-                        ctx.local.usb_acm_write_adapter.flush().await;
+                        ctx.local.usb_acm_pipe_adapter.flush().await;
                     }
                     Err(_e) => {
                         defmt::debug!("RX fail!");
                         let _ = ctx
                             .local
-                            .usb_acm_write_adapter
-                            .usb_acm_writer
+                            .usb_acm_pipe_adapter
+                            .acm_pipe_writer
                             .write("!".as_bytes())
                             .await;
                         *ctx.local.err_count += 1;
