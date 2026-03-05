@@ -105,12 +105,12 @@ impl Led {
     }
 
     /// Returns `true` if the LED is in the OFF state
-    pub fn is_off(&mut self) -> bool {
+    pub fn is_off(&self) -> bool {
         self.inner.is_set_high()
     }
 
     /// Returns `true` if the LED is in the ON state
-    pub fn is_on(&mut self) -> bool {
+    pub fn is_on(&self) -> bool {
         !self.is_off()
     }
 
