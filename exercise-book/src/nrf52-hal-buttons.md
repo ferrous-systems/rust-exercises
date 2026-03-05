@@ -14,9 +14,11 @@ It should now fail to compile, because the `dk` crate doesn't have support for b
 
 ✅ Add a `struct Button` which represents a single button.
 
-It should be similar to `struct Led`, except the inner type must be `Pin<Input<PullUp>>`. You will need to import those types - look where `Output` and `PushPull` types were imported from for clues! Think about where it makes sense to add this new type. At the top? At the bottom? Maybe just after to the LED related types?
+It should be similar to `struct Led`, except the inner type must be `Input<'static>`. 
+You will need to import those types - look where the `Output` type was imported from for clues!
+Think about where it makes sense to add this new type. At the top? At the bottom? Maybe just after to the LED related types?
 
-🔎 The pins must be set as pull-ups is because each button connects a GPIO pin to ground, but the pins float when the button is not pressed. Enabling the pull-ups inside the SoC ensure that the GPIO pin is weakly connected to 3.3V through a resistor, giving it a 'default' value of 'high'. Pressing the button then makes the pin go 'low.
+🔎 The pins must be set as pull-ups because each button connects a GPIO pin to ground, but the pins float when the button is not pressed. Enabling the pull-ups inside the SoC ensure that the GPIO pin is weakly connected to 3.3V through a resistor, giving it a 'default' value of 'high'. Pressing the button then makes the pin go 'low'.
 
 ## Define all the Buttons
 
