@@ -44,6 +44,10 @@ mod app {
         let led = Output::new(p.P0_13, Level::Low, OutputDrive::Standard);
         let _ = syst_check::spawn(led);
 
+        // Set the ARM SLEEPONEXIT bit to go to sleep after handling interrupts
+        // See https://developer.arm.com/docs/100737/0100/power-management/sleep-mode/sleep-on-exit-bit
+        ctx.core.SCB.set_sleepdeep();
+
         (Shared {}, Local {})
     }
 
@@ -56,17 +60,19 @@ mod app {
 
     #[task(priority = 1)]
     async fn syst_check(_cx: syst_check::Context, mut led: Output<'static>) {
-        let last_ms = now_ms();
+        let mut last_second = now_ms() / 1000;
         loop {
-            let ms = now_ms();
-            if ms > last_ms {
-                defmt::info!("SYSTICK {} ms", ms);
+            let second = now_ms() / 1000;
+            if second > last_second {
+                defmt::info!("SYSTICK {} s", second);
                 led.toggle();
+                last_second = second;
             }
             embassy_time::Timer::after_millis(200).await;
         }
     }
 }
+
 #[unsafe(no_mangle)]
 #[allow(non_snake_case)]
 unsafe extern "C" fn SysTick() {
@@ -77,10 +83,12 @@ unsafe extern "C" fn SysTick() {
 }
 
 fn now_ms() -> u32 {
+    /*
     let mut syst = unsafe { cortex_m::Peripherals::steal().SYST };
     if syst.has_wrapped() {
         SYSTICK_CNT.fetch_add(1, core::sync::atomic::Ordering::AcqRel);
     }
+    */
 
     SYSTICK_CNT.load(core::sync::atomic::Ordering::Relaxed)
 }

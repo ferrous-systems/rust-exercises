@@ -1,0 +1,19 @@
+[package]
+authors = ["Ferrous Systems"]
+edition = "2021"
+license = "MIT OR Apache-2.0"
+name = "loopback-fw"
+version = "0.0.0"
+
+[dependencies]
+cortex-m = { version = "0.7", features = ["critical-section-single-core"] }
+defmt = "1"
+defmt-rtt = "1"
+
+rtic = { version = "2.1.2", features = ["thumbv7-backend"] }
+rtic-monotonics = { version = "2.0.3", features = ["cortex-m-systick"] }
+
+embassy-futures = { version = "0.1.2" }
+embassy-sync = { version = "0.7", features = ["defmt"] }
+embassy-nrf = { version = "0.9.0", features = [ "defmt", "nrf52840", "time-driver-rtc1", "unstable-pac", "time"] }
+panic-probe = { version = "1.0.0", features = ["print-defmt"] }
