@@ -15,14 +15,17 @@ bsp = { package = "dongle", path = "../boards/dongle" }
 # bsp = { package = "dk", path = "../boards/dk", features = ["usbd", "radio"] }
 heapless = { version = "0.9", features = ["defmt"] }
 rtic = { version = "2.1.2", features = ["thumbv7-backend"] }
-rtic-monotonics = { version = "2.0.3", features = ["cortex-m-systick"] }
 usb-device = { version = "0.3.2", features = ["defmt"] }
 usbd-hid = { version = "0.9", features = ["defmt"] }
 usbd-serial = "0.2.2"
 static_cell = "2"
 embedded-io-async = "0.6"
+embedded-hal-async = "1"
 embassy-usb = { version = "0.5", features = ["defmt"] }
 embassy-sync = "0.7"
+embassy-futures = "0.1"
+# Configure embassy-time to be executor agnostic.
+embassy-time = { version = "0.5", features = ["defmt-timestamp-uptime", "generic-queue-16"] }
 
 [features]
 dk = []

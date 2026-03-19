@@ -18,15 +18,15 @@ use bsp::RgbLed;
 #[rtic::app(device = bsp, peripherals = false, dispatchers = [QSPI, CRYPTOCELL])]
 mod app {
     use bsp::hal::{self, usb::vbus_detect::HardwareVbusDetect};
+    use embassy_time::Delay;
+    use embedded_hal_async::delay::DelayNs as _;
     use core::fmt::Write as _;
     use defmt_rtt as _;
     use embassy_sync::blocking_mutex::raw::CriticalSectionRawMutex;
+    use embassy_time::Duration;
     use embassy_usb::class::cdc_acm;
     use embassy_usb::class::hid;
     use embedded_io_async::Write as _;
-    use rtic_monotonics::fugit::ExtU32;
-
-    use rtic_monotonics::systick::prelude::*;
     use static_cell::StaticCell;
 
     const MSG_CHANNEL_LEN: usize = 8;
@@ -71,8 +71,6 @@ mod app {
         #[cfg(feature = "dk")]
         RADIO => hal::radio::InterruptHandler<hal::peripherals::RADIO>;
     });
-
-    systick_monotonic!(Mono);
 
     /// An adapter that simplifies asynchronously writing to the USB ACM by buffering writes.
     ///
@@ -161,9 +159,8 @@ mod app {
     struct MySharedResources {}
 
     #[init]
-    fn init(ctx: init::Context) -> (MySharedResources, MyLocalResources) {
+    fn init(mut ctx: init::Context) -> (MySharedResources, MyLocalResources) {
         let board = bsp::init().unwrap();
-        Mono::start(ctx.core.SYST, 64_000_000);
         defmt::println!("-- Radio Puzzle firmware --");
 
         #[cfg(feature = "dk")]
@@ -314,9 +311,7 @@ mod app {
 
         // Set the ARM SLEEPONEXIT bit to go to sleep after handling interrupts
         // See https://developer.arm.com/docs/100737/0100/power-management/sleep-mode/sleep-on-exit-bit
-        // TODO: Unfortunately, this does not work yet. Radio packets are not
-        // arriving properly.
-        //ctx.core.SCB.set_sleepdeep();
+        ctx.core.SCB.set_sleepdeep();
 
         (shared, local)
     }
@@ -327,11 +322,7 @@ mod app {
             // Now Wait For Interrupt is used instead of a busy-wait loop
             // to allow MCU to sleep between interrupts
             // https://developer.arm.com/documentation/ddi0406/c/Application-Level-Architecture/Instruction-Details/Alphabetical-list-of-instructions/WFI
-            //
-            // TODO: Unfortunately, this does not work yet. Radio packets are not
-            // arriving properly.
-            // rtic::export::wfi()
-            cortex_m::asm::nop();
+            rtic::export::wfi()
         }
     }
 
@@ -366,7 +357,12 @@ mod app {
     async fn usb_acm(mut ctx: usb_acm::Context) {
         loop {
             // Wait for up to 200 ms for a connection, discard ACM data otherwise.
-            match Mono::timeout_after(200.millis(), ctx.local.usb_acm.wait_connection()).await {
+            match embassy_time::with_timeout(
+                Duration::from_millis(200),
+                ctx.local.usb_acm.wait_connection(),
+            )
+            .await
+            {
                 Ok(_) => {
                     connected_usb_acm(&mut ctx).await;
                 }
@@ -392,8 +388,11 @@ mod app {
         let mut buffer = [0u8; MAX_ACM_PACKET_SIZE];
         loop {
             // Poll for a frame for up to 50 milliseconds.
-            if let Ok(result) =
-                Mono::timeout_after(50.millis(), ctx.local.usb_acm.read_packet(&mut buffer)).await
+            if let Ok(result) = embassy_time::with_timeout(
+                Duration::from_millis(50),
+                ctx.local.usb_acm.read_packet(&mut buffer),
+            )
+            .await
             {
                 match result {
                     Ok(n) => {
@@ -423,8 +422,8 @@ mod app {
                 .acm_pipe_reader
                 .try_read(&mut buffer[0..MAX_ACM_PACKET_SIZE - 1])
             {
-                match Mono::timeout_after(
-                    20.millis(),
+                match embassy_time::with_timeout(
+                    Duration::from_millis(50),
                     ctx.local.usb_acm.write_packet(&buffer[0..bytes_read]),
                 )
                 .await
@@ -529,8 +528,11 @@ mod app {
             defmt::debug!("Waiting for packet..");
 
             // Poll for a frame for up to 200 milliseconds.
-            if let Ok(result) =
-                Mono::timeout_after(200.millis(), ctx.local.radio.receive(ctx.local.packet)).await
+            if let Ok(result) = embassy_time::with_timeout(
+                Duration::from_millis(200),
+                ctx.local.radio.receive(ctx.local.packet),
+            )
+            .await
             {
                 match result {
                     Ok(_) => {
@@ -625,7 +627,7 @@ mod app {
                         // we want to ensure they are definitely in receive mode by the
                         // time we send this reply)
                         if reply {
-                            Mono::delay(500.micros()).await;
+                            Delay.delay_us(500).await;
                             if let Err(e) = ctx.local.radio.try_send(ctx.local.packet).await {
                                 let _ = writeln!(
                                     &mut ctx.local.usb_acm_pipe_adapter,
@@ -700,5 +702,3 @@ fn panic(info: &core::panic::PanicInfo) -> ! {
         core::hint::spin_loop();
     }
 }
-
-defmt::timestamp!("{=u64:tus}", bsp::uptime_us());
