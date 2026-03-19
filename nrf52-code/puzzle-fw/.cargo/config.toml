@@ -1,6 +1,9 @@
 [target.thumbv7em-none-eabihf]
 # set custom cargo runner to DFU the dongle
 runner = "nrfdfu"
+# Alternative runner for running on the DK board.
+# runner = ["probe-rs", "run", "--chip=nRF52840_xxAA", "--allow-erase-all", "--log-format=oneline"]
+
 rustflags = [
   "-C", "link-arg=-Tlink.x", # use the cortex-m-rt linker script
   "-C", "linker=flip-link", # adds stack overflow protection
