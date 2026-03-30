@@ -17,7 +17,7 @@ For completing this exercise you need to have
 
 Rewrite the body of `fn fizzbuzz()` so the different cases are not distinguished with `if` statements, but with pattern matching of a tuple containing the remainders.
 
-If you need it, we have provided a [complete solution](../../exercise-solutions/fizzbuzz/src/examples/fizzbuzz_match.rs) for this exercise.
+If you need it, we have provided a [complete solution](../../exercise-solutions/fizzbuzz/examples/fizzbuzz_match.rs) for this exercise.
 
 ## Knowledge
 
@@ -45,8 +45,8 @@ Define a tuple that consists of the remainder of the integer `i` divided by 3 an
   <summary>Solution</summary>
 
 ```rust
-# let i = 10;
-let remainders = (i%3, i%5);
+# let i = 10_u32;
+let multi_check_tuple = (i.is_multiple_of(3), i.is_multiple_of(5));
 ```
 
 </details>
@@ -59,14 +59,31 @@ The the for us relevant patterns of the tuple that we match for are a combinatio
   <summary>Solution</summary>
 
 ```rust
-# fn fizzbuzz(i: i32) -> String {
-# let remainders = (i%3, i%5);
+# fn fizzbuzz(i: u32) -> String {
+    # let multi_check_tuple = (i.is_multiple_of(3), i.is_multiple_of(5));
+    match multi_check_tuple {
+        (true, true) => format!("FizzBuzz"),
+        (true, false) => format!("Fizz"),
+        (false, true) => format!("Buzz"),
+        (false, false) => format!("{}", i),
+    }
+# }
+```
 
-    match remainders {
-        (0, 0) => format!("FizzBuzz"),
-        (0, _) => format!("Fizz"),
-        (_, 0) => format!("Buzz"),
-        (_, _) => format!("{}", i),
+</details>
+
+### Step 3: Shorten the code by matching on the tuple directly
+
+<details>
+  <summary>Solution</summary>
+
+```rust
+# fn fizzbuzz(i: u32) -> String {
+    match (i.is_multiple_of(3), i.is_multiple_of(5)) {
+        (true, true) => format!("FizzBuzz"),
+        (true, false) => format!("Fizz"),
+        (false, true) => format!("Buzz"),
+        (false, false) => format!("{}", i),
     }
 # }
 ```

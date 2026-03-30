@@ -5,11 +5,11 @@ fn main() {
 }
 
 fn fizzbuzz(i: u32) -> String {
-    if i % 3 == 0 && i % 5 == 0 {
+    if i.is_multiple_of(3) && i.is_multiple_of(5) {
         format!("FizzBuzz")
-    } else if i % 3 == 0 {
+    } else if i.is_multiple_of(3) {
         format!("Fizz")
-    } else if i % 5 == 0 {
+    } else if i.is_multiple_of(5) {
         format!("Buzz")
     } else {
         format!("{}", i)
