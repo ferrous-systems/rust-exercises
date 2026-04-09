@@ -67,6 +67,15 @@ if number == 4 {
 
 ```
 
+## `is_multiple_of` API
+
+Might be more readable than using operators. Only works on unsigned types.
+
+```rust
+let var = 10_u32;
+assert!(var.is_multiple_of(5));
+```
+
 ## Operators (Selection)
 
 |Operator       |Example            |Explanation                    |

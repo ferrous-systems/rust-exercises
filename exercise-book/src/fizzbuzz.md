@@ -32,7 +32,7 @@ For completing this exercise you need to have
   - On each iteration the integer is tested with `fn fizzbuzz`
   - print the returned value.
 
-If you need it, we have provided a [complete solution](../../exercise-solutions/fizzbuzz/src/examples/fizzbuzz.rs) for this exercise.
+If you need it, we have provided a [complete solution](../../exercise-solutions/fizzbuzz/examples/fizzbuzz.rs) for this exercise.
 
 ## Knowledge
 
@@ -71,8 +71,8 @@ If you have issues returning data from multiple branches of your solution, liber
 
 ```rust
 # fn returner() -> String {
-    # let x = 10;
-    if x % 5 == 0 {
+    # let x = 10_u32;
+    if x.is_multiple_of(5) {
         return format!("Buzz");
     }
     format!("Fizz")
@@ -149,11 +149,11 @@ Running this code should still only print the numbers from 1 to 100.
 
 ```rust
 fn fizzbuzz(i: u32) -> String {
-    if i % 3 == 0 && i % 5 == 0 {
+    if i.is_multiple_of(3) && i.is_multiple_of(5) {
         format!("FizzBuzz")
-    } else if i % 3 == 0 {
+    } else if i.is_multiple_of(3) {
         format!("Fizz")
-    } else if i % 5 == 0 {
+    } else if i.is_multiple_of(5) {
         format!("Buzz")
     } else {
         format!("{}", i)
@@ -174,11 +174,11 @@ Running this code should print numbers, interlaced with `Fizz`, `Buzz` and `Fizz
 
 ```rust
 # fn fizzbuzz(i: u32) -> String {
-#     if i % 3 == 0 && i % 5 == 0 {
+#     if i.is_multiple_of(3) && i.is_multiple_of(5) {
 #         format!("FizzBuzz")
-#     } else if i % 3 == 0 {
+#     } else if i.is_multiple_of(3) {
 #         format!("Fizz")
-#     } else if i % 5 == 0 {
+#     } else if i.is_multiple_of(5) {
 #         format!("Buzz")
 #     } else {
 #         format!("{}", i)
