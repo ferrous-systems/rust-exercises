@@ -35,9 +35,9 @@ X
 11
 ```
 
-We have a [template project](../../exercise-templates/iterators) for this exercise. You can replace the `todo!` item in the template with [reader.lines()](https://doc.rust-lang.org/stable/std/io/trait.BufRead.html#method.lines) and continue "chaining" the iterators until you've calculated the desired result. Note that the template will only be able to find `numbers.txt` if you run `cargo run` from the `exercise-templates/iterators` directory. Running the binary from elsewhere in the workspace will give a *File not found* error.
+We have a [template project](../../exercise-templates/iterators/src/main.rs) for this exercise. You can replace the `todo!` item in the template with [reader.lines()](https://doc.rust-lang.org/stable/std/io/trait.BufRead.html#method.lines) and continue "chaining" the iterators until you've calculated the desired result. Note that the template will only be able to find `numbers.txt` if you run `cargo run` from the `exercise-templates/iterators` directory. Running the binary from elsewhere in the workspace will give a *File not found* error.
 
-If you need it, we have provided a [complete solution](../../exercise-solutions/iterators) for this exercise.
+If you need it, we have provided a [complete solution](../../exercise-solutions/iterators/src/main.rs) for this exercise.
 
 ## Knowledge
 
