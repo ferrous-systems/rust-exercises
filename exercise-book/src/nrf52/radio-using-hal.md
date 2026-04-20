@@ -12,7 +12,7 @@ This grants you access to the board's peripherals, like its LEDs.
 
 The `dk` crate / library is a Board Support Package (BSP) tailored to this training to make accessing the peripherals used in this exercise as seamless as possible. You can find its source code at [`nrf52-code/boards/dk/src/`](../../../nrf52-code/boards/dk/src/).
 
-`dk` is based on the [`nrf52840-hal`] crate, which is a Hardware Abstraction Layer (HAL) over the nRF52840 System on Chip. The purpose of a HAL is to abstract away the device-specific details of the hardware, for example registers, and instead expose a higher level API more suitable for application development.
+`dk` is based on the [`embassy-nrf` HAL] crate, which is a Hardware Abstraction Layer (HAL) over the nRF52840 System on Chip. The purpose of a HAL is to abstract away the device-specific details of the hardware, for example registers, and instead expose a higher level API more suitable for application development.
 
 The `dk::init` function we have been calling in all programs initializes a few of the nRF52840 peripherals and returns a `Board` structure that provides access to those peripherals. We'll first look at the `Leds` API.
 
@@ -40,6 +40,6 @@ After the `dk::init` logs you'll find logs about the `Led` API. As the logs indi
 
 🔎 When writing your own embedded project, you can implement your own BSP similar to `dk`, or use the matching HAL crate for your chip directly. Check out [awesome-embedded-rust] if there's a BSP for the board you want to use, or a HAL crate for the chip you'd like to use.
 
-[`nrf52840-hal`]: https://docs.rs/nrf52840-hal/0.18.0/nrf52840_hal/
+[`embassy-nrf HAL`]: https://docs.embassy.dev/embassy-nrf/git/nrf52820/index.html
 [board documentation]: https://infocenter.nordicsemi.com/index.jsp?topic=%2Fug_nrf52840_dk%2FUG%2Fnrf52840_DK%2Fintro.html
 [awesome-embedded-rust]: https://github.com/rust-embedded/awesome-embedded-rust#hal-implementation-crates
