@@ -42,9 +42,14 @@ function build_and_store {
     # Munge all the relative source code links to point at Github
     for folder in ${CODE_FOLDER_LIST}; do
         echo "Processing ${folder}"
-        # This finds a Markdown links with relative URLs
+        # This finds a Markdown links with relative URLs for .md files in subfolders.
+        find ./exercise-book -type f -name "*.md" -exec sed -e "s~(../../../${folder}/~(https://github.com/ferrous-systems/rust-exercises/tree/$2/${folder}/~g" -i.backup {} \;
+        # This finds a Markdown references with relative URLs for .md files in subfolders.
+        find ./exercise-book -type f -name "*.md" -exec sed -e "s~]: ../../../${folder}/~]: https://github.com/ferrous-systems/rust-exercises/tree/$2/${folder}/~g" -i.backup {} \;
+
+        # This finds a Markdown links with relative URLs for .md files in the source root directory.
         find ./exercise-book -type f -name "*.md" -exec sed -e "s~(../../${folder}/~(https://github.com/ferrous-systems/rust-exercises/tree/$2/${folder}/~g" -i.backup {} \;
-        # This finds a Markdown references with relative URLs
+        # This finds a Markdown references with relative URLs for .md files in the source root directory.
         find ./exercise-book -type f -name "*.md" -exec sed -e "s~]: ../../${folder}/~]: https://github.com/ferrous-systems/rust-exercises/tree/$2/${folder}/~g" -i.backup {} \;
     done
     # Build the book first, because mdbook will create any empty sections
@@ -83,6 +88,7 @@ for tag in $(git tag | sort -V); do
     for folder in ${CODE_FOLDER_LIST}; do
         echo "Processing ${folder}"
         # This finds HTML links with relative URLs
+        find "${OUTPUT_DIR}/${tag}/book" -type f -name "*.html" -exec sed -e "s~\"../../../${folder}/~\"https://github.com/ferrous-systems/rust-exercises/tree/${tag}/${folder}/~g" -i.backup {} \;
         find "${OUTPUT_DIR}/${tag}/book" -type f -name "*.html" -exec sed -e "s~\"../../${folder}/~\"https://github.com/ferrous-systems/rust-exercises/tree/${tag}/${folder}/~g" -i.backup {} \;
     done
     rm -rf "${OUTPUT_DIR}/${tag}"/rust-*

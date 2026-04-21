@@ -701,6 +701,6 @@ fn divide_by_zero() {
 
 Finally, you can uncomment the smoke test and see how our library works for complex expressions.
 
-[You can find a complete solution in our repository.](../../exercise-solutions/calculator/)
+[You can find a complete solution in our repository.](../../../exercise-solutions/calculator/)
 
 </details>

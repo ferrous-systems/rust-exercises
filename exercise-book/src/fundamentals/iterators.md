@@ -160,7 +160,7 @@ If you ever feel completely stuck or that you haven’t understood something, pl
 
 ### Step 1: New Project
 
-Copy or recreate the [exercise-templates/iterators](../../exercise-templates/iterators/) template to get started.
+Copy or recreate the [exercise-templates/iterators](../../../exercise-templates/iterators/) template to get started.
 
 ### Step 2: Read the string data
 
