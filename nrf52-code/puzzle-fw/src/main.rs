@@ -520,6 +520,7 @@ mod app {
                             defmt::info!("Bad Channel {}!", n);
                         } else {
                             ctx.local.radio.set_channel(n);
+                            *ctx.local.current_channel = n;
                         }
                     }
                 }
