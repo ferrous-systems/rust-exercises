@@ -2,7 +2,7 @@
 authors = ["Ferrous Systems"]
 edition = "2021"
 license = "MIT OR Apache-2.0"
-name = "puzzle-fw"
+name = "dongle-fw"
 version = "0.0.0"
 
 [dependencies]
@@ -16,13 +16,14 @@ bsp = { package = "dongle", path = "../boards/dongle" }
 heapless = { version = "0.9", features = ["defmt"] }
 rtic = { version = "2.1.2", features = ["thumbv7-backend"] }
 usb-device = { version = "0.3.2", features = ["defmt"] }
-usbd-hid = { version = "0.9", features = ["defmt"] }
+usbd-hid = { version = "0.10", features = ["defmt"] }
 usbd-serial = "0.2.2"
 static_cell = "2"
-embedded-io-async = "0.6"
+embedded-io-async = "0.7"
+embedded-hal = "1"
 embedded-hal-async = "1"
-embassy-usb = { version = "0.5", features = ["defmt"] }
-embassy-sync = "0.7"
+embassy-usb = { version = "0.6", features = ["defmt"] }
+embassy-sync = "0.8"
 # Configure embassy-time to be executor agnostic.
 embassy-time = { version = "0.5", features = ["defmt-timestamp-uptime", "generic-queue-16"] }
 

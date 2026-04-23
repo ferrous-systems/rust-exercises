@@ -10,7 +10,7 @@ use serialport::SerialPortType;
 
 pub fn change_channel(channel: &str) -> color_eyre::Result<()> {
     fn check_pid(pid: u16) -> bool {
-        pid == consts::USB_PID_DONGLE_LOOPBACK || pid == consts::USB_PID_DONGLE_PUZZLE
+        pid == consts::USB_PID_DONGLE_UNIFIED
     }
 
     let api = HidApi::new()?;
@@ -107,11 +107,8 @@ pub fn usb_list() -> color_eyre::Result<()> {
                 " <- J-Link on the nRF52840 Development Kit"
             }
             (0x1915, 0x521f) => " <- nRF52840 Dongle (in bootloader mode)",
-            (consts::USB_VID_DEMO, consts::USB_PID_DONGLE_LOOPBACK) => {
-                " <- nRF52840 Dongle (loopback-fw)"
-            }
-            (consts::USB_VID_DEMO, consts::USB_PID_DONGLE_PUZZLE) => {
-                " <- nRF52840 Dongle (puzzle-fw)"
+            (consts::USB_VID_DEMO, consts::USB_PID_DONGLE_UNIFIED) => {
+                " <- nRF52840 Dongle (dongle-fw)"
             }
             (consts::USB_VID_DEMO, consts::USB_PID_RTIC_DEMO) => {
                 " <- nRF52840 on the nRF52840 Development Kit"

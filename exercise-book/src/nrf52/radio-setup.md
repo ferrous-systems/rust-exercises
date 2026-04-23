@@ -6,7 +6,7 @@
 
 ```console
 $ cargo xtask serial-term
-rx=0, err=0, ch=20, app=loopback-fw
+rx=0, err=0, ch=20, app=dongle-fw
 (..)
 Received 5 bytes (CRC=0xdad9, LQI=61)
 ```

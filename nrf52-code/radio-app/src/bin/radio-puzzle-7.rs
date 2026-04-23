@@ -18,9 +18,9 @@ fn main() -> ! {
     let mut radio = board.radio;
     let mut timer = board.timer;
 
-    // puzzle-fw uses channel 25 by default
+    // dongle-fw uses channel 20 by default
     // NOTE if you ran `change-channel` then you may need to update the channel here
-    radio.set_channel(Channel::_25); // <- must match the Dongle's listening channel
+    radio.set_channel(Channel::_20); // <- must match the Dongle's listening channel
 
     /* # Build a dictionary */
     let dict = LinearMap::<u8, u8, 128>::new();

@@ -17,8 +17,7 @@ package_list := " \
 	nrf52-code/usb-app \
 	nrf52-code/usb-app-solutions \
 	nrf52-code/consts \
-	nrf52-code/puzzle-fw \
-	nrf52-code/loopback-fw \
+	nrf52-code/dongle-fw \
 	nrf52-code/usb-lib-solutions/complete \
 	nrf52-code/usb-lib-solutions/get-descriptor-config \
 	nrf52-code/usb-lib-solutions/get-device \
@@ -30,7 +29,7 @@ package_list := " \
 default:
   @just --choose
 
-everything: test-mdbook build-mdbook test-exercise-templates test-exercise-solutions test-connected-mailbox test-multi-threaded-mailbox build-qemu-uart-driver build-qemu-uart-driver-ferrocene build-radio-app build-usb-app test-usb-lib build-puzzle-fw build-loopback-fw format
+everything: test-mdbook build-mdbook test-exercise-templates test-exercise-solutions test-connected-mailbox test-multi-threaded-mailbox build-qemu-uart-driver build-qemu-uart-driver-ferrocene build-radio-app build-usb-app test-usb-lib build-dongle-fw format
 
 format-check: format-check-rust
 
@@ -87,13 +86,10 @@ test-usb-lib:
 	cd nrf52-code/usb-lib-solutions/get-device && cargo build --release
 	cd nrf52-code/usb-lib-solutions/set-config && cargo build --release
 
-build-puzzle-fw:
-	cd nrf52-code/puzzle-fw && cargo build --release
+build-dongle-fw:
+	cd nrf52-code/dongle-fw && cargo build --release
 
-build-loopback-fw:
-	cd nrf52-code/loopback-fw && cargo build --release
-
-build-nrf52-code: build-radio-app build-usb-app test-usb-lib build-puzzle-fw build-loopback-fw build-hal-app
+build-nrf52-code: build-radio-app build-usb-app test-usb-lib build-dongle-fw build-hal-app
 
 assemble version:
 	echo "Making ./rust-exercises-{{ version }}..."
@@ -107,8 +103,6 @@ assemble version:
 	cp -r ./xtask ./rust-exercises-{{ version }}
 	cp -r ./.cargo ./rust-exercises-{{ version }}
 	cp -r ./tools ./rust-exercises-{{ version }}
-	cp ./nrf52-code/puzzle-fw/target/thumbv7em-none-eabihf/release/puzzle-fw "./rust-exercises-{{ version }}/nrf52-code/boards/dongle-fw/puzzle-fw"
-	cp ./nrf52-code/loopback-fw/target/thumbv7em-none-eabihf/release/loopback-fw "./rust-exercises-{{ version }}/nrf52-code/boards/dongle-fw/loopback-fw"
 	echo "Compressing ./rust-exercises-{{ version }}.zip..."
 	zip -r ./rust-exercises-{{ version }}.zip ./rust-exercises-{{ version }}
 

@@ -41,11 +41,7 @@ $ tree -L 2
 │   ├── Cargo.lock
 │   ├── Cargo.toml
 │   └── src
-├── loopback-fw
-│   ├── Cargo.lock
-│   ├── Cargo.toml
-│   └── src
-├── puzzle-fw
+├── dongle-fw
 │   ├── Cargo.lock
 │   ├── Cargo.toml
 │   ├── build.rs
@@ -99,13 +95,9 @@ Contains constants (e.g. USB Vendor IDs) shared by multiple crates.
 
 Contains template and solution binary crates for the *nRF BSP* exercise.
 
-### loopback-fw
+### dongle-fw
 
-Source code for the USB Dongle firmware to implement loopback mode.
-
-### puzzle-fw
-
-Source code for the USB Dongle firmware to implement puzzle mode. No, you won't find the solution to the puzzle in this source directory - nice try!
+Source code for the USB Dongle firmware used in the radio exercise.
 
 ### radio-app
 

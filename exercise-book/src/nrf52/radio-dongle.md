@@ -35,14 +35,14 @@ Now that the device is in bootloader mode, you need to get the Dongle Firmware.
 ❗️ This firmware will not be found in the git checkout - you need to get it from <https://github.com/ferrous-systems/rust-exercises/releases>.
 
 * If you have downloaded and unpacked the complete rust-exercises release zip file, the firmware will be in the [`nrf52-code/boards/dongle-fw`](../../../nrf52-code/boards/dongle-fw) directory.
-* If not, you can download the individual firmware files from the [releases](https://github.com/ferrous-systems/rust-exercises/releases) page. You need `puzzle-fw` and `loopback-fw`.
+* If not, you can download the individual firmware files from the [releases](https://github.com/ferrous-systems/rust-exercises/releases) page. You need `dongle-fw`.
 
-For the next section you'll need to flash the `loopback-fw` file onto the Dongle.
+For the next section you'll need to flash the `dongle-fw` file onto the Dongle.
 
-✅ Change to the directory where the `loopback-fw` file is located and run:
+✅ Change to the directory where the `dongle-fw` file is located and run:
 
 ```console
-nrfdfu ./loopback-fw
+nrfdfu ./dongle-fw
 ```
 
 Expected output:
@@ -57,7 +57,7 @@ After the device has been programmed it will automatically reset and start runni
 
 🔎 Alternatively, you can also use nordic's own [`nrfutil`](https://www.nordicsemi.com/Products/Development-tools/nRF-Util) tool to convert a .hex file and flash it for you, among many other things `nrfutil` is a very powerful tool, but also unstable at times, which is why we replaced the parts we needed from it with `nrfdfu`.
 
-🔎 The `loopback` application will make the Dongle enumerate itself as a CDC ACM device.
+🔎 The `dongle` application will make the Dongle enumerate itself as a CDC ACM device.
 
 ✅ Run `cyme` to see the newly enumerated Dongle in the output:
 
@@ -67,7 +67,7 @@ $ cyme
   2  16  0x1209 0x0002 Dongle Loopback          -                 12.0 Mb/s
 ```
 
-The `loopback` app will log messages over the USB interface. To display these messages on the host we have provided a cross-platform tool: `cargo xtask serial-term`.
+The `dongle` app will log messages over the USB interface. To display these messages on the host we have provided a cross-platform tool: `cargo xtask serial-term`.
 
 ❗ Do not use serial terminal emulators like `minicom` or `screen`. They use the USB TTY ACM interface in a slightly different manner and may result in data loss.
 
@@ -79,11 +79,11 @@ $ cargo xtask serial-term
      Running `xtask/target/debug/xtask serial-term`
 (waiting for the Dongle to be connected)
 (..)
-rx=0, err=0, ch=20, app=loopback-fw
+rx=0, err=0, ch=20, app=dongle-fw
 (..)
 ```
 
-This line is printed by the `loopback` app on boot. It contains the device ID of the dongle, a 64-bit unique identifier (so everyone will see a different number); the radio channel that the device will use to communicate; and the transmission power of the radio in dBm.
+This line is printed by the `dongle` app on boot. It contains the device ID of the dongle, a 64-bit unique identifier (so everyone will see a different number); the radio channel that the device will use to communicate; and the transmission power of the radio in dBm.
 
 If you don't get any output from `cargo xtask serial-term` check [the USB dongle troubleshooting section][usb-issues].
 
@@ -97,7 +97,7 @@ At this point you should *not* get more output from `cargo xtask serial-term`.
 
 ```console
 $ cargo xtask serial-term
-rx=0, err=0, ch=20, app=loopback-fw
+rx=0, err=0, ch=20, app=dongle-fw
 (..)
 received 7 bytes (CRC=Ok(0x2459), LQI=0)
 received 5 bytes (CRC=Ok(0xdad9), LQI=0)
@@ -114,7 +114,7 @@ requested channel change to channel 11
 Then you should see new output from `cargo xtask serial-term`:
 
 ```console
-rx=0, err=0, ch=20, app=loopback-fw
+rx=0, err=0, ch=20, app=dongle-fw
 (..)
 now listening on channel 11
 ```
