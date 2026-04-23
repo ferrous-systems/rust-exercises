@@ -40,6 +40,6 @@ After the `dk::init` logs you'll find logs about the `Led` API. As the logs indi
 
 🔎 When writing your own embedded project, you can implement your own BSP similar to `dk`, or use the matching HAL crate for your chip directly. Check out [awesome-embedded-rust] if there's a BSP for the board you want to use, or a HAL crate for the chip you'd like to use.
 
-[`embassy-nrf HAL`]: https://docs.embassy.dev/embassy-nrf/git/nrf52820/index.html
+[`embassy-nrf HAL`]: https://docs.embassy.dev/embassy-nrf/0.9.0/nrf52840/index.html
 [board documentation]: https://infocenter.nordicsemi.com/index.jsp?topic=%2Fug_nrf52840_dk%2FUG%2Fnrf52840_DK%2Fintro.html
 [awesome-embedded-rust]: https://github.com/rust-embedded/awesome-embedded-rust#hal-implementation-crates
