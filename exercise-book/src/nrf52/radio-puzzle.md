@@ -9,9 +9,10 @@ Your task in this section is to decrypt the [substitution cipher] encrypted *ASC
 [substitution cipher]: https://en.wikipedia.org/wiki/Substitution_cipher
 [`heapless`]: https://docs.rs/heapless
 
-✅ Flash the `puzzle-fw` program on the Dongle. Follow the instructions from the [nRF52840 Dongle](./nrf52-radio-dongle.md) section but flash the `puzzle-fw` program instead of the `loopback-fw` one -- don't forget to put the Dongle in bootloader mode (pressing the reset button) before invoking `nrfdfu`.
+✅ Switch the dongle to the puzzle mode by pressing the large user button. The LED should switch
+to blue in the puzzle mode.
 
-Like in the previous sections the Dongle will listen for radio packets -- this time over *channel 25* -- while also logging messages over a USB/serial interface. It also prints a `.` periodically so you know it's still alive.
+Like in the previous sections the Dongle will listen for radio packets over *channel 20* -- while also logging messages over a USB/serial interface. It also prints a `.` periodically so you know it's still alive.
 
 ## Sending Messages and Receiving the Dongle's Responses
 

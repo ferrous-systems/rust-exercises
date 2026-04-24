@@ -6,7 +6,11 @@
 #![deny(warnings)]
 #![no_std]
 
-use core::{hint::spin_loop, sync::atomic::{AtomicBool, AtomicU32, Ordering, compiler_fence}, time::Duration};
+use core::{
+    hint::spin_loop,
+    sync::atomic::{compiler_fence, AtomicBool, AtomicU32, Ordering},
+    time::Duration,
+};
 
 use defmt_rtt as _; // global logger
 
@@ -43,7 +47,10 @@ pub struct Board {
     pub leds: Leds,
     /// Timer
     pub timer: Timer,
-
+    /// Raw user button resource.
+    pub user_button: hal::Peri<'static, hal::peripherals::P1_06>,
+    /// GPIO event channel
+    pub event_ch: hal::Peri<'static, hal::peripherals::GPIOTE_CH0>,
     /// Radio interface
     pub radio: hal::radio::ieee802154::Radio<'static>,
     /// UBBD peripheral instance from the embassy peripheral singleton.
@@ -138,6 +145,13 @@ pub struct Leds {
     pub ld1_green: Led,
     /// LD2 RGB: pins P0.08 (red), P1.09 (green), P0.12 (blue)
     pub ld2_rgb: RgbLed,
+}
+
+impl Leds {
+    /// Split the LEDs structure into its components.
+    pub fn split(self) -> (Led, RgbLed) {
+        (self.ld1_green, self.ld2_rgb)
+    }
 }
 
 /// A byte-based ring-buffer that you can writeln! into, and drain under
@@ -247,6 +261,8 @@ pub fn init() -> Result<Board, Error> {
         timer,
         usbd: periph.USBD,
         usbd_regs: hal::pac::USBD,
+        user_button: periph.P1_06,
+        event_ch: periph.GPIOTE_CH0,
     })
 }
 
@@ -305,7 +321,11 @@ impl Led {
 
     /// Set the LED to the specified state.
     pub fn set(&mut self, on: bool) {
-        if on { self.on() } else { self.off() }
+        if on {
+            self.on()
+        } else {
+            self.off()
+        }
     }
 
     /// Returns `true` if the LED is in the OFF state

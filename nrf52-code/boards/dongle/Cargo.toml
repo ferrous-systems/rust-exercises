@@ -9,7 +9,7 @@ version = "0.0.0"
 cortex-m = { version = "0.7.7", features = ["critical-section-single-core"] }
 cortex-m-rt = "0.7.5"
 cortex-m-semihosting = "0.5.0"
-hal = { package = "embassy-nrf", version = "0.9", features = ["nrf52840", "time-driver-rtc1", "unstable-pac"] }
+hal = { package = "embassy-nrf", version = "0.10", features = ["nrf52840", "time-driver-rtc1", "gpiote", "unstable-pac"] }
 embedded-io = "0.7"
 critical-section = "1.2.0"
 defmt = "1"
