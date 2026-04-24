@@ -212,6 +212,6 @@ jobs:
          id: create_release
          uses: ncipollo/release-action@v1
          with:
-           artifacts: "./rust-exercises-${{ env.slug }}.zip,./rust-exercises-${{ env.slug }}/nrf52-code/boards/dongle-fw/*-fw"
+           artifacts: "./rust-exercises-${{ env.slug }}.zip,./nrf52-code/dongle-fw/target/thumbv7em-none-eabihf/release/dongle-fw"
            allowUpdates: true
            updateOnlyUnreleased: true
