@@ -26,7 +26,6 @@ mod app {
     use embassy_time::Duration;
     use embassy_usb::class::cdc_acm;
     use embassy_usb::class::hid;
-    use embedded_hal::digital::InputPin;
     use embedded_hal_async::delay::DelayNs as _;
     use embedded_io_async::Write as _;
     use static_cell::StaticCell;
@@ -396,12 +395,7 @@ mod app {
             // Debounce delay
             Delay.delay_ms(20).await;
             // If button in default state again, we toggle the mode.
-            if ctx
-                .local
-                .user_button
-                .is_high()
-                .expect("error reading user button")
-            {
+            if ctx.local.user_button.pin().is_high() {
                 let mode = ctx.shared.mode.lock(|mode| {
                     mode.toggle();
                     *mode
