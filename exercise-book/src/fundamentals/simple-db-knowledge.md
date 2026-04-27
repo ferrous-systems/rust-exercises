@@ -27,7 +27,7 @@ if let Some(message) = message.strip_prefix("PREFIX:") {
 let Some(message) = message.strip_prefix("PREFIX:") else {
     // Executes if the above pattern is NOT a match.
     // Must have an early return in this block.
-}
+};
 // The variable `message` is still available here.
 ```
 
