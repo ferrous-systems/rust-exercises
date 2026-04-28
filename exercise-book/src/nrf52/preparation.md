@@ -1,6 +1,6 @@
 # nRF52 Preparation
 
-This chapter contains information about the nRF52-based exercises, the required hardware and an installation guide.
+This chapter contains the introduction and preparation for the nRF52-based exercises.
 
 ## Required Hardware
 
@@ -12,14 +12,18 @@ This chapter contains information about the nRF52-based exercises, the required 
 
 In our nRF52-focussed exercises we will use both the nRF52840 Development Kit (DK) and the nRF52840 Dongle. We'll mainly develop programs for the DK and use the Dongle to assist with some exercises.
 
-For the span of these exercises keep the nRF52840 DK connected to your PC using a micro-USB cable. Connect the USB cable to the J2 port on the nRF52840 DK.
+## Software Tools
 
-![Labeled Diagram of the nRF52840 Development Kit (DK)](../img/nrf52840_dk_board.jpg)
+Please [install the required tools](./tools.md) before the lesson starts.
+
+## nRF52 Dongle 
+
+The [dongle chapter](./dongle.md) will walk you through the setup of the dongle.
+
+## nRF52-DK Board
+
+The [DK board chapter](./board.md) will walk you through the setup of the board.
 
 ## Starter code
 
 Project templates and starter code for our trainings can be found at [in this repo](https://github.com/ferrous-systems/rust-exercises).
-
-## Required tools
-
-Please [install the required tools](./tools.md) before the lesson starts.

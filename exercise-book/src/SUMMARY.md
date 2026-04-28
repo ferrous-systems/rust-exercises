@@ -47,10 +47,10 @@
 
 # Rust for Microcontrollers
 
-- [Preparation](./nrf52/preparation.md)
-  - [Code Organization](./nrf52/code-organisation.md)
-  - [Hardware](./nrf52/hardware.md)
+- [Introduction and Preparation](./nrf52/preparation.md)
   - [Software Tools](./nrf52/tools.md)
+  - [Dongle Preparation](./nrf52/dongle.md)
+  - [Board Preparation](./nrf52/board.md)
 - [References and Resources](./nrf52/references-resources.md)
   - [Tooltips](./nrf52/tooltips.md)
 - [Troubleshooting](./nrf52/troubleshooting.md)
@@ -69,7 +69,6 @@
   - [Panicking](./nrf52/radio-panicking.md)
   - [Using a Hardware Abstraction Layer](./nrf52/radio-using-hal.md)
   - [Timers and Time](./nrf52/radio-time.md)
-  - [nRF52840 Dongle](./nrf52/radio-dongle.md)
   - [Radio Out](./nrf52/radio-out.md)
     - [Radio Setup](./nrf52/radio-setup.md)
     - [Messages](./nrf52/radio-messages.md)
