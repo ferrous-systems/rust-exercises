@@ -14,7 +14,7 @@ In our nRF52-focussed exercises we will use both the nRF52840 Development Kit (D
 
 For the span of these exercises keep the nRF52840 DK connected to your PC using a micro-USB cable. Connect the USB cable to the J2 port on the nRF52840 DK.
 
-![Labeled Diagram of the nRF52840 Development Kit (DK)](img/nrf52840_dk_board.jpg)
+![Labeled Diagram of the nRF52840 Development Kit (DK)](../img/nrf52840_dk_board.jpg)
 
 ## Starter code
 
@@ -22,4 +22,4 @@ Project templates and starter code for our trainings can be found at [in this re
 
 ## Required tools
 
-Please [install the required tools](./nrf52-tools.md) before the lesson starts.
+Please [install the required tools](./tools.md) before the lesson starts.
