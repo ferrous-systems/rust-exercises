@@ -28,7 +28,7 @@ Return to the ["Interference"] section.
 
 🔎 `cargo xtask serial-term` shows you the log output that the Dongle is sending to your computer via the serial interface (not over the wireless network!). After you've ran `cargo xtask change-channel`, it tells you that it is now listening for network traffic on channel 20. This is helpful for debugging, but not mission-critical.
 
-["Interference"]: radio-dongle.md#interference
+["Interference"]: dongle.md#interference
 
 If you only get one line of output then your OS may be losing some serial data -- we have seen this behavior on some macOS machines. You will still be able to work through the exercises but will miss log data every now and then. Return to the ["Interference"] section.
 
