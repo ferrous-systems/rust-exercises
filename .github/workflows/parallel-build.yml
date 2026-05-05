@@ -49,9 +49,11 @@ jobs:
       - uses: ./.github/actions/setup
         with:
           cache: exercise-book
+      - run: curl -sSL  https://github.com/jonathanpallant/mdBook/releases/download/v0.5.2-current-page-active/mdbook -o ~/.cargo/bin/mdbook
+      - run: chmod a+x ~/.cargo/bin/mdbook
       - uses: taiki-e/install-action@v2
         with:
-          tool: mdbook@0.5.2,mdbook-graphviz@0.3.1
+          tool: mdbook-graphviz@0.3.1
       - run: just test-mdbook
       - run: just build-mdbook
       - uses: actions/upload-artifact@v4
