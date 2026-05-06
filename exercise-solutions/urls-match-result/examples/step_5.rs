@@ -1,5 +1,5 @@
 fn parse_url(line: &str) -> Option<url::Url> {
-    match url::Url::parse(&line) {
+    match url::Url::parse(line) {
         Ok(u) => Some(u),
         Err(_e) => None,
     }

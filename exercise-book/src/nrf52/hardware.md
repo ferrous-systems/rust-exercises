@@ -8,7 +8,7 @@ Connect one end of one of the supplied micro USB cable to the USB connector *J2*
 
 💬 These directions assume you are holding the board "horizontally" with components (switches, buttons and pins) facing up. In this position, rotate the board, so that its convex shaped short side faces right. You'll find one USB connector (J2) on the left edge, another USB connector (J3) on the bottom edge and 4 buttons on the bottom right corner.
 
-![Labeled Diagram of the nRF52840 Development Kit (DK)](img/nrf52840_dk_board.jpg)
+![Labeled Diagram of the nRF52840 Development Kit (DK)](../img/nrf52840_dk_board.jpg)
 
 The board has several switches to configure its behavior. The out of the box configuration is the one we want. If the above instructions didn't work for you, check the position of the following switches:
 

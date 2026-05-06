@@ -1,6 +1,6 @@
 # Radio Puzzle
 
-![illustration showing that you send plaintext and the dongle responds with ciphertext](img/puzzle_illustration.jpg)
+![illustration showing that you send plaintext and the dongle responds with ciphertext](../img/puzzle_illustration.jpg)
 
 Your task in this section is to decrypt the [substitution cipher] encrypted *ASCII* string stored in the Dongle using one of the stack-allocated maps in the [`heapless`] crate. The string has been encrypted using *simple substitution*.
 
