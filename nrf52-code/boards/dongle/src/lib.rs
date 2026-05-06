@@ -168,6 +168,9 @@ impl Ringbuffer {
     /// Construct a new Ringbuffer
     pub const fn new() -> Ringbuffer {
         Ringbuffer {
+            // This function was deprecated: https://docs.rs/heapless/latest/heapless/mpmc/type.Queue.html#method.new
+            // It still works fine for us though.
+            #[expect(deprecated)]
             buffer: heapless::mpmc::Queue::new(),
         }
     }
