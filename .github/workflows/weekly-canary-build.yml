@@ -31,10 +31,12 @@ jobs:
         with:
           cache: exercise-book
           channel: ${{ matrix.rust-channel }}
-      - name: Install mdbook, mdbook-graphviz
+      - run: curl -sSL  https://github.com/jonathanpallant/mdBook/releases/download/v0.5.2-current-page-active/mdbook -o ~/.cargo/bin/mdbook
+      - run: chmod a+x ~/.cargo/bin/mdbook
+      - name: Install mdbook-graphviz
         uses: taiki-e/install-action@v2
         with:
-          tool: mdbook@0.5.2,mdbook-graphviz@0.3.1
+          tool: mdbook-graphviz@0.3.1
       - run: just test-mdbook
       - run: just build-mdbook
       - name: Upload mdbook artifacts
