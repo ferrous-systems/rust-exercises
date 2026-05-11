@@ -9,9 +9,8 @@ use hal_app as _;
 
 #[entry]
 fn main() -> ! {
-    // to enable more verbose logs, set the `DEFMT_LOG` environment variable.
-
-    let board = dk::init().unwrap();
+    // we don't wait for RTT, so that the LED will blink even without probe-rs
+    let board = dk::init_with(dk::InitOptions { wait_for_rtt: false }).unwrap();
 
     let mut led = board.leds._1;
     let mut timer = board.timer;

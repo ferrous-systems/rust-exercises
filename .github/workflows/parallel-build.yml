@@ -118,6 +118,24 @@ jobs:
           tool: flip-link@0.1.10
       - run: just build-radio-app
 
+  build-hal-app:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+        with:
+          cache: nrf52-code/hal-app
+          target: thumbv7em-none-eabihf
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: flip-link@0.1.10
+      - run: just build-hal-app
+      - uses: actions/upload-artifact@v4
+        with:
+          name: blinky
+          path: nrf52-code/hal-app/target/thumbv7em-none-eabihf/release/blinky
+          if-no-files-found: error
+
   build-usb-app:
     runs-on: ubuntu-24.04
     steps:
@@ -184,7 +202,7 @@ jobs:
      runs-on: ubuntu-24.04
      # Notice that because our repo expects all checks to pass, we don't need to include every other job
      # as a dependency of the `deploy` job.
-     needs: [test-build-mdbook, build-dongle-fw]
+     needs: [test-build-mdbook, build-dongle-fw, build-hal-app]
      steps:
        - uses: actions/checkout@v4
        - uses: ./.github/actions/setup
@@ -198,6 +216,10 @@ jobs:
          with:
           name: dongle-fw
           path: ./nrf52-code/dongle-fw/target/thumbv7em-none-eabihf/release/
+       - uses: actions/download-artifact@v4
+         with:
+          name: blinky
+          path: ./nrf52-code/hal-app/target/thumbv7em-none-eabihf/release/
        - run: |
            slug=$(./describe.sh "${GITHUB_REF}")
            echo "Building with slug '${slug}'"
@@ -214,6 +236,6 @@ jobs:
          id: create_release
          uses: ncipollo/release-action@v1
          with:
-           artifacts: "./rust-exercises-${{ env.slug }}.zip,./nrf52-code/dongle-fw/target/thumbv7em-none-eabihf/release/dongle-fw"
+           artifacts: "./rust-exercises-${{ env.slug }}.zip,./nrf52-code/dongle-fw/target/thumbv7em-none-eabihf/release/dongle-fw,./nrf52-code/hal-app/target/thumbv7em-none-eabihf/release/blinky"
            allowUpdates: true
            updateOnlyUnreleased: true

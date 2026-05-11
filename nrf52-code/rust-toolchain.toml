@@ -1,0 +1,5 @@
+[toolchain]
+channel = "stable"
+components = [ "llvm-tools-preview", "clippy" ]
+targets = [ "thumbv7em-none-eabihf" ]
+profile = "default"
