@@ -295,7 +295,31 @@ pub enum Error {
 static HAL_INIT: AtomicBool = AtomicBool::new(false);
 
 /// Initializes the board
+/// 
+/// This version blocks waiting for an RTT connection
 pub fn init() -> Result<Board, Error>{
+    init_with(Default::default())
+}
+
+/// Options you can pass to `init_with`
+#[derive(Debug, Clone, defmt::Format)]
+pub struct InitOptions {
+    /// Should we wait for RTT to connect?
+    /// 
+    /// Defaults to true, so you don't miss any logs. If you build firmware as a
+    /// .hex file to load with drag-and-drop, or if you wish to run the firmware
+    /// on reset with no logged connected, you should set this to false.
+    pub wait_for_rtt: bool
+}
+
+impl Default for InitOptions {
+    fn default() -> Self {
+        Self { wait_for_rtt: true }
+    }
+}
+
+/// Initializes the board with the given options
+pub fn init_with(options: InitOptions) -> Result<Board, Error>{
     if HAL_INIT.swap(true, Ordering::Relaxed) {
         return Err(Error::DoubleInit);
     }
@@ -313,8 +337,10 @@ pub fn init() -> Result<Board, Error>{
     // for waiting for probe-rs to connect.
     //
     // do this *after* clock set-up to avoid start-up issues
-    while !defmt_rtt::in_blocking_mode() {
-        core::hint::spin_loop();
+    if options.wait_for_rtt {
+        while !defmt_rtt::in_blocking_mode() {
+            core::hint::spin_loop();
+        }
     }
 
     // NOTE: this branch runs at most once
