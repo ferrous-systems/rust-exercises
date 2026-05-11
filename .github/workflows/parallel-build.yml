@@ -30,7 +30,7 @@ on:
 # my_cool_new_job:
 #   runs-on: ubuntu-24.04
 #   steps:
-#   - uses: actions/checkout@v4                     # This is what downloads a fresh clone of the repo and cd's into it
+#   - uses: actions/checkout@v6                     # This is what downloads a fresh clone of the repo and cd's into it
 #   - uses: ./.github/actions/setup
 #     with:
 #       cache: dir_where_I_want_results_cached
@@ -45,7 +45,7 @@ jobs:
   test-build-mdbook:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: ./.github/actions/setup
         with:
           cache: exercise-book
@@ -65,7 +65,7 @@ jobs:
   test-exercise-templates:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: ./.github/actions/setup
         with:
           cache: exercise-templates
@@ -74,7 +74,7 @@ jobs:
   test-exercise-solutions:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: ./.github/actions/setup
         with:
           cache: exercise-solutions
@@ -83,21 +83,21 @@ jobs:
   test-connected-mailbox:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: ./.github/actions/setup
       - run: just test-connected-mailbox
 
   test-multi-threaded-mailbox:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: ./.github/actions/setup
       - run: just test-multi-threaded-mailbox
 
   build-qemu-uart-driver:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: ./.github/actions/setup
         with:
           cache: qemu-code/uart-driver
@@ -108,7 +108,7 @@ jobs:
   build-radio-app:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: ./.github/actions/setup
         with:
           cache: nrf52-code/radio-app
@@ -121,7 +121,7 @@ jobs:
   build-usb-app:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: ./.github/actions/setup
         with:
           cache: nrf52-code/usb-app
@@ -134,7 +134,7 @@ jobs:
   test-usb-lib:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: ./.github/actions/setup
         with:
           cache: nrf52-code/usb-lib
@@ -144,7 +144,7 @@ jobs:
   build-dongle-fw:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: ./.github/actions/setup
         with:
           cache: nrf52-code/dongle-fw
@@ -165,7 +165,7 @@ jobs:
   build-xtask:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: ./.github/actions/setup
         with:
           cache: xtask
@@ -174,7 +174,7 @@ jobs:
   format-check:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: ./.github/actions/setup
       - run: just format-check
 
@@ -186,7 +186,7 @@ jobs:
      # as a dependency of the `deploy` job.
      needs: [test-build-mdbook, build-dongle-fw]
      steps:
-       - uses: actions/checkout@v4
+       - uses: actions/checkout@v6
        - uses: ./.github/actions/setup
        # Download the produced artifacts
        - uses: actions/download-artifact@v4
