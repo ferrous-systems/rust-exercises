@@ -21,6 +21,11 @@ The target `thumbv7em-none-eabihf` can be broken down as:
 cargo build --bin hello
 ```
 
+It should be noted that building the application for this target also requires the `thumbv7em-none-eabihf`
+target. Normally, you would have to add this target to `cargo` by using
+`rustup target add thumbv7em-none-eabihf`, but we provide a `rust-toolchain.toml` that is used to
+`cargo` to determine which toolchains should be installed automatically.
+
 The output of the compilation process will be an ELF (Executable and Linkable Format) file. The file will be placed in the `target/thumbv7em-none-eabihf` directory.
 
 ✅ Run `$ file target/thumbv7em-none-eabihf/debug/hello` and compare if your output is as expected.

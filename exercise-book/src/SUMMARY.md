@@ -47,15 +47,15 @@
 
 # Rust for Microcontrollers
 
-- [Preparation](./nrf52/preparation.md)
-  - [Code Organization](./nrf52/code-organisation.md)
-  - [Hardware](./nrf52/hardware.md)
-  - [Software Tools](./nrf52/tools.md)
+- [Introduction and Preparation](./nrf52/preparation.md)
+  - [Dongle Preparation](./nrf52/dongle.md)
+  - [Board Preparation](./nrf52/board.md)
 - [References and Resources](./nrf52/references-resources.md)
   - [Tooltips](./nrf52/tooltips.md)
 - [Troubleshooting](./nrf52/troubleshooting.md)
   - [`cargo-size` is not working](./nrf52/troubleshoot-cargo-size.md)
   - [Rust analyzer is not working](./nrf52/troubleshoot-rust-analyzer.md)
+  - [`probe-rs` does not work on Windows](./nrf52/troubleshoot-windows-probe-rs.md)
   - [`cargo build` fails to link](./nrf52/troubleshoot-cargo-build.md)
   - [Dongle USB functionality is not working](./nrf52/troubleshoot-usb-dongle.md)
   - [`cargo run` errors](./nrf52/troubleshoot-cargo-run-error.md)
@@ -69,7 +69,6 @@
   - [Panicking](./nrf52/radio-panicking.md)
   - [Using a Hardware Abstraction Layer](./nrf52/radio-using-hal.md)
   - [Timers and Time](./nrf52/radio-time.md)
-  - [nRF52840 Dongle](./nrf52/radio-dongle.md)
   - [Radio Out](./nrf52/radio-out.md)
     - [Radio Setup](./nrf52/radio-setup.md)
     - [Messages](./nrf52/radio-messages.md)
