@@ -139,7 +139,7 @@ fn four_in_guess_one_in_secret() {
 }
 
 #[test]
-fn two_in_secret_one_in_guess() {
+fn one_in_guess_two_in_secret() {
     assert_eq!(
         &calc_green_and_yellow(&[1, 2, 3, 4], &[3, 3, 9, 9]),
         "⬜⬜🟨⬜"
