@@ -164,7 +164,7 @@ Copy or recreate the [exercise-templates/iterators](../../../exercise-templates/
 
 ### Step 2: Read the string data
 
-Read the contents of `iterators/numbers.txt` line by line, and collect it all into one big `String`. Note that the `lines()` iterator gives us `Result<String, std::io::Error>` so let's only keep the lines that we were able to succesfully read from disk.
+Read the contents of `iterators/numbers.txt` line by line, and collect it all into one big `String`. Note that the `lines()` iterator gives us `Result<String, std::io::Error>` so let's only keep the lines that we were able to successfully read from disk.
 
 <details>
   <summary>Solution</summary>
