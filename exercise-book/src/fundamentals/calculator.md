@@ -15,7 +15,7 @@ You will learn:
 ## Task
 
 Write a library that parses and evaluates math expressions that use [Reverse-Polish (postfix) notation](https://en.wikipedia.org/wiki/Reverse_Polish_notation).
-For example, a string `"3 1 + 2 /"` in this notation is equivalent to `(3 + 1) / 2` but unlike the later it does not force us to handle operator precedence using parentheses.
+For example, a string `"3 1 + 2 /"` in this notation is equivalent to `(3 + 1) / 2` but unlike the latter it does not force us to handle operator precedence using parentheses.
 
 We will support the 4 basic math operations (`+`, `-`, `*`, `/`) that all will expect two operands, and a `sqr` operation to square a single number.
 
