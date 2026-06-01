@@ -52,6 +52,6 @@ fn correct_translation() {
 #[test]
 fn task() {
     let sentence = "Implement a function that splits a sentence into its words";
-    let setence_latinized = rustlatin(sentence);
-    assert_eq!(setence_latinized, "srImplement sra functionrs thatrs splitsrs sra sentencers srinto srits wordsrs");
+    let sentence_latinized = rustlatin(sentence);
+    assert_eq!(sentence_latinized, "srImplement sra functionrs thatrs splitsrs sra sentencers srinto srits wordsrs");
 }

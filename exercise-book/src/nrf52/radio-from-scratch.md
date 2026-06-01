@@ -56,7 +56,7 @@ script supplied by the `cortex-m-rt` crate).
 ## The `app-template` project template
 
 With all this information you'll be able to build programs for the target device. The [`app-template`] project template provides the most frictionless way to start a new project for the ARM Cortex-M architecture -- for other architectures check out other project templates by the [rust-embedded] organization. It uses
-the [`cargo-generate`] tool to set up a lot of the scafolding and boilerplate necessary
+the [`cargo-generate`] tool to set up a lot of the scaffolding and boilerplate necessary
 for embedded Rust projects.
 
 [rust-embedded]: https://github.com/rust-embedded/

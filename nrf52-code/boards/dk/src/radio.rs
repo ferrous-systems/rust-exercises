@@ -403,7 +403,7 @@ impl<'d> Radio<'d> {
     pub fn recv(&mut self, packet: &mut Packet) -> Result<u16, u16> {
         // Start non-blocking receive
         self.recv_non_blocking(packet, |recv| {
-            // Block untill receive is done
+            // Block until receive is done
             nb::block!(recv.is_done())
         })
     }
@@ -451,7 +451,7 @@ impl<'d> Radio<'d> {
 
         // Start non-blocking receive
         self.recv_non_blocking(packet, |recv| {
-            // Check if either receive is done or timeout occured
+            // Check if either receive is done or timeout occurred
             loop {
                 match recv.is_done() {
                     Ok(crc) => {
