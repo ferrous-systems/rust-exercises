@@ -21,6 +21,40 @@ your `cargo` installation:
 cargo version
 ```
 
+### Linux specific - Configure USB Device access for non-root users
+
+<a id="linux-usb-access"></a>
+
+We have to update the `udev` rules for proper permissions.
+To access the USB devices as a non-root user, follow these steps:
+
+1. As root, create `/etc/udev/rules.d/50-ferrous-training.rules` with the following contents:
+
+    ```console
+    # udev rules to allow access to USB devices as a non-root user
+
+    # nRF52840 Dongle in bootloader mode
+    ATTRS{idVendor}=="1915", ATTRS{idProduct}=="521f", TAG+="uaccess"
+
+    # nRF52840 Dongle applications
+    ATTRS{idVendor}=="1209", TAG+="uaccess"
+
+    # nRF52840 Development Kit
+    ATTRS{idVendor}=="1366", ENV{ID_MM_DEVICE_IGNORE}="1", TAG+="uaccess"
+    ```
+
+2. Run the following command to put the new udev rules into effect
+
+    ```console
+    sudo udevadm control --reload-rules
+    sudo udevadm trigger
+    ```
+
+If you plan to use `probe-rs` for other microcontrollers and setups, it is strongly recommended
+to follow the Linux specific steps on the [`probe-rs` website](https://probe.rs/docs/getting-started/probe-setup/)
+which involve downloading a generic rules file, manually placing it in `/etc/udev/rules.d` and then
+running step 2 above.
+
 ## Connecting the Dongle
 
 Connect the Dongle to your PC/laptop. Its red LED should start oscillating in intensity.

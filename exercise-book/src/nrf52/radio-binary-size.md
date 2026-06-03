@@ -4,6 +4,12 @@ ELF files contain metadata like debug information so their size on disk is not a
 
 To display the amount of Flash the program will occupy on the target device use the `cargo-size` tool, which is part of the `cargo-binutils` package.
 
+Install the `cargo-binutils` first:
+
+```console
+cargo install cargo-binutils
+```
+
 ✅ Use the following command to print the binary's size in system V format.
 
 ```console
