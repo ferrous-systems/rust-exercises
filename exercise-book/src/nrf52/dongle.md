@@ -30,7 +30,7 @@ To access the USB devices as a non-root user, follow these steps:
 
 1. As root, create `/etc/udev/rules.d/50-ferrous-training.rules` with the following contents:
 
-    ```console
+    ```text
     # udev rules to allow access to USB devices as a non-root user
 
     # nRF52840 Dongle in bootloader mode
