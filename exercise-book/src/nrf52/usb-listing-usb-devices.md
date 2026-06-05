@@ -1,6 +1,15 @@
 # Listing USB Devices
 
-As we showed in [Preparation/Software Tools](./tools.md), we can use `cyme` to list USB devices on our system.
+We can use `cyme` as a generic application to list USB devices on our system. It is the
+Rust version of `lsusb`.
+
+If you have not installed `cyme` yet, you can use
+
+```sh
+cargo install cyme
+```
+
+to install the tool.
 
 ✅ To list all USB devices, run `cyme` from the top-level checkout.
 
