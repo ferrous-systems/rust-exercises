@@ -12,7 +12,7 @@ Give rust-analyzer some time to analyze the file and its dependency graph. When 
 
 If you are not using VS code run the `cargo run --bin hello` command from the [`nrf52-code/usb-app`](../../../nrf52-code/usb-app) folder.
 
-> __NOTE:__ Recent version of the nRF52840-DK have flash-read-out protection to stop people dumping the contents of flash on an nRF52 they received pre-programmed, so if you have problems immediately after first plugging your board in, see [this page](./tools.md#setup-check).
+> __NOTE:__ Recent version of the nRF52840-DK have flash-read-out protection to stop people dumping the contents of flash on an nRF52 they received pre-programmed.
 >
 > If you run into an error along the lines of "Debug power request failed" retry the operation and the error should disappear.
 

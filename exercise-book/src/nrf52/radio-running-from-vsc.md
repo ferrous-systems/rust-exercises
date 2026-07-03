@@ -49,7 +49,7 @@ If you are not using VS code, you can run the program out of your console. Enter
 
 ## Expected output
 
-> __NOTE:__ Recent version of the nRF52840-DK have flash-read-out protection to stop people dumping the contents of flash on an nRF52 they received pre-programmed, so if you have problems immediately after first plugging your board in, see [this page](./tools.md#setup-check).
+> __NOTE:__ Recent version of the nRF52840-DK have flash-read-out protection to stop people dumping the contents of flash on an nRF52 they received pre-programmed.
 >
 > More recent versions of the DK board also have configuration parameters which need to be updated inside
 > a special segment of the flash, which in turn requires a soft-reset. This needs to be done for reset pin

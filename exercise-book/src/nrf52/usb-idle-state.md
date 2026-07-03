@@ -50,7 +50,7 @@ You can find traces for other OSes in these files (they are in the [`nrf52-code/
 - `macos-enumeration.txt` (same logs as the ones shown above)
 - `win-enumeration.txt`
 
-✅ Double check that the enumeration works by running `cargo xtask usb-list`](./nrf52-tools.md) while `usb-4.rs` is running.
+✅ Double check that the enumeration works by running `cargo xtask usb-list` while `usb-4.rs` is running.
 
 ```console
 $ cargo xtask usb-list
