@@ -10,9 +10,9 @@ of your PC / laptop.
 
 First of all, we want to prepare some software we need for displaying that our computer
 detects the dongle. We have prepared a tool for this which is also cross-platform but using
-this tool requires the [`cargo` package manager]. If you have not done so already, go to the
-[Rust website](https://rust-lang.org/tools/install/) which should specify how to install Rust
-for your operating system. Every Rust installation also comes with an installation of `cargo`.
+this tool requires the [`cargo` package manager](https://doc.rust-lang.org/cargo/). If you have not
+done so already, go to the [Rust website](https://rust-lang.org/tools/install/) which should specify
+how to install Rust for your operating system. Every Rust installation also comes with an installation of `cargo`.
 
 After you have done this, you can use the following command in the terminal of your choice to check
 your `cargo` installation:
