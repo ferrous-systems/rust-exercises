@@ -12,8 +12,6 @@ Nothing extra needs to be done if you're working on a Linux or macOS host. The h
 
 ## Windows
 
-After getting the device enumerated and into the idle state, open the Zadig tool (covered in the setup instructions; see the top README) and use it to associate the nRF52840 USB device to the WinUSB driver. The nRF52840 will appear as a "unknown device" with a VID and PID that matches the ones defined in the [`consts` crate](../../../nrf52-code/consts/src/lib.rs).
-
 Now modify the `usb-descriptors` command within the `xtask` package to "open" the device -- this operation is commented out in the source code. With this modification `usb-descriptors` will cause Windows to send a `SET_CONFIGURATION` request to configure the device. You'll need to run `cargo xtask usb-descriptors` to test out the correct handling of the `SET_CONFIGURATION` request.
 
 ## SET_CONFIGURATION
