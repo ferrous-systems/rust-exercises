@@ -1,0 +1,11 @@
+[package]
+name = "nucleo-u5a5zj-bsp"
+description = "A small BSP for the NUCLEO-U5A5ZJ-Q board"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+stm32u5-tiny-hal.workspace = true
+stm32u5.workspace = true
+cortex-m.workspace = true
+cortex-m-semihosting.workspace = true

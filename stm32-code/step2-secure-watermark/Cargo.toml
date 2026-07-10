@@ -1,0 +1,10 @@
+[package]
+name = "step2-secure-watermark"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+cortex-m-rt.workspace = true
+cortex-m.workspace = true
+stm32u5.workspace = true
+cortex-m-semihosting.workspace = true

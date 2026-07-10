@@ -1,0 +1,12 @@
+[package]
+name = "nonsecure-app"
+description = "A nonsecure app running from Flash Bank 2 and SRAM3"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+cortex-m-rt.workspace = true
+cortex-m.workspace = true
+defmt-rtt.workspace = true
+defmt.workspace = true
+nucleo-u5a5zj-bsp.workspace = true
