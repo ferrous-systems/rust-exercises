@@ -1,0 +1,12 @@
+[package]
+name = "secure-loader"
+description = "A secure-mode application running from the Flash Bank 1 and SRAM 1"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+cortex-m-rt.workspace = true
+nucleo-u5a5zj-bsp.workspace = true
+cortex-m-semihosting.workspace = true
+cortex-m.workspace = true
+critical-section.workspace = true

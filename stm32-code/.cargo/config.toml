@@ -1,0 +1,8 @@
+[target.thumbv8m.main-none-eabi]
+runner = "probe-rs run --chip STM32U5A5ZJ"
+
+[build]
+target = "thumbv8m.main-none-eabi"
+
+[env]
+DEFMT_LOG = "info"

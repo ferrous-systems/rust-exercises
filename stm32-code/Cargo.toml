@@ -1,0 +1,32 @@
+[workspace]
+resolver = "3"
+members = [
+    "nonsecure-app",
+    "nucleo-u5a5zj-bsp",
+    "step1-option-bytes",
+    "step2-secure-watermark",
+    "secure-loader",
+    "stm32u5-tiny-hal",
+]
+
+[workspace.dependencies]
+cortex-m = { git = "https://github.com/rust-embedded/cortex-m", branch = "release-cortex-m-rt-076", features = ["critical-section-single-core", "secure-mode"] }
+cortex-m-rt = { git = "https://github.com/rust-embedded/cortex-m", branch = "release-cortex-m-rt-076" }
+cortex-m-semihosting = { git = "https://github.com/rust-embedded/cortex-m", branch = "release-cortex-m-rt-076" }
+critical-section = "1"
+defmt = "1.1.1"
+defmt-rtt = "1.3.0"
+nucleo-u5a5zj-bsp = { path = "./nucleo-u5a5zj-bsp" }
+stm32u5 = { version = "0.16.0", features = ["stm32u5a5"] }
+stm32u5-tiny-hal = { path = "./stm32u5-tiny-hal" }
+
+[patch.crates-io]
+cortex-m = { git = "https://github.com/rust-embedded/cortex-m", branch = "release-cortex-m-rt-076" }
+cortex-m-rt = { git = "https://github.com/rust-embedded/cortex-m", branch = "release-cortex-m-rt-076" }
+
+[profile.release]
+debug = 2
+
+[profile.dev]
+opt-level = 1
+

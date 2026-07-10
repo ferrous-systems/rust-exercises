@@ -112,6 +112,11 @@
     - [USB Endpoint descriptor](./nrf52/usb-endpoint-descriptor.md)
     - [Inspecting the Descriptors](./nrf52/usb-inspecting-descriptors.md)
     - [Stack Overflow Protection](./nrf52/usb-stack-overflow-protection.md)
+- [STM32 Introduction and Preparation](./stm32/preparation.md)
+- [STM32 TrustZone Exercise](./stm32/trustzone.md)
+    - [Booting in Secure Mode](./stm32/trustzone-secure.md)
+    - [Changing to Nonsecure Mode](./stm32/trustzone-nonsecure.md)
+    - [Offering Secure APIs](./stm32/trustzone-secure-apis.md)
 
 # Rust for Real-Time Systems
 
