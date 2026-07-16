@@ -1,4 +1,4 @@
-# nRF52 Preparation
+# nRF52 Introduction and Preparation
 
 This chapter contains the introduction and preparation for the nRF52-based exercises.
 
@@ -7,7 +7,7 @@ This chapter contains the introduction and preparation for the nRF52-based exerc
 - [nRF52840 Development Kit (DK)](https://www.nordicsemi.com/Software-and-Tools/Development-Kits/nRF52840-DK)
 - [nRF52840 Dongle](https://www.nordicsemi.com/Software-and-tools/Development-Kits/nRF52840-Dongle)
 - 2 micro-USB cables
-  - ❗️ make sure you're using micro usb cables which can transmit data (some are charging-only; these are not suitable for these exercises)
+  - ❗️ make sure you're using micro-USB cables which can transmit data (some are charging-only; these are not suitable for these exercises)
 - 2 corresponding available USB ports on your laptop / PC (you can use a USB hub if you don't have enough ports)
 
 In our nRF52-focussed exercises we will use both the nRF52840 Development Kit (DK) and the nRF52840 Dongle. We'll mainly develop programs for the DK and use the Dongle to assist with some exercises.
