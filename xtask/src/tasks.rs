@@ -104,14 +104,24 @@ pub fn usb_list() -> color_eyre::Result<()> {
     for dev in nusb::list_devices()? {
         let suffix = match (dev.vendor_id(), dev.product_id()) {
             (0x1366, pid) if (pid >> 8) == 0x10 || (pid >> 8) == 0x01 => {
+                // we've observed a few PIDs here
                 " <- J-Link on the nRF52840 Development Kit"
             }
-            (0x1915, 0x521f) => " <- nRF52840 Dongle (in bootloader mode)",
+            (0x1915, 0x521f) => {
+                // This seems to have a consistent PID
+                " <- nRF52840 Dongle (in bootloader mode)"
+            }
             (consts::USB_VID_DEMO, consts::USB_PID_DONGLE_UNIFIED) => {
+                // this depends on how they programmed the firmware, so use consts
                 " <- nRF52840 Dongle (dongle-fw)"
             }
             (consts::USB_VID_DEMO, consts::USB_PID_RTIC_DEMO) => {
+                // this depends on how they programmed the firmware, so use consts
                 " <- nRF52840 on the nRF52840 Development Kit"
+            }
+            (0x0483, 0x374e | 0x374f | 0x3754) => {
+                // there are a few pids listed on the Linux USB list
+                " <- STLINK-V3 on the NUCLEO-U5A5"
             }
             _ => "",
         };
