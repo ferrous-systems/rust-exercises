@@ -47,20 +47,9 @@
 
 # Rust for Microcontrollers
 
-- [Introduction and Preparation](./nrf52/preparation.md)
+- [nRF52 Introduction and Preparation](./nrf52/preparation.md)
   - [Dongle Preparation](./nrf52/dongle.md)
   - [Board Preparation](./nrf52/board.md)
-- [References and Resources](./nrf52/references-resources.md)
-  - [Tooltips](./nrf52/tooltips.md)
-- [Troubleshooting](./nrf52/troubleshooting.md)
-  - [`cargo-size` is not working](./nrf52/troubleshoot-cargo-size.md)
-  - [Rust analyzer is not working](./nrf52/troubleshoot-rust-analyzer.md)
-  - [`probe-rs` does not work on Windows](./nrf52/troubleshoot-windows-probe-rs.md)
-  - [`cargo build` fails to link](./nrf52/troubleshoot-cargo-build.md)
-  - [Dongle USB functionality is not working](./nrf52/troubleshoot-usb-dongle.md)
-  - [`cargo run` errors](./nrf52/troubleshoot-cargo-run-error.md)
-  - [`no probe was found` error](./nrf52/troubleshoot-probe-not-found.md)
-  - [`location info is incomplete` error](./nrf52/troubleshoot-location-info.md)
 - [nRF52 Radio Exercise](./nrf52/radio-exercise.md)
   - [Parts of an Embedded Program](./nrf52/radio-parts-embedded-program.md)
   - [Building an Embedded Program](./nrf52/radio-building-program.md)
@@ -117,6 +106,17 @@
     - [Booting in Secure Mode](./stm32/trustzone-secure.md)
     - [Changing to Nonsecure Mode](./stm32/trustzone-nonsecure.md)
     - [Offering Secure APIs](./stm32/trustzone-secure-apis.md)
+- [References and Resources](./nrf52/references-resources.md)
+  - [Tooltips](./nrf52/tooltips.md)
+- [Troubleshooting](./nrf52/troubleshooting.md)
+  - [`cargo-size` is not working](./nrf52/troubleshoot-cargo-size.md)
+  - [Rust analyzer is not working](./nrf52/troubleshoot-rust-analyzer.md)
+  - [`probe-rs` does not work on Windows](./nrf52/troubleshoot-windows-probe-rs.md)
+  - [`cargo build` fails to link](./nrf52/troubleshoot-cargo-build.md)
+  - [Dongle USB functionality is not working](./nrf52/troubleshoot-usb-dongle.md)
+  - [`cargo run` errors](./nrf52/troubleshoot-cargo-run-error.md)
+  - [`no probe was found` error](./nrf52/troubleshoot-probe-not-found.md)
+  - [`location info is incomplete` error](./nrf52/troubleshoot-location-info.md)
 
 # Rust for Real-Time Systems
 
