@@ -197,7 +197,7 @@ enters an infinite loop if it has nothing to do.
 
 ## Secure Watermark
 
-Another part of the option bytes controls the "Secure Watermark" - that is, which pages in Flash are readable from Nonsecure mode.
+Another part of the option bytes controls the "Secure Watermark" - that is, which pages in Flash are readable from Nonsecure Mode.
 
 ```console
 $ cargo run --bin step2-secure-watermark
@@ -208,7 +208,7 @@ $ cargo run --bin step2-secure-watermark
      Finished in 0.45s
 Running option-bytes program.
 Enable FLASH peripheral...
-Unlocking Bank 2 from secure mode. probe-rs is about to crash and that's OK :)
+Unlocking Bank 2 from Secure Mode. probe-rs is about to crash and that's OK :)
 
 (all the rest of the output is junk from probe-rs that you can ignore)
 ```

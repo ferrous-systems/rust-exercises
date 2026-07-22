@@ -1,6 +1,6 @@
 //! # nonsecure-app, complete
 //!
-//! A complete nonsecure app running on the NUCLEO-U5A5ZJ
+//! A complete Nonsecure Mode binary running on the NUCLEO-U5A5ZJ
 
 #![no_std]
 #![no_main]

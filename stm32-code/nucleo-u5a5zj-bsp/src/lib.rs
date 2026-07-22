@@ -114,7 +114,7 @@ impl SecureBoard {
 
     /// Set SRAM3 to be nonsecure
     ///
-    /// Still allows secure mode to have read/write access to it
+    /// Still allows Secure Mode to have read/write access to it
     pub fn set_sram3_nonsecure(&mut self) {
         self.gztc
             .map_addresses_nonsecure(

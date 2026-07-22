@@ -1,6 +1,6 @@
 //! # secure-loader, complete
 //!
-//! A secure app, with the exercise completed.
+//! A Secure Mode binary, with the exercise completed.
 
 #![no_std]
 #![no_main]
@@ -51,14 +51,14 @@ fn main() -> ! {
         RED_LED.replace(cs, Some(bsp.red_ld3));
     });
 
-    // We give Green to nonsecure mode
+    // We give Green to Nonsecure Mode
     _ = bsp.green_ld1.make_nonsecure(&mut bsp.gpio);
 
     hprintln!("...LEDs configured");
 
     let ns_app_base = bsp::hal::ns_addr::FLASH2_START;
-    hprintln!("Booting NS application at 0x{:08x}...", ns_app_base);
-    // Boot nonsecure world
+    hprintln!("Booting Nonsecure Mode binary at 0x{:08x}...", ns_app_base);
+    // Boot a Nonsecure Mode binary
     unsafe {
         cortex_m::asm::bootload_ns(ns_app_base as *const u32, bsp.scb_ns);
     }

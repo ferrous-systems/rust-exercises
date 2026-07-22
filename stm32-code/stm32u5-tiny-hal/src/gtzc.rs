@@ -37,7 +37,7 @@ impl Driver {
         }
     }
 
-    /// Give secure mode read/write access to a memory bank even when it's set to nonsecure mode
+    /// Give Secure Mode read/write access to a memory bank even when it's set to Nonsecure Mode
     pub fn allow_secure_read_write(&mut self, sram_bank: SramBank) -> Result<(), Error> {
         match sram_bank {
             SramBank::SRAM1 => {
