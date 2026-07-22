@@ -2,7 +2,7 @@
 //!
 //! A simple STM32 program for reprogramming its own secure watermark on Flash Bank 2.
 //!
-//! Requires that the chip is in Secure mode (TZEN=1), so run step1-option-bytes first.
+//! Requires that the chip is in Secure Mode (TZEN=1), so run step1-option-bytes first.
 
 #![no_std]
 #![no_main]
@@ -36,7 +36,7 @@ fn main() -> ! {
     if secure_watermark2.secwm2_pstrt() == 0xFF && secure_watermark2.secwm2_pend() == 0 {
         hprintln!("Secure watermark is OK :)");
     } else {
-        hprintln!("Unlocking Bank 2 from secure mode. probe-rs is about to crash and that's OK :)");
+        hprintln!("Unlocking Bank 2 from Secure Mode. probe-rs is about to crash and that's OK :)");
         // Unlock NSCR
         p.SEC_FLASH.nskeyr().write(|w| {
             unsafe {

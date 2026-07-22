@@ -1,6 +1,6 @@
 [package]
 name = "secure-loader"
-description = "A secure-mode application running from the Flash Bank 1 and SRAM 1"
+description = "A Secure Mode binary running from Flash Bank 1 and SRAM1"
 version = "0.1.0"
 edition = "2024"
 

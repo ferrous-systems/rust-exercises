@@ -1,6 +1,6 @@
 [package]
 name = "nonsecure-app"
-description = "A nonsecure app running from Flash Bank 2 and SRAM3"
+description = "A Nonsecure Mode binary running from Flash Bank 2 and SRAM3"
 version = "0.1.0"
 edition = "2024"
 

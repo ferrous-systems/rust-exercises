@@ -1,11 +1,11 @@
 # Offering Secure APIs
 
-Now our nonsecure code is running, we we would like to take the next step - to
+Now our Nonsecure Mode code is running, we we would like to take the next step - to
 have it take advantage of secure services offered by the `secure-loader`
 program.
 
-Obviously nonsecure code cannot just randomly start executing any secure code
-that happens to exist in flash - that would be bad.
+Obviously code in Nonsecure Mode cannot just randomly start executing code that
+happens to exist in secure region of flash - that would be bad.
 
 ```rust,ignore
 fn nonsecure_main() {
@@ -18,15 +18,15 @@ fn nonsecure_main() {
 }
 ```
 
-The rule in TrustZone-M is that when nonsecure mode makes a call to a secure
+The rule in TrustZone-M is that when Nonsecure Mode makes a call to a secure
 API, that API must:
 
 * begin with an `sg` (Secure Gateway) instruction, and
 * exist in a region of memory marked as *Nonsecure Callable* (that is, Nonsecure
-  mode can execute it, but cannot read or write it).
+  Mode can execute it, but cannot read or write it).
 
 In addition, it's very important that registers are cleaned up when the secure
-function returns back to nonsecure mode, and that we do not use any data types
+function returns back to Nonsecure Mode, and that we do not use any data types
 that contain padding between fields - because the padding could inadvertently
 contain secret information.
 
@@ -48,9 +48,9 @@ We're just going to add a normal, public, `extern "C"` function to our
 * If the number is 0, turn the blue LED off, otherwise turn the blue LED on
 
 You *could* accept a pointer to some nonsecure data (like a string to print),
-but then we'd have to check the nonsecure app wasn't trying to trick secure mode
-by giving it a pointer to secure SRAM (e.g. a pointer the secret encryption
-key). That's possible, but let's stick with plain integers for now.
+but then we'd have to check the Nonsecure Mode code wasn't trying to trick
+Secure Mode by giving it a pointer to secure SRAM (e.g. a pointer the secret
+encryption key). That's possible, but let's stick with plain integers for now.
 
 Note that the Blue LED driver is stored as a global `static` variable, inside a
 critical-section Mutex. You can observe what the Secure Fault handler does with
@@ -87,7 +87,7 @@ pub extern "C" fn secure_set_blue_led(value: u32) {
 
 ### Task 2 - Export the function
 
-Now we will export the function from Secure mode. To do this, we will use a new
+Now we will export the function from Secure Mode. To do this, we will use a new
 Rust ABI called `"cmse-nonsecure-entry"`. This is currently unstable, and only
 available in nightly releases of Rust, and even then only if you opt-in to the
 feature.

@@ -31,12 +31,12 @@ our 32-bit (4 GiB) address space as being either:
 - *Nonsecure* (NS), or
 - *Nonsecure Callable* (NSC).
 
-That last one means that the code will run in *Secure mode* but it is offered as
-an API to code running in *Nonsecure mode*. For example, if *Secure mode* was
+That last one means that the code will run in *Secure Mode* but it is offered as
+an API to code running in *Nonsecure Mode*. For example, if *Secure Mode* was
 looking after your signing keys, you might have a *Nonsecure Callable* API for
 "Please verify this digital signature". The signature verification process needs
 the keys but it is very important the keys themselves do not leak out into
-nonsecure world and hence into the hands of a potential attacker.
+Nonsecure Mode and hence into the hands of a potential attacker.
 
 You need both IDPAU and SAU to say yes in order to make a secure access to
 Flash, RAM or a memory-mapped peripheral. This, and many more details about
@@ -47,7 +47,7 @@ for Armv8-M Architecture][tz-arch].
 
 ## Running the Template
 
-This is all fairly complicated, so we've set up a template Secure-mode
+This is all fairly complicated, so we've set up a template Secure Mode
 application to get you started. Let's run it.
 
 ```console
@@ -83,6 +83,6 @@ Take a look through the [`src/main.rs`] file. Important things to note include:
 If you look in [`memory.x`] you'll note that we're only telling the linker about
 the first 2 MiB of Flash, and the first 768K of SRAM (which is a bank called
 SRAM1). The other half of Flash, and the other SRAM banks, we are going to
-reserve for the nonsecure application.
+reserve for the Nonsecure Mode application.
 
 [`memory.x`]: ../../../stm32-code/secure-loader/memory.x

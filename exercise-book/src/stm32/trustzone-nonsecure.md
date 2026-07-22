@@ -1,14 +1,14 @@
 # Changing to Nonsecure Mode
 
-We got secure-mode running in the previous chapter. But we also want to run a
-nonsecure application.
+We got Secure Mode running in the previous chapter. But we also want to run a
+different application in Nonsecure Mode at the same time.
 
 Your tasks are to:
 
 * Call the BSP function to program the SAU.
 * Call the BSP function to program the Global TrustZone Controller's Memory
   Protection Controller for SRAM3
-* Use the `cortex-m` library function to bootstrap the Nonsecure application
+* Use the `cortex-m` library function to bootstrap the Nonsecure Mode application
 
 Once we've done that, we can load the `nonsecure-app` and hopefully the
 `secure-loader` will boot and then jump to the `nonsecure-app`.
@@ -40,7 +40,7 @@ The `secure-loader` sees the world like this:
 
 ## Task 1 - Program the SAU
 
-By default the SAU will say no to anything the Nonsecure mode asks for (which is
+By default the SAU will say no to anything the Nonsecure Mode asks for (which is
 a very reasonable default). However, our `nonsecure-app` is going to need *some*
 resources, so we'll give it:
 
@@ -75,10 +75,10 @@ There's a function in the BSP that will do this for you.
 ### Task 2 - Program the Global TrustZone Controller's Memory Protection Controller
 
 The STM32U5 has a separate device for controlling which parts of which SRAM are
-available to nonsecure mode. This device can apportion memory on a 512-byte
+available to Nonsecure Mode. This device can apportion memory on a 512-byte
 block by block basis, which seems overkill. We just want to leave SRAM1 for
-Secure mode, and give all of SRAM3 to Nonsecure mode. As SRAM3 is 832 KiB in
-length, that's 1664 blocks we have to individually flip over to Nonsecure mode.
+Secure mode, and give all of SRAM3 to Nonsecure Mode. As SRAM3 is 832 KiB in
+length, that's 1664 blocks we have to individually flip over to Nonsecure Mode.
 
 The GTZC MPCBB peripheral does this with a whole bunch of 32-bit registers,
 where each register controls 32 blocks (1 bit per block). SRAM3 therefore has 52
@@ -89,7 +89,7 @@ Luckily for you, I wrote a driver for this, you can you just call
 will then hit all the right bits in all the right registers for you.
 
 You will also want to call `bsp.gztc.allow_secure_read_write` to tell it that
-although SRAM3 is given over to Nonsecure mode, Secure mode would still like to
+although SRAM3 is given over to Nonsecure Mode, Secure Mode would still like to
 read it.
 
 <details>
@@ -99,9 +99,9 @@ There's a function in the BSP that will do this for you.
 
 </details>
 
-## Task 3 - Bootstrap the Nonsecure world
+## Task 3 - Bootstrap the Nonsecure Mode
 
-Nonsecure World and Secure World have their own copies of some important things:
+Nonsecure Mode and Secure Mode have their own copies of some important things:
 
 * They have their own Nested Vector Interrupt Controller (NVIC), which is a
   memory-mapped peripheral at `0xE000_E100`
@@ -111,38 +111,38 @@ Nonsecure World and Secure World have their own copies of some important things:
   `MSP`, or just `SP`
 
 These things have the same name regardless of which world you are in - `MSP` is
-the Secure Main Stack Pointer when you are Secure Mode, and is the Nonsecure
+the Secure Main Stack Pointer when you are Secure Mode, and is the nonsecure
 Main Stack Pointer when you are in Nonsecure Mode.
 
-But, Secure mode also gets access to the Nonsecure mode values as well, through
+But, Secure Mode also gets access to the Nonsecure Mode values as well, through
 different names.
 
-* The Nonsecure MSP is available as system register called `MSP_NS` 
-* The Nonsecure NVIC is available at `0xE002_E100`
-* The Nonsecure SCB is available at `0xE002_ED04`
+* The nonsecure MSP is available as system register called `MSP_NS` 
+* The nonsecure NVIC is available at `0xE002_E100`
+* The nonsecure SCB is available at `0xE002_ED04`
 
 Think for a moment about whether this should work the other way around - should
-Nonsecure mode have access to the Secure mode peripherals?
+Nonsecure Mode have access to the Secure Mode peripherals?
 
 <details>
 <summary>Answer</summary>
 
 No!
 
-The point of TrustZone is to keep things in Secure mode (like encryption keys) a
-secret from Nonsecure mode (which might get hacked when processing untrusted
+The point of TrustZone is to keep things in Secure Mode (like encryption keys) a
+secret from Nonsecure Mode (which might get hacked when processing untrusted
 input).
 
-Secure mode is more trusted, and has more permissions that Nonsecure mode.
+Secure mode is more trusted, and has more permissions that Nonsecure Mode.
 
 </details>
 
 To actually enter Nonsecure world, we need to:
 
-* Set Nonsecure mode's Vector Table Offset Register to where the code lives in
+* Set Nonsecure Mode's Vector Table Offset Register to where the code lives in
   flash, so that interrupts and exceptions work
-* Set Nonsecure mode's Main Stack Pointer, so it has a stack to use
-* Zero all the CPU registers so we don't leak any secrets to Nonsecure mode
+* Set Nonsecure Mode's Main Stack Pointer, so it has a stack to use
+* Zero all the CPU registers so we don't leak any secrets to Nonsecure Mode
 * Execute the `BXNS` instruction, with the address of the Nonsecure reset
   function
 
@@ -170,7 +170,7 @@ The `bootload_ns` function is also unsafe - why is that? What rules does the
 human reviewer need to check before we use that function?
 
 Bonus question (hard-mode): Can you find a way that information might be leaked
-from Secure mode to Nonsecure mode through this function? I hope not, but maybe
+from Secure Mode to Nonsecure Mode through this function? I hope not, but maybe
 there's a bug!
 
 ## Some nonsecure firmware
@@ -200,7 +200,7 @@ SECURE FAULT:
 The `fffffff0` value is suspicious - it's like `0xFFFF_FFFF` rounded down, and
 `0xFFFF_FFFF` is what blank flash reads as.
 
-That's because we haven't loaded a non-secure application! Let's do that.
+That's because we haven't loaded a Nonsecure Mode binary! Let's do that.
 
 ```console
 $ cargo run --bin nonsecure-app
@@ -219,12 +219,12 @@ Booting NS application at 0x08200000...
 ```
 
 Note how even though we just loaded `nonsecure-app`, the `secure-loader` program
-still ran first. But it bounced us into nonsecure mode and our nonsecure
+still ran first. But it bounced us into Nonsecure Mode and our nonsecure
 application is happily running.
 
 Well done!
 
-As an aside, our nonsecure app is using `defmt` over SEGGER RTT for the text
+As an aside, the `nonsecure-app` is using `defmt` over SEGGER RTT for the text
 output, which is much faster than semihosting. The trade-off is that if you
 re-run the `secure-loader` program to get a new version on to the board, you
 will not see any defmt output from the nonsecure side. This is because
