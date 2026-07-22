@@ -19,11 +19,9 @@ portion of the permissions comes from the memory address.
     https://developer.arm.com/documentation/100690/0201/Attribution-units--SAU-and-IDAU-
 
 Because our STM32U5A5ZJ-Q has `TZEN=1` set in the Option Bytes (see [STM32
-Introduction and Preparation]), it will boot from the address given in the
-`FLASH_SECBOOTADD0R` register (which is loaded from the Option Bytes). This
-defaults to `0x0C00_0000`.
-
-[STM32 Introduction and Preparation]: ./preparation.md#option-bytes
+Introduction and Preparation](./preparation.md#option-bytes)), it will boot from
+the address given in the `FLASH_SECBOOTADD0R` register (which is loaded from the
+Option Bytes). This defaults to `0x0C00_0000`.
 
 The other half of your permissions comes from a Cortex-M33 peripheral called the
 [*Secure Atribution Unit*][attr-unit] and there we can mark particular parts of
