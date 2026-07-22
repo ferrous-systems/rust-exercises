@@ -1,0 +1,10 @@
+[package]
+name = "stm32u5-tiny-hal"
+description = "A small HAL for STM32U5 series MCUs"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+stm32u5.workspace = true
+cortex-m.workspace = true
+cortex-m-semihosting.workspace = true

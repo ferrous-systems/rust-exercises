@@ -22,6 +22,7 @@ package_list := " \
 	nrf52-code/usb-lib-solutions/get-descriptor-config \
 	nrf52-code/usb-lib-solutions/get-device \
 	nrf52-code/usb-lib-solutions/set-config \
+	stm32-code \
 	xtask \
 	tools/tcp-client \
 "
@@ -29,7 +30,7 @@ package_list := " \
 default:
   @just --choose
 
-everything: test-mdbook build-mdbook test-exercise-templates test-exercise-solutions test-connected-mailbox test-multi-threaded-mailbox build-qemu-uart-driver build-qemu-uart-driver-ferrocene build-radio-app build-usb-app test-usb-lib build-dongle-fw format
+everything: test-mdbook build-mdbook test-exercise-templates test-exercise-solutions test-connected-mailbox test-multi-threaded-mailbox build-qemu-uart-driver build-qemu-uart-driver-ferrocene build-nrf52-code build-stm32-code format
 
 format-check: format-check-rust
 
@@ -90,6 +91,14 @@ build-dongle-fw:
 	cd nrf52-code/dongle-fw && cargo build --release
 
 build-nrf52-code: build-radio-app build-usb-app test-usb-lib build-dongle-fw build-hal-app
+
+build-stm32-code:
+	#!/bin/sh
+	cd stm32-code
+	cargo build --release --bin secure-loader
+	cargo build --release --bin nonsecure-app
+	cargo build --release --bin secure-loader-complete
+	cargo build --release --bin nonsecure-app-complete
 
 assemble version:
 	echo "Making ./rust-exercises-{{ version }}..."

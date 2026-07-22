@@ -149,6 +149,19 @@ jobs:
           tool: flip-link@0.1.10
       - run: just build-usb-app
 
+  build-stm32-code:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup
+        with:
+          cache: stm32-code
+          target: thumbv8m.main-none-eabi
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: flip-link@0.1.10
+      - run: just build-stm32-code
+
   test-usb-lib:
     runs-on: ubuntu-24.04
     steps:
