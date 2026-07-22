@@ -78,7 +78,7 @@ The STM32U5 has a separate device for controlling which parts of which SRAM are
 available to nonsecure mode. This device can apportion memory on a 512-byte
 block by block basis, which seems overkill. We just want to leave SRAM1 for
 Secure mode, and give all of SRAM3 to Nonsecure mode. As SRAM3 is 832 KiB in
-length, that's 1664 blocks we have to individual flip over to Nonsecure mode.
+length, that's 1664 blocks we have to individually flip over to Nonsecure mode.
 
 The GTZC MPCBB peripheral does this with a whole bunch of 32-bit registers,
 where each register controls 32 blocks (1 bit per block). SRAM3 therefore has 52
@@ -133,7 +133,7 @@ The point of TrustZone is to keep things in Secure mode (like encryption keys) a
 secret from Nonsecure mode (which might get hacked when processing untrusted
 input).
 
-Secure mode has is more trusted, and has more permissions that Nonsecure mode.
+Secure mode is more trusted, and has more permissions that Nonsecure mode.
 
 </details>
 
@@ -158,12 +158,12 @@ unsafe {
 
 As an aside, we're using a fork of the `cortex-m` crate that adds access to some
 of these Nonsecure peripherals. So don't expect the documentation at
-`https://docs.rs/cortex-m` to be that helpful here. You'll need to look at
+<https://docs.rs/cortex-m> to be that helpful here. You'll need to look at
 <https://github.com/rust-embedded/cortex-m/tree/jp/release-cm-and-cmrt/cortex-m>
 for the time being.
 
 The `bootload_ns` function needs access to the Nonsecure System Control Base
-peripheral, but the BSP has provided that so we can just and it over. Feel free
+peripheral, but the BSP has provided that so we can just hand it over. Feel free
 to "Go to Definition" and dig into what this function is doing.
 
 The `bootload_ns` function is also unsafe - why is that? What rules does the
