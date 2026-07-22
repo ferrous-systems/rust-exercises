@@ -182,7 +182,7 @@ pub struct NonSecureBoard {
 }
 
 impl NonSecureBoard {
-    /// Grab the non-secure board support package
+    /// Grab the nonsecure board support package
     ///
     /// Will panic if you've already grabbed either the [`SecureBoard`] or the [`NonSecureBoard`]
     pub fn new() -> Self {

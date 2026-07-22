@@ -71,7 +71,7 @@ impl Driver {
         }
     }
 
-    /// Map some addresses as non-secure
+    /// Map some addresses as nonsecure
     ///
     /// * The start and end address must be relative to the start of the given SRAM Bank.
     /// * The start and end address must be a multiple of the superblock size (16K).

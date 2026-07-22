@@ -7,7 +7,7 @@ STM32U5A5ZJ microcontroller.
 
 There are five packages in this directory.
 
-* [`option-bytes`](./option-bytes/) - a non-secure app that sets the Option Bytes
+* [`option-bytes`](./option-bytes/) - a nonsecure app that sets the Option Bytes
   so that the board boots into Secure Mode from them on (i.e. sets TZEN=1)
 * [`nucleo-u5a5zj`](./nucleo-u5a5zj/) - a small BSP for the NUCLEO-U5A5ZJ-Q
   board
