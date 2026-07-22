@@ -1,6 +1,6 @@
 //! # nonsecure-app
 //!
-//! A skeleton template for a non-secure app running on the NUCLEO-U5A5ZJ
+//! A skeleton template for a nonsecure app running on the NUCLEO-U5A5ZJ
 
 #![no_std]
 #![no_main]

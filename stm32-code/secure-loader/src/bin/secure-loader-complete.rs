@@ -66,7 +66,7 @@ fn main() -> ! {
 
 /// Control the blue LED
 ///
-/// This function is exported and made available to the non-secure side
+/// This function is exported and made available to the nonsecure side
 #[unsafe(no_mangle)]
 pub extern "cmse-nonsecure-entry" fn secure_set_blue_led(value: u32) {
     cortex_m_semihosting::hprintln!("secure_set_blue_led({})", value);
