@@ -88,9 +88,11 @@ Luckily for you, I wrote a driver for this, you can you just call
 `bsp.gztc.map_addresses_nonsecure` and give it the address range for SRAM3. It
 will then hit all the right bits in all the right registers for you.
 
-You will also want to call `bsp.gztc.allow_secure_read_write` to tell it that
+You may also want to call `bsp.gztc.allow_secure_read_write` to tell it that
 although SRAM3 is given over to Nonsecure State, Secure State would still like to
-read it.
+read it. Technically you don't need this to boot the application, but if you later
+want to receive pointers through a Nonsecure Callable API and then read the data
+they point at, you'll need this enabled.
 
 <details>
 <summary>Hint</summary>
