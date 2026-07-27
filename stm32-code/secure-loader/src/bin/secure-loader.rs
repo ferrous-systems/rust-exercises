@@ -1,6 +1,6 @@
 //! # secure-loader
 //!
-//! A skeleton Secure Mode binary, to start the exercise.
+//! A skeleton Secure State binary, to start the exercise.
 
 #![no_std]
 #![no_main]
