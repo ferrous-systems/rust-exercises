@@ -24,35 +24,35 @@ static BLUE_LED: Mutex<RefCell<Option<bsp::SecureLed>>> = Mutex::new(RefCell::ne
 
 #[cortex_m_rt::entry]
 fn main() -> ! {
-    let mut bsp: bsp::SecureBoard = bsp::SecureBoard::new();
+    let mut board: bsp::SecureBoard = bsp::SecureBoard::new();
 
     // Enable secure fault handler
-    bsp.scb
+    board.scb
         .enable(cortex_m::peripheral::scb::Exception::SecureFault);
 
     // Say hello
     hprintln!("Hello, this is secure-loader. Configuring peripherals...");
 
     // Configure Secure Attribution Unit, to mark some addresses as Nonsecure
-    bsp.configure_sau();
+    board.configure_sau();
     hprintln!("...SAU configured");
 
     // Configure the Memory Protection Controller to mark all
     // the SRAM3 blocks as Nonsecure
-    bsp.set_sram3_nonsecure();
+    board.set_sram3_nonsecure();
     hprintln!("...GTZC1 configured");
 
     // We keep Red and Blue LEDs
-    bsp.blue_ld2.off();
-    bsp.red_ld3.on();
+    board.blue_ld2.off();
+    board.red_ld3.on();
     // Save these for later
     critical_section::with(|cs| {
-        BLUE_LED.replace(cs, Some(bsp.blue_ld2));
-        RED_LED.replace(cs, Some(bsp.red_ld3));
+        BLUE_LED.replace(cs, Some(board.blue_ld2));
+        RED_LED.replace(cs, Some(board.red_ld3));
     });
 
     // We give Green to Nonsecure State
-    _ = bsp.green_ld1.make_nonsecure(&mut bsp.gpio);
+    _ = board.green_ld1.make_nonsecure(&mut board.gpio);
 
     hprintln!("...LEDs configured");
 
@@ -60,7 +60,7 @@ fn main() -> ! {
     hprintln!("Booting Nonsecure State binary at 0x{:08x}...", ns_app_base);
     // Boot a Nonsecure State binary
     unsafe {
-        cortex_m::asm::bootload_ns(ns_app_base as *const u32, bsp.scb_ns);
+        cortex_m::asm::bootload_ns(ns_app_base as *const u32, board.scb_ns);
     }
 }
 

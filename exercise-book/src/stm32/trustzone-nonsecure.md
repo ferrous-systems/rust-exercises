@@ -9,34 +9,35 @@ Your tasks are to:
 * Call the BSP function to program the Global TrustZone Controller's Memory
   Protection Controller for SRAM3
 * Use the `cortex-m` library function to bootstrap the Nonsecure State application
+* Hand the GPIO for the Green LED over the Nonsecure State so it can blink it
 
 Once we've done that, we can load the `nonsecure-app` and hopefully the
 `secure-loader` will boot and then jump to the `nonsecure-app`.
 
 The `nonsecure-app` sees the world like this:
 
-| Description  | Start Address | End Address   | IDPAU     | SAU                 | Contains       |
+| Description  | Start Address | End Address   | IDAU     | SAU                 | Contains       |
 |--------------|---------------|---------------|-----------|---------------------|----------------|
-| Flash Bank 1 | `0x0800_0000` | `0x081F_FFFF` | Nonsecure | ---                 | *Unused*       |
+| Flash Bank 1 | `0x0800_0000` | `0x081F_FFFF` | Nonsecure | ---                 | *Hidden*       |
 | Flash Bank 2 | `0x0820_0000` | `0x083F_FFFF` | Nonsecure | Region 0, Nonsecure | Code           |
-| SRAM1        | `0x2000_0000` | `0x200B_FFFF` | Nonsecure | ---                 | *Unused*       |
+| SRAM1        | `0x2000_0000` | `0x200B_FFFF` | Nonsecure | ---                 | *Hidden*       |
 | SRAM3        | `0x200D_0000` | `0x201A_FFFF` | Nonsecure | Region 1, Nonsecure | Data and Stack |
 | Peripherals  | `0x4000_0000` | `0x4FFF_FFFF` | Nonsecure | Region 2, Nonsecure | Peripherals    |
 
 The `secure-loader` sees the world like this:
 
-| Description  | Start Address | End Address   | IDPAU     | SAU                 | Contains           |
-|--------------|---------------|---------------|-----------|---------------------|--------------------|
-| Flash Bank 1 | `0x0800_0000` | `0x081F_FFFF` | Nonsecure | ---                 | *Unused*           |
-| Flash Bank 2 | `0x0820_0000` | `0x083F_FFFF` | Nonsecure | Region 0, Nonsecure | Code               |
-| Flash Bank 1 | `0x0C00_0000` | `0x0C1F_FFFF` | Secure    | ---                 | Secure loader code |
-| Flash Bank 2 | `0x0C20_0000` | `0x0C3F_FFFF` | Secure    | ---                 | *Unused alias*     |
-| SRAM1        | `0x2000_0000` | `0x200B_FFFF` | Nonsecure | ---                 | *Unused*           |
-| SRAM3        | `0x200D_0000` | `0x201A_FFFF` | Nonsecure | Region 1, Nonsecure | Data and Stack     |
-| SRAM1        | `0x3000_0000` | `0x300B_FFFF` | Secure    | ---                 | *Unused alias*     |
-| SRAM3        | `0x300D_0000` | `0x301A_FFFF` | Secure    | ---                 | *Unused alias*     |
-| Peripherals  | `0x4000_0000` | `0x4FFF_FFFF` | Nonsecure | Region 2, Nonsecure | Peripherals        |
-| Peripherals  | `0x5000_0000` | `0x5FFF_FFFF` | Secure    | ---                 | Secure Peripherals |
+| Description  | Start Address | End Address   | IDAU     | SAU                 | Contains                         |
+|--------------|---------------|---------------|-----------|---------------------|----------------------------------|
+| Flash Bank 1 | `0x0800_0000` | `0x081F_FFFF` | Nonsecure | ---                 | *Alias of Loader Code*           |
+| Flash Bank 2 | `0x0820_0000` | `0x083F_FFFF` | Nonsecure | Region 0, Nonsecure | App Code                         |
+| Flash Bank 1 | `0x0C00_0000` | `0x0C1F_FFFF` | Secure    | ---                 | Loader Code                      |
+| Flash Bank 2 | `0x0C20_0000` | `0x0C3F_FFFF` | Secure    | ---                 | *Alias of App Code*              |
+| SRAM1        | `0x2000_0000` | `0x200B_FFFF` | Nonsecure | ---                 | *Alias of Loader Data and Stack* |
+| SRAM3        | `0x200D_0000` | `0x201A_FFFF` | Nonsecure | Region 1, Nonsecure | App Data and Stack               |
+| SRAM1        | `0x3000_0000` | `0x300B_FFFF` | Secure    | ---                 | Loader Data and Stack            |
+| SRAM3        | `0x300D_0000` | `0x301A_FFFF` | Secure    | ---                 | *Alias of App Data and Stack*    |
+| Peripherals  | `0x4000_0000` | `0x4FFF_FFFF` | Nonsecure | Region 2, Nonsecure | Peripherals                      |
+| Peripherals  | `0x5000_0000` | `0x5FFF_FFFF` | Secure    | ---                 | Secure Peripherals               |
 
 ## Task 1 - Program the SAU
 
@@ -237,3 +238,36 @@ the price you pay for defmt being so fast.
 
 It's also why `secure-loader` is set to use the much slower semihosting output,
 so we can always see it regardless of which app we've just flashed.
+
+## Task 4
+
+The Nonsecure state app is trying to blink the LED but nothing is happening. This is
+because the GPIO peripheral is TrustZone-aware, and it knows the GPIO for the Green LED
+is still associated with Secure state.
+
+To fix this, use the `make_nonsecure` method on the Green LED variable in the `secure-loader`.
+
+Remember, you'll need to reflash the `secure-loader` when you've made that change but, you
+probably *won't* need to change the `nonsecure-app` - it should just start blinking away!
+
+
+<details>
+<summary>Solution</summary>
+
+Simply add this code to `fn main()` for `secure-loader` (after you've been given
+the board):
+
+```rust
+// We give Green to Nonsecure State
+_ = board.green_ld1.make_nonsecure(&mut board.gpio);
+```
+
+The API gives us an object back representing access to the LED from Nonsecure
+state, but as we don't want the `secure-loader` playing with the LED we just
+discard the value by assigning to `_`.
+
+The API takes an exclusive reference to the GPIO peripheral to ensure that
+no-one else touches the registers it needs whilst it does a read-modify-write
+cycle on them.
+
+</details>

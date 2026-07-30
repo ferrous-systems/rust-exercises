@@ -43,6 +43,7 @@ We therefore have three steps:
 We're just going to add a normal, public, `extern "C"` function to our
 `secure-loader`. You can do whatever you like here, but our suggestion is:
 
+* Call the function `secure_set_blue_led`
 * Accept a single numeric argument, of type `u32`
 * Print the number using semihosting
 * If the number is 0, turn the blue LED off, otherwise turn the blue LED on

@@ -17,6 +17,14 @@ exercises.
 In our STM32-focussed exercises we will develop programs for the NUCLEO-U5A5ZJ-Q
 using its on-board ST-Link debugger.
 
+## Required Software
+
+You will need Rustup installed.
+
+We provide `rust-toolchain.toml` file will ensure that a suitable nightly
+release of Rust is downloaded automatically, along with the Rust Standard
+Library for the `thumbv8m.m-none-eabi` target.
+
 ## Board preparation
 
 The NULCEO-U5A5 board has two USB ports: a micro-USB port (CN1) and an USB
@@ -146,6 +154,53 @@ website] which involve downloading a generic rules file, manually placing it in
 
  [`probe-rs` website]: https://probe.rs/docs/getting-started/probe-setup
 
+## Fetching the code
+
+All of the remaining examples will assume you are in the root of the workspace
+for this exercise. Please clone the `ferrous-systems/rust-exercises` repository
+from Github and enter the `stm32-code` folder:
+
+```bash
+git clone https://github.com/ferrous-systems/rust-exercises
+cd rust-exercises/stm32-code
+```
+
+Your trainer will have told you if a specific version of the exercise material
+is required.
+
+## What is TrustZone
+
+Arm processors with TrustZone support two execution states:
+
+* Secure State
+* Nonsecure State
+
+The resources of the processor are shared between the two states, but only one
+state is executing code at any given moment in time.
+
+Secure state has more permissions than Nonsecure State. That means Secure state
+can do things that affect Nonsecure state, but Nonsecure state *cannot* affect
+Secure state.
+
+You might, for example, store your encryption keys in an application running in
+Secure state, and process your untrusted (and potentially malicious) in
+Nonsecure state. It should be **impossible** for any kind of hack on the
+Nonsecure code to result in the attacker obtaining the encryption key out of
+Secure state.
+
+You can change states by:
+
+* Setting a non-volatile option to control which state the processor starts in.
+* Having Secure state call a Nonsecure state entry function, using a special new
+  branch instruction.
+* Having Nonsecure state call an API provided by Secure state, using a special
+  new branch instruction **and** only when branching to a memory address
+  starting with a specialn new *Secure Gateway* marker instruction.
+
+TrustZone is available on both Application-profile Arm processors (Cortex-A,
+Cortex-X and Neoverse etc), and on Microcontroller-profile Arm processors
+(Cortex-M). Our STM32U5A5ZJ-Q is a Cortex-M33 based device.
+
 ## Enable TrustZone
 
 The STM32U5A5ZJ-Q MCU has a small ROM which executes before any user code. This
@@ -153,7 +208,7 @@ ROM can be controlled with some non-volatile configuration, known as *Option
 Bytes*.
 
 The Option Bytes need to be changed on your board, so that it boots into Secure
-Mode. This is controlled by a bit called `TZEN`.
+State. This is controlled by a bit called `TZEN`.
 
 We have provided a simple program which will set `TZEN=1` in the Option Bytes.
 The program is called `step1-option-bytes` and running it will also help us
@@ -197,7 +252,15 @@ enters an infinite loop if it has nothing to do.
 
 ## Secure Watermark
 
-Another part of the option bytes controls the "Secure Watermark" - that is, which pages in Flash are readable from Nonsecure State.
+Another part of the option bytes controls the "Secure Watermark" - that is,
+which pages in Flash are readable from Nonsecure State, and which are reserved
+for Secure state usage. We need to adjust the "Secure Watermark" in order for
+our example programs work.
+
+We couldn't do that before because you can only do this when your board boots
+into Secure state, hence why this binary is called `step2-secure-watermark`.
+
+You can run it like this:
 
 ```console
 $ cargo run --bin step2-secure-watermark
