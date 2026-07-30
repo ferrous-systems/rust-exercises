@@ -257,7 +257,7 @@ probably *won't* need to change the `nonsecure-app` - it should just start blink
 Simply add this code to `fn main()` for `secure-loader` (after you've been given
 the board):
 
-```rust
+```rust,ignore
 // We give Green to Nonsecure State
 _ = board.green_ld1.make_nonsecure(&mut board.gpio);
 ```
