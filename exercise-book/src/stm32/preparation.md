@@ -14,7 +14,7 @@ exercises.
 
 [ST Micro NUCLEO-U5A5ZJ-Q]: https://www.st.com/en/evaluation-tools/nucleo-u5a5zj-q.html
 
-In our STM32-focussed exercises we will develop programs for the NUCLEO-U5A5ZJ-Q
+In these STM32-focussed exercises we will develop programs for the NUCLEO-U5A5ZJ-Q
 using its on-board ST-Link debugger.
 
 ## Required Software
@@ -33,11 +33,11 @@ micro-USB port is connected to the ST-Link and is the one you should connect to
 your computer. You can also refer to the image below to see the location of the
 different components on the board.
 
-The development board actually has two chips. One is the STM32U5A5ZJ-Q target chip,
-and the other contains a special firmware which transforms it into a ST Micro
-ST-Link debugger probe. Your computer will communicate via USB with the ST-Link,
-which will in turn use the SWD protocol to interface with the target chip. All
-of this avoids the need for an external probe.
+The development board actually has two chips. One is the STM32U5A5ZJ-Q target
+chip, and the other contains a special firmware which transforms it into a ST
+Micro ST-Link debugger probe. Your computer will communicate via USB with the
+ST-Link, which will in turn use the SWD protocol to interface with the target
+chip. All of this avoids the need for an external probe.
 
 💬 These directions assume you are holding the board "vertically" with
 components (jumpers, buttons and socket headers) facing up. In this position,
@@ -95,11 +95,11 @@ it.
 
 We are going to use a debugging tool built with Rust which is well integrated
 into the Embedded Rust ecosystem called [`probe-rs`]. The [installation page]
-specifies how you can install this tool on your operating system. If you are on
-Windows and have problems executing the Windows PowerShell script, you can also
-download pre-built binaries from the [releases page]. You can then place these
-pre-built binaries at some location and add the location to your system PATH if
-it isn't there already.
+for probe-rs specifies how you can install this tool on your operating system.
+If you are on Windows and have problems executing the Windows PowerShell script,
+you can also download pre-built binaries from the [releases page]. You can then
+place these pre-built binaries at some location and add the location to your
+system PATH if it isn't there already.
 
 [`probe-rs`]: https://probe.rs/
 [installation page]: https://probe.rs/docs/getting-started/installation/
