@@ -195,7 +195,7 @@ You can change states by:
   branch instruction.
 * Having Nonsecure state call an API provided by Secure state, using a special
   new branch instruction **and** only when branching to a memory address
-  starting with a specialn new *Secure Gateway* marker instruction.
+  starting with a special new *Secure Gateway* marker instruction.
 
 TrustZone is available on both Application-profile Arm processors (Cortex-A,
 Cortex-X and Neoverse etc), and on Microcontroller-profile Arm processors
