@@ -2,7 +2,7 @@
 
 This is the nRF52840 Development Kit (DK) board.
 
-The board has two USB ports: J2 and J3 and an on-board J-Link programmer / debugger. USB port J3 is
+The board has two USB ports, J2 and J3, and an on-board J-Link programmer / debugger. USB port J3 is
 the nRF52840's USB port. Connect the Development Kit to your computer using the **J2** port.
 You can also refer to the image below to see the location of the different components on the board.
 
