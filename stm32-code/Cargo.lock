@@ -25,8 +25,9 @@ checksum = "bef38d45163c2f1dde094a7dfd33ccf595c92905c8f8f4fdc18d06fb1037718a"
 
 [[package]]
 name = "cortex-m"
-version = "0.7.7"
-source = "git+https://github.com/rust-embedded/cortex-m?branch=release-cortex-m-rt-076#1d4170ba7ae8dcf0ba69456731f2a37b958a30ac"
+version = "0.7.8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f985670a83ddb4c96174f696987458ae26fe3d801faf7263b56a2b2252c2f76f"
 dependencies = [
  "bare-metal",
  "bitfield",
@@ -39,8 +40,9 @@ dependencies = [
 
 [[package]]
 name = "cortex-m-macros"
-version = "0.1.0"
-source = "git+https://github.com/rust-embedded/cortex-m?branch=release-cortex-m-rt-076#1d4170ba7ae8dcf0ba69456731f2a37b958a30ac"
+version = "0.7.8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6d1922be58519ad40368fc4ca595a2cefa51a7abf947be3b0c90586dc7dbd0e2"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -50,7 +52,8 @@ dependencies = [
 [[package]]
 name = "cortex-m-rt"
 version = "0.7.6"
-source = "git+https://github.com/rust-embedded/cortex-m?branch=release-cortex-m-rt-076#1d4170ba7ae8dcf0ba69456731f2a37b958a30ac"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9c439b23bf18154d8a634543caf1ee73cceb723f2902f7ea243634159a00fd47"
 dependencies = [
  "cortex-m-rt-macros",
 ]
@@ -58,7 +61,8 @@ dependencies = [
 [[package]]
 name = "cortex-m-rt-macros"
 version = "0.7.6"
-source = "git+https://github.com/rust-embedded/cortex-m?branch=release-cortex-m-rt-076#1d4170ba7ae8dcf0ba69456731f2a37b958a30ac"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "061a75f3e7f3f01d649668d68e02d0ef92c7041a9c97b8fe6bc354ddbf40822d"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -67,8 +71,9 @@ dependencies = [
 
 [[package]]
 name = "cortex-m-semihosting"
-version = "0.5.0"
-source = "git+https://github.com/rust-embedded/cortex-m?branch=release-cortex-m-rt-076#1d4170ba7ae8dcf0ba69456731f2a37b958a30ac"
+version = "0.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fb6d409db102d77600a714dfa93744e379d9a7e03cbb175d64f09e14d3e921a2"
 dependencies = [
  "critical-section",
 ]
@@ -279,9 +284,9 @@ dependencies = [
 
 [[package]]
 name = "syn"
-version = "3.0.2"
+version = "3.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a207d6d6a2b7fc470b80443726053f18a2481b7e1eee970597051596567987a3"
+checksum = "53e9bae58849f64dfa4f5d5ae372c8341f7305f82a3868709269343628b659a3"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -305,7 +310,7 @@ checksum = "43cbfe0cf76104d42a574802844187e84a305e531ed54455f11fbde0f10541cd"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 3.0.2",
+ "syn 3.0.3",
 ]
 
 [[package]]
