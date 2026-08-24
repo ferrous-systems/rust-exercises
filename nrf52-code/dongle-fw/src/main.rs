@@ -10,7 +10,7 @@
 
 #![no_main]
 #![no_std]
-#![deny(missing_docs)]
+#![warn(missing_docs)]
 
 #[cfg(not(feature = "dk"))]
 use bsp::RgbLed;
@@ -33,6 +33,12 @@ mod app {
     const MSG_CHANNEL_LEN: usize = 8;
     const ACM_PIPE_LEN: usize = 256;
     const MAX_ACM_PACKET_SIZE: usize = 64;
+
+    /// CDC ACM class type definition.
+    pub type CdcAcmClass = embassy_usb::class::cdc_acm::CdcAcmClass<
+        'static,
+        hal::usb::Driver<'static, HardwareVbusDetect>,
+    >;
 
     /// App mode.
     #[derive(Debug, defmt::Format, Copy, Clone, PartialEq, Eq)]
@@ -170,19 +176,12 @@ mod app {
         green_led: bsp::Led,
         /// The RGB LED on the board
         rgb_led: bsp::RgbLed,
-        /// Our raw USB device
-        usb_dev: embassy_usb::UsbDevice<'static, hal::usb::Driver<'static, HardwareVbusDetect>>,
         /// Handles doing async writeln! to the USB ACM interface from the radio task.
         usb_acm_pipe_adapter_radio: WriteAsyncPipeAdapter,
         /// Handles doing async writeln! to the USB ACM interface from the button task.
         usb_acm_pipe_adapter_button: WriteAsyncPipeAdapter,
         /// Provides queued data to be written to USB ACM
         acm_pipe_reader: AcmPipeReader,
-        /// The ACM part of our USB device interface
-        usb_acm: embassy_usb::class::cdc_acm::CdcAcmClass<
-            'static,
-            hal::usb::Driver<'static, HardwareVbusDetect>,
-        >,
     }
 
     #[shared]
@@ -195,16 +194,118 @@ mod app {
         let board = bsp::init().unwrap();
         defmt::println!("-- Radio Puzzle firmware --");
 
+        let current_channel: u8 = 20;
+        defmt::debug!("Configuring radio...");
+        #[cfg(feature = "dk")]
+        let radio = {
+            let mut radio = hal::radio::ieee802154::Radio::new(
+                unsafe { hal::Peripherals::steal() }.RADIO,
+                Irqs,
+            );
+
+            // set TX power to its maximum value
+            radio.set_transmission_power(8);
+            radio.set_channel(current_channel);
+            defmt::debug!(
+                "Radio initialized and configured with TX power set to the maximum value"
+            );
+            radio
+        };
+        #[cfg(not(feature = "dk"))]
+        let mut radio = board.radio;
+        #[cfg(not(feature = "dk"))]
+        radio.set_channel(current_channel);
+
+        static MSG_CHANNEL: static_cell::ConstStaticCell<MessageChannel> =
+            static_cell::ConstStaticCell::new(embassy_sync::channel::Channel::new());
+        static ACM_PIPE: static_cell::ConstStaticCell<AcmPipe> =
+            static_cell::ConstStaticCell::new(embassy_sync::pipe::Pipe::new());
+
+        let msg_channel = MSG_CHANNEL.take();
+        let msg_channel_receiver = msg_channel.receiver();
+        let msg_channel_sender_acm = msg_channel.sender();
+        let msg_channel_sender_hid = msg_channel.sender();
+        let (acm_pipe_reader, acm_pipe_writer) = ACM_PIPE.take().split();
+
+        let usb_acm_pipe_adapter = WriteAsyncPipeAdapter {
+            buffer: heapless::String::new(),
+            acm_pipe_writer,
+        };
+
+        let user_button = InputChannel::new(
+            board.event_ch,
+            board.user_button,
+            hal::gpio::Pull::Up,
+            hal::gpiote::InputChannelPolarity::Toggle,
+        );
+
+        let (green_led, mut rgb_led) = board.leds.split();
+        // We start with loopback mode, which is green.
+        rgb_led.green_only();
+
+        defmt::debug!("Building structures...");
+        let shared = MySharedResources {
+            mode: AppMode::Loopback,
+        };
+        let local = MyLocalResources {
+            radio,
+            current_channel,
+            user_button,
+            packet: bsp::hal::radio::ieee802154::Packet::new(),
+            timer: board.timer,
+            rx_count: 0,
+            err_count: 0,
+            msg_channel_receiver,
+            msg_channel_sender_acm,
+            green_led,
+            rgb_led,
+            usb_acm_pipe_adapter_radio: usb_acm_pipe_adapter.clone(),
+            usb_acm_pipe_adapter_button: usb_acm_pipe_adapter.clone(),
+            acm_pipe_reader,
+        };
+
+        // The USB task is constructed in a distinct high priority task because the embassy-usb
+        // stack types are not Send, which is a requirement to local resources.
+        usb_task::spawn(board.usbd, msg_channel_sender_hid).unwrap();
+        radio::spawn().unwrap();
+        button_task::spawn().unwrap();
+
+        defmt::debug!("Init Complete!");
+
+        // Set the ARM SLEEPONEXIT bit to go to sleep after handling interrupts
+        // See https://developer.arm.com/docs/100737/0100/power-management/sleep-mode/sleep-on-exit-bit
+        ctx.core.SCB.set_sleepdeep();
+
+        (shared, local)
+    }
+
+    #[idle]
+    fn idle(_cx: idle::Context) -> ! {
+        loop {
+            // Now Wait For Interrupt is used instead of a busy-wait loop
+            // to allow MCU to sleep between interrupts
+            // https://developer.arm.com/documentation/ddi0406/c/Application-Level-Architecture/Instruction-Details/Alphabetical-list-of-instructions/WFI
+            rtic::export::wfi()
+        }
+    }
+
+    /// Run the USB Device
+    #[task(priority = 1)]
+    async fn usb_task(
+        ctx: usb_task::Context,
+        peri: hal::Peri<'static, hal::peripherals::USBD>,
+        msg_channel_tx_hid: MessageChannelSender,
+    ) {
         #[cfg(feature = "dk")]
         let driver = hal::usb::Driver::new(
             unsafe { hal::Peripherals::steal().USBD },
             Irqs,
             HardwareVbusDetect::new(Irqs),
         );
+
         // Create the driver, from the HAL.
         #[cfg(not(feature = "dk"))]
-        let driver = hal::usb::Driver::new(board.usbd, Irqs, HardwareVbusDetect::new(Irqs));
-
+        let driver = hal::usb::Driver::new(peri, Irqs, HardwareVbusDetect::new(Irqs));
         // Create embassy-usb Config
         let mut config =
             embassy_usb::Config::new(consts::USB_VID_DEMO, consts::USB_PID_DONGLE_UNIFIED);
@@ -278,109 +379,14 @@ mod app {
         let (hid_reader, _) = hid_rw.split();
 
         // Build the builder.
-        let usb_dev = builder.build();
+        let mut usb_dev = builder.build();
 
-        let current_channel: u8 = 20;
-        defmt::debug!("Configuring radio...");
-        #[cfg(feature = "dk")]
-        let radio = {
-            let mut radio = hal::radio::ieee802154::Radio::new(
-                unsafe { hal::Peripherals::steal() }.RADIO,
-                Irqs,
-            );
 
-            // set TX power to its maximum value
-            radio.set_transmission_power(8);
-            radio.set_channel(current_channel);
-            defmt::debug!(
-                "Radio initialized and configured with TX power set to the maximum value"
-            );
-            radio
-        };
-        #[cfg(not(feature = "dk"))]
-        let mut radio = board.radio;
-        #[cfg(not(feature = "dk"))]
-        radio.set_channel(current_channel);
+        ctx.local_spawner.usb_acm_task(usb_acm).ok();
+        ctx.local_spawner.usb_hid_task(hid_reader, msg_channel_tx_hid).ok();
 
-        static MSG_CHANNEL: static_cell::ConstStaticCell<MessageChannel> =
-            static_cell::ConstStaticCell::new(embassy_sync::channel::Channel::new());
-        static ACM_PIPE: static_cell::ConstStaticCell<AcmPipe> =
-            static_cell::ConstStaticCell::new(embassy_sync::pipe::Pipe::new());
-
-        let msg_channel = MSG_CHANNEL.take();
-        let msg_channel_receiver = msg_channel.receiver();
-        let msg_channel_sender_acm = msg_channel.sender();
-        let msg_channel_sender_hid = msg_channel.sender();
-        let (acm_pipe_reader, acm_pipe_writer) = ACM_PIPE.take().split();
-
-        let usb_acm_pipe_adapter = WriteAsyncPipeAdapter {
-            buffer: heapless::String::new(),
-            acm_pipe_writer,
-        };
-
-        let user_button = InputChannel::new(
-            board.event_ch,
-            board.user_button,
-            hal::gpio::Pull::Up,
-            hal::gpiote::InputChannelPolarity::Toggle,
-        );
-
-        let (green_led, mut rgb_led) = board.leds.split();
-        // We start with loopback mode, which is green.
-        rgb_led.green_only();
-
-        defmt::debug!("Building structures...");
-        let shared = MySharedResources {
-            mode: AppMode::Loopback,
-        };
-        let local = MyLocalResources {
-            radio,
-            current_channel,
-            user_button,
-            packet: bsp::hal::radio::ieee802154::Packet::new(),
-            timer: board.timer,
-            rx_count: 0,
-            err_count: 0,
-            msg_channel_receiver,
-            msg_channel_sender_acm,
-            green_led,
-            rgb_led,
-            usb_dev,
-            usb_acm,
-            usb_acm_pipe_adapter_radio: usb_acm_pipe_adapter.clone(),
-            usb_acm_pipe_adapter_button: usb_acm_pipe_adapter.clone(),
-            acm_pipe_reader,
-        };
-
-        usb_dev::spawn().unwrap();
-        usb_acm::spawn().unwrap();
-        let _ = usb_hid::spawn(hid_reader, msg_channel_sender_hid);
-        radio::spawn().unwrap();
-        button_task::spawn().unwrap();
-
-        defmt::debug!("Init Complete!");
-
-        // Set the ARM SLEEPONEXIT bit to go to sleep after handling interrupts
-        // See https://developer.arm.com/docs/100737/0100/power-management/sleep-mode/sleep-on-exit-bit
-        ctx.core.SCB.set_sleepdeep();
-
-        (shared, local)
-    }
-
-    #[idle]
-    fn idle(_cx: idle::Context) -> ! {
-        loop {
-            // Now Wait For Interrupt is used instead of a busy-wait loop
-            // to allow MCU to sleep between interrupts
-            // https://developer.arm.com/documentation/ddi0406/c/Application-Level-Architecture/Instruction-Details/Alphabetical-list-of-instructions/WFI
-            rtic::export::wfi()
-        }
-    }
-
-    /// Run the USB Device
-    #[task(local = [usb_dev], priority = 1)]
-    async fn usb_dev(ctx: usb_dev::Context) {
-        ctx.local.usb_dev.run().await;
+        // The stack driver runs forever
+        usb_dev.run().await;
     }
 
     #[task(local = [user_button, usb_acm_pipe_adapter_button, rgb_led], shared = [mode], priority = 1)]
@@ -423,9 +429,9 @@ mod app {
     }
 
     /// Handles USB HID data
-    #[task(priority = 1)]
-    async fn usb_hid(
-        _ctx: usb_hid::Context,
+    #[task(priority = 1, local_task = true)]
+    async fn usb_hid_task(
+        _ctx: usb_hid_task::Context,
         // Need to send this by value, because it is consumed by the run method.
         usb_hid_reader: hid::HidReader<'static, hal::usb::Driver<'static, HardwareVbusDetect>, 64>,
         msg_channel_tx_hid: MessageChannelSender,
@@ -443,18 +449,16 @@ mod app {
     /// * Deals with being disconnected from the host
     ///
     /// Defers to [`connected_usb_acm`] for most of the work
-    #[task(local = [usb_acm, msg_channel_sender_acm, acm_pipe_reader], priority = 1)]
-    async fn usb_acm(mut ctx: usb_acm::Context) {
+    #[task(local = [msg_channel_sender_acm, acm_pipe_reader], priority = 1, local_task = true)]
+    async fn usb_acm_task(mut ctx: usb_acm_task::Context, usb_acm: CdcAcmClass) {
+        let mut usb_acm = usb_acm;
         loop {
             // Wait for up to 200 ms for a connection, discard ACM data otherwise.
-            match embassy_time::with_timeout(
-                Duration::from_millis(200),
-                ctx.local.usb_acm.wait_connection(),
-            )
-            .await
+            match embassy_time::with_timeout(Duration::from_millis(200), usb_acm.wait_connection())
+                .await
             {
                 Ok(_) => {
-                    connected_usb_acm(&mut ctx).await;
+                    connected_usb_acm(&mut ctx, &mut usb_acm).await;
                 }
                 Err(_) => {
                     let mut dummy_buf: [u8; 32] = [0; 32];
@@ -474,13 +478,13 @@ mod app {
     ///   `acm_pipe_reader`)
     ///
     /// Called by [`usb_acm`] when we are actually connected
-    async fn connected_usb_acm(ctx: &mut usb_acm::Context<'_>) {
+    async fn connected_usb_acm(ctx: &mut usb_acm_task::Context<'_>, usb_acm: &mut CdcAcmClass) {
         let mut buffer = [0u8; MAX_ACM_PACKET_SIZE];
         loop {
             // Poll for a frame for up to 50 milliseconds.
             if let Ok(result) = embassy_time::with_timeout(
                 Duration::from_millis(50),
-                ctx.local.usb_acm.read_packet(&mut buffer),
+                usb_acm.read_packet(&mut buffer),
             )
             .await
             {
@@ -514,7 +518,7 @@ mod app {
             {
                 match embassy_time::with_timeout(
                     Duration::from_millis(50),
-                    ctx.local.usb_acm.write_packet(&buffer[0..bytes_read]),
+                    usb_acm.write_packet(&buffer[0..bytes_read]),
                 )
                 .await
                 {
