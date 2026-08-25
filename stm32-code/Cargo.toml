@@ -3,9 +3,10 @@ resolver = "3"
 members = [
     "nonsecure-app",
     "nucleo-u5a5zj-bsp",
+    "secure-loader",
+    "standalone-app",
     "step1-option-bytes",
     "step2-secure-watermark",
-    "secure-loader",
     "stm32u5-tiny-hal",
 ]
 

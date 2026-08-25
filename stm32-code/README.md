@@ -20,11 +20,15 @@ There are five packages in this directory.
 * [`secure-loader`](./secure-loader) - a Secure State binary which initialises
   hardware and then boots a Nonsecure State binary in the other half of flash
 * [`nonsecure-app`](./nonsecure-app) - a fairly normal Rust Embedded program
+  designed to be bootstrapped by the `secure-loader`
+* [`standalone-app`](./standalone-app/) - a fairly normal Rust Embedded program
+  designed to boot without `secure-loader` being present
 
-You will need to load both the `secure-loader` binary and the `nonsecure-app` binary
-onto your board. The `secure-loader` will run first, in Secure State, and it will
-then start the `nonsecure-app` in Nonsecure State. The `nonsecure-app` has access
-to services exported from the `secure-loader` which it can call at will.
+For TrustZone work, you will need to load both the `secure-loader` binary and
+the `nonsecure-app` binary onto your board. The `secure-loader` will run first,
+in Secure State, and it will then start the `nonsecure-app` in Nonsecure State.
+The `nonsecure-app` has access to services exported from the `secure-loader`
+which it can call at will.
 
 Because this project uses the [unstable `cmse_nonsecure_entry` feature], you must
 use Nightly Rust to build it.
