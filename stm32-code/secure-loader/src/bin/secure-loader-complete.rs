@@ -7,9 +7,9 @@
 #![feature(cmse_nonsecure_entry)]
 
 use core::cell::RefCell;
-use critical_section::Mutex;
 
 use cortex_m_semihosting::hprintln;
+use critical_section::Mutex;
 use nucleo_u5a5zj_bsp as bsp;
 
 /// The Red LED on the board
@@ -27,7 +27,8 @@ fn main() -> ! {
     let mut board: bsp::SecureBoard = bsp::SecureBoard::new();
 
     // Enable secure fault handler
-    board.scb
+    board
+        .scb
         .enable(cortex_m::peripheral::scb::Exception::SecureFault);
 
     // Say hello
@@ -69,7 +70,8 @@ fn main() -> ! {
 /// This function is exported and made available to the nonsecure side
 #[unsafe(no_mangle)]
 pub extern "cmse-nonsecure-entry" fn secure_set_blue_led(value: u32) {
-    cortex_m_semihosting::hprintln!("secure_set_blue_led({})", value);
+    // This logging will get mixed up with the defmt logging from the nonsecure-app
+    // cortex_m_semihosting::hprintln!("secure_set_blue_led({})", value);
     critical_section::with(|cs| {
         if let Some(blue_led) = BLUE_LED.borrow_ref_mut(cs).as_mut() {
             if value == 0 {
