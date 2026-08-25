@@ -146,24 +146,27 @@ impl SecureBoard {
             static __veneer_limit: u32;
         }
 
-        // Nonsecure Flash
         self.sau
             .init(&[
+                // Nonsecure Flash (second bank)
                 SauRegion {
                     base_address: ns_addr::FLASH2_START as u32,
                     limit_address: ns_addr::FLASH2_END as u32,
                     attribute: SauRegionAttribute::NonSecure,
                 },
+                // Nonsecure SRAM (SRAM3)
                 SauRegion {
                     base_address: ns_addr::SRAM3_START as u32,
                     limit_address: ns_addr::SRAM3_END as u32,
                     attribute: SauRegionAttribute::NonSecure,
                 },
+                // All of the Nonsecure Peripherals
                 SauRegion {
                     base_address: ns_addr::PERIPH_START as u32,
                     limit_address: ns_addr::PERIPH_END as u32,
                     attribute: SauRegionAttribute::NonSecure,
                 },
+                // the Secure Gateway stubs we export
                 SauRegion {
                     base_address: (&raw const __veneer_base) as u32,
                     limit_address: ((&raw const __veneer_limit) as u32) - 1,
