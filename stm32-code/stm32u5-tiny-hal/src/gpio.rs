@@ -344,6 +344,28 @@ impl SecureDriver {
         Input(PinInner(secure_input.0.0))
     }
 
+    /// Change pin to Alternate Function mode
+    pub fn change_to_af(&mut self, input: SecureInput, af_mode: u8) {
+        let (port, pin) = input.0.get_port_pin();
+        self.change_mode(port, pin, 0b10);
+        let (af_ptr, shift) = if pin <= 7 {
+            // use AF_LOW register
+            let af_ptr = unsafe { port.base(true).byte_offset(0x20) };
+            (af_ptr, pin * 4)
+        } else {
+            // use AF_HIGH register
+            let af_ptr = unsafe { port.base(true).byte_offset(0x24) };
+            (af_ptr, (pin - 8) * 4)
+        };
+        let mask = 0xF << shift;
+        let new_value = (u32::from(af_mode & 0xF)) << shift;
+        unsafe {
+            let existing = af_ptr.read_volatile();
+            let new = (existing & !mask) | new_value;
+            af_ptr.write_volatile(new);
+        }
+    }
+
     fn change_mode(&mut self, port: Port, pin: u8, bits: u8) {
         let mask = 0b11 << (pin * 2);
         let new_value = (bits as u32) << (pin * 2);
@@ -462,6 +484,28 @@ impl NonsecureDriver {
         let (port, pin) = output.0.get_port_pin();
         self.change_mode(port, pin, 0b00);
         Input(output.0)
+    }
+
+    /// Change pin to Alternate Function mode
+    pub fn change_to_af(&mut self, input: Input, af_mode: u8) {
+        let (port, pin) = input.0.get_port_pin();
+        self.change_mode(port, pin, 0b10);
+        let (af_ptr, shift) = if pin <= 7 {
+            // use AF_LOW register
+            let af_ptr = unsafe { port.base(false).byte_offset(0x20) };
+            (af_ptr, pin * 4)
+        } else {
+            // use AF_HIGH register
+            let af_ptr = unsafe { port.base(false).byte_offset(0x24) };
+            (af_ptr, (pin - 8) * 4)
+        };
+        let mask = 0xF << shift;
+        let new_value = (u32::from(af_mode & 0xF)) << shift;
+        unsafe {
+            let existing = af_ptr.read_volatile();
+            let new = (existing & !mask) | new_value;
+            af_ptr.write_volatile(new);
+        }
     }
 
     fn change_mode(&mut self, port: Port, pin: u8, bits: u8) {

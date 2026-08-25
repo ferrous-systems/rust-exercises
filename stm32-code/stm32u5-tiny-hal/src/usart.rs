@@ -3,6 +3,12 @@
 use stm32u5::Periph;
 use stm32u5::stm32u5a5 as pac;
 
+/// UART1, Secure State address
+pub const USART1_S: usize = 0x5001_3800;
+
+/// UART1, Nonsecure State address
+pub const USART1_NS: usize = 0x4001_3800;
+
 /// A basic blocking USART driver
 pub struct Driver<const ADDR: usize> {
     pac_object: Periph<pac::usart1::RegisterBlock, ADDR>,
@@ -17,23 +23,30 @@ impl<const ADDR: usize> Driver<ADDR> {
     /// Configure the UART to 8N1, 9600 bps
     pub fn configure(&mut self) {
         // Calculate Baud Rate Register
-        let brr = ((8_000_000u32 / 9600u32) / 8u32) as u16;
+        //
+        // We have no UART prescaler, so we just have our 4 MHz system clock,
+        // and we want a baud rate of 9600.
+        //
+        // The /2 is for rounding.
+        let baud = 9600u32;
+        let clock_speed = 4_000_000u32;
+        let brr = ((clock_speed + (baud / 2)) / baud) as u16;
         // Disable UART
         self.pac_object.cr1().modify(|_r, w| {
             w.ue().clear_bit();
             w
         });
         // Configure UART
-        self.pac_object.cr1().write(|w| {
+        self.pac_object.cr1().modify(|_r, w| {
             // FIFO Enabled
             w.fifoen().set_bit();
             // 16x oversampling
             w.over8().clear_bit();
             // Transmit Enabled
             w.te().set_bit();
-            // Receive Disabled
-            w.re().clear_bit();
-            // 1 start bit, 8 data bits, N stop bits
+            // Receive Enabled
+            w.re().set_bit();
+            // 1 start bit, 8 data bits
             w.m0().clear_bit();
             w.m1().clear_bit();
             // No parity
@@ -46,9 +59,11 @@ impl<const ADDR: usize> Driver<ADDR> {
             w
         });
         self.pac_object.brr().write(|w| {
+            // baud rate is as calculated previously
             w.brr().set(brr);
             w
         });
+
         // Enable UART
         self.pac_object.cr1().modify(|_r, w| {
             w.ue().set_bit();
@@ -67,6 +82,18 @@ impl<const ADDR: usize> Driver<ADDR> {
             w.tdr().set(ch as u16);
             w
         });
+    }
+
+    /// Get a character, if one is waiting
+    pub fn rx_char(&mut self) -> Option<u8> {
+        if self.pac_object.isr().read().rxfne().bit_is_set() {
+            // RX FIFO is Not Empty, so read it
+            let byte = self.pac_object.rdr().read().bits() as u8;
+            Some(byte)
+        } else {
+            // RX FIFO is Empty
+            None
+        }
     }
 }
 

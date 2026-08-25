@@ -14,17 +14,17 @@ unsafe extern "C" {
 
 #[cortex_m_rt::entry]
 fn main() -> ! {
-    let bsp = bsp::NonSecureBoard::new();
+    let board = bsp::NonSecureBoard::new();
     defmt::info!("Hello, this is nonsecure-app-complete!");
 
     for _ in 0..5 {
         defmt::info!("On...");
-        bsp.green_ld1.on();
+        board.green_ld1.on();
         secure_set_blue_led(0);
         cortex_m::asm::delay(1_000_000);
 
         defmt::info!("Off...");
-        bsp.green_ld1.off();
+        board.green_ld1.off();
         secure_set_blue_led(1);
         cortex_m::asm::delay(1_000_000);
     }

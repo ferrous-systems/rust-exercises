@@ -12,7 +12,7 @@ pub use stm32u5_tiny_hal::{
 
 pub struct SecureBoard {
     /// USART1, connected to the USB Virtual COM Port
-    pub usart1: hal::usart::Driver<0x5001_3800>,
+    pub usart1: hal::usart::Driver<{ hal::usart::USART1_S }>,
     /// Secure Attribution Unit
     pub sau: cortex_m::peripheral::SAU,
     /// Global TrustZone Controller
@@ -67,9 +67,8 @@ impl SecureBoard {
             panic!("Run the 'step2-secure-watermark' program to unprotect Flash Bank 2");
         }
 
-        // Enable the USB Virtual COM Port UART
-        let mut usart1 = hal::usart::Driver::new(p.SEC_USART1);
-        usart1.configure();
+        // Create a driver for the UART connected to the USB Virtual COM Port
+        let usart1 = hal::usart::Driver::new(p.SEC_USART1);
 
         let (mut gpio, pins) = hal::gpio::SecureDriver::new(
             p.SEC_GPIOA,
@@ -95,6 +94,9 @@ impl SecureBoard {
         let mut pwr = hal::pwr::Driver::new(p.SEC_PWR);
         pwr.vddio2_enable(true);
 
+        // Set PC7, PB7 and PG2 to be outputs, because they are the LED pins
+        //
+        // A secure state application may choose to switch these pins over to Nonsecure State mode
         let green_ld1 = SecureLed {
             inner: gpio.change_to_output(pins.port_c.pin7),
         };
@@ -104,6 +106,10 @@ impl SecureBoard {
         let red_ld3 = SecureLed {
             inner: gpio.change_to_output(pins.port_g.pin2),
         };
+
+        // Set PA9 and PA10 to their "USART1_TX/RX" alternate function (AF7)
+        gpio.change_to_af(pins.port_a.pin9, 7);
+        gpio.change_to_af(pins.port_a.pin10, 7);
 
         Self {
             usart1,
@@ -176,6 +182,8 @@ impl Default for SecureBoard {
 }
 
 pub struct NonSecureBoard {
+    /// USART1, connected to the USB Virtual COM Port
+    pub usart1: hal::usart::Driver<{ hal::usart::USART1_NS }>,
     /// GPIO driver
     pub gpio: hal::gpio::NonsecureDriver,
     /// Green LED
@@ -192,16 +200,40 @@ impl NonSecureBoard {
     /// Will panic if you've already grabbed either the [`SecureBoard`] or the [`NonSecureBoard`]
     pub fn new() -> Self {
         let p = pac::Peripherals::take().expect("Grabbed peripherals twice?!");
+        let mut cp = cortex_m::Peripherals::take().expect("Grabbed core peripherals twice?");
+
+        // Enable all the peripherals we need
+        let mut rcc = hal::rcc::Driver::new(p.RCC);
+        rcc.enable(hal::rcc::Peripheral::Usart1, true);
+        rcc.enable(hal::rcc::Peripheral::GpioA, true);
+        rcc.enable(hal::rcc::Peripheral::GpioB, true);
+        rcc.enable(hal::rcc::Peripheral::GpioC, true);
+        rcc.enable(hal::rcc::Peripheral::GpioG, true);
+
         // trace must be enabled for cycle counter to work
         cp.DCB.enable_trace();
         // we use the cycle counter as a crude 8 MHz power-on timer
         cp.DWT.disable_cycle_counter();
         cp.DWT.set_cycle_count(0);
         cp.DWT.enable_cycle_counter();
+
+        // Create a driver for the UART connected to the USB Virtual COM Port
+        let usart1 = hal::usart::Driver::new(p.USART1);
+
         let (mut gpio, pins) = hal::gpio::NonsecureDriver::new(
             p.GPIOA, p.GPIOB, p.GPIOC, p.GPIOD, p.GPIOE, p.GPIOF, p.GPIOG, p.GPIOH, p.GPIOI,
             p.GPIOJ,
         );
+
+        // Set PC7, PB7 and PG2 to be outputs, because they are the LED pins
+        //
+        // (+) This will have no effect unless either:
+        //
+        // * TZEN=0, or
+        // * Secure Mode switched these GPIO pins to Nonsecure mode.
+        //
+        // However if neither of those is true then this is harmless (it gets
+        // ignored), so we do it anyway.
 
         let green_ld1 = Led {
             inner: gpio.change_to_output(pins.port_c.pin7),
@@ -213,7 +245,15 @@ impl NonSecureBoard {
             inner: gpio.change_to_output(pins.port_g.pin2),
         };
 
+        // Set PA9 and PA10 to their "USART1_TX/RX" alternate function (AF7)
+        //
+        // See note (+) above about the effect of GPIO pin changes in Nonsecure
+        // State
+        gpio.change_to_af(pins.port_a.pin9, 7);
+        gpio.change_to_af(pins.port_a.pin10, 7);
+
         Self {
+            usart1,
             gpio,
             green_ld1,
             blue_ld2,
