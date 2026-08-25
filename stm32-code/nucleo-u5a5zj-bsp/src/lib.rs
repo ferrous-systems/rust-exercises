@@ -39,7 +39,14 @@ impl SecureBoard {
     /// Will panic if you've already grabbed either the [`SecureBoard`] or the [`NonSecureBoard`]
     pub fn new() -> Self {
         let p = pac::Peripherals::take().expect("Grabbed peripherals twice?!");
-        let cp = cortex_m::Peripherals::take().expect("Grabbed core peripherals twice?");
+        let mut cp = cortex_m::Peripherals::take().expect("Grabbed core peripherals twice?");
+
+        // trace must be enabled for cycle counter to work
+        cp.DCB.enable_trace();
+        // we use the cycle counter as a crude 8 MHz power-on timer
+        cp.DWT.disable_cycle_counter();
+        cp.DWT.set_cycle_count(0);
+        cp.DWT.enable_cycle_counter();
 
         // Enable all the peripherals we need
         let mut rcc = hal::rcc::Driver::new(p.SEC_RCC);
@@ -185,6 +192,12 @@ impl NonSecureBoard {
     /// Will panic if you've already grabbed either the [`SecureBoard`] or the [`NonSecureBoard`]
     pub fn new() -> Self {
         let p = pac::Peripherals::take().expect("Grabbed peripherals twice?!");
+        // trace must be enabled for cycle counter to work
+        cp.DCB.enable_trace();
+        // we use the cycle counter as a crude 8 MHz power-on timer
+        cp.DWT.disable_cycle_counter();
+        cp.DWT.set_cycle_count(0);
+        cp.DWT.enable_cycle_counter();
         let (mut gpio, pins) = hal::gpio::NonsecureDriver::new(
             p.GPIOA, p.GPIOB, p.GPIOC, p.GPIOD, p.GPIOE, p.GPIOF, p.GPIOG, p.GPIOH, p.GPIOI,
             p.GPIOJ,
@@ -253,4 +266,17 @@ impl Led {
     pub fn off(&self) {
         self.inner.set_low();
     }
+}
+
+/// Get the system timestamp, in microseconds
+///
+/// Gets a timestamp that you can use with `defmt::timestamp!`
+///
+/// ```rust,ignore
+/// defmt::timestamp!("{=u32:tus}", bsp::timestamp());
+/// ```
+pub fn timestamp() -> u32 {
+    // We run at 4 MHz because we never both to reprogram the clock.
+    // Therefore cycles / 4 = microseconds
+    cortex_m::peripheral::DWT::cycle_count() / 4
 }
