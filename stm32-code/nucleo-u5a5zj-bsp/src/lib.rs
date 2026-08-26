@@ -4,6 +4,7 @@
 
 #![no_std]
 
+use rand::SeedableRng;
 pub use stm32u5::stm32u5a5 as pac;
 pub use stm32u5_tiny_hal::{
     self as hal,
@@ -195,6 +196,8 @@ pub struct NonSecureBoard {
     pub blue_ld2: Led,
     /// Red LED
     pub red_ld3: Led,
+    /// A small random number generator
+    pub rng: rand::rngs::SmallRng,
 }
 
 impl NonSecureBoard {
@@ -216,9 +219,15 @@ impl NonSecureBoard {
         // trace must be enabled for cycle counter to work
         cp.DCB.enable_trace();
         // we use the cycle counter as a crude 8 MHz power-on timer
+        // but first we grab the counter as a randon number seed
+        cp.DWT.enable_cycle_counter();
+        let cycle_count = cortex_m::peripheral::DWT::cycle_count();
+        // now lets reset it so the timestamps make more sense
         cp.DWT.disable_cycle_counter();
         cp.DWT.set_cycle_count(0);
         cp.DWT.enable_cycle_counter();
+
+        let rng = rand::rngs::SmallRng::seed_from_u64(cycle_count as u64);
 
         // Create a driver for the UART connected to the USB Virtual COM Port
         let usart1 = hal::usart::Driver::new(p.USART1);
@@ -261,6 +270,7 @@ impl NonSecureBoard {
             green_ld1,
             blue_ld2,
             red_ld3,
+            rng,
         }
     }
 }
