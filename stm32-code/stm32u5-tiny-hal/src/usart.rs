@@ -21,7 +21,7 @@ impl<const ADDR: usize> Driver<ADDR> {
     }
 
     /// Configure the UART to 8N1, 9600 bps
-    pub fn configure(&mut self) {
+    pub fn configure(&mut self, apb_periph_clk_hz: u32) {
         // Calculate Baud Rate Register
         //
         // We have no UART prescaler, so we just have our 4 MHz system clock,
@@ -29,8 +29,7 @@ impl<const ADDR: usize> Driver<ADDR> {
         //
         // The /2 is for rounding.
         let baud = 9600u32;
-        let clock_speed = 4_000_000u32;
-        let brr = ((clock_speed + (baud / 2)) / baud) as u16;
+        let brr = ((apb_periph_clk_hz + (baud / 2)) / baud) as u16;
         // Disable UART
         self.pac_object.cr1().modify(|_r, w| {
             w.ue().clear_bit();

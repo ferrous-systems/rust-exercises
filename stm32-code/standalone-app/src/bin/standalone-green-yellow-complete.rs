@@ -1,4 +1,4 @@
-//! # green-yellow-complete
+//! # standalone-green-yellow-complete
 //!
 //! A functioning version of the green-yellow game, running standalone.
 //!
@@ -17,7 +17,7 @@ use green_yellow_solution::*;
 #[cortex_m_rt::entry]
 fn main() -> ! {
     let mut board = bsp::NonSecureBoard::new();
-    board.usart1.configure();
+    board.usart1.configure(bsp::APB2_PERIPH_CLK_HZ);
 
     'game_loop: loop {
         let mut secret = [0u8; NUM_DIGITS];

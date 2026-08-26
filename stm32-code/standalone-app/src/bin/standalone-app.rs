@@ -16,7 +16,7 @@ use nucleo_u5a5zj_bsp as bsp;
 #[cortex_m_rt::entry]
 fn main() -> ! {
     let mut board = bsp::NonSecureBoard::new();
-    board.usart1.configure();
+    board.usart1.configure(bsp::APB2_PERIPH_CLK_HZ);
 
     defmt::info!("Hello, this is standalone-app!");
 

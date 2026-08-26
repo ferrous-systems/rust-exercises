@@ -3,6 +3,8 @@
 //! A small BSP for the NUCLEO-U5A5ZJ-Q board
 
 #![no_std]
+#![deny(missing_docs)]
+#![deny(clippy::missing_safety_doc)]
 
 use rand::SeedableRng;
 pub use stm32u5::stm32u5a5 as pac;
@@ -11,6 +13,16 @@ pub use stm32u5_tiny_hal::{
     gpio::{Output, SecureOutput},
 };
 
+/// Medium Speed Internal System (MSIS) Clock power-on default value
+pub const MSIS_CLK_HZ: u32 = 4_000_000;
+
+/// AHB Clock power-on default value
+pub const HCLK_HZ: u32 = MSIS_CLK_HZ;
+
+/// APB2 Peripheral Clock power-on default value
+pub const APB2_PERIPH_CLK_HZ: u32 = HCLK_HZ;
+
+/// Drivers for the NUCLEO-U5A5ZJ-Q board when running in Secure State
 pub struct SecureBoard {
     /// USART1, connected to the USB Virtual COM Port
     pub usart1: hal::usart::Driver<{ hal::usart::USART1_S }>,
@@ -185,6 +197,7 @@ impl Default for SecureBoard {
     }
 }
 
+/// Drivers for the NUCLEO-U5A5ZJ-Q board when running in Nonsecure State
 pub struct NonSecureBoard {
     /// USART1, connected to the USB Virtual COM Port
     pub usart1: hal::usart::Driver<{ hal::usart::USART1_NS }>,
@@ -329,7 +342,7 @@ impl Led {
 /// defmt::timestamp!("{=u32:tus}", bsp::timestamp());
 /// ```
 pub fn timestamp() -> u32 {
-    // We run at 4 MHz because we never both to reprogram the clock.
+    // We run at 4 MHz because we never bother to reprogram the clock.
     // Therefore cycles / 4 = microseconds
     cortex_m::peripheral::DWT::cycle_count() / 4
 }

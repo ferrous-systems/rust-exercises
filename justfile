@@ -99,8 +99,7 @@ build-stm32-code:
 	cargo build --release --bin nonsecure-app
 	cargo build --release --bin secure-loader-complete
 	cargo build --release --bin nonsecure-app-complete
-	cargo build --release --bin standalone-app
-	cargo build --release --bin green-yellow-solution
+	cargo build --release --package standalone-app
 
 assemble version:
 	echo "Making ./rust-exercises-{{ version }}..."
