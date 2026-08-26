@@ -12,3 +12,5 @@ green-yellow-solution.workspace = true
 heapless.workspace = true
 nucleo-u5a5zj-bsp.workspace = true
 rand.workspace = true
+rtic.workspace = true
+rtic-monotonics.workspace = true

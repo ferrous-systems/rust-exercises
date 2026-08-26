@@ -26,12 +26,16 @@ fn main() -> ! {
     defmt::info!("In secure state? {}", tt.secure());
 
     for i in 0u64.. {
-        defmt::info!("On...");
+        defmt::info!("Green/Blue...");
         board.green_ld1.on();
+        board.blue_ld2.on();
+        board.red_ld3.off();
         cortex_m::asm::delay(1_000_000);
 
-        defmt::info!("Off...");
+        defmt::info!("Red...");
         board.green_ld1.off();
+        board.blue_ld2.off();
+        board.red_ld3.on();
         cortex_m::asm::delay(1_000_000);
 
         _ = writeln!(board.usart1, "Hello {i}");

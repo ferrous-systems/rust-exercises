@@ -9,6 +9,8 @@
 
 #![no_std]
 
+pub use stm32u5::stm32u5a5 as pac;
+
 // Ensure we pick up the critical-section implementation
 use cortex_m as _;
 

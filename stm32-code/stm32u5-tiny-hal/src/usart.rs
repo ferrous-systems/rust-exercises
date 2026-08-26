@@ -103,11 +103,23 @@ impl<const ADDR: usize> Driver<ADDR> {
             }
         }
     }
+
+    /// Set whether the RX Interrupt is enabled
+    pub fn rx_interrupt_enable(&mut self, enabled: bool) {
+        self.pac_object.cr1().modify(|_r, w| {
+            w.rxneie().bit(enabled);
+            w
+        });
+    }
 }
 
 impl<const ADDR: usize> core::fmt::Write for Driver<ADDR> {
     fn write_str(&mut self, s: &str) -> core::fmt::Result {
         for b in s.bytes() {
+            // convert LF to CRLF because Rust uses LF line endings but most terminals want CRLF
+            if b == b'\n' {
+                self.tx_char_blocking(b'\r');
+            }
             self.tx_char_blocking(b);
         }
         Ok(())

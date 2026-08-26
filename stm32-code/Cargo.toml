@@ -22,6 +22,8 @@ green-yellow-solution = { version = "0.1.0", path = "./green-yellow-solution" }
 heapless = { version = "0.9.3", features = ["defmt"] }
 nucleo-u5a5zj-bsp = { path = "./nucleo-u5a5zj-bsp" }
 rand = { version = "0.10.2", default-features = false }
+rtic = { version = "2.3.1", features = ["thumbv8main-backend"] }
+rtic-monotonics = { version = "2.2.1", features = ["cortex-m-systick"] }
 stm32u5 = { version = "0.16.0", features = ["stm32u5a5"] }
 stm32u5-tiny-hal = { path = "./stm32u5-tiny-hal" }
 

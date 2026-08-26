@@ -47,13 +47,8 @@ pub struct SecureBoard {
 }
 
 impl SecureBoard {
-    /// Grab the secure board support package
-    ///
-    /// Will panic if you've already grabbed either the [`SecureBoard`] or the [`NonSecureBoard`]
-    pub fn new() -> Self {
-        let p = pac::Peripherals::take().expect("Grabbed peripherals twice?!");
-        let mut cp = cortex_m::Peripherals::take().expect("Grabbed core peripherals twice?");
-
+    /// Create the secure board support package, using existing resources
+    pub fn new_with(mut cp: cortex_m::Peripherals, p: pac::Peripherals) -> Self {
         // trace must be enabled for cycle counter to work
         cp.DCB.enable_trace();
         // we use the cycle counter as a crude 8 MHz power-on timer
@@ -105,6 +100,7 @@ impl SecureBoard {
         );
 
         let mut pwr = hal::pwr::Driver::new(p.SEC_PWR);
+        // We need VDDIO2 enabled for the Red LED to work
         pwr.vddio2_enable(true);
 
         // Set PC7, PB7 and PG2 to be outputs, because they are the LED pins
@@ -136,6 +132,15 @@ impl SecureBoard {
             blue_ld2,
             red_ld3,
         }
+    }
+
+    /// Create the secure board support package
+    ///
+    /// Will panic if you've already grabbed either the `cortex-m` peripherals or the PAC peripherals.
+    pub fn new() -> Self {
+        let cp = cortex_m::Peripherals::take().expect("Grabbed core peripherals twice?");
+        let p = pac::Peripherals::take().expect("Grabbed peripherals twice?!");
+        Self::new_with(cp, p)
     }
 
     /// Set SRAM3 to be nonsecure
@@ -214,13 +219,8 @@ pub struct NonSecureBoard {
 }
 
 impl NonSecureBoard {
-    /// Grab the nonsecure board support package
-    ///
-    /// Will panic if you've already grabbed either the [`SecureBoard`] or the [`NonSecureBoard`]
-    pub fn new() -> Self {
-        let p = pac::Peripherals::take().expect("Grabbed peripherals twice?!");
-        let mut cp = cortex_m::Peripherals::take().expect("Grabbed core peripherals twice?");
-
+    /// Create the nonsecure board support package, using existing resources
+    pub fn new_with(cp: &mut cortex_m::Peripherals, p: pac::Peripherals) -> Self {
         // Enable all the peripherals we need
         let mut rcc = hal::rcc::Driver::new(p.RCC);
         rcc.enable(hal::rcc::Peripheral::Usart1, true);
@@ -228,6 +228,7 @@ impl NonSecureBoard {
         rcc.enable(hal::rcc::Peripheral::GpioB, true);
         rcc.enable(hal::rcc::Peripheral::GpioC, true);
         rcc.enable(hal::rcc::Peripheral::GpioG, true);
+        rcc.enable(hal::rcc::Peripheral::Power, true);
 
         // trace must be enabled for cycle counter to work
         cp.DCB.enable_trace();
@@ -249,6 +250,10 @@ impl NonSecureBoard {
             p.GPIOA, p.GPIOB, p.GPIOC, p.GPIOD, p.GPIOE, p.GPIOF, p.GPIOG, p.GPIOH, p.GPIOI,
             p.GPIOJ,
         );
+
+        let mut pwr = hal::pwr::Driver::new(p.PWR);
+        // We need VDDIO2 enabled for the Red LED to work
+        pwr.vddio2_enable(true);
 
         // Set PC7, PB7 and PG2 to be outputs, because they are the LED pins
         //
@@ -285,6 +290,15 @@ impl NonSecureBoard {
             red_ld3,
             rng,
         }
+    }
+
+    /// Create the nonsecure board support package
+    ///
+    /// Will panic if you've already grabbed either the `cortex-m` peripherals or the PAC peripherals.
+    pub fn new() -> NonSecureBoard {
+        let mut cp = cortex_m::Peripherals::take().expect("Grabbed core peripherals twice?");
+        let p = pac::Peripherals::take().expect("Grabbed peripherals twice?!");
+        NonSecureBoard::new_with(&mut cp, p)
     }
 }
 
@@ -346,3 +360,9 @@ pub fn timestamp() -> u32 {
     // Therefore cycles / 4 = microseconds
     cortex_m::peripheral::DWT::cycle_count() / 4
 }
+
+// These re-exports allow us to use this crate as an RTIC device crate
+
+pub use pac::NVIC_PRIO_BITS;
+pub use pac::Peripherals;
+pub use pac::interrupt;
