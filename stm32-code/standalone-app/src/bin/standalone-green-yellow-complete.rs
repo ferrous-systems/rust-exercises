@@ -67,6 +67,7 @@ fn main() -> ! {
 #[panic_handler]
 fn panic_handler(info: &core::panic::PanicInfo) -> ! {
     defmt::error!("PANIC: {}", info);
+    cortex_m::asm::bkpt();
     loop {}
 }
 

@@ -27,7 +27,7 @@ fi
 
 # Must be an absolute path, otherwise mdbook puts the output in the wrong place
 OUTPUT_DIR=$(pwd)/html
-CODE_FOLDER_LIST="exercise-solutions exercise-templates nrf52-code qemu-code"
+CODE_FOLDER_LIST="exercise-solutions exercise-templates nrf52-code qemu-code stm32-code"
 VERSION_FILE="${OUTPUT_DIR}/history/index.html"
 
 # Clean out whatever exists, and make the index (before we do any git checkouts

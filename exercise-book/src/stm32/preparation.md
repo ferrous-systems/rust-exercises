@@ -180,7 +180,7 @@ state is executing code at any given moment in time.
 
 Secure state has more permissions than Nonsecure State. That means Secure state
 can do things that affect Nonsecure state, but Nonsecure state *cannot* affect
-Secure state.
+Secure state (except through APIs that you can define and tightly control).
 
 You might, for example, store your encryption keys in an application running in
 Secure state, and process your untrusted (and potentially malicious) in

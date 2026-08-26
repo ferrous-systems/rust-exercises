@@ -1,6 +1,6 @@
 //! # standalone-rtic-hello
 //!
-//! A simple Nonsecure State binary running on the NUCLEO-U5A5ZJ using RTIC
+//! A basic RTIC application
 
 #![no_std]
 #![no_main]
@@ -37,5 +37,6 @@ mod app {
 #[panic_handler]
 fn panic_handler(info: &core::panic::PanicInfo) -> ! {
     defmt::error!("PANIC: {}", info);
+    cortex_m::asm::bkpt();
     loop {}
 }

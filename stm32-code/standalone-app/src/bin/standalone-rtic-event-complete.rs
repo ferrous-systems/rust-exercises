@@ -1,7 +1,5 @@
 //! # standalone-rtic-event, but completed
 //!
-//! A simple Nonsecure State binary running on the NUCLEO-U5A5ZJ using RTIC.
-//!
 //! A completed version of the `standalone-rtic-event` exercise.
 
 #![no_std]
@@ -67,6 +65,7 @@ mod app {
 #[panic_handler]
 fn panic_handler(info: &core::panic::PanicInfo) -> ! {
     defmt::error!("PANIC: {}", info);
+    cortex_m::asm::bkpt();
     loop {}
 }
 

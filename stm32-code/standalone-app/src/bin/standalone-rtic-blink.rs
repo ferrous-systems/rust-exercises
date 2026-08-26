@@ -1,6 +1,6 @@
 //! # standalone-rtic-blink
 //!
-//! A complete Nonsecure State binary running on the NUCLEO-U5A5ZJ using RTIC
+//! An RTIC application that blinks LD1
 
 #![no_std]
 #![no_main]
@@ -76,6 +76,7 @@ mod app {
 #[panic_handler]
 fn panic_handler(info: &core::panic::PanicInfo) -> ! {
     defmt::error!("PANIC: {}", info);
+    cortex_m::asm::bkpt();
     loop {}
 }
 
