@@ -1,7 +1,5 @@
 //! Green and Yellow, Complete Version
 
-use rand::Rng;
-
 const NUM_DIGITS: usize = 4;
 
 fn calc_green_and_yellow(
@@ -41,14 +39,13 @@ fn calc_green_and_yellow(
 }
 
 fn main() {
-    let mut rng = rand::thread_rng();
     let stdin = std::io::stdin();
 
     println!("New game!");
 
     let mut secret = [0u8; NUM_DIGITS];
     for digit in secret.iter_mut() {
-        *digit = rng.gen_range(1..=9);
+        *digit = rand::random_range(1..=9);
     }
 
     'game_loop: loop {

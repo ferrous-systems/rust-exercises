@@ -190,9 +190,9 @@ fn one_in_guess_two_in_secret() {
 
 There are no random number generators in the standard library - you have to use the `rand` crate.
 
-You will need to change `Cargo.toml` to depend on the `rand` crate - we suggest version `0.8`.
+You will need to change `Cargo.toml` to depend on the `rand` crate - we suggest version `0.10`.
 
-You need a random number generator (call `rand::thread_rng()`), and using that you can generate a number out of a given range with `gen_range`. See <https://docs.rs/rand> for more details.
+You need to pick a random number from a range (try `rand::random_range()`). See <https://docs.rs/rand> for more details.
 
 ### Reading from the Console
 
@@ -272,17 +272,17 @@ If you wanted, you could instead create a mutable copy of the `secret` array and
 
 ### Step 5: Get some random numbers
 
-Add `rand = "0.8"` to your Cargo.toml, and make a random number generator (or 'RNG') with `rand::thread_rng()`. You will also have to `use rand::Rng;` to bring the trait into scope.
+Add `rand = "0.10"` to your Cargo.toml, and use the `rand::random_range()` function to create each digit, passing in a range (like `0..5`). What is the right range for each digit?
 
-(A built-in [random number generator](https://github.com/rust-lang/rust/issues/130703) is proposed for the Standard Library but is still nightly only as of October 2024).
+You'll want to create a `secret` array of `u8` values and then fill in each digit one by one.
 
-Call `your_rng.gen_range()` in a loop.
+🔎 A built-in [random number generator](https://github.com/rust-lang/rust/issues/130703) is proposed for the Standard Library but is still nightly-only as of October 2024.
 
 <details>
   <summary>Solution</summary>
 
 ```rust ignore
-{{#include ../../../exercise-solutions/green-yellow/src/bin/step5.rs:43:52}}
+{{#include ../../../exercise-solutions/green-yellow/src/bin/step5.rs:42:45}}
 ```
 
 </details>
