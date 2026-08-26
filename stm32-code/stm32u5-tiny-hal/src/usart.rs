@@ -95,6 +95,15 @@ impl<const ADDR: usize> Driver<ADDR> {
             None
         }
     }
+
+    /// Wait for a character and return it
+    pub fn rx_char_blocking(&mut self) -> u8 {
+        loop {
+            if let Some(ch) = self.rx_char() {
+                return ch;
+            }
+        }
+    }
 }
 
 impl<const ADDR: usize> core::fmt::Write for Driver<ADDR> {

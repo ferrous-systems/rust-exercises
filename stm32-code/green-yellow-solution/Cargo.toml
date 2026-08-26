@@ -1,0 +1,6 @@
+[package]
+name = "green-yellow-solution"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]

@@ -8,4 +8,7 @@ cortex-m-rt.workspace = true
 cortex-m.workspace = true
 defmt-rtt.workspace = true
 defmt.workspace = true
+green-yellow-solution.workspace = true
+heapless.workspace = true
 nucleo-u5a5zj-bsp.workspace = true
+rand.workspace = true

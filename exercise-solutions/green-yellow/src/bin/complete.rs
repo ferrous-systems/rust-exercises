@@ -48,7 +48,7 @@ fn main() {
         *digit = rand::random_range(1..=9);
     }
 
-    'game_loop: loop {
+    'guess_loop: loop {
         let mut line = String::new();
         println!("Enter guess:");
         stdin.read_line(&mut line).unwrap();
@@ -57,19 +57,23 @@ fn main() {
         for piece in line.trim().split(' ') {
             let Ok(digit) = piece.parse::<u8>() else {
                 println!("{:?} wasn't a number", piece);
-                continue 'game_loop;
+                continue 'guess_loop;
             };
             if digit < 1 || digit > 9 {
                 println!("{} is out of range", digit);
-                continue 'game_loop;
+                continue 'guess_loop;
             }
             if let Some(slot) = guess.get_mut(idx) {
                 *slot = digit;
             } else {
                 println!("Too many numbers, I only want 4!");
-                continue 'game_loop;
+                continue 'guess_loop;
             }
             idx += 1;
+        }
+        if idx < guess.len() {
+            println!("Not enough numbers, I want {}", guess.len());
+            continue 'guess_loop;
         }
 
         println!("Your guess is {:?}", guess);
