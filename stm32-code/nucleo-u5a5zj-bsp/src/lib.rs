@@ -7,7 +7,8 @@
 #![deny(clippy::missing_safety_doc)]
 
 use rand::SeedableRng;
-pub use stm32u5::stm32u5a5 as pac;
+use stm32u5::stm32u5a5 as pac;
+
 pub use stm32u5_tiny_hal::{
     self as hal,
     gpio::{Output, SecureOutput},
@@ -363,6 +364,11 @@ pub fn timestamp() -> u32 {
 
 // These re-exports allow us to use this crate as an RTIC device crate
 
+#[doc(hidden)]
 pub use pac::NVIC_PRIO_BITS;
+
+#[doc(hidden)]
 pub use pac::Peripherals;
+
+#[doc(hidden)]
 pub use pac::interrupt;

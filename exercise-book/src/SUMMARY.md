@@ -108,6 +108,7 @@
   - [Binary Size](./stm32/green-yellow-binary-size.md)
   - [Running the Program](./stm32/green-yellow-running-from-vsc.md)
   - [Panicking](./stm32/green-yellow-panicking.md)
+  - [Using a Hardware Abstraction Layer](./stm32/green-yellow-using-hal.md)
 - [STM32 TrustZone Exercise](./stm32/trustzone.md)
     - [TrustZone Intro](./stm32/trustzone-intro.md)
     - [Booting in Secure State](./stm32/trustzone-secure.md)
