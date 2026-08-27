@@ -19,7 +19,7 @@ fn main() -> ! {
     let mut board = bsp::NonSecureBoard::new();
     board.usart1.configure(bsp::APB2_PERIPH_CLK_HZ);
 
-    'game_loop: loop {
+    loop {
         let mut secret = [0u8; NUM_DIGITS];
         for digit in secret.iter_mut() {
             *digit = board.rng.random_range(1..=9);
@@ -28,24 +28,24 @@ fn main() -> ! {
         defmt::debug!("The secret is {:?}", secret);
         _ = writeln!(board.usart1, "Let's play the Green and Yellow Game!");
 
-        'guess_loop: loop {
+        loop {
             let mut guess = [0u8; NUM_DIGITS];
 
-            for (idx, slot) in guess.iter_mut().enumerate() {
-                _ = write!(board.usart1, "\nEnter digit {}: ", idx + 1);
+            let mut i = 0;
+            loop {
+                _ = write!(board.usart1, "\nEnter digit {}: ", i);
                 let ch = board.usart1.rx_char_blocking();
                 match ch {
                     b'1'..=b'9' => {
-                        *slot = ch - b'0';
+                        guess[i] = ch - b'0';
                         board.usart1.tx_char_blocking(ch);
+                        i += 1;
+                        if i == NUM_DIGITS {
+                            break;
+                        }
                     }
                     _ => {
-                        _ = writeln!(
-                            board.usart1,
-                            "{:?} is not valid, re-do your guess",
-                            ch as char
-                        );
-                        continue 'guess_loop;
+                        _ = writeln!(board.usart1, "{:?} is not valid, try again", ch as char);
                     }
                 }
             }
@@ -58,7 +58,7 @@ fn main() -> ! {
 
             if guess == secret {
                 _ = writeln!(board.usart1, "Well done!!");
-                continue 'game_loop;
+                break;
             }
         }
     }
