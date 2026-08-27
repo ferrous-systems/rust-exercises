@@ -30,10 +30,10 @@ runs:
         CRITICALUP_VERSION: ${{ inputs.criticalup }}
       run: |
         curl -fsSL https://github.com/ferrocene/criticalup/releases/download/${CRITICALUP_VERSION}/criticalup-installer.sh | sh
-    - name: Install Just 1.42
-      uses: extractions/setup-just@v3
+    - name: Install Just 1.58
+      uses: extractions/setup-just@v4
       with:
-        just-version: 1.42
+        just-version: 1.58
     - name: Update Rust
       shell: bash
       run: |
