@@ -109,6 +109,7 @@
   - [Running the Program](./stm32/green-yellow-running-from-vsc.md)
   - [Panicking](./stm32/green-yellow-panicking.md)
 - [STM32 TrustZone Exercise](./stm32/trustzone.md)
+    - [TrustZone Intro](./stm32/trustzone-intro.md)
     - [Booting in Secure State](./stm32/trustzone-secure.md)
     - [Changing to Nonsecure State](./stm32/trustzone-nonsecure.md)
     - [Offering Secure APIs](./stm32/trustzone-secure-apis.md)

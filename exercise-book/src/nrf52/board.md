@@ -86,13 +86,13 @@ and `probe-rs` does not work properly, refer to [the troubleshooting for Windows
 MCU.
 
 We provide a simple pre-built blinky app that can be used to quickly verify that this flashing
-process works properly. You can download the `blinky` ELF file from the
+process works properly. You can download the `nrf52-blinky` ELF file from the
 [release](https://github.com/ferrous-systems/rust-exercises/releases) page.
 
-Then, you can use the following command to flash the blinky binary to the board:
+Then, you can use the following command to flash the `nrf52-blinky` binary to the board:
 
 ```sh
-probe-rs run --chip nRF52840_xxAA --allow-erase-all ./blinky
+probe-rs run --chip nRF52840_xxAA --allow-erase-all ./nrf52-blinky
 ```
 
 You now should now see the LED1 blinking with a frequency of 1 second.

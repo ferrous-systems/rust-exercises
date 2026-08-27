@@ -109,6 +109,7 @@ assemble version:
 	cp -r ./exercise-templates ./rust-exercises-{{ version }}
 	cp -r ./exercise-solutions ./rust-exercises-{{ version }}
 	cp -r ./nrf52-code ./rust-exercises-{{ version }}
+	cp -r ./stm32-code ./rust-exercises-{{ version }}
 	cp -r ./qemu-code ./rust-exercises-{{ version }}
 	cp -r ./xtask ./rust-exercises-{{ version }}
 	cp -r ./.cargo ./rust-exercises-{{ version }}

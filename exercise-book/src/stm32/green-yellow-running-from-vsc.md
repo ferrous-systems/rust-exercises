@@ -7,19 +7,19 @@ Enter the appropriate command into the terminal you're using. This will set the 
 ### MacOS & Linux
 
 ```console
-export DEFMT_LOG=warn
+export DEFMT_LOG=info
 ```
 
 ### PowerShell
 
 ```console
-$Env:DEFMT_LOG = "warn"
+$Env:DEFMT_LOG = "info"
 ```
 
 ### Windows Command Prompt
 
 ```console
-set DEFMT_LOG=warn
+set DEFMT_LOG=info
 ```
 
 ### Inside VS Code
@@ -31,7 +31,7 @@ To get VS Code to pick up the environment variable, you can either:
 
   ```json
   "rust-analyzer.runnables.extraEnv": {
-      "DEFMT_LOG": "warn"
+      "DEFMT_LOG": "info"
   }
   ```
 

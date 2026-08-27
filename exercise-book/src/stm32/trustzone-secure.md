@@ -2,9 +2,9 @@
 
 ## Introduction
 
-As noted before, code running in Nonsecure state **cannot** access anything
-marked as *Secure* access only. But how do we mark which things should be
-accessible from each state?
+As noted in the [TrustZone Intro](./trustzone-intro.md) section, code running in
+Nonsecure state **cannot** access anything marked as *Secure* access only. But
+how do we mark which things should be accessible from each state?
 
 TrustZone does this using a combination of two *Attribution Units*:
 
