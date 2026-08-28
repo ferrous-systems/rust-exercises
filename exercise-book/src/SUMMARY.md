@@ -110,6 +110,7 @@
   - [Panicking](./stm32/green-yellow-panicking.md)
   - [Using a Hardware Abstraction Layer](./stm32/green-yellow-using-hal.md)
   - [Porting Green and Yellow](./stm32/green-yellow-porting.md)
+- [STM32 Buttons Exercise](./stm32/buttons.md)
 - [STM32 TrustZone Exercise](./stm32/trustzone.md)
     - [TrustZone Intro](./stm32/trustzone-intro.md)
     - [Booting in Secure State](./stm32/trustzone-secure.md)

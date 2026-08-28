@@ -161,7 +161,7 @@ Disassembly of section .gnu.sgstubs:
  Why is it at `0x0C1F_0000`? Because we told the linker to put it there, using
  the `build.rs` file:
 
- ```rust
+```rust
 // Use top of Bank 0 for the Secure Gateway stubs
 println!("cargo:rustc-link-arg=--section-start=.gnu.sgstubs=0x0C1F0000");
 ```
