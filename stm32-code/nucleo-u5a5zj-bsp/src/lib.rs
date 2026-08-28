@@ -11,7 +11,10 @@ use stm32u5::stm32u5a5 as pac;
 
 pub use stm32u5_tiny_hal::{
     self as hal,
-    gpio::{Output, SecureOutput},
+    gpio::{
+        nonsecure::pin_mode::{Input, Output},
+        secure::pin_mode::Output as SecureOutput,
+    },
 };
 
 /// Medium Speed Internal System (MSIS) Clock power-on default value
@@ -36,7 +39,7 @@ pub struct SecureBoard {
     /// Secure System Control Block
     pub scb: cortex_m::peripheral::SCB,
     /// GPIO driver
-    pub gpio: hal::gpio::SecureDriver,
+    pub gpio: hal::gpio::secure::Driver,
     /// Power Control
     pub pwr: hal::pwr::Driver<0x5602_0800>,
     /// Green LED
@@ -79,7 +82,7 @@ impl SecureBoard {
         // Create a driver for the UART connected to the USB Virtual COM Port
         let usart1 = hal::usart::Driver::new(p.SEC_USART1);
 
-        let (mut gpio, pins) = hal::gpio::SecureDriver::new(
+        let (mut gpio, pins) = hal::gpio::secure::Driver::new(
             p.SEC_GPIOA,
             p.SEC_GPIOB,
             p.SEC_GPIOC,
@@ -169,20 +172,20 @@ impl SecureBoard {
             .init(&[
                 // Nonsecure Flash (second bank)
                 SauRegion {
-                    base_address: ns_addr::FLASH2_START as u32,
-                    limit_address: ns_addr::FLASH2_END as u32,
+                    base_address: ns_addr::FLASH2_START,
+                    limit_address: ns_addr::FLASH2_END,
                     attribute: SauRegionAttribute::NonSecure,
                 },
                 // Nonsecure SRAM (SRAM3)
                 SauRegion {
-                    base_address: ns_addr::SRAM3_START as u32,
-                    limit_address: ns_addr::SRAM3_END as u32,
+                    base_address: ns_addr::SRAM3_START,
+                    limit_address: ns_addr::SRAM3_END,
                     attribute: SauRegionAttribute::NonSecure,
                 },
                 // All of the Nonsecure Peripherals
                 SauRegion {
-                    base_address: ns_addr::PERIPH_START as u32,
-                    limit_address: ns_addr::PERIPH_END as u32,
+                    base_address: ns_addr::PERIPH_START,
+                    limit_address: ns_addr::PERIPH_END,
                     attribute: SauRegionAttribute::NonSecure,
                 },
                 // the Secure Gateway stubs we export
@@ -208,7 +211,7 @@ pub struct NonSecureBoard {
     /// USART1, connected to the USB Virtual COM Port
     pub usart1: hal::usart::Driver<{ hal::usart::USART1_NS }>,
     /// GPIO driver
-    pub gpio: hal::gpio::NonsecureDriver,
+    pub gpio: hal::gpio::nonsecure::Driver,
     /// Green LED
     pub green_ld1: Led,
     /// Blue LED
@@ -225,10 +228,6 @@ impl NonSecureBoard {
         // Enable all the peripherals we need
         let mut rcc = hal::rcc::Driver::new(p.RCC);
         rcc.enable(hal::rcc::Peripheral::Usart1, true);
-        rcc.enable(hal::rcc::Peripheral::GpioA, true);
-        rcc.enable(hal::rcc::Peripheral::GpioB, true);
-        rcc.enable(hal::rcc::Peripheral::GpioC, true);
-        rcc.enable(hal::rcc::Peripheral::GpioG, true);
         rcc.enable(hal::rcc::Peripheral::Power, true);
 
         // trace must be enabled for cycle counter to work
@@ -247,9 +246,9 @@ impl NonSecureBoard {
         // Create a driver for the UART connected to the USB Virtual COM Port
         let usart1 = hal::usart::Driver::new(p.USART1);
 
-        let (mut gpio, pins) = hal::gpio::NonsecureDriver::new(
+        let (mut gpio, pins) = hal::gpio::nonsecure::Driver::new(
             p.GPIOA, p.GPIOB, p.GPIOC, p.GPIOD, p.GPIOE, p.GPIOF, p.GPIOG, p.GPIOH, p.GPIOI,
-            p.GPIOJ,
+            p.GPIOJ, &mut rcc,
         );
 
         let mut pwr = hal::pwr::Driver::new(p.PWR);
@@ -326,9 +325,8 @@ impl SecureLed {
     }
 
     /// Make this LED available the nonsecure world
-    pub fn make_nonsecure(self, gpio: &mut hal::gpio::SecureDriver) {
-        let secure_input = gpio.change_to_input(self.inner);
-        let _input = gpio.change_to_nonsecure_input(secure_input);
+    pub fn make_nonsecure(self, gpio: &mut hal::gpio::secure::Driver) {
+        gpio.change_to_nonsecure(self.inner);
     }
 }
 

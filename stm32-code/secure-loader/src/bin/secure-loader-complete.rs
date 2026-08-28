@@ -53,7 +53,7 @@ fn main() -> ! {
     });
 
     // We give Green to Nonsecure State
-    _ = board.green_ld1.make_nonsecure(&mut board.gpio);
+    board.green_ld1.make_nonsecure(&mut board.gpio);
 
     hprintln!("...LEDs configured");
 
