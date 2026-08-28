@@ -7,11 +7,11 @@ license = "MIT OR Apache-2.0"
 description = "A simple ARMv8-R UART driver exercise that runs in QEMU and compiles with Ferrocene"
 
 [dependencies]
-bitbybit = "1.4"
-cortex-ar = { version = "0.2", features = ["critical-section-single-core"] }
-cortex-r-rt = "0.2"
+bitbybit = "2.0"
+aarch32-cpu = { version = "0.4", features = ["critical-section-single-core"] }
+aarch32-rt = "0.4"
 critical-section = "1.2"
-derive-mmio = "0.6"
+derive-mmio = "0.8"
 semihosting = { version = "0.1.20", features = ["stdio"] }
 
 [profile.release]

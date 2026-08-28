@@ -17,19 +17,19 @@ use uart_exercise::uart_driver_solution::Uart;
 
 /// The entry-point to the Rust application.
 ///
-/// It is called by the start-up assembly code in `cortex-r-rt` and thus
-/// exported as a C-compatible symbol.
-#[no_mangle]
-pub extern "C" fn kmain() {
-    if let Err(e) = main() {
+/// It is called by the start-up assembly code in `aarch32-rt`.
+#[aarch32_rt::entry]
+fn main() -> ! {
+    if let Err(e) = inner_main() {
         panic!("main returned {:?}", e);
     }
+    semihosting::process::exit(0);
 }
 
 /// The main function of our Rust application.
 ///
-/// Called by [`kmain`].
-fn main() -> Result<(), core::fmt::Error> {
+/// Called by [`main`].
+fn inner_main() -> Result<(), core::fmt::Error> {
     semihosting::println!("Starting main...");
     let mut uart0 = unsafe { Uart::new_uart0() };
     uart0.enable(115200, PERIPHERAL_CLOCK);
@@ -42,8 +42,7 @@ fn main() -> Result<(), core::fmt::Error> {
         }
         writeln!(uart0)?;
     }
-    // Now exit the program
-    semihosting::process::exit(0);
+    Ok(())
 }
 
 // End of file

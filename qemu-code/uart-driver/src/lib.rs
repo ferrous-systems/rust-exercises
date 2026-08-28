@@ -9,8 +9,6 @@
 pub mod uart_driver;
 pub mod uart_driver_solution;
 
-use cortex_r_rt as _;
-
 /// The clock speed of the peripheral subsystem on an SSE-300 SoC an on MPS3 board.
 ///
 /// Probably right for an MPS3-536
