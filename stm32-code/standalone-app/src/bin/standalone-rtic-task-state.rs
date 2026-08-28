@@ -1,7 +1,6 @@
-//! # standalone-rtic-event
+//! # standalone-rtic-task-state
 //!
-//! Demonstrates how RTIC can handle interrupts by executing short-lived tasks
-//! to handle them.
+//! A completed version of the `standalone-rtic-event` exercise.
 
 #![no_std]
 #![no_main]
@@ -18,7 +17,9 @@ mod app {
 
     /// The resources we dedicate to individual tasks
     #[local]
-    struct MyLocalResources {}
+    struct MyLocalResources {
+        usart1: bsp::hal::usart::Driver<{ bsp::hal::usart::USART1_NS }>,
+    }
 
     /// Init routine
     ///
@@ -34,7 +35,12 @@ mod app {
         board.usart1.configure(bsp::APB2_PERIPH_CLK_HZ);
         board.usart1.rx_interrupt_enable(true);
 
-        (MySharedResources {}, MyLocalResources {})
+        (
+            MySharedResources {},
+            MyLocalResources {
+                usart1: board.usart1,
+            },
+        )
     }
 
     /// Runs when there is nothing to do
@@ -47,8 +53,8 @@ mod app {
     }
 
     /// Runs when USART1 interrupt is active
-    #[task(binds = USART1)]
-    fn usart1_handler(_cx: usart1_handler::Context) {
+    #[task(binds = USART1, local = [usart1])]
+    fn usart1_handler(cx: usart1_handler::Context) {
         defmt::info!("USART1 IRQ!");
     }
 }

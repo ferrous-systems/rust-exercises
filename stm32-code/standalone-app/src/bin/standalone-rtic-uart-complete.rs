@@ -1,6 +1,6 @@
-//! # standalone-rtic-event, but completed
+//! # standalone-rtic-uart-complete
 //!
-//! A completed version of the `standalone-rtic-event` exercise.
+//! A completed version of the *STM32 Handle UART Received Data* exercise.
 
 #![no_std]
 #![no_main]
@@ -19,6 +19,7 @@ mod app {
     #[local]
     struct MyLocalResources {
         usart1: bsp::hal::usart::Driver<{ bsp::hal::usart::USART1_NS }>,
+        counter: u32,
     }
 
     /// Init routine
@@ -39,6 +40,7 @@ mod app {
             MySharedResources {},
             MyLocalResources {
                 usart1: board.usart1,
+                counter: 0,
             },
         )
     }
@@ -53,11 +55,15 @@ mod app {
     }
 
     /// Runs when USART1 interrupt is active
-    #[task(binds = USART1, local = [usart1])]
+    #[task(binds = USART1, local = [usart1, counter])]
     fn usart1_handler(cx: usart1_handler::Context) {
         defmt::info!("USART1 IRQ!");
         if let Some(rx_ch) = cx.local.usart1.rx_char() {
             defmt::info!("< 0x{=u8:02x}", rx_ch);
+            if rx_ch == b'x' {
+                *cx.local.counter += 1;
+                defmt::info!("That's {} x's!", cx.local.counter);
+            }
         }
     }
 }

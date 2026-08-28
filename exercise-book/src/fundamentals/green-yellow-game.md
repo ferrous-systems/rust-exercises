@@ -84,7 +84,7 @@ To complete this exercise you need to have:
 
 If you need it, we have provided a [complete solution](../../../exercise-solutions/green-yellow/src/bin/complete.rs) for this exercise.
 
-Here are some test cases to check your algorith (scroll past them to get to the hints section, if you need a hint):
+Here are some test cases to check your algorithm (scroll past them to get to the hints section, if you need a hint):
 
 ```rust
 #[test]
