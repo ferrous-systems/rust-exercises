@@ -99,6 +99,7 @@ build-stm32-code:
 	cargo build --release --bin nonsecure-app
 	cargo build --release --bin secure-loader-complete
 	cargo build --release --bin nonsecure-app-complete
+	cargo build --release --package standalone-app
 
 assemble version:
 	echo "Making ./rust-exercises-{{ version }}..."
@@ -108,6 +109,7 @@ assemble version:
 	cp -r ./exercise-templates ./rust-exercises-{{ version }}
 	cp -r ./exercise-solutions ./rust-exercises-{{ version }}
 	cp -r ./nrf52-code ./rust-exercises-{{ version }}
+	cp -r ./stm32-code ./rust-exercises-{{ version }}
 	cp -r ./qemu-code ./rust-exercises-{{ version }}
 	cp -r ./xtask ./rust-exercises-{{ version }}
 	cp -r ./.cargo ./rust-exercises-{{ version }}

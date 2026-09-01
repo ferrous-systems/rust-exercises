@@ -1,0 +1,28 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+
+        {
+            "preLaunchTask": "rust: cargo build",
+            "type": "probe-rs-debug",
+            "request": "launch",
+            "name": "Run standalone-hello with probe-rs",
+            "cwd": "${workspaceFolder}",
+            "connectUnderReset": false,
+            "chip": "STM32U5A5ZJ",
+            "flashingConfig": {
+                "flashingEnabled": true,
+            },
+            "coreConfigs": [
+                {
+                    // Change this to the binary you want to debug
+                    "programBinary": "target/thumbv8m.main-none-eabi/debug/standalone-hello",
+                    "rttEnabled": true
+                }
+            ]
+        }
+    ]
+}

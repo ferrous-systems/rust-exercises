@@ -76,7 +76,7 @@ impl Driver {
     /// * The start and end address must be relative to the start of the given SRAM Bank.
     /// * The start and end address must be a multiple of the superblock size (16K).
     /// * The end address must be one beyond the end of the range you wish to
-    /// map.
+    ///   map.
     ///
     /// To map all of SRAM3, call `map_addresses_nonsecure(SramBank::SRAM3, 0x00_0000, 0x0D_0000)`
     pub fn map_addresses_nonsecure(

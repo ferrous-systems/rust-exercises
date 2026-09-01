@@ -36,7 +36,9 @@ fn main() -> ! {
     if secure_watermark2.secwm2_pstrt() == 0xFF && secure_watermark2.secwm2_pend() == 0 {
         hprintln!("Secure watermark is OK :)");
     } else {
-        hprintln!("Unlocking Bank 2 from Secure State. probe-rs is about to crash and that's OK :)");
+        hprintln!(
+            "Unlocking Bank 2 from Secure State. probe-rs is about to crash and that's OK :)"
+        );
         // Unlock NSCR
         p.SEC_FLASH.nskeyr().write(|w| {
             unsafe {

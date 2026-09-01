@@ -1,11 +1,13 @@
 [workspace]
 resolver = "3"
 members = [
+    "green-yellow-solution",
     "nonsecure-app",
     "nucleo-u5a5zj-bsp",
+    "secure-loader",
+    "standalone-app",
     "step1-option-bytes",
     "step2-secure-watermark",
-    "secure-loader",
     "stm32u5-tiny-hal",
 ]
 
@@ -16,7 +18,12 @@ cortex-m-semihosting = "0.6"
 critical-section = "1"
 defmt = "1.1.1"
 defmt-rtt = "1.3.0"
+green-yellow-solution = { version = "0.1.0", path = "./green-yellow-solution" }
+heapless = { version = "0.9.3", features = ["defmt"] }
 nucleo-u5a5zj-bsp = { path = "./nucleo-u5a5zj-bsp" }
+rand = { version = "0.10.2", default-features = false }
+rtic = { version = "2.3.1", features = ["thumbv8main-backend"] }
+rtic-monotonics = { version = "2.2.1", features = ["cortex-m-systick"] }
 stm32u5 = { version = "0.16.0", features = ["stm32u5a5"] }
 stm32u5-tiny-hal = { path = "./stm32u5-tiny-hal" }
 

@@ -30,7 +30,7 @@ on:
 # my_cool_new_job:
 #   runs-on: ubuntu-24.04
 #   steps:
-#   - uses: actions/checkout@v6                     # This is what downloads a fresh clone of the repo and cd's into it
+#   - uses: actions/checkout@v7                     # This is what downloads a fresh clone of the repo and cd's into it
 #   - uses: ./.github/actions/setup
 #     with:
 #       cache: dir_where_I_want_results_cached
@@ -45,7 +45,7 @@ jobs:
   test-build-mdbook:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup
         with:
           cache: exercise-book
@@ -56,7 +56,7 @@ jobs:
           tool: mdbook-graphviz@0.3.1
       - run: just test-mdbook
       - run: just build-mdbook
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: mdbook-dir
           path: exercise-book/book/
@@ -65,7 +65,7 @@ jobs:
   test-exercise-templates:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup
         with:
           cache: exercise-templates
@@ -74,7 +74,7 @@ jobs:
   test-exercise-solutions:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup
         with:
           cache: exercise-solutions
@@ -83,21 +83,21 @@ jobs:
   test-connected-mailbox:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup
       - run: just test-connected-mailbox
 
   test-multi-threaded-mailbox:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup
       - run: just test-multi-threaded-mailbox
 
   build-qemu-uart-driver:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup
         with:
           cache: qemu-code/uart-driver
@@ -108,7 +108,7 @@ jobs:
   build-radio-app:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup
         with:
           cache: nrf52-code/radio-app
@@ -121,7 +121,7 @@ jobs:
   build-hal-app:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup
         with:
           cache: nrf52-code/hal-app
@@ -130,16 +130,16 @@ jobs:
         with:
           tool: flip-link@0.1.10
       - run: just build-hal-app
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
-          name: blinky
+          name: nrf52-blinky
           path: nrf52-code/hal-app/target/thumbv7em-none-eabihf/release/blinky
           if-no-files-found: error
 
   build-usb-app:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup
         with:
           cache: nrf52-code/usb-app
@@ -152,7 +152,7 @@ jobs:
   build-stm32-code:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup
         with:
           cache: stm32-code
@@ -161,11 +161,16 @@ jobs:
         with:
           tool: flip-link@0.1.10
       - run: just build-stm32-code
+      - uses: actions/upload-artifact@v7
+        with:
+          name: stm32-blinky
+          path: stm32-code/target/thumbv8m.main-none-eabi/release/standalone-blinky
+          if-no-files-found: error
 
   test-usb-lib:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup
         with:
           cache: nrf52-code/usb-lib
@@ -175,7 +180,7 @@ jobs:
   build-dongle-fw:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup
         with:
           cache: nrf52-code/dongle-fw
@@ -187,7 +192,7 @@ jobs:
         env:
           CI_BUILD: "1"
           HIDDEN_MESSAGE: ${{ secrets.HIDDEN_MESSAGE }}
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: dongle-fw
           path: nrf52-code/dongle-fw/target/thumbv7em-none-eabihf/release/dongle-fw
@@ -196,7 +201,7 @@ jobs:
   build-xtask:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup
         with:
           cache: xtask
@@ -205,7 +210,7 @@ jobs:
   format-check:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup
       - run: just format-check
 
@@ -215,30 +220,38 @@ jobs:
      runs-on: ubuntu-24.04
      # Notice that because our repo expects all checks to pass, we don't need to include every other job
      # as a dependency of the `deploy` job.
-     needs: [test-build-mdbook, build-dongle-fw, build-hal-app]
+     needs: [test-build-mdbook, build-dongle-fw, build-hal-app, build-stm32-code]
      steps:
-       - uses: actions/checkout@v6
+       - uses: actions/checkout@v7
        - uses: ./.github/actions/setup
        # Download the produced artifacts
-       - uses: actions/download-artifact@v4
+       - uses: actions/download-artifact@v8
          with:
           # Move the mdbook `book` dir to where we expect it to be
           name: mdbook-dir
           path: ./exercise-book/book
-       - uses: actions/download-artifact@v4
+       - uses: actions/download-artifact@v8
          with:
           name: dongle-fw
-          path: ./nrf52-code/dongle-fw/target/thumbv7em-none-eabihf/release/
-       - uses: actions/download-artifact@v4
+          path: nrf52-code/dongle-fw/target/thumbv7em-none-eabihf/release
+       - uses: actions/download-artifact@v8
          with:
-          name: blinky
-          path: ./nrf52-code/hal-app/target/thumbv7em-none-eabihf/release/
+          name: nrf52-blinky
+          path: nrf52-code/hal-app/target/thumbv7em-none-eabihf/release
+       - uses: actions/download-artifact@v8
+         with:
+          name: stm32-blinky
+          path: stm32-code/target/thumbv8m.main-none-eabi/release
        - run: |
            slug=$(./describe.sh "${GITHUB_REF}")
            echo "Building with slug '${slug}'"
            echo "slug=${slug}" >> "${GITHUB_ENV}"
        - run: just assemble ${{ env.slug }}
-       - uses: actions/upload-artifact@v4
+       - run: |
+          cp ./nrf52-code/dongle-fw/target/thumbv7em-none-eabihf/release/dongle-fw ./dongle-fw
+          cp ./nrf52-code/hal-app/target/thumbv7em-none-eabihf/release/blinky ./nrf52-blinky
+          cp ./stm32-code/target/thumbv8m.main-none-eabi/release/standalone-blinky ./stm32-blinky
+       - uses: actions/upload-artifact@v7
          if: ${{success()}}
          with:
            name: Artifacts
@@ -249,6 +262,6 @@ jobs:
          id: create_release
          uses: ncipollo/release-action@v1
          with:
-           artifacts: "./rust-exercises-${{ env.slug }}.zip,./nrf52-code/dongle-fw/target/thumbv7em-none-eabihf/release/dongle-fw,./nrf52-code/hal-app/target/thumbv7em-none-eabihf/release/blinky"
+           artifacts: "./rust-exercises-${{ env.slug }}.zip,./dongle-fw,./nrf52-blinky,./stm32-blinky"
            allowUpdates: true
            updateOnlyUnreleased: true

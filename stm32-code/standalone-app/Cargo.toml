@@ -1,0 +1,16 @@
+[package]
+name = "standalone-app"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+cortex-m-rt.workspace = true
+cortex-m.workspace = true
+defmt-rtt.workspace = true
+defmt.workspace = true
+green-yellow-solution.workspace = true
+heapless.workspace = true
+nucleo-u5a5zj-bsp.workspace = true
+rand.workspace = true
+rtic.workspace = true
+rtic-monotonics.workspace = true

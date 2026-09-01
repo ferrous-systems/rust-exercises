@@ -26,7 +26,8 @@ fn main() -> ! {
     let mut board: bsp::SecureBoard = bsp::SecureBoard::new();
 
     // Enable secure fault handler
-    board.scb
+    board
+        .scb
         .enable(cortex_m::peripheral::scb::Exception::SecureFault);
 
     // Say hello
