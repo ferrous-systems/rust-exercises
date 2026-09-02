@@ -21,23 +21,24 @@ using its on-board ST-Link debugger.
 
 You will need Rustup installed.
 
-We provide `rust-toolchain.toml` file will ensure that a suitable nightly
+We provide a `rust-toolchain.toml` file that will ensure that a suitable nightly
 release of Rust is downloaded automatically, along with the Rust Standard
 Library for the `thumbv8m.m-none-eabi` target.
 
 ## Board preparation
 
 The NULCEO-U5A5 board has two USB ports: a micro-USB port (CN1) and an USB
-Type-C port (CN15). It also has on-board ST-Link programmer / debugger. The
+Type-C port (CN15). It also has on-board ST-Link programmer / debug probe. The
 micro-USB port is connected to the ST-Link and is the one you should connect to
 your computer. You can also refer to the image below to see the location of the
 different components on the board.
 
 The development board actually has two chips. One is the STM32U5A5ZJ-Q target
 chip, and the other contains a special firmware which transforms it into a ST
-Micro ST-Link debugger probe. Your computer will communicate via USB with the
-ST-Link, which will in turn use the SWD protocol to interface with the target
-chip. All of this avoids the need for an external probe.
+Micro ST-Link. Your computer will communicate via USB with the ST-Link, which
+will in turn use the SWD protocol to interface with the target chip. All of this
+avoids the need for an external debug probe. The ST-Link also acts as a UART
+to USB Serial convertor.
 
 💬 These directions assume you are holding the board "vertically" with
 components (jumpers, buttons and socket headers) facing up. In this position,
