@@ -258,14 +258,13 @@ the board):
 
 ```rust,ignore
 // We give Green to Nonsecure State
-_ = board.green_ld1.make_nonsecure(&mut board.gpio);
+board.green_ld1.make_nonsecure(&mut board.gpio);
 ```
 
-The API gives us an object back representing access to the LED from Nonsecure
-state, but as we don't want the `secure-loader` playing with the LED we just
-discard the value by assigning to `_`.
+The API takes ownership of our `SecureLed` and gives us nothing back. But that's
+fine because we don't want the LED any more - not in this program anyway.
 
-The API takes an exclusive reference to the GPIO peripheral to ensure that
+The API also takes an exclusive reference to the GPIO peripheral to ensure that
 no-one else touches the registers it needs whilst it does a read-modify-write
 cycle on them.
 
