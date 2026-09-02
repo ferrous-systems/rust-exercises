@@ -26,3 +26,11 @@ The `#![no_main]` language attribute indicates that the program will use a custo
 ### `#[entry]`
 
 The `#[entry]` macro attribute marks the custom entry point of the program. The entry point must be a divergent function whose return type is the never type `!`. The function is not allowed to return; therefore the program is not allowed to terminate. The macro comes from the [cortex-m-rt crate](https://docs.rs/cortex-m-rt/0.7.6/cortex_m_rt/attr.entry.html) and is not part of the Rust language.
+
+### `#[panic_handler]`
+
+Rust requires we supply a function to be executed whenever the system panics. We mark our function with this
+attribute and the compiler automatically links it into the panic handling infrastructure in `libcore`.
+
+If we remove this function, or change the function signature, we get a compile error. You are allowed to put the panic handler in a library crate, but here we've just written a short one so you can see it. We'll talk more
+about the panic handler later.
