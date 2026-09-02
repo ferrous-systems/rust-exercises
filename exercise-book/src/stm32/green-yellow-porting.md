@@ -180,17 +180,19 @@ loop {
         // Loop for each Digit within the Guess
         let mut i = 0;
         loop {
-            // read valid digits into `guess[i]`
+
+            // TODO: read valid digits into `guess[i]` and increment i
+
             if i == NUM_DIGITS {
                 break;
             }
         }
 
-        // do the calculation
+        // TODO: do the calculation and print the result
 
         if guess == secret {
             _ = writeln!(board.usart1, "Well done!!");
-            continue 'game_loop;
+            break;
         }
     }
 }

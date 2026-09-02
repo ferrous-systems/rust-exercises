@@ -34,8 +34,8 @@ Some parts of the STM32U5 appear in the memory map *twice*. For example, the
 STM32U5A5ZJ-Q has 4 MiB of Flash, which is available via two address ranges. One
 address range is for *nonsecure access* and one is for *secure access*.
 
-- The nonsecure address range for Flash is `0x0800_0000..0x0803_FFFF`.
-- The secure address range for Flash is `0x0C00_0000..0x0C03_FFFF`.
+- The nonsecure address range for Flash is `0x0800_0000..0x083F_FFFF`.
+- The secure address range for Flash is `0x0C00_0000..0x0C3F_FFFF`.
 
 You see the same contents regardless of which address range you use, but only
 code running in *Secure state* can use the secure address range.

@@ -1,6 +1,6 @@
 # Panicking
 
-✅ Open the [`stm32-code/standalone-app/src/bin/standalone-panic.rs`](../../../stm32-code/standalone-app/src/bin/standalone-panic.rs) file and click the "Run" button (or run with `cargo run --bin panic`).
+✅ Open the [`stm32-code/standalone-app/src/bin/standalone-panic.rs`](../../../stm32-code/standalone-app/src/bin/standalone-panic.rs) file and click the "Run" button (or run with `cargo run --bin standalone-panic`).
 
 This program attempts to index an array beyond its length and this results in a panic.
 

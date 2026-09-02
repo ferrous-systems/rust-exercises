@@ -85,7 +85,7 @@ The GTZC MPCBB peripheral does this with a whole bunch of 32-bit registers,
 where each register controls 32 blocks (1 bit per block). SRAM3 therefore has 52
 registers we need to hit.
 
-Luckily for you, I wrote a driver for this, you can you just call
+Luckily for you, the HAL includes a a driver for this. You can you just call
 `bsp.gztc.map_addresses_nonsecure` and give it the address range for SRAM3. It
 will then hit all the right bits in all the right registers for you.
 
@@ -159,11 +159,10 @@ unsafe {
 }
 ```
 
-As an aside, we're using a fork of the `cortex-m` crate that adds access to some
-of these Nonsecure peripherals. So don't expect the documentation at
-<https://docs.rs/cortex-m> to be that helpful here. You'll need to look at
-<https://github.com/rust-embedded/cortex-m/tree/jp/release-cm-and-cmrt/cortex-m>
-for the time being.
+You can see the crate documentation at <https://docs.rs/cortex-m> but
+unfortunately the authors forgot to set the 'secure-mode' feature for the
+docs.rs build, so the function is missing from the generated docs. For now you'll
+have to refer to the [source code](https://github.com/rust-embedded/cortex-m/blob/3bfd58c0e36e3771bdb37caa527cb4197277e678/cortex-m/src/asm.rs#L409).
 
 The `bootload_ns` function needs access to the Nonsecure System Control Base
 peripheral, but the BSP has provided that so we can just hand it over. Feel free
@@ -180,7 +179,7 @@ there's a bug!
 
 If you run your program now, you probably end up in the Secure Fault handler.
 
-```text
+```console
 $ cargo run --bin secure-loader
    Compiling nucleo-u5a5zj-bsp v0.1.0 (/Users/jonathan/Documents/ferrous-systems/rust-exercises/stm32-code/nucleo-u5a5zj-bsp)
    Compiling secure-loader v0.1.0 (/Users/jonathan/Documents/ferrous-systems/rust-exercises/stm32-code/secure-loader)
@@ -259,14 +258,13 @@ the board):
 
 ```rust,ignore
 // We give Green to Nonsecure State
-_ = board.green_ld1.make_nonsecure(&mut board.gpio);
+board.green_ld1.make_nonsecure(&mut board.gpio);
 ```
 
-The API gives us an object back representing access to the LED from Nonsecure
-state, but as we don't want the `secure-loader` playing with the LED we just
-discard the value by assigning to `_`.
+The API takes ownership of our `SecureLed` and gives us nothing back. But that's
+fine because we don't want the LED any more - not in this program anyway.
 
-The API takes an exclusive reference to the GPIO peripheral to ensure that
+The API also takes an exclusive reference to the GPIO peripheral to ensure that
 no-one else touches the registers it needs whilst it does a read-modify-write
 cycle on them.
 

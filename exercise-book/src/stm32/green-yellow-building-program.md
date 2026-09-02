@@ -22,18 +22,19 @@ The target `thumbv8m.main-none-eabi` can be broken down as:
   * `f32` and `f64` are passed to functions in normal CPU registers (like `R0`),
     instead of in FPU registers (like `S0`)
 
-✅ Inside the folder [`stm32-code`](../../../stm32-code), use the following
+✅ Inside the folder [`stm32-code`](../../../stm32-code/), use the following
 command to cross compile the program:
 
 ```console
 cargo build --bin standalone-hello
 ```
 
-It should be noted that building the application for this target also requires
-the `thumbv8m.main-none-eabi` target. Normally, you would have to add this
-target to `cargo` by using `rustup target add thumbv8m.main-none-eabi`, but we
-provide a `rust-toolchain.toml` that is used to determine which toolchains
-and targets should be installed automatically when in this folder.
+Building the application also requires a Rust Standard Library that has been
+pre-compiled for the `thumbv8m.main-none-eabi` target. Normally, you would have
+to add this component to `cargo` by using
+`rustup target add thumbv8m.main-none-eabi`, but we provide a
+`rust-toolchain.toml` that is used to determine which toolchains and targets
+should be installed automatically when in this folder.
 
 The output of the compilation process will be an ELF (Executable and Linkable
 Format) file. The file will be placed in the `target/thumbv8m.main-none-eabi`

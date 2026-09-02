@@ -86,8 +86,8 @@ enters an infinite loop if it has nothing to do.
 
 Another part of the option bytes controls the "Secure Watermark" - that is,
 which pages in Flash are readable from Nonsecure State, and which are reserved
-for Secure state usage. We need to adjust the "Secure Watermark" in order for
-our example programs work.
+for Secure state usage. We need to adjust the "Secure Watermark" for our example
+programs to work.
 
 We couldn't do that before because you can only do this when your board boots
 into Secure state, hence why this binary is called `step2-secure-watermark`.

@@ -2,7 +2,7 @@
 
 Now you have a working framework, with UART interrupts firing and being handled. Let's try adding a `#[local]` resource of our own.
 
-✅ Modify the program so that it checks which character has been received on the UART, and have report the total number of ASCII letter `'x'` characters that have been received.
+✅ Modify the program so that it checks which character has been received on the UART, and have it report the total number of ASCII letter `'x'` characters that have been received.
 
 You'll probably want an additional resource for this.
 
