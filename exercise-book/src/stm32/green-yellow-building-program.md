@@ -22,7 +22,7 @@ The target `thumbv8m.main-none-eabi` can be broken down as:
   * `f32` and `f64` are passed to functions in normal CPU registers (like `R0`),
     instead of in FPU registers (like `S0`)
 
-✅ Inside the folder [`stm32-code`](../../../stm32-code), use the following
+✅ Inside the folder [`stm32-code`](../../../stm32-code/), use the following
 command to cross compile the program:
 
 ```console

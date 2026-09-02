@@ -41,11 +41,11 @@ To get VS Code to pick up the environment variable, you can either:
 
 ✅ Open the [`stm32-code/standalone-app/src/bin/standalone-hello.rs`](../../../stm32-code/standalone-app/src/bin/standalone-hello.rs) file, go to the "Run and Debug" button on the left, and then click the "Run" triangle next to *Debug Microcontroller*.
 
-> Note: you will get the "Run" button if the Rust analyzer's workspace is set to the [`stm32-code`](../../../stm32-code) folder. This will be the case if the current folder in VS code (left side panel) is set to [`stm32-code`](../../../stm32-code).
+> Note: you will get the "Run" button if the Rust analyzer's workspace is set to the [`stm32-code`](../../../stm32-code/) folder. This will be the case if the current folder in VS code (left side panel) is set to [`stm32-code`](../../../stm32-code/).
 
 ## Running from the console
 
-If you are not using VS code, you can run the program out of your console. Enter the command `cargo run --bin standalone-hello` from within the [`stm32-code`](../../../stm32-code) folder. Rust Analyzer's "Run" button is a short-cut for that command.
+If you are not using VS code, you can run the program out of your console. Enter the command `cargo run --bin standalone-hello` from within the [`stm32-code`](../../../stm32-code/) folder. Rust Analyzer's "Run" button is a short-cut for that command.
 
 ## Expected output
 

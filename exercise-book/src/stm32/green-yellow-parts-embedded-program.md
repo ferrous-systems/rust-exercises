@@ -2,7 +2,7 @@
 
 We will look at the elements that distinguish an embedded Rust program from a desktop program.
 
-✅ Open the [`stm32-code`](../../../stm32-code) folder in VS Code.
+✅ Open the [`stm32-code`](../../../stm32-code/) folder in VS Code.
 
 ```sh
 # or use "File > Open Folder" in VS Code
