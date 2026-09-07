@@ -14,8 +14,4 @@ fn main() {
     println!("cargo:rustc-link-arg=-Tlink.x");
     // We need the defmt linker script to put the log messages in a NOLOAD section
     println!("cargo:rustc-link-arg=-Tdefmt.x");
-    // Import the file where the symbol table notes where the Secure Gateway stubs are
-    println!("cargo:rustc-link-arg=target/libsec_bootloader_stubs.o");
-    // And rebuild our program if it changes
-    println!("cargo::rerun-if-changed=target/libsec_bootloader_stubs.o");
 }
