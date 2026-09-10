@@ -55,7 +55,7 @@ impl SecureBoard {
     pub fn new_with(mut cp: cortex_m::Peripherals, p: pac::Peripherals) -> Self {
         // trace must be enabled for cycle counter to work
         cp.DCB.enable_trace();
-        // we use the cycle counter as a crude 8 MHz power-on timer
+        // we use the cycle counter as a crude power-on timer
         cp.DWT.disable_cycle_counter();
         cp.DWT.set_cycle_count(0);
         cp.DWT.enable_cycle_counter();
@@ -232,8 +232,8 @@ impl NonSecureBoard {
 
         // trace must be enabled for cycle counter to work
         cp.DCB.enable_trace();
-        // we use the cycle counter as a crude 8 MHz power-on timer
-        // but first we grab the counter as a randon number seed
+        // we use the cycle counter as a crude power-on timer
+        // but first we grab the counter as a random number seed
         cp.DWT.enable_cycle_counter();
         let cycle_count = cortex_m::peripheral::DWT::cycle_count();
         // now lets reset it so the timestamps make more sense
