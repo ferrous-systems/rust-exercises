@@ -54,7 +54,7 @@ mod app {
 
     /// Runs when USART1 interrupt is active
     #[task(binds = USART1, local = [usart1])]
-    fn usart1_handler(cx: usart1_handler::Context) {
+    fn usart1_handler(_cx: usart1_handler::Context) {
         defmt::info!("USART1 IRQ!");
     }
 }
