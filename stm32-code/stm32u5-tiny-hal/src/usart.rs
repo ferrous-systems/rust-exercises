@@ -9,6 +9,12 @@ pub const USART1_S: usize = 0x5001_3800;
 /// UART1, Nonsecure State address
 pub const USART1_NS: usize = 0x4001_3800;
 
+/// Nonsecure State driver for USART1
+pub type Usart1Driver = Driver<{ USART1_NS }>;
+
+/// Secure State driver for USART1
+pub type Usart1DriverSecure = Driver<{ USART1_S }>;
+
 /// A basic blocking USART driver
 pub struct Driver<const ADDR: usize> {
     pac_object: Periph<pac::usart1::RegisterBlock, ADDR>,

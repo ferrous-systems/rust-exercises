@@ -5,24 +5,15 @@
 #![no_std]
 #![no_main]
 
+use core::cell::RefCell;
 use core::fmt::Write;
 
-// We use defmt for logging output
+use critical_section::Mutex;
 use defmt_rtt as _;
 
-// This is our Board Support Package, which we need to mention
-// so it actually gets linked in
-use nucleo_u5a5zj_bsp as bsp;
+use nucleo_u5a5zj_bsp::{self as bsp, hal::usart::Usart1Driver, interrupt};
 
-use nucleo_u5a5zj_bsp::interrupt;
-
-use core::cell::RefCell;
-
-use critical_section::Mutex;
-
-type UartType = bsp::hal::usart::Driver<{ bsp::hal::usart::USART1_NS }>;
-
-static GLOBAL_UART: Mutex<RefCell<Option<UartType>>> = Mutex::new(RefCell::new(None));
+static GLOBAL_UART: Mutex<RefCell<Option<Usart1Driver>>> = Mutex::new(RefCell::new(None));
 
 #[cortex_m_rt::entry]
 fn main() -> ! {
