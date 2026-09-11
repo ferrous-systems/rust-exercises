@@ -73,7 +73,7 @@ There's a function in the BSP that will do this for you.
 
 </details>
 
-### Task 2 - Program the Global TrustZone Controller's Memory Protection Controller
+## Task 2 - Program the Global TrustZone Controller's Memory Protection Controller
 
 The STM32U5 has a separate device for controlling which parts of which SRAM are
 available to Nonsecure State. This device can apportion memory on a 512-byte
@@ -155,7 +155,7 @@ do is:
 ```rust,ignore
 let ns_app_base = ....; // some number goes here
 unsafe {
-    cortex_m::asm::bootload_ns(ns_app_base as *const u32, bsp.scb_ns);
+    cortex_m::asm::bootload_ns(ns_app_base as *const u32, board.scb_ns);
 }
 ```
 
