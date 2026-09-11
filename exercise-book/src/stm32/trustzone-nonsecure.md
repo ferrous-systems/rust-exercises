@@ -155,7 +155,7 @@ do is:
 ```rust,ignore
 let ns_app_base = ....; // some number goes here
 unsafe {
-    cortex_m::asm::bootload_ns(ns_app_base as *const u32, bsp.scb_ns);
+    cortex_m::asm::bootload_ns(ns_app_base as *const u32, board.scb_ns);
 }
 ```
 
