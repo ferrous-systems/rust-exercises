@@ -39,7 +39,7 @@ These days though, ST Micro was kind enough to include a UART to USB Serial conv
 
 If you have a favourite Serial Terminal program on your computer, feel free to use that. I quite like `pyserial-miniterm` that come with the Python pyserial package. Linux users might prefer `minicom` or `picocom`. Windows users often use `PuTTY`.
 
-If you have Linux or macOS, you should have an entry in `/dev/` that corresponds to the virtual USB Serial Port. On Windows, it will have been assigned a COM port, like `COM27`, which you can see in Device Manager. On Unix systems, you can use `ls -l /dev/serial/by-id/*` to list all
+If you have Linux or macOS, you should have an entry in `/dev/` that corresponds to the virtual USB Serial Port. On Windows, it will have been assigned a COM port, like `COM27`, which you can see in Device Manager. On Linux systems, you can use `ls -l /dev/serial/by-id/*` to list all
 serial ports including their ID.
 
 ✅ To test your serial port, run the `standalone-green-yellow` program, and connect your Serial Terminal to the virtual USB Serial Port, (using 9600 baud).
