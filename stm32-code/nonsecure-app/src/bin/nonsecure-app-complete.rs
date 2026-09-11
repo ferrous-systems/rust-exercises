@@ -32,6 +32,7 @@ fn main() -> ! {
     defmt::println!("Being naughty and trying to read secure RAM...");
 
     let p = bsp::hal::ns_addr::SRAM1_START as *const u32;
+    // Safety: p is a valid address (albeit one we have no permission to read)
     let value = unsafe { p.read() };
 
     defmt::println!("Read secure RAM? {}", value);

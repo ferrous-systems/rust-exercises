@@ -8,31 +8,31 @@ pub enum Peripheral {
     Gtzc,
     /// USART1 on APB2
     Usart1,
-    /// SRAM3
+    /// SRAM3 on AHB2
     Sram3,
-    /// GPIOA
+    /// GPIOA on AHB2
     GpioA,
-    /// GPIOB
+    /// GPIOB on AHB2
     GpioB,
-    /// GPIOC
+    /// GPIOC on AHB2
     GpioC,
-    /// GPIOD
+    /// GPIOD on AHB2
     GpioD,
-    /// GPIOE
+    /// GPIOE on AHB2
     GpioE,
-    /// GPIOF
+    /// GPIOF on AHB2
     GpioF,
-    /// GPIOG
+    /// GPIOG on AHB2
     GpioG,
-    /// GPIOH
+    /// GPIOH on AHB2
     GpioH,
-    /// GPIOI
+    /// GPIOI on AHB2
     GpioI,
-    /// GPIOJ
+    /// GPIOJ on AHB2
     GpioJ,
-    /// PWR
+    /// PWR on AHB3
     Power,
-    // FLASH
+    /// FLASH on AHB1
     Flash,
 }
 

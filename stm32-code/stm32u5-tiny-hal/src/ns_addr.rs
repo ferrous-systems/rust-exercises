@@ -1,5 +1,7 @@
 //! Memory Addresses for nonsecure access to memory
 
+#![allow(missing_docs)]
+
 pub const SRAM1_START: u32 = 0x2000_0000;
 pub const SRAM2_START: u32 = 0x200C_0000;
 pub const SRAM3_START: u32 = 0x200D_0000;

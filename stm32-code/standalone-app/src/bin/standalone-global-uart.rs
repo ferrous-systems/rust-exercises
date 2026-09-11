@@ -31,6 +31,7 @@ fn main() -> ! {
         *uart_ref = Some(board.usart1);
     });
 
+    // Safety: we are not in a critical section, so are safe to enable these interrupts
     unsafe {
         // enable the USART1 interrupt in the NVIC
         cortex_m::peripheral::NVIC::unmask(interrupt::USART1);

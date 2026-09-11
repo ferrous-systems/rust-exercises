@@ -15,35 +15,61 @@ pub struct Driver {
 
 /// All the NonSecure GPIO ports
 pub struct Ports {
+    /// The pins for port A
     pub port_a: PinsForPort,
+    /// The pins for port B
     pub port_b: PinsForPort,
+    /// The pins for port C
     pub port_c: PinsForPort,
+    /// The pins for port D
     pub port_d: PinsForPort,
+    /// The pins for port E
     pub port_e: PinsForPort,
+    /// The pins for port F
     pub port_f: PinsForPort,
+    /// The pins for port G
     pub port_g: PinsForPort,
+    /// The pins for port H
     pub port_h: PinsForPort,
+    /// The pins for port I
     pub port_i: PinsForPort,
+    /// The pins for port J
     pub port_j: PinsForPort,
 }
 
 /// All the pins in a port, for NonSecure State
 pub struct PinsForPort {
+    /// GPIO pin 0
     pub pin0: pin_mode::Analog,
+    /// GPIO pin 1
     pub pin1: pin_mode::Analog,
+    /// GPIO pin 2
     pub pin2: pin_mode::Analog,
+    /// GPIO pin 3
     pub pin3: pin_mode::Analog,
+    /// GPIO pin 4
     pub pin4: pin_mode::Analog,
+    /// GPIO pin 5
     pub pin5: pin_mode::Analog,
+    /// GPIO pin 6
     pub pin6: pin_mode::Analog,
+    /// GPIO pin 7
     pub pin7: pin_mode::Analog,
+    /// GPIO pin 8
     pub pin8: pin_mode::Analog,
+    /// GPIO pin 9
     pub pin9: pin_mode::Analog,
+    /// GPIO pin 10
     pub pin10: pin_mode::Analog,
+    /// GPIO pin 11
     pub pin11: pin_mode::Analog,
+    /// GPIO pin 12
     pub pin12: pin_mode::Analog,
+    /// GPIO pin 13
     pub pin13: pin_mode::Analog,
+    /// GPIO pin 14
     pub pin14: pin_mode::Analog,
+    /// GPIO pin 15
     pub pin15: pin_mode::Analog,
 }
 

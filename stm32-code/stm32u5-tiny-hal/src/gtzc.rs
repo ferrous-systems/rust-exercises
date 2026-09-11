@@ -7,9 +7,21 @@ use stm32u5::stm32u5a5 as pac;
 /// Only banks the GTZC1 can control are listed. We don't have a GTZC2 driver.
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub enum SramBank {
+    /// SRAM Bank 1
+    ///
+    /// Lives at `0x2000_0000`
     SRAM1,
+    /// SRAM Bank 2
+    ///
+    /// Lives at `0x200C_0000`
     SRAM2,
+    /// SRAM Bank 3
+    ///
+    /// Lives at `0x200D_0000`
     SRAM3,
+    /// SRAM Bank 5
+    ///
+    /// Lives at `0x201A_0000`
     SRAM5,
 }
 
@@ -96,6 +108,7 @@ impl Driver {
         let start_superblock = (start / SUPERBLOCK_SIZE) as usize;
         let end_superblock = ((end - 1) / SUPERBLOCK_SIZE) as usize;
         for super_block in start_superblock..=end_superblock {
+            #[allow(clippy::undocumented_unsafe_blocks)]
             match sram_bank {
                 SramBank::SRAM1 => {
                     self.mem_protect_ctrl1.seccfgr(super_block).write(|w| {
@@ -140,6 +153,8 @@ impl Driver {
 /// An error from the Global TrustZone Controller driver
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Error {
+    /// Invalid start address for GTZC
     InvalidStart(u32),
+    /// Invalid end address for GTZC
     InvalidEnd(u32),
 }

@@ -60,6 +60,8 @@ fn main() -> ! {
     let ns_app_base = bsp::hal::ns_addr::FLASH2_START;
     hprintln!("Booting Nonsecure State binary at 0x{:08x}...", ns_app_base);
     // Boot a Nonsecure State binary
+    //
+    // Safety: this is a valid base address for a Cortex-M vector table
     unsafe {
         cortex_m::asm::bootload_ns(ns_app_base as *const u32, board.scb_ns);
     }
