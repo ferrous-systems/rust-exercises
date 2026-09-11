@@ -73,7 +73,7 @@ There's a function in the BSP that will do this for you.
 
 </details>
 
-### Task 2 - Program the Global TrustZone Controller's Memory Protection Controller
+## Task 2 - Program the Global TrustZone Controller's Memory Protection Controller
 
 The STM32U5 has a separate device for controlling which parts of which SRAM are
 available to Nonsecure State. This device can apportion memory on a 512-byte

@@ -9,7 +9,7 @@ how do we mark which things should be accessible from each state?
 TrustZone does this using a combination of two *Attribution Units*:
 
 * the [*Implementation Defined Attribution Unit*][attr-unit] (IDAU)
-* the [*Secure Atribution Unit*][attr-unit]
+* the [*Secure Attribution Unit*][attr-unit]
 
 [attr-unit]:
     https://developer.arm.com/documentation/100690/0201/Attribution-units--SAU-and-IDAU-
