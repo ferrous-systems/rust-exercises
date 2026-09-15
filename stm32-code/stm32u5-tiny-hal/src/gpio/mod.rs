@@ -52,6 +52,7 @@ impl<const SECURE: bool> PinInner<SECURE> {
     pub(crate) fn read_idr(&self) -> bool {
         let (port, mask) = self.get_port_mask();
         let base_ptr = port.base(SECURE);
+        // Safety: this is a valid MMIO register in the GPIO peripheral
         let idr = unsafe { base_ptr.byte_offset(GPIO_IDR_OFFSET).read_volatile() };
         (idr & (mask as u32)) != 0
     }
@@ -67,6 +68,7 @@ impl<const SECURE: bool> PinInner<SECURE> {
             (mask as u32) << 16
         };
         let base_ptr = port.base(SECURE);
+        // Safety: this is a valid MMIO register in the GPIO peripheral
         unsafe { base_ptr.byte_offset(GPIO_BSRR_OFFSET).write_volatile(mask) };
     }
 }
@@ -79,6 +81,7 @@ impl<const SECURE: bool> PinInner<SECURE> {
 /// The const generic `SECURE` records whether the pin is assigned to Secure
 /// State (true) or Nonsecure State (false).
 pub trait PinKind<const SECURE: bool> {
+    /// Internal method to turn any kind of pin into its constituent `PinInner`
     fn degrade(self, token: private::Token) -> PinInner<SECURE>;
 }
 
@@ -87,15 +90,25 @@ pub trait PinKind<const SECURE: bool> {
 /// Each port has up to 16 pins
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub enum Port {
+    /// Port A
     A,
+    /// Port B
     B,
+    /// Port C
     C,
+    /// Port D
     D,
+    /// Port E
     E,
+    /// Port F
     F,
+    /// Port G
     G,
+    /// Port H
     H,
+    /// Port I
     I,
+    /// Port J
     J,
 }
 
@@ -225,16 +238,17 @@ impl Driver {
         let (port, pin) = pin_inner.get_port_pin();
         // set AF field
         let (af_ptr, shift) = if pin <= 7 {
-            // use AF_LOW register
+            // Safety: AF_LOW is a valid MMIO register in the GPIO peripheral
             let af_ptr = unsafe { port.base(S).byte_offset(GPIO_AFRL_OFFSET) };
             (af_ptr, pin * 4)
         } else {
-            // use AF_HIGH register
+            // Safety: AF_LOW is a valid MMIO register in the GPIO peripheral
             let af_ptr = unsafe { port.base(S).byte_offset(GPIO_AFRH_OFFSET) };
             (af_ptr, (pin - 8) * 4)
         };
         let mask = 0xF << shift;
         let new_value = (u32::from(af_mode & 0xF)) << shift;
+        // Safety: this is a valid MMIO register in the GPIO peripheral
         unsafe {
             let existing = af_ptr.read_volatile();
             let new = (existing & !mask) | new_value;
@@ -255,6 +269,7 @@ impl Driver {
         let mask = 0b11 << (pin * 2);
         let mode_value = (mode as u32) << (pin * 2);
         let pupd_value = (pull as u32) << (pin * 2);
+        // Safety: these are valid MMIO registers in the GPIO peripheral
         unsafe {
             let mode_ptr = port.base(secure).byte_offset(GPIO_MODER_OFFSET);
             let existing = mode_ptr.read_volatile();

@@ -18,7 +18,7 @@ mod app {
     /// The resources we dedicate to individual tasks
     #[local]
     struct MyLocalResources {
-        usart1: bsp::hal::usart::Driver<{ bsp::hal::usart::USART1_NS }>,
+        usart1: bsp::hal::usart::Usart1Driver,
         counter: u32,
     }
 

@@ -13,6 +13,9 @@ impl<const ADDR: usize> Driver<ADDR> {
         Self { pac_object }
     }
 
+    /// Enable/disable VDDIO2
+    ///
+    /// You need VDDIO2 enabled for certain GPIOs to work
     pub fn vddio2_enable(&mut self, enabled: bool) {
         self.pac_object.svmcr().modify(|_r, w| {
             w.io2sv().bit(enabled);

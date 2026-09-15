@@ -18,7 +18,7 @@ mod app {
     /// The resources we dedicate to individual tasks
     #[local]
     struct MyLocalResources {
-        usart1: bsp::hal::usart::Driver<{ bsp::hal::usart::USART1_NS }>,
+        usart1: bsp::hal::usart::Usart1Driver,
     }
 
     /// Init routine
@@ -54,7 +54,7 @@ mod app {
 
     /// Runs when USART1 interrupt is active
     #[task(binds = USART1, local = [usart1])]
-    fn usart1_handler(cx: usart1_handler::Context) {
+    fn usart1_handler(_cx: usart1_handler::Context) {
         defmt::info!("USART1 IRQ!");
     }
 }

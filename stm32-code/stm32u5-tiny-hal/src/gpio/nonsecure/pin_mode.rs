@@ -15,10 +15,12 @@ impl PinKind<false> for Analog {
 pub struct Input(pub(crate) PinInner<false>);
 
 impl Input {
+    /// Is input high currently?
     pub fn is_high(&self) -> bool {
         self.0.read_idr()
     }
 
+    /// Is input low currently?
     pub fn is_low(&self) -> bool {
         !self.is_high()
     }

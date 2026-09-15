@@ -10,3 +10,13 @@ nucleo-u5a5zj-bsp.workspace = true
 cortex-m-semihosting.workspace = true
 cortex-m.workspace = true
 critical-section.workspace = true
+
+[lints.clippy]
+missing_safety_doc = "deny"
+undocumented_unsafe_blocks = "deny"
+
+[lints.rust]
+missing_docs = "deny"
+unsafe_op_in_unsafe_fn = "deny"
+unsafe_attr_outside_unsafe = "deny"
+unused_unsafe = "deny"

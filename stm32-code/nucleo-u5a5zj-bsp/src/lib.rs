@@ -29,7 +29,7 @@ pub const APB2_PERIPH_CLK_HZ: u32 = HCLK_HZ;
 /// Drivers for the NUCLEO-U5A5ZJ-Q board when running in Secure State
 pub struct SecureBoard {
     /// USART1, connected to the USB Virtual COM Port
-    pub usart1: hal::usart::Driver<{ hal::usart::USART1_S }>,
+    pub usart1: hal::usart::Usart1DriverSecure,
     /// Secure Attribution Unit
     pub sau: cortex_m::peripheral::SAU,
     /// Global TrustZone Controller
@@ -55,7 +55,7 @@ impl SecureBoard {
     pub fn new_with(mut cp: cortex_m::Peripherals, p: pac::Peripherals) -> Self {
         // trace must be enabled for cycle counter to work
         cp.DCB.enable_trace();
-        // we use the cycle counter as a crude 8 MHz power-on timer
+        // we use the cycle counter as a crude power-on timer
         cp.DWT.disable_cycle_counter();
         cp.DWT.set_cycle_count(0);
         cp.DWT.enable_cycle_counter();
@@ -209,7 +209,7 @@ impl Default for SecureBoard {
 /// Drivers for the NUCLEO-U5A5ZJ-Q board when running in Nonsecure State
 pub struct NonSecureBoard {
     /// USART1, connected to the USB Virtual COM Port
-    pub usart1: hal::usart::Driver<{ hal::usart::USART1_NS }>,
+    pub usart1: hal::usart::Usart1Driver,
     /// GPIO driver
     pub gpio: hal::gpio::nonsecure::Driver,
     /// Green LED
@@ -232,8 +232,8 @@ impl NonSecureBoard {
 
         // trace must be enabled for cycle counter to work
         cp.DCB.enable_trace();
-        // we use the cycle counter as a crude 8 MHz power-on timer
-        // but first we grab the counter as a randon number seed
+        // we use the cycle counter as a crude power-on timer
+        // but first we grab the counter as a random number seed
         cp.DWT.enable_cycle_counter();
         let cycle_count = cortex_m::peripheral::DWT::cycle_count();
         // now lets reset it so the timestamps make more sense
