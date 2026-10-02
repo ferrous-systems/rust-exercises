@@ -18,15 +18,15 @@ You can find the solutions [here](../../../exercise-solutions/collections/).
 ## Task
 
 1. Create a new binary crate called `collections`
-1. Read in a string of space separated words into a vector. Then sort the vector
-   and print the sorted list.
-1. Perform the same task as in task 2, but use the `std::collections::BTreeSet`
+1. Read in a string of space separated words from Standard Input and place them into a vector.
+   Then sort the vector and print the sorted list.
+1. Repeat step 2, but use the `std::collections::BTreeSet`
    container instead which keeps the elements in sorted order. Print the list again.
-1. Create a new binary inside the binary crate by creating a `bin` folder inside the `src` folder
+1. Create a second binary inside the package by creating a `bin` folder inside the `src` folder
    and creating a new `map.rs` file inside it.
 1. Read in a string with the syntax `key1:value1,key2:value2` and store the
-   key-value pairs in a hash map. A nice solution also deals with extra whitespace,
-   e.g. `key1: value1, key2: value2`.
+   key-value pairs in a `std::collections::HashMap`. A nice solution also deals with extra
+   whitespace, e.g. `key1: value1, key2: value2`.
 
 ## Hints
 
@@ -37,13 +37,14 @@ These hints can help you with completing individual steps.
 The [`std::io`](https://doc.rust-lang.org/std/io/index.html) module contains everything
 required to read from the console or write to the console. The operating
 system models those using pre-defined [standard streams](https://en.wikipedia.org/wiki/Standard_streams).
-These stdin, stdout and stderr are exposed by the [`std::io::stdin`](https://doc.rust-lang.org/std/io/fn.stdin.html), [`std::io::stdout`](https://doc.rust-lang.org/std/io/fn.stdout.html)
+The Standard *In*, *Out* and *Error* streams are exposed by the [`std::io::stdin`](https://doc.rust-lang.org/std/io/fn.stdin.html),
+[`std::io::stdout`](https://doc.rust-lang.org/std/io/fn.stdout.html)
 and [`std::io::stderr`](https://doc.rust-lang.org/std/io/fn.stderr.html) functions.
 
 The [`std::io::Stdin`](https://doc.rust-lang.org/std/io/struct.Stdin.html) handle implements the
 [`std::io::Read`](https://doc.rust-lang.org/std/io/trait.Read.html) trait and also exposes the
 [`read_line`](https://doc.rust-lang.org/std/io/struct.Stdin.html#method.read_line)
-method to help with this task. This function expects a mutable reference to a `std::string::String`,
+method to help with this task. This function expects a mutable reference to a `String`,
 so you need to create an empty one before calling it.
 
 <details>
@@ -59,7 +60,7 @@ Code to read a line from the console:
 
 ### Word extraction
 
-Rust provides a lot of useful APIs for string manipulation and extraction. You might
+Rust provides useful APIs for string manipulation and extraction. You might
 find the following APIs useful:
 
 <details>
@@ -86,7 +87,7 @@ which sort in-place and do not require allocation.
 
 ## Quiz
 
-After you have worked through this exercise, you can work through this quiz for a deeper
+After you have worked through this exercise, you can try this quiz to double check your
 understanding:
 
 **Q1**:
@@ -111,12 +112,12 @@ Answer:
 
 All APIs or data structures which do sorting rely on a `core::cmp::Ord` implementation of
 whatever type you are sorting. This trait is already implemented by commonly used standard
-library types like [`core::str::str`](https://doc.rust-lang.org/std/primitive.str.html#impl-Ord-for-str)
-and [`std::string::String`](https://doc.rust-lang.org/std/string/struct.String.html#impl-Ord-for-String).
+library types like [`str`](https://doc.rust-lang.org/std/primitive.str.html#impl-Ord-for-str)
+and [`String`](https://doc.rust-lang.org/std/string/struct.String.html#impl-Ord-for-String).
 
 </details>
 
-**Q2a**:
+**Q2**:
 
 If you have type hints enabled, you might notice that we are storing string references (`&str`)
 inside our collections. The same is visible from the explicit type annotation in the
@@ -140,15 +141,17 @@ Answer:
 
 **A**:
 
-No, this does not work. The closure argument for spawning a thread has a `'static` bound,
-which is not fulfilled by `&str`. A thread can outlive its calling scope, so the `'static`
-bound on the closure ensures that anything moved into the thread outlives the thread.
+Only if you use a [scoped thread](https://doc.rust-lang.org/std/thread/fn.scope.html) which
+allows to borrow non-`'static` data.
+For a regular thread, this does not work. The closure argument for spawning a thread has a
+`'static` bound, which is not fulfilled by `&str`. A thread can outlive its calling scope, so the
+`'static` bound on the closure ensures that anything moved into the thread outlives the thread.
 
 </details>
 
-**Q2b**:
+**Q3**:
 
-What would you need to do if you want to do this?
+What would you need to do if you want to pass the word list to a spawned thread?
 
 Hint:
 
@@ -169,9 +172,12 @@ Storing an owned type like `String` ensures we fulfill the lifetime bound. We ca
 by using `String::from` or using an explicit type annotation like `Vec<String>` in combination
 with `.into()`.
 
+You can also use a [scoped thread](https://doc.rust-lang.org/std/thread/fn.scope.html) which
+lets you borrow non-`'static` data.
+
 </details>
 
-**Q2c**:
+**Q4**:
 
 What is the advantage of using `&str` over `String`?
 
