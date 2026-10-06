@@ -381,9 +381,10 @@ mod app {
         // Build the builder.
         let mut usb_dev = builder.build();
 
-
         ctx.local_spawner.usb_acm_task(usb_acm).ok();
-        ctx.local_spawner.usb_hid_task(hid_reader, msg_channel_tx_hid).ok();
+        ctx.local_spawner
+            .usb_hid_task(hid_reader, msg_channel_tx_hid)
+            .ok();
 
         // The stack driver runs forever
         usb_dev.run().await;
