@@ -3,7 +3,6 @@
 //! See <https://www.nordicsemi.com/Products/Development-hardware/nrf52840-dk>
 
 #![deny(missing_docs)]
-#![deny(warnings)]
 #![no_std]
 
 use core::{
