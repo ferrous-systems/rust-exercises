@@ -37,7 +37,7 @@ pub fn change_channel(channel: &str) -> color_eyre::Result<()> {
 
     let chan = channel.parse::<u8>()?;
     if !(11..=26).contains(&chan) {
-        bail!("channel is out of range (`11..=26`)")
+        bail!("channel is out of range (`11..=26`)");
     }
     const REPORT_ID: u8 = 0;
     dev.write(&[REPORT_ID, chan])?;
