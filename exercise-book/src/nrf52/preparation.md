@@ -22,4 +22,12 @@ The [DK board chapter](./board.md) will walk you through the setup of the board.
 
 ## Starter code
 
-Project templates and starter code for our trainings can be found at [in this repo](https://github.com/ferrous-systems/rust-exercises).
+Project templates, starter code and some required tools for the exercises can be
+found at [in this repo](https://github.com/ferrous-systems/rust-exercises).
+Make sure you have a local copy. You can either download a zip with the latest
+version from the [releases](https://github.com/ferrous-systems/rust-training/releases) page or you
+can clone the project locally using git:
+
+```sh
+git clone https://github.com/ferrous-systems/rust-exercises.git
+```
