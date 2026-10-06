@@ -6,9 +6,9 @@
 name: rust-exercises
 
 env:
-  CARGO_TERM_COLOR: always     # We want colors in our CI output
-  CARGO_INCREMENTAL: 0         # Don't waste time writing out incremental build files
-  CARGO_PROFILE_TEST_DEBUG: 0  # These are thrown away anyways, don't produce them
+  CARGO_TERM_COLOR: always # We want colors in our CI output
+  CARGO_INCREMENTAL: 0 # Don't waste time writing out incremental build files
+  CARGO_PROFILE_TEST_DEBUG: 0 # These are thrown away anyways, don't produce them
 
 # Runs CI on pushing tags and pulls, but not both. Since we have branch protection on, these are our only cases to handle.
 on:
@@ -30,11 +30,11 @@ on:
 # my_cool_new_job:
 #   runs-on: ubuntu-24.04
 #   steps:
-#   - uses: actions/checkout@v7                     # This is what downloads a fresh clone of the repo and cd's into it
+#   - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1                     # This is what downloads a fresh clone of the repo and cd's into it
 #   - uses: ./.github/actions/setup
 #     with:
 #       cache: dir_where_I_want_results_cached
-#   - uses: taiki-e/install-action@v2                # For adding arbitrary binaries as tools
+#   - uses: taiki-e/install-action@183e4297cca2404691e9380e1307288dced5c82a # v2.87.25                # For adding arbitrary binaries as tools
 #     with:
 #       tool: name_of_binary_tool@v1.0
 #   - run: just do-thing
@@ -45,18 +45,20 @@ jobs:
   test-build-mdbook:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v7
-      - uses: ./.github/actions/setup
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: $/.github/actions/setup
         with:
           cache: exercise-book
       - run: curl -sSL  https://github.com/jonathanpallant/mdBook/releases/download/v0.5.2-current-page-active/mdbook -o ~/.cargo/bin/mdbook
       - run: chmod a+x ~/.cargo/bin/mdbook
-      - uses: taiki-e/install-action@v2
+      - uses: taiki-e/install-action@183e4297cca2404691e9380e1307288dced5c82a # v2.87.25
         with:
           tool: mdbook-graphviz@0.3.1
       - run: just test-mdbook
       - run: just build-mdbook
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: mdbook-dir
           path: exercise-book/book/
@@ -65,8 +67,10 @@ jobs:
   test-exercise-templates:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v7
-      - uses: ./.github/actions/setup
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: $/.github/actions/setup
         with:
           cache: exercise-templates
       - run: just test-exercise-templates
@@ -74,8 +78,10 @@ jobs:
   test-exercise-solutions:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v7
-      - uses: ./.github/actions/setup
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: $/.github/actions/setup
         with:
           cache: exercise-solutions
       - run: just test-exercise-solutions
@@ -83,22 +89,28 @@ jobs:
   test-connected-mailbox:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v7
-      - uses: ./.github/actions/setup
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: $/.github/actions/setup
       - run: just test-connected-mailbox
 
   test-multi-threaded-mailbox:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v7
-      - uses: ./.github/actions/setup
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: $/.github/actions/setup
       - run: just test-multi-threaded-mailbox
 
   build-qemu-uart-driver:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v7
-      - uses: ./.github/actions/setup
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: $/.github/actions/setup
         with:
           cache: qemu-code/uart-driver
           target: armv8r-none-eabihf
@@ -108,12 +120,14 @@ jobs:
   build-radio-app:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v7
-      - uses: ./.github/actions/setup
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: $/.github/actions/setup
         with:
           cache: nrf52-code/radio-app
           target: thumbv7em-none-eabihf
-      - uses: taiki-e/install-action@v2
+      - uses: taiki-e/install-action@183e4297cca2404691e9380e1307288dced5c82a # v2.87.25
         with:
           tool: flip-link@0.1.10
       - run: just build-radio-app
@@ -121,16 +135,18 @@ jobs:
   build-hal-app:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v7
-      - uses: ./.github/actions/setup
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: $/.github/actions/setup
         with:
           cache: nrf52-code/hal-app
           target: thumbv7em-none-eabihf
-      - uses: taiki-e/install-action@v2
+      - uses: taiki-e/install-action@183e4297cca2404691e9380e1307288dced5c82a # v2.87.25
         with:
           tool: flip-link@0.1.10
       - run: just build-hal-app
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: nrf52-blinky
           path: nrf52-code/hal-app/target/thumbv7em-none-eabihf/release/blinky
@@ -139,12 +155,14 @@ jobs:
   build-usb-app:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v7
-      - uses: ./.github/actions/setup
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: $/.github/actions/setup
         with:
           cache: nrf52-code/usb-app
           target: thumbv7em-none-eabihf
-      - uses: taiki-e/install-action@v2
+      - uses: taiki-e/install-action@183e4297cca2404691e9380e1307288dced5c82a # v2.87.25
         with:
           tool: flip-link@0.1.10
       - run: just build-usb-app
@@ -152,16 +170,18 @@ jobs:
   build-stm32-code:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v7
-      - uses: ./.github/actions/setup
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: $/.github/actions/setup
         with:
           cache: stm32-code
           target: thumbv8m.main-none-eabi
-      - uses: taiki-e/install-action@v2
+      - uses: taiki-e/install-action@183e4297cca2404691e9380e1307288dced5c82a # v2.87.25
         with:
           tool: flip-link@0.1.10
       - run: just build-stm32-code
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: stm32-blinky
           path: stm32-code/target/thumbv8m.main-none-eabi/release/standalone-blinky
@@ -170,8 +190,10 @@ jobs:
   test-usb-lib:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v7
-      - uses: ./.github/actions/setup
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: $/.github/actions/setup
         with:
           cache: nrf52-code/usb-lib
           target: thumbv7em-none-eabihf
@@ -180,19 +202,21 @@ jobs:
   build-dongle-fw:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v7
-      - uses: ./.github/actions/setup
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: $/.github/actions/setup
         with:
           cache: nrf52-code/dongle-fw
           target: thumbv7em-none-eabihf
-      - uses: taiki-e/install-action@v2
+      - uses: taiki-e/install-action@183e4297cca2404691e9380e1307288dced5c82a # v2.87.25
         with:
           tool: flip-link@0.1.10
       - run: just build-dongle-fw
         env:
           CI_BUILD: "1"
           HIDDEN_MESSAGE: ${{ secrets.HIDDEN_MESSAGE }}
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: dongle-fw
           path: nrf52-code/dongle-fw/target/thumbv7em-none-eabihf/release/dongle-fw
@@ -201,8 +225,10 @@ jobs:
   build-xtask:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v7
-      - uses: ./.github/actions/setup
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: $/.github/actions/setup
         with:
           cache: xtask
       - run: cd xtask && cargo build
@@ -210,58 +236,61 @@ jobs:
   format-check:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v7
-      - uses: ./.github/actions/setup
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: $/.github/actions/setup
       - run: just format-check
 
   # This is the last job, and waits (`needs:`) only on those that pass artifacts to it.
   # It the necessary resulting builds as artifacts, zips them, and uploads with a tag if necessary.
   deploy:
-     runs-on: ubuntu-24.04
-     # Notice that because our repo expects all checks to pass, we don't need to include every other job
-     # as a dependency of the `deploy` job.
-     needs: [test-build-mdbook, build-dongle-fw, build-hal-app, build-stm32-code]
-     steps:
-       - uses: actions/checkout@v7
-       - uses: ./.github/actions/setup
-       # Download the produced artifacts
-       - uses: actions/download-artifact@v8
-         with:
+    runs-on: ubuntu-24.04
+    # Notice that because our repo expects all checks to pass, we don't need to include every other job
+    # as a dependency of the `deploy` job.
+    needs: [test-build-mdbook, build-dongle-fw, build-hal-app, build-stm32-code]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: $/.github/actions/setup
+      # Download the produced artifacts
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
           # Move the mdbook `book` dir to where we expect it to be
           name: mdbook-dir
           path: ./exercise-book/book
-       - uses: actions/download-artifact@v8
-         with:
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
           name: dongle-fw
           path: nrf52-code/dongle-fw/target/thumbv7em-none-eabihf/release
-       - uses: actions/download-artifact@v8
-         with:
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
           name: nrf52-blinky
           path: nrf52-code/hal-app/target/thumbv7em-none-eabihf/release
-       - uses: actions/download-artifact@v8
-         with:
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
           name: stm32-blinky
           path: stm32-code/target/thumbv8m.main-none-eabi/release
-       - run: |
-           slug=$(./describe.sh "${GITHUB_REF}")
-           echo "Building with slug '${slug}'"
-           echo "slug=${slug}" >> "${GITHUB_ENV}"
-       - run: just assemble ${{ env.slug }}
-       - run: |
+      - run: |
+          slug=$(./describe.sh "${GITHUB_REF}")
+          echo "Building with slug '${slug}'"
+          echo "slug=${slug}" >> "${GITHUB_ENV}"
+      - run: just assemble ${slug}
+      - run: |
           cp ./nrf52-code/dongle-fw/target/thumbv7em-none-eabihf/release/dongle-fw ./dongle-fw
           cp ./nrf52-code/hal-app/target/thumbv7em-none-eabihf/release/blinky ./nrf52-blinky
           cp ./stm32-code/target/thumbv8m.main-none-eabi/release/standalone-blinky ./stm32-blinky
-       - uses: actions/upload-artifact@v7
-         if: ${{success()}}
-         with:
-           name: Artifacts
-           if-no-files-found: error
-           path: |
-             ./rust-exercises-*
-       - if: github.event_name == 'push' && startswith(github.ref, 'refs/tags/')
-         id: create_release
-         uses: ncipollo/release-action@v1
-         with:
-           artifacts: "./rust-exercises-${{ env.slug }}.zip,./dongle-fw,./nrf52-blinky,./stm32-blinky"
-           allowUpdates: true
-           updateOnlyUnreleased: true
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: ${{success()}}
+        with:
+          name: Artifacts
+          if-no-files-found: error
+          path: |
+            ./rust-exercises-*
+      - if: github.event_name == 'push' && startswith(github.ref, 'refs/tags/')
+        id: create_release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "$slug" --title="$slug" "./rust-exercises-${slug}.zip" ./dongle-fw ./nrf52-blinky ./stm32-blinky
