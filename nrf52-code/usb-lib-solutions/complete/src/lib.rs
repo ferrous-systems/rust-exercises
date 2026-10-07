@@ -1,7 +1,6 @@
 //! Some USB 2.0 data types
 
 #![deny(missing_docs)]
-#![deny(warnings)]
 #![no_std]
 
 use core::num::NonZeroU8;

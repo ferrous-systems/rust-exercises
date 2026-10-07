@@ -1,5 +1,3 @@
-#![deny(warnings)]
-
 mod tasks;
 
 use std::env;

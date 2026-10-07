@@ -8,7 +8,6 @@
 //! This copy contains support for Buttons 1 to 4.
 
 #![deny(missing_docs)]
-#![deny(warnings)]
 #![no_std]
 
 use core::{

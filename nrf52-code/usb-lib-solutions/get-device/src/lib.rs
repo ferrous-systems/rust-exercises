@@ -2,7 +2,6 @@
 // NOTE this is a partial solution to exercise `usb-2`
 
 #![deny(missing_docs)]
-#![deny(warnings)]
 #![no_std]
 
 use core::num::NonZeroU8;

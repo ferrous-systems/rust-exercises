@@ -1,13 +1,13 @@
 name: Weekly Canary Build
 
 env:
-  CARGO_TERM_COLOR: always     # We want colors in our CI output
-  CARGO_INCREMENTAL: 0         # Don't waste time writing out incremental build files
-  CARGO_PROFILE_TEST_DEBUG: 0  # These are thrown away anyways, don't produce them
+  CARGO_TERM_COLOR: always # We want colors in our CI output
+  CARGO_INCREMENTAL: 0 # Don't waste time writing out incremental build files
+  CARGO_PROFILE_TEST_DEBUG: 0 # These are thrown away anyways, don't produce them
 
 on:
   schedule:
-    - cron: '45 1 * * Mon'
+    - cron: "45 1 * * Mon"
   # Uncomment this temporarily if you are changing this workflow
   # push:
   #   branches:
@@ -21,26 +21,28 @@ on:
 jobs:
   weekly-canary-build:
     strategy:
-        fail-fast: false
-        matrix:
-            rust-channel: [stable, beta, nightly]
+      fail-fast: false
+      matrix:
+        rust-channel: [stable, beta, nightly]
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v6
-      - uses: ./.github/actions/setup
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: $/.github/actions/setup
         with:
           cache: exercise-book
           channel: ${{ matrix.rust-channel }}
       - run: curl -sSL  https://github.com/jonathanpallant/mdBook/releases/download/v0.5.2-current-page-active/mdbook -o ~/.cargo/bin/mdbook
       - run: chmod a+x ~/.cargo/bin/mdbook
       - name: Install mdbook-graphviz
-        uses: taiki-e/install-action@v2
+        uses: taiki-e/install-action@183e4297cca2404691e9380e1307288dced5c82a # v2.87.25
         with:
           tool: mdbook-graphviz@0.3.1
       - run: just test-mdbook
       - run: just build-mdbook
       - name: Upload mdbook artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: mdbook-dir-${{ matrix.rust-channel }}
           path: exercise-book/book/
@@ -48,18 +50,20 @@ jobs:
 
   build-nrf52-code:
     strategy:
-        fail-fast: false
-        matrix:
-            rust-channel: [stable, beta, nightly]
+      fail-fast: false
+      matrix:
+        rust-channel: [stable, beta, nightly]
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v6
-      - uses: ./.github/actions/setup
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: $/.github/actions/setup
         with:
           channel: ${{ matrix.rust-channel }}
           cache: nrf52-code
           target: thumbv7em-none-eabihf
-      - uses: taiki-e/install-action@v2
+      - uses: taiki-e/install-action@183e4297cca2404691e9380e1307288dced5c82a # v2.87.25
         with:
           tool: flip-link@0.1.10
       - run: just build-nrf52-code
