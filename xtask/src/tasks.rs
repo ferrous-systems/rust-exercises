@@ -154,5 +154,5 @@ pub fn usb_descriptors() -> color_eyre::Result<()> {
         }
     }
 
-    bail!("nRF52840 USB device not found")
+    bail!("nRF52840 USB device not found");
 }
