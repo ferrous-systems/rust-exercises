@@ -84,4 +84,4 @@ Each step is demonstrated in a separate example so if for example you only need 
 
 For your reference, we have provided a complete solution in the `src/bin/radio-puzzle-solution.rs` file. That solution is based on the seven steps outlined above. Did you solve the puzzle in a different way?
 
-All finished? See the [next steps](nrf52-radio-next-steps.md).
+All finished? See the [next steps](radio-next-steps.md).
