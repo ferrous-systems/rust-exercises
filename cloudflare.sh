@@ -15,7 +15,7 @@ if [ "$(uname)" == "Darwin" ]; then
     dot -V || brew install graphviz
     mdbook-graphviz --version || cargo install mdbook-graphviz@0.3.1 --locked
 else
-    /mdbook --version || curl -sSL https://github.com/rust-lang/mdBook/releases/download/v0.5.4/mdbook-v0.5.4-x86_64-unknown-linux-gnu.tar.gz | tar -xvzf -
+    ./mdbook --version || curl -sSL https://github.com/rust-lang/mdBook/releases/download/v0.5.4/mdbook-v0.5.4-x86_64-unknown-linux-gnu.tar.gz | tar -xvzf -
     dot -V || ( curl -ssL https://github.com/restruct/dot-static/raw/refs/heads/master/x64/dot_static -o ./dot && chmod a+x ./dot )
     ./mdbook-graphviz --version || ( curl -sSL https://github.com/dylanowen/mdbook-graphviz/releases/download/v0.3.1/mdbook-graphviz_v0.3.1_x86_64-unknown-linux-musl.zip -o mdbook-graphviz.zip \
         && unzip mdbook-graphviz.zip \
