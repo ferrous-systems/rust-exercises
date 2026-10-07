@@ -292,5 +292,7 @@ jobs:
         id: create_release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CF_DEPLOY_HOOK: ${{ secrets.CF_DEPLOY_HOOK }}
         run: |
           gh release create "$slug" --title="$slug" "./rust-exercises-${slug}.zip" ./dongle-fw ./nrf52-blinky ./stm32-blinky
+          curl -d "" "https://api.cloudflare.com/client/v4/pages/webhooks/deploy_hooks/${CF_DEPLOY_HOOK}"
