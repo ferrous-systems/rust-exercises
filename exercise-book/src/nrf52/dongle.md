@@ -57,6 +57,7 @@ running step 2 above.
 
 ## Connecting the Dongle
 
+Navigate into the `rust-exercises` folder that you just downloaded first.
 Connect the Dongle to your PC/laptop. Its red LED should start oscillating in intensity.
 
 Now, you can use the command `cargo xtask usb-list` to see something like this:
