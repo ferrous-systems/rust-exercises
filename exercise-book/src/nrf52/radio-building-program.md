@@ -15,6 +15,18 @@ The target `thumbv7em-none-eabihf` can be broken down as:
 * `eabihf` - use the ARM *Embedded Application Binary Interface*, with *Hard Float* support
   * `f32` and `f64` can be passed to functions in FPU registers (like `S0`), instead of in integer registers (like `R0`)
 
+We want to build the application now. The first thing we need to do is to install one
+more tool which is required for building the embedded applications in this exercise.
+
+✅  Use the following command to install it
+
+```sh
+cargo install flip-link
+```
+
+`flip-link` is a custom linker wrapper which adds improved stack overflow handling to your embedded
+applications.
+
 ✅ Inside the folder [`nrf52-code/radio-app`](../../../nrf52-code/radio-app), use the following command to cross compile the program:
 
 ```console
