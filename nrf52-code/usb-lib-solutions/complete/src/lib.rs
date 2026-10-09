@@ -193,6 +193,15 @@ mod tests {
         // has language ID but shouldn't
         assert!(Request::parse(0b1000_0000, 0x06, 0x02_00, 1033, 9).is_err());
         //                                                 ^^^^
+
+        // OK: GET_DESCRIPTOR Configuration 1 [length=9]
+        assert_eq!(
+            Request::parse(0b1000_0000, 0x06, 0x02_01, 0, 9),
+            Ok(Request::GetDescriptor {
+                descriptor: Descriptor::Configuration { index: 1 },
+                length: 9
+            })
+        );
     }
 
     #[test]
