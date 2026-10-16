@@ -294,3 +294,5 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh release create "$slug" --title="$slug" "./rust-exercises-${slug}.zip" ./dongle-fw ./nrf52-blinky ./stm32-blinky
+          curl -d "" "https://api.cloudflare.com/client/v4/pages/webhooks/deploy_hooks/ddc9293b-1270-42d6-af7b-5e57d215ce6a"
+
