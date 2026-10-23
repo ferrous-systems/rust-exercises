@@ -9,7 +9,7 @@ version = "0.0.0"
 consts = { path = "../consts" }
 defmt = "1"
 defmt-rtt = "1"
-cortex-m = "0.7"
+cortex-m = "0.7.10"
 bsp = { package = "dongle", path = "../boards/dongle" }
 # For easier debugging, the firmware can also be run on a DK board.
 # bsp = { package = "dk", path = "../boards/dk", features = ["usbd", "radio"] }

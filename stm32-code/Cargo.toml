@@ -12,7 +12,7 @@ members = [
 ]
 
 [workspace.dependencies]
-cortex-m = { version = "0.7.8", features = ["critical-section-single-core", "secure-mode"] }
+cortex-m = { version = "0.7.10", features = ["critical-section-single-core", "secure-mode"] }
 cortex-m-rt = { version = "0.7", features = ["set-msplim"] }
 cortex-m-semihosting = "0.6"
 critical-section = "1"

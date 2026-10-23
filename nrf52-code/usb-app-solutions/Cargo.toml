@@ -12,8 +12,8 @@ usb2 = "0.0.1"
 
 [dependencies]
 consts = { path = "../consts" }
-cortex-m = "0.7.7"
-cortex-m-rt = "0.7.5"
+cortex-m = "0.7.10"
+cortex-m-rt = "0.7.7"
 rtic = { version = "2", features = ["thumbv7-backend"] }
 defmt = "1"
 defmt-rtt = "1.1"
