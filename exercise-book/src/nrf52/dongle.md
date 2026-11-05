@@ -21,6 +21,13 @@ your `cargo` installation:
 cargo version
 ```
 
+### Windows Subsystem for Linux
+
+If you would like to use [WSL](https://learn.microsoft.com/en-us/windows/wsl/install) for these
+exercises, you have to perform some setup steps for USB devices to be available in WSL:
+[Connecting USB devices to WSL](https://learn.microsoft.com/en-us/windows/wsl/connect-usb).
+Then follow the Linux steps below.
+
 ### Linux specific - Configure USB Device access for non-root users
 
 <a id="linux-usb-access"></a>
@@ -34,13 +41,13 @@ To access the USB devices as a non-root user, follow these steps:
     # udev rules to allow access to USB devices as a non-root user
 
     # nRF52840 Dongle in bootloader mode
-    ATTRS{idVendor}=="1915", ATTRS{idProduct}=="521f", TAG+="uaccess"
+    ATTRS{idVendor}=="1915", ATTRS{idProduct}=="521f", MODE="660", GROUP="plugdev", TAG+="uaccess"
 
     # nRF52840 Dongle applications
-    ATTRS{idVendor}=="1209", TAG+="uaccess"
+    ATTRS{idVendor}=="1209", MODE="660", GROUP="plugdev", TAG+="uaccess"
 
     # nRF52840 Development Kit
-    ATTRS{idVendor}=="1366", ENV{ID_MM_DEVICE_IGNORE}="1", TAG+="uaccess"
+    ATTRS{idVendor}=="1366", ENV{ID_MM_DEVICE_IGNORE}="1", MODE="660", GROUP="plugdev", TAG+="uaccess"
     ```
 
 2. Run the following command to put the new udev rules into effect
