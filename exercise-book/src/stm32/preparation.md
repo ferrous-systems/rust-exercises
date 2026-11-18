@@ -122,6 +122,13 @@ The [`probe-rs` setup page] also specifies these steps.
 
 [`probe-rs` setup page]: https://probe.rs/docs/getting-started/probe-setup/
 
+### Windows Subsystem for Linux
+
+If you would like to use [WSL](https://learn.microsoft.com/en-us/windows/wsl/install)
+for these exercises, you have to perform some setup steps for USB devices to be
+available in WSL: [Connecting USB devices to WSL](https://learn.microsoft.com/en-us/windows/wsl/connect-usb).
+Then follow the Linux steps below.
+
 ### Linux specific - Configure USB Device access for non-root users
 
 <a id="linux-usb-access"></a>
@@ -136,9 +143,9 @@ devices as a non-root user, follow these steps:
    # udev rules to allow access to USB devices as a non-root user
 
    # ST-Link V3
-   ATTRS{idVendor}=="0483", ATTRS{idProduct}=="374e", TAG+="uaccess"
-   ATTRS{idVendor}=="0483", ATTRS{idProduct}=="374f", TAG+="uaccess"
-   ATTRS{idVendor}=="0483", ATTRS{idProduct}=="3754", TAG+="uaccess"
+   ATTRS{idVendor}=="0483", ATTRS{idProduct}=="374e", MODE="660", GROUP="plugdev", TAG+="uaccess"
+   ATTRS{idVendor}=="0483", ATTRS{idProduct}=="374f", MODE="660", GROUP="plugdev", TAG+="uaccess"
+   ATTRS{idVendor}=="0483", ATTRS{idProduct}=="3754", MODE="660", GROUP="plugdev", TAG+="uaccess"
    ```
 
 2. Run the following command to put the new udev rules into effect
