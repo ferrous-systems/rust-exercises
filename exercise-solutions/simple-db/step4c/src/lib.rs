@@ -135,4 +135,12 @@ mod tests {
         let expected = Err(Error::MissingPayload);
         assert_eq!(result, expected);
     }
+
+    #[test]
+    fn test_longer_command() {
+        let line = "PUBLISHED Hello World\n";
+        let result: Result<Command, Error> = parse(line);
+        let expected = Err(Error::UnknownCommand);
+        assert_eq!(result, expected);
+    }
 }
